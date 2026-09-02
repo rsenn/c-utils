@@ -34,11 +34,6 @@
 
 extern buffer* unix_optbuf;
 
-void debug_int(const char* name, int i);
-void debug_sa(const char* name, stralloc* sa);
-void debug_sl(const char* name, const strlist* l, const char* sep);
-void debug_str(const char* name, const char* s);
-
 static const char* compiler_types[] = {
     "8cc", "bcc",    "clang",  "digitalmars", "dmc", "gcc",  "gnu", "gp", "htc",  "icl", "lcc",   "llvm", "msvc",
     "occ", "orange", "pelles", "picc",        "po",  "sdcc", "tcc", "vc", "vs20", "xc8", "zapcc", 0,
@@ -145,10 +140,6 @@ mkdir_components(strlist* dir, int mode) {
 
   for(i = 1; i <= n; ++i) {
     strlist r = strlist_range(dir, 0, i);
-
-#ifdef DEBUG_OUTPUT_
-    debug_sa("mkdir_components", &r.sa);
-#endif
 
     if(r.sa.len) {
       if(mkdir_sa(&r.sa, mode) == -1) {
@@ -388,12 +379,6 @@ deps_for_libs(void) {
       set_clear(&indir);
       deps_indirect(&indir, &libs);
 
-#ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(debug_buf, "Deps for library '", lib->name, "': ", NULL);
-      buffer_putsa(debug_buf, &libs.sa);
-      buffer_putnlflush(debug_buf);
-#endif
-
       rule_list(&libs, &lib->deps);
       strlist_free(&libs);
     }
@@ -462,62 +447,6 @@ print_rule_deps(buffer* b, target* t) {
   set_free(&deplist);
   strlist_free(&hierlist);
 }
-
-/**
- * @brief       Removes all indirect dependencies
- *
- * @param      top    Toplevel dependencies
- * @param      a      Dependency layer array
- * @param      depth  Recursion depth
- */
-/*static void
-remove_indirect_deps_recursive(array* top, array* a, int depth) {
-  target **p, **found;
-
-  array_foreach_t(a, p) {
-    target* t;
-
-    if((t = *p) == NULL)
-      continue;
-
-    if(depth > 0)
-
-      if((found = array_find(top, sizeof(target*), &t)))
-        *found = NULL;
-
-    if(a != &t->deps)
-
-      if(depth < 100 && array_length(&t->deps, sizeof(target*)) > 0)
-        remove_indirect_deps_recursive(top, &t->deps, depth + 1);
-  }
-}*/
-
-/**
- * @brief      Removes indirect deps
- *
- * @param      deps  Dependencies
- *
- * @return    Number of dependencies removed
- */
-/*static ssize_t
-remove_indirect_deps(array* deps) {
-  size_t w, r, n;
-  target** a;
-
-  remove_indirect_deps_recursive(deps, deps, 0);
-
-  n = array_length(deps, sizeof(target*));
-  a = array_start(deps);
-
-  for(w = 0, r = 0; r < n; ++r)
-
-    if(a[r])
-      a[w++] = a[r];
-
-  array_truncate(deps, sizeof(target*), w);
-
-  return r - w;
-}*/
 
 /**
  * @brief         Set the machine type
@@ -1147,7 +1076,7 @@ set_compiler_type(const char* compiler) {
     var_set("LIB", "sdcclib");
     var_unset("CXX");
     cfg.mach.arch = PIC;
-    exts.bin = ".cof";
+    exts.bin = ".cod";
     exts.obj = ".o";
     exts.lib = ".lib";
 
@@ -1283,7 +1212,11 @@ set_compiler_type(const char* compiler) {
     var_set("LIB", "xc8-ar");
     cfg.mach.arch = PIC;
     exts.bin = ".elf";
-    exts.obj = ".o";
+    /* despite the gcc-like CLI, "-c ... -o foo.o" still writes foo.p1 --
+     * an intermediate/object file with a fixed extension, same as the
+     * legacy xc8/picc driver -- not a true .o; xc8-cc ignores the
+     * extension given via -o for -c and always appends .p1 itself. */
+    exts.obj = ".p1";
     exts.lib = ".a";
 
     if(cfg.chip.len == 0)
@@ -1293,8 +1226,17 @@ set_compiler_type(const char* compiler) {
 
     /* the XC8 device pack directory -- resolved at build time from the
      * DFP_DIR environment variable (as MPLAB X's own generated
-     * Makefiles do), not baked in at generation time */
-    var_set("MDFP", "$(DFP_DIR)/xc8");
+     * Makefiles do), not baked in at generation time. Unlike make,
+     * ninja doesn't import the process environment into its own
+     * variable namespace, and its $(NAME)->$name variable-reference
+     * lowering (transform_subst_sa) would otherwise turn this into a
+     * reference to a ninja variable that's never defined (silently
+     * expanding to empty). Route around that for ninja with a
+     * doubly-escaped $$DFP_DIR: ninja unescapes "$$" to a literal "$"
+     * once at parse time and doesn't reinterpret it afterwards, so the
+     * generated command line ends up with a literal $DFP_DIR that the
+     * shell -- not ninja -- expands from its real environment. */
+    var_set("MDFP", build_tool == TOOL_NINJA ? "$$DFP_DIR/xc8" : "$(DFP_DIR)/xc8");
     var_push("CFLAGS", "-mdfp=\"$(MDFP)\"");
 
     if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
@@ -1447,13 +1389,7 @@ libdirs_add(const char* dir) {
   stralloc_init(&tmp);
   path_normalize_sa(dir, &tmp);
 
-  if(strlist_push_unique_sa(&link_dirs, &tmp)) {
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "Added to lib dirs: ");
-    buffer_putsa(debug_buf, &tmp);
-    buffer_putnlflush(debug_buf);
-#endif
-  }
+  strlist_push_unique_sa(&link_dirs, &tmp);
 
   stralloc_free(&tmp);
 }
@@ -1546,6 +1482,979 @@ usage(char* argv0) {
 }
 
 /**
+ * @brief      Resolve the build type, make tool and compiler to use, and
+ *             apply the selected compiler's variable/command defaults.
+ *
+ *             Auto-detects `cfg.build_type` from directory names, infers
+ *             `tools.make` from `tools.compiler` (or vice versa by
+ *             scanning tokens split out of the build dir / output file
+ *             name), classifies `build_tool` (batch/ninja/shell/make), and
+ *             finally calls `set_make_type()`/`set_compiler_type()` to
+ *             populate `commands`/`exts`/`var_*` for the resolved
+ *             compiler. Also applies `-c/--cross` prefixing and computes
+ *             `batchmode`.
+ *
+ * @param      argv0  argv[0], for usage() on failure
+ *
+ * @return     0 on success; nonzero is the exit code main() should return
+ *             (compiler/make-tool combination couldn't be resolved)
+ */
+static int
+resolve_toolchain(const char* argv0) {
+  path_getcwd(&dirs.this.sa);
+
+  /* NB: cfg.build_type is always BUILD_TYPE_RELEASE (0) here in practice --
+   * byte_zero(&cfg, ...) in main() means it can never be -1, so this
+   * directory-name autodetection is unreachable dead code. Left as-is
+   * (not fixed) in this refactor; see BUGS. */
+  if(cfg.build_type == -1)
+    if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
+      if((cfg.build_type = extract_build_type(&dirs.this.sa)) == -1)
+        cfg.build_type = extract_build_type(&dirs.out.sa);
+
+  if(cfg.build_type == -1)
+    cfg.build_type = BUILD_TYPE_DEBUG;
+
+  if(tools.make == NULL && tools.compiler) {
+    if(str_start(tools.compiler, "b")) {
+      tools.make = "borland";
+
+    } else if(str_start(tools.compiler, "msvc")) {
+      tools.make = "nmake";
+    } else if(str_start(tools.compiler, "g")) {
+      tools.make = "gmake";
+    } else if(str_start(tools.compiler, "o")) {
+      tools.make = "omake";
+    } else if(str_start(tools.compiler, "po")) {
+      tools.make = "pomake";
+    }
+  }
+
+  if(str_equal(tools.make, "gmake"))
+    make_capabs |= MAKE_RULE_PATTERN;
+
+  if(str_equal(tools.make, "make"))
+    make_capabs |= MAKE_RULE_IMPLICIT;
+
+  if(tools.toolchain)
+    cygming =
+        str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
+
+  if(cygming) {
+    tools.compiler = "gcc";
+
+    if(tools.make == 0)
+      tools.make = "gmake";
+  }
+
+  if(tools.make == NULL)
+    tools.make = "make";
+
+  build_tool = (str_start(tools.make, "bat") || str_start(tools.make, "cmd")) ? TOOL_BATCH
+               : tools.make[str_find(tools.make, "ninja")] != '\0'            ? TOOL_NINJA
+               : str_start(tools.make, "sh")                                  ? TOOL_SHELL
+                                                                              : 0;
+
+  if(build_tool == TOOL_BATCH)
+    comment = "REM ";
+
+  /* auto-detect tools.compiler (and, as a byproduct, cfg.build_type again)
+   * by splitting the build dir / output file name into '/'-'-'-'.'
+   * separated tokens and checking each one against known compiler/build
+   * type names. */
+  {
+    set_t toks;
+    const char* s;
+    size_t n;
+
+    set_init(&toks, 0);
+
+    {
+      strlist tmp;
+      strlist_init(&tmp, '\0');
+      stralloc_copy(&tmp.sa, &dirs.build.sa);
+
+      if(outfile)
+        strlist_push(&tmp, outfile);
+      stralloc_replacec(&tmp.sa, '/', '\0');
+      stralloc_replacec(&tmp.sa, '-', '\0');
+      stralloc_replacec(&tmp.sa, '.', '\0');
+      strlist_foreach(&tmp, s, n) { set_add(&toks, s, n); }
+
+      strlist_free(&tmp);
+    }
+
+    {
+      size_t i;
+      set_iterator_t it;
+      stralloc tok;
+
+      stralloc_init(&tok);
+
+      set_foreach(&toks, it, s, n) {
+        stralloc_copyb(&tok, s, n);
+        stralloc_nul(&tok);
+
+        if(!tools.compiler && is_compiler(tok.s)) {
+          tools.compiler = (char*)s;
+          break;
+        }
+
+        if(cfg.build_type == -1) {
+          for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
+            if(s[case_find(s, build_types[i])]) {
+              cfg.build_type = i;
+              break;
+            }
+          }
+        }
+      }
+
+      stralloc_free(&tok);
+    }
+
+    set_free(&toks);
+  }
+
+  if(tools.compiler)
+    if(!set_make_type() || !set_compiler_type(tools.compiler)) {
+      usage(argv0);
+      return 2;
+    }
+
+  if(*cross_compile) {
+    var_set("CROSS_COMPILE", cross_compile);
+
+    if(var_isset("CC"))
+      stralloc_prepends(&var_list("CC", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
+
+    if(var_isset("CXX"))
+      stralloc_prepends(&var_list("CXX", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
+
+    if(var_isset("AR"))
+      stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
+  }
+
+  batchmode = build_tool == TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
+
+  if(build_tool == TOOL_BATCH)
+    pathsep_args = pathsep_make;
+
+  return 0;
+}
+
+/**
+ * @brief      Resolve dirs.work/out/build/this to their final values and
+ *             make dirs.out/dirs.build absolute, canonical and collapsed.
+ *
+ *             `-w`/`--workdir` (dirs.work) is honored if the user gave it
+ *             explicitly; otherwise it falls back to outfile's dirname or
+ *             the literal "build".
+ */
+static void
+resolve_directories(void) {
+  stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+
+  strlist_nul(&dirs.out);
+  strlist_nul(&dirs.this);
+
+  if(dirs.work.sa.len == 0) {
+    if(outfile)
+      path_dirname(outfile, &dirs.work.sa);
+    else
+      stralloc_copys(&dirs.work.sa, "build");
+  }
+
+  if(dirs.out.sa.len == 0)
+    path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
+
+  if(dirs.build.sa.len == 0) {
+    if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
+      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
+
+    } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
+      stralloc target;
+
+      stralloc_init(&target);
+      stralloc_copys(&target, tools.toolchain);
+
+      if(cfg.chip.s) {
+        stralloc_cats(&target, "-");
+        stralloc_cat(&target, &cfg.chip);
+      }
+
+      stralloc_nul(&target);
+      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
+
+      if(cross_compile && *cross_compile) {
+        strlist_push(&dirs.build, cross_compile);
+      } else {
+        strlist_push_sa(&dirs.build, &target);
+        stralloc_catc(&dirs.build.sa, '-');
+        stralloc_cats(&dirs.build.sa, build_types[cfg.build_type]);
+      }
+
+      stralloc_free(&target);
+    }
+
+    stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+  }
+
+  if(dirs.work.sa.len == 0)
+    stralloc_copys(&dirs.work.sa, ".");
+
+  path_absolute_sa(&dirs.out.sa);
+  path_canonical_sa(&dirs.out.sa);
+  path_collapse_sa(&dirs.out.sa);
+
+  path_absolute_sa(&dirs.build.sa);
+  path_canonical_sa(&dirs.build.sa);
+  path_collapse_sa(&dirs.build.sa);
+
+  strlist_nul(&dirs.this);
+  strlist_nul(&dirs.out);
+  strlist_nul(&dirs.build);
+  strlist_nul(&dirs.work);
+}
+
+/**
+ * @brief      Apply -L/-l/-I search paths, compute the relative
+ *             `sources_dir`, and create the output/work/build directories
+ *             on disk.
+ *
+ * @param      libdirs   -L arguments
+ * @param      libs      -l arguments
+ * @param      includes  -I arguments
+ */
+static void
+setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
+  stralloc tmp;
+  char** it;
+
+  stralloc_init(&tmp);
+
+  if(tools.preproc)
+    var_set("CPP", tools.preproc);
+
+  strarray_foreach(libdirs, it) { push_linkdir("LIBS", *it); }
+  strarray_foreach(libs, it) { with_lib(*it); }
+  strarray_foreach(includes, it) { includes_add(*it); }
+
+  includes_cppflags();
+
+  strlist_nul(&dirs.this);
+  strlist_nul(&dirs.out);
+  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
+  stralloc_nul(&sources_dir);
+
+  if(dirs.out.sa.len) {
+    stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    path_absolute_sa(&dirs.out.sa);
+    stralloc_zero(&tmp);
+    path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
+    stralloc_copy(&sources_dir, &tmp);
+    stralloc_nul(&sources_dir);
+
+    stralloc_zero(&tmp);
+  }
+
+  path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
+
+  strlist_nul(&dirs.work);
+  stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
+
+  mkdir_components(&dirs.out, 0755);
+
+  if(stralloc_diffs(&dirs.work.sa, "."))
+    mkdir_components(&dirs.work, 0755);
+
+  mkdir_components(&dirs.build, 0755);
+
+  stralloc_free(&tmp);
+}
+
+/**
+ * @brief      Open the `-o FILE` output file if one was given, pointing
+ *             `*out` at it; otherwise `*out` is left untouched (stdout).
+ *
+ * @param      filebuf  Buffer storage to truncate/open `outfile` into
+ * @param      out      Output buffer pointer to redirect
+ *
+ * @return     0 on success, 2 if the file couldn't be opened
+ */
+static int
+open_output_file(buffer* filebuf, buffer** out) {
+  if(outfile) {
+    if('\\' != PATHSEP_C)
+      stralloc_replacec(&dirs.out.sa, '\\', PATHSEP_C);
+
+    if(stralloc_equals(&dirs.out.sa, "."))
+      stralloc_zero(&dirs.out.sa);
+    else
+      stralloc_catc(&dirs.out.sa, pathsep_make);
+
+    byte_zero(filebuf, sizeof(*filebuf));
+
+    if(buffer_truncfile(filebuf, outfile)) {
+      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
+      return 2;
+    }
+
+    *out = filebuf;
+  }
+
+  return 0;
+}
+
+/**
+ * @brief      Create the "all" phony target and, if the resolved make
+ *             tool supports pattern/implicit rules, the generic
+ *             compile-pattern rule; also wires up the `.asm.o` rule when
+ *             building assembly sources.
+ *
+ * @param      all             Receives the "all" target
+ * @param      compile_target  Receives the generic compile rule, or stays
+ *                              NULL if the make tool doesn't support one
+ */
+static void
+seed_base_rules(target** all, target** compile_target) {
+  *all = rule_get("all");
+  (*all)->phony = true;
+
+  stralloc_catc(&(*all)->recipe, '\n');
+
+  if(make_capabs & (MAKE_RULE_PATTERN | MAKE_RULE_IMPLICIT)) {
+    stralloc rn;
+    bool outputs = false;
+
+    stralloc_init(&rn);
+
+    if(make_capabs & MAKE_RULE_PATTERN) {
+      stralloc_copys(&rn, "$(BUILDDIR)");
+      stralloc_cats(&rn, "%");
+      stralloc_cats(&rn, exts.obj);
+      stralloc_cats(&rn, ": %");
+      stralloc_cats(&rn, exts.src);
+      outputs = true;
+    } else {
+      stralloc_copys(&rn, exts.src);
+      stralloc_cats(&rn, exts.obj);
+    }
+
+    *compile_target = rule_get_sa(&rn);
+    (*compile_target)->outputs = outputs;
+
+    if(stralloc_length(&(*compile_target)->recipe) == 0)
+      stralloc_copy(&(*compile_target)->recipe, &commands.compile);
+
+    stralloc_free(&rn);
+  }
+
+  if(str_equal(exts.src, ".asm")) {
+    target* assemble = rule_get(".asm.o");
+
+    stralloc_copy(&assemble->recipe, &commands.compile);
+  }
+}
+
+/**
+ * @brief      Ingest a hand-written `-f/--input-file` makefile fragment,
+ *             then rewrite every rule's baked-in recipe so any literal
+ *             CFLAGS/CPPFLAGS/LDFLAGS text becomes a `$(VAR)` reference
+ *             again, feeding the first compile-type recipe found back
+ *             into the generic `compile_target` (if any) and recording
+ *             the first known build directory as `builddir_varname`.
+ *
+ * @param      all             The "all" target, passed through to
+ *                              input_process_file()
+ * @param      compile_target  The generic compile rule, or NULL
+ */
+static void
+ingest_input_file(target* all, target* compile_target) {
+  input_process_file(infile, all);
+
+  MAP_PAIR_T iter;
+
+  MAP_FOREACH(rule_map, iter) {
+    target* rule = MAP_ITER_VALUE(iter);
+    static const char* varnames[] = {
+        "CFLAGS",
+        "CPPFLAGS",
+        "LDFLAGS",
+        0,
+    };
+
+    for(size_t i = 0; varnames[i]; ++i) {
+      const char* value;
+
+      if(!(value = var_get(varnames[i])) || !value[0])
+        continue;
+
+      if(stralloc_contains(&rule->recipe, value)) {
+        stralloc tmp;
+        stralloc_init(&tmp);
+
+        var_subst_b(varnames[i], &tmp, rule->recipe.s, rule->recipe.len, 0, 0);
+
+        stralloc_copy(&rule->recipe, &tmp);
+        stralloc_nul(&rule->recipe);
+        stralloc_free(&tmp);
+      }
+    }
+
+    set_subst_sa(&rule->prereq, &rule->recipe, rule->type == COMPILE ? "$<" : "$^");
+    set_subst_sa(&rule->output, &rule->recipe, "$@");
+
+    if(rule->type == COMPILE && stralloc_length(&rule->recipe)) {
+      if(compile_target && !stralloc_length(&compile_target->recipe)) {
+        stralloc_copy(&compile_target->recipe, &rule->recipe);
+      }
+    }
+  }
+
+  {
+    stralloc builddir;
+
+    stralloc_init(&builddir);
+
+    set_at_sa(&build_directories, 0, &builddir);
+
+    var_set_b(builddir_varname, builddir.s, builddir.len);
+    stralloc_free(&builddir);
+  }
+}
+
+/**
+ * @brief      Build the `COMMON_FLAGS` variable by substituting
+ *             CFLAGS/CPPFLAGS/LDFLAGS references into it.
+ */
+static void
+compute_common_flags(void) {
+  static const char* varnames[] = {
+      "CFLAGS",
+      "CPPFLAGS",
+      "LDFLAGS",
+      0,
+  };
+
+  var_list("COMMON_FLAGS", 0)->value.sep = ' ';
+
+  for(size_t i = 0; varnames[i]; ++i) {
+    var_t* v;
+
+    if((v = var_list(varnames[i], 0))) {
+      var_subst_sa("COMMON_FLAGS", &v->value.sa, NULL, NULL);
+    }
+  }
+}
+
+/**
+ * @brief      When a single generic compile_target rule exists, fold
+ *             every other compile-type rule's output into it and disable
+ *             the (now redundant) per-file recipes for gmake.
+ *
+ * @param      compile_target  The generic compile rule, or NULL
+ */
+static void
+consolidate_compile_target(target* compile_target) {
+  if(compile_target) {
+    MAP_PAIR_T it;
+
+    strlist_nul(&dirs.work);
+    strlist_push_unique(&vpath, ".");
+    strlist_push_unique_sa(&vpath, &dirs.work.sa);
+
+    set_clear(&compile_target->output);
+
+    MAP_FOREACH(rule_map, it) {
+      target* rule = MAP_ITER_VALUE(it);
+
+      if(rule_is_compile(rule) && rule != compile_target) {
+        stralloc_free(&rule->recipe);
+        stralloc_init(&rule->recipe);
+
+        if(str_equal(tools.make, "gmake"))
+          rule->disabled = 1;
+
+        set_cat(&compile_target->output, &rule->output);
+      }
+    }
+  }
+}
+
+/**
+ * @brief      Classify every remaining positional argv[] entry as a
+ *             `NAME=value` variable assignment or a path to add to
+ *             `args`, then validate at least one path (or `-f`) was
+ *             given.
+ *
+ * @param      argc  Argument count
+ * @param      argv  Argument vector
+ * @param      args  Receives path-shaped positional arguments
+ *
+ * @return     0 on success, nonzero (the exit code for main() to return)
+ *             if neither positional args nor `-f/--input-file` were given
+ */
+static int
+consume_positional_args(int argc, char** argv, strarray* args) {
+  while(unix_optind < argc) {
+    stralloc arg;
+
+    stralloc_init(&arg);
+    stralloc_copys(&arg, argv[unix_optind]);
+    stralloc_nul(&arg);
+
+    if(stralloc_contains(&arg, "=")) {
+      size_t eqpos;
+      const char* v;
+
+      eqpos = str_chr(arg.s, '=');
+      arg.s[eqpos++] = '\0';
+      v = &arg.s[eqpos];
+      var_set(arg.s, v);
+      ++unix_optind;
+      continue;
+    }
+
+    stralloc_replacec(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_nul(&arg);
+
+#if WINDOWS_NATIVE || defined(__MINGW32__)
+    if(str_rchrs(argv[unix_optind], "*?", 2) < str_len(argv[unix_optind]))
+      strarray_glob(args, arg.s);
+    else
+#endif
+
+      strarray_push(args, arg.s);
+    ++unix_optind;
+
+    stralloc_free(&arg);
+  }
+
+  path_canonical_sa(&dirs.out.sa);
+  path_collapse_sa(&dirs.out.sa);
+
+  /* No arguments given */
+
+  if(strarray_size(args) == 0 && !infile) {
+    buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
+    usage(argv[0]);
+    return 1;
+  }
+
+  return 0;
+}
+
+/**
+ * @brief      Validate and classify every entry in `args`: source/include
+ *             files are added directly, directories are scanned
+ *             recursively (via sources_get()/sources_add(), populating
+ *             the global sources_set), then the discovered sources are
+ *             drained into a sorted `sources` array.
+ *
+ * @param      args     Positional path arguments (from
+ *                       consume_positional_args())
+ * @param      sources  Receives the final, sorted list of source files
+ *
+ * @return     0 on success, nonzero (ret=127, main() should `goto fail`)
+ *             if a given path doesn't exist
+ */
+static int
+discover_sources(strarray* args, strarray* sources) {
+  char** arg;
+  const char* x;
+  size_t n;
+
+  strarray_foreach(args, arg) {
+    {
+      const char* p = *arg;
+
+      if(!path_exists(p)) {
+        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
+        buffer_flush(buffer_2);
+        return 127;
+      }
+
+      if(is_source(p) || is_include(p))
+        sources_add(p);
+      else if(path_is_directory(p))
+        sources_get(p);
+    }
+  }
+
+  {
+    set_iterator_t it;
+    set_foreach(&sources_set, it, x, n) {
+      if(is_source_b(x, n))
+        strarray_pushb(sources, x, n);
+    }
+
+    strarray_sort(sources, &sources_sort_callback);
+  }
+
+  return 0;
+}
+
+/**
+ * @brief      Recompute `builddir_varname`'s value for gmake, re-check
+ *             `batchmode` now that dirs.work is final, and compute
+ *             `project_name`.
+ */
+static void
+finalize_build_metadata(void) {
+  if(str_start(tools.make, "g")) {
+    stralloc builddir, workabs;
+
+    /* dirs.build.sa was made absolute above (path_absolute_sa), but
+     * dirs.work.sa never is -- path_relative_to() needs both sides
+     * absolute to produce a sane result, so resolve a throwaway
+     * absolute copy of dirs.work.sa here (same trick path_output2()
+     * uses for the same reason). */
+    stralloc_init(&workabs);
+    path_absolute(dirs.work.sa.s, &workabs);
+
+    stralloc_init(&builddir);
+    path_relative_to_sa(&dirs.build.sa, &workabs, &builddir);
+    stralloc_nul(&builddir);
+
+    if(!stralloc_endc(&builddir, PATHSEP_C))
+      stralloc_catc(&builddir, PATHSEP_C);
+    var_set(builddir_varname, builddir.s);
+    stralloc_free(&builddir);
+    stralloc_free(&workabs);
+  }
+
+  if(((build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
+    batchmode = 1;
+
+  if(output_name.len) {
+    project_name = str_ndup(output_name.s, output_name.len);
+  } else {
+    stralloc abspath;
+
+    stralloc_init(&abspath);
+    path_absolute(dirs.this.sa.s, &abspath);
+    stralloc_nul(&abspath);
+    project_name = str_dup(path_basename(abspath.s));
+    stralloc_free(&abspath);
+  }
+}
+
+/**
+ * @brief      Populate sourcedir_map from `sources`, then generate
+ *             library/compile rules for every source directory and link
+ *             rules for every program, wiring the results into `all`.
+ *             Only called when no `-f/--input-file` was given.
+ *
+ *             NB: `sources2` (the copy iterated for
+ *             sourcedir_addsource()) is never freed here -- neither was
+ *             it in the original code. See BUGS
+ *             (genmakefile-sources2-leak); not fixed in this refactor.
+ *
+ * @param      sources  The discovered, sorted source file list --
+ *                       consumed: freed by this function via
+ *                       sourcedir_populate()+strarray_free()
+ * @param      all      The "all" target
+ */
+static void
+generate_all_rules(strarray* sources, target* all) {
+  MAP_PAIR_T t;
+  int link_rules = 0;
+  stralloc src;
+  strarray sources2;
+  char** ptr;
+
+  stralloc_init(&src);
+
+  strarray_init(&sources2);
+  strarray_copy(&sources2, sources);
+
+  strarray_foreach(&sources2, ptr) { sourcedir_addsource(*ptr, sources, &progs, &bins, pathsep_make); }
+
+  sourcedir_populate(sources);
+  strarray_free(sources);
+  stralloc_free(&src);
+
+  if(cmd_libs) {
+    generate_lib_rules(build_tool == TOOL_SHELL, build_tool == TOOL_BATCH, batchmode, pathsep_args, pathsep_make);
+    deps_for_libs();
+  } else {
+    MAP_FOREACH(sourcedir_map, t) {
+      sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
+      generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args);
+    }
+  }
+
+  if(cmd_bins) {
+    int ret;
+
+    if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
+      cmd_bins = 0;
+
+    link_rules += ret;
+  }
+
+  if(cmd_module) {
+    /* --create-module is parsed and threaded through here but this
+     * branch has always been empty -- module rule generation was never
+     * implemented. See BUGS (genmakefile-cmd-module-stub); not fixed in
+     * this refactor. */
+  }
+
+  if(cmd_bins == 0 || cmd_libs == 1) {
+    MAP_FOREACH(rule_map, t) {
+      target* tgt = MAP_ITER_VALUE(t);
+
+      if(stralloc_equal(&tgt->recipe, &commands.lib) && cmd_libs)
+        set_adds(&all->prereq, MAP_ITER_KEY(t));
+    }
+  }
+}
+
+/**
+ * @brief      Derive mkdir rules for every directory referenced by
+ *             rule_map, add the clean rule, attach every link-type rule
+ *             as a prerequisite of `all`, and generate install rules if
+ *             requested. Runs regardless of `-f/--input-file`.
+ *
+ * @param      all  The "all" target
+ */
+static void
+generate_auxiliary_rules(target* all) {
+  {
+    MAP_PAIR_T t;
+    set_t rule_dirs = SET();
+    set_iterator_t it;
+    const char* d;
+    size_t dlen;
+
+    MAP_FOREACH(rule_map, t) {
+      target* rule = MAP_ITER_VALUE(t);
+      stralloc dir, name;
+      size_t namelen;
+
+      /* some rule names are "target: mask" pattern-rule keys (see
+       * generate_srcdir_rule()/generate_srcdir_compile_rules()), not a
+       * plain path -- only the part before ": " is an actual target.
+       * path_dirname_b() can't be handed that bound directly: its
+       * "no separator" check reads path[size], which for a bound
+       * short of the real NUL isn't '\0' -- so cut a properly
+       * NUL-terminated copy first. */
+      namelen = str_find(rule->name, ": ");
+
+      stralloc_init(&name);
+      stralloc_copyb(&name, rule->name, namelen);
+      stralloc_nul(&name);
+
+      stralloc_init(&dir);
+      path_dirname(name.s, &dir);
+      stralloc_nul(&dir);
+      stralloc_free(&name);
+
+      if(dir.len && !stralloc_equals(&dir, "."))
+        set_insert(&rule_dirs, dir.s, dir.len);
+
+      stralloc_free(&dir);
+    }
+
+    set_foreach(&rule_dirs, it, d, dlen) {
+      stralloc dirsa;
+
+      stralloc_init(&dirsa);
+      stralloc_copyb(&dirsa, d, dlen);
+      stralloc_nul(&dirsa);
+
+      generate_mkdir_rule(&dirsa);
+      set_insert(&all->prereq, dirsa.s, dirsa.len);
+
+      stralloc_free(&dirsa);
+    }
+
+    set_free(&rule_dirs);
+  }
+
+  generate_clean_rule(pathsep_make);
+
+  {
+    MAP_PAIR_T t;
+    MAP_FOREACH(rule_map, t) {
+      target* rule = MAP_ITER_VALUE(t);
+
+      if(rule_is_link(rule))
+        set_adds(&all->prereq, rule->name);
+    }
+  }
+
+  if(inst_bins || inst_libs)
+    generate_install_rules();
+}
+
+/**
+ * @brief      Dump the entire "source of truth" -- every rule, variable,
+ *             source directory, source file, and the resolved
+ *             config/exts/commands/dirs/tools state -- to debug_buf.
+ *             Called once, right before the output-writing step. A no-op
+ *             unless compiled with DEBUG_OUTPUT.
+ */
+static void
+dump_state(void) {
+#ifdef DEBUG_OUTPUT
+  MAP_PAIR_T t;
+  struct dnode* link;
+
+  buffer_puts(debug_buf, "==== genmakefile state dump ====\n");
+
+  config_dump(&cfg);
+  exts_dump(&exts);
+  commands_dump(&commands);
+
+  buffer_puts(debug_buf, "dirs.work=\"");
+  buffer_putsa(debug_buf, &dirs.work.sa);
+  buffer_puts(debug_buf, "\" dirs.out=\"");
+  buffer_putsa(debug_buf, &dirs.out.sa);
+  buffer_puts(debug_buf, "\" dirs.build=\"");
+  buffer_putsa(debug_buf, &dirs.build.sa);
+  buffer_puts(debug_buf, "\" dirs.this=\"");
+  buffer_putsa(debug_buf, &dirs.this.sa);
+  buffer_putc(debug_buf, '"');
+  buffer_putnlflush(debug_buf);
+
+  buffer_putm_internal(debug_buf, "tools.toolchain=", tools.toolchain ? tools.toolchain : "", NULL);
+  buffer_putm_internal(debug_buf, " compiler=", tools.compiler ? tools.compiler : "", NULL);
+  buffer_putm_internal(debug_buf, " make=", tools.make ? tools.make : "", NULL);
+  buffer_putm_internal(debug_buf, " preproc=", tools.preproc ? tools.preproc : "", NULL);
+  buffer_putnlflush(debug_buf);
+
+  buffer_puts(debug_buf, "-- rules --\n");
+  MAP_FOREACH(rule_map, t) { rule_dump(MAP_ITER_VALUE(t)); }
+
+  buffer_puts(debug_buf, "-- vars --\n");
+  MAP_FOREACH(vars, t) { var_dump(MAP_ITER_KEY(t), (var_t*)MAP_ITER_VALUE(t)); }
+
+  buffer_puts(debug_buf, "-- source directories --\n");
+  sourcedir_dump_all(debug_buf);
+
+  buffer_puts(debug_buf, "-- source files --\n");
+  dlist_foreach_down(&sources_list, link) { sourcefile_dump(dlist_data(link, sourcefile*)); }
+
+  buffer_putnlflush(debug_buf);
+#endif
+}
+
+/**
+ * @brief      Handle the MPLAB/CMake "project file" output modes, which
+ *             replace normal rule emission entirely.
+ *
+ * @param      out  Output buffer
+ *
+ * @return     true if a project file was written (caller should skip the
+ *             normal makefile/script output), false otherwise
+ */
+static bool
+write_project_file(buffer* out) {
+  if(!case_diffs(tools.make, "mplab")) {
+    output_mplab_project(out, 0, 0, &include_dirs);
+    return true;
+  }
+
+  if(!case_diffs(tools.make, "cmake")) {
+    output_cmake_project(out, &rule_map, &vars, &include_dirs, &link_dirs);
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * @brief      Emit the "Generated by" banner, all variables, the
+ *             VPATH/ninja preamble, fallback compile recipes for any
+ *             still-empty object rule, and finally the rules/script
+ *             themselves (output_script() for batch/shell, otherwise
+ *             output_all_rules()).
+ *
+ * @param      out      Output buffer
+ * @param      cmdline  The original command line, for the banner
+ */
+static void
+write_makefile_output(buffer* out, strlist* cmdline) {
+  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
+  buffer_putsa(out, &cmdline->sa);
+  buffer_putsflush(out, newline);
+  stralloc_nul(&cfg.chip);
+  var_set("CHIP", cfg.chip.s);
+
+  if(build_tool == TOOL_NINJA) {
+    stralloc tmp;
+
+    stralloc_init(&tmp);
+    path_relative_to_sa(&dirs.build.sa, &dirs.out.sa, &tmp);
+
+    while(stralloc_endb(&tmp, &pathsep_args, 1))
+      tmp.len--;
+
+    var_set_b("objdir", tmp.s, tmp.len);
+    var_set("extra_cflags", "$$EXTRA_CFLAGS");
+    var_set("extra_ldflags", "$$EXTRA_LDFLAGS");
+
+    stralloc_free(&tmp);
+  }
+
+  {
+    strlist varnames;
+
+    strlist_init(&varnames, '\0');
+    map_keys_get(&vars, &varnames);
+
+    output_all_vars(out, &vars, &varnames, build_tool);
+    strlist_free(&varnames);
+  }
+
+  if(str_equal(tools.make, "gmake")) {
+    strlist_nul(&vpath);
+    // buffer_putm_internal(out,   "\nvpath ", vpath.sa.s,   "\n", NULL);
+    stralloc_replacec(&vpath.sa, ' ', ':');
+    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", NULL);
+    buffer_flush(out);
+  }
+
+  if(build_tool == TOOL_NINJA) {
+    output_ninja_rule(out, "cc", &commands.compile);
+    output_ninja_rule(out, "link", &commands.link);
+    output_ninja_rule(out, "lib", &commands.lib);
+    buffer_putnl(out, 0);
+  }
+
+  {
+    MAP_PAIR_T t;
+
+    MAP_FOREACH(rule_map, t) {
+      const char* name = MAP_ITER_KEY(t);
+      target* rule = MAP_ITER_VALUE(t);
+
+      if(rule->recipe.len)
+        continue;
+
+      if(str_end(name, exts.obj))
+
+        if(!str_end(tools.make, "make"))
+          stralloc_weak(&rule->recipe, &commands.compile);
+    }
+  }
+
+  if(build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) {
+    if(build_tool == TOOL_BATCH)
+      buffer_putm_internal(out, "CD %~dp0", newline, NULL);
+    else
+      buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
+
+    output_script(out, NULL, build_tool, quote_args, pathsep_args, make_sep_inline);
+  } else {
+    output_all_rules(out, build_tool, quote_args, pathsep_args, pathsep_make, make_sep_inline);
+  }
+}
+
+/**
  * @brief      main
  *
  * @param      argc  The count of arguments
@@ -1556,15 +2465,11 @@ usage(char* argv0) {
 int
 main(int argc, char* argv[]) {
   strarray libs, libdirs, includes, args, sources;
-  stralloc tmp;
   strlist cmdline;
   int c, ret = 0, index = 0;
   const char *s, *objdir = NULL;
-  set_t toks;
   buffer filebuf, *out = buffer_1;
-  size_t n;
   target *all = 0, *compile_target = 0;
-  char **it, **arg, **ptr, *x;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"objext", 1, NULL, 'T'},
@@ -1617,7 +2522,6 @@ main(int argc, char* argv[]) {
   strarray_init(&libs);
   strarray_init(&libdirs);
   strarray_init(&includes);
-  stralloc_init(&tmp);
 
 #if !WINDOWS_NATIVE
   sig_ignore(SIGTRAP);
@@ -1817,21 +2721,11 @@ main(int argc, char* argv[]) {
       }
 
       case 'I': {
-#ifdef DEBUG_OUTPUT_
-        buffer_puts(debug_buf, "Add -I: ");
-        buffer_puts(debug_buf, arg);
-        buffer_putnlflush(debug_buf);
-#endif
         strarray_push(&includes, arg);
         break;
       }
 
       case 'L': {
-#ifdef DEBUG_OUTPUT_
-        buffer_puts(debug_buf, "Add -L: ");
-        buffer_puts(debug_buf, arg);
-        buffer_putnlflush(debug_buf);
-#endif
         strarray_push(&libdirs, arg);
         break;
       }
@@ -1874,984 +2768,45 @@ main(int argc, char* argv[]) {
 
     format_linklib_fn = &format_linklib_lib;
 
-  path_getcwd(&dirs.this.sa);
-
-  if(cfg.build_type == -1)
-
-    if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
-
-      if((cfg.build_type = extract_build_type(&dirs.this.sa)) == -1)
-        cfg.build_type = extract_build_type(&dirs.out.sa);
-
-  if(cfg.build_type == -1)
-    cfg.build_type = BUILD_TYPE_DEBUG;
-
-  if(tools.make == NULL && tools.compiler) {
-    if(str_start(tools.compiler, "b")) {
-      tools.make = "borland";
-
-    } else if(str_start(tools.compiler, "msvc")) {
-      tools.make = "nmake";
-    } else if(str_start(tools.compiler, "g")) {
-      tools.make = "gmake";
-    } else if(str_start(tools.compiler, "o")) {
-      tools.make = "omake";
-    } else if(str_start(tools.compiler, "po")) {
-      tools.make = "pomake";
-    }
-  }
-
-  if(str_equal(tools.make, "gmake"))
-    make_capabs |= MAKE_RULE_PATTERN;
-
-  if(str_equal(tools.make, "make"))
-    make_capabs |= MAKE_RULE_IMPLICIT;
-
-  if(tools.toolchain)
-    cygming =
-        str_start(tools.toolchain, "mingw") || str_start(tools.toolchain, "cyg") || str_start(tools.toolchain, "msys");
-
-  if(cygming) {
-    tools.compiler = "gcc";
-
-    if(tools.make == 0)
-      tools.make = "gmake";
-  }
-
-  if(tools.make == NULL)
-    tools.make = "make";
-
-  build_tool = (str_start(tools.make, "bat") || str_start(tools.make, "cmd")) ? TOOL_BATCH
-               : tools.make[str_find(tools.make, "ninja")] != '\0'            ? TOOL_NINJA
-               : str_start(tools.make, "sh")                                  ? TOOL_SHELL
-                                                                              : 0;
-
-  if(build_tool == TOOL_BATCH)
-    comment = "REM ";
-
-  /*if(tools.compiler == NULL) {
-    if(cfg.mach.arch == PIC)
-      tools.compiler = "xc8";
-
-    if(tools.compiler == NULL)
-      tools.compiler = "gcc";
-    else if(cfg.mach.bits == 0)
-      set_machine(tools.compiler);
-  }*/
-
-  set_init(&toks, 0);
-
-  {
-    strlist tmp;
-    strlist_init(&tmp, '\0');
-    stralloc_copy(&tmp.sa, &dirs.build.sa);
-
-    if(outfile)
-      strlist_push(&tmp, outfile);
-    stralloc_replacec(&tmp.sa, '/', '\0');
-    stralloc_replacec(&tmp.sa, '-', '\0');
-    stralloc_replacec(&tmp.sa, '.', '\0');
-    strlist_foreach(&tmp, s, n) { set_add(&toks, s, n); }
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "toks: ");
-    buffer_putset(debug_buf, &toks, " ", 1);
-#endif
-  }
-
-  {
-    size_t i;
-    set_iterator_t it;
-    stralloc tok;
-
-    stralloc_init(&tok);
-
-    set_foreach(&toks, it, s, n) {
-      stralloc_copyb(&tok, s, n);
-      stralloc_nul(&tok);
-
-      if(!tools.compiler && is_compiler(tok.s)) {
-        tools.compiler = (char*)s;
-        break;
-      }
-
-      if(cfg.build_type == -1) {
-        for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
-          if(s[case_find(s, build_types[i])]) {
-            cfg.build_type = i;
-            break;
-          }
-        }
-      }
-    }
-
-    stralloc_free(&tok);
-  }
-
-  if(tools.compiler)
-    if(!set_make_type() || !set_compiler_type(tools.compiler)) {
-      usage(argv[0]);
-      ret = 2;
-      goto quit;
-    }
-
-  if(*cross_compile) {
-    var_set("CROSS_COMPILE", cross_compile);
-
-    if(var_isset("CC"))
-      stralloc_prepends(&var_list("CC", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
-
-    if(var_isset("CXX"))
-      stralloc_prepends(&var_list("CXX", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
-
-    if(var_isset("AR"))
-      stralloc_prepends(&var_list("AR", pathsep_args)->value.sa, "$(CROSS_COMPILE)");
-  }
-
-  batchmode = build_tool == TOOL_BATCH && stralloc_contains(&commands.compile, "-Fo");
-
-  if(build_tool == TOOL_BATCH)
-    pathsep_args = pathsep_make;
-
-  stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-
-  strlist_nul(&dirs.out);
-  strlist_nul(&dirs.this);
-
-  if(outfile)
-    path_dirname(outfile, &dirs.work.sa);
-  else
-    stralloc_copys(&dirs.work.sa, "build");
-
-  if(dirs.out.sa.len == 0)
-    path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
-
-  if(dirs.build.sa.len == 0) {
-    if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
-      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
-
-    } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
-      stralloc target;
-
-      stralloc_init(&target);
-      stralloc_copys(&target, tools.toolchain);
-
-      if(cfg.chip.s) {
-        stralloc_cats(&target, "-");
-        stralloc_cat(&target, &cfg.chip);
-      }
-
-      stralloc_nul(&target);
-      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
-
-      if(cross_compile && *cross_compile) {
-        strlist_push(&dirs.build, cross_compile);
-      } else {
-        strlist_push_sa(&dirs.build, &target);
-        stralloc_catc(&dirs.build.sa, '-');
-        stralloc_cats(&dirs.build.sa, build_types[cfg.build_type]);
-      }
-
-      stralloc_free(&target);
-    }
-
-    stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-  }
-
-  if(dirs.work.sa.len == 0)
-    stralloc_copys(&dirs.work.sa, ".");
-
-  path_absolute_sa(&dirs.out.sa);
-  path_canonical_sa(&dirs.out.sa);
-  path_collapse_sa(&dirs.out.sa);
-
-  path_absolute_sa(&dirs.build.sa);
-  path_canonical_sa(&dirs.build.sa);
-  path_collapse_sa(&dirs.build.sa);
-
-  strlist_nul(&dirs.this);
-  strlist_nul(&dirs.out);
-  strlist_nul(&dirs.build);
-  strlist_nul(&dirs.work);
-
-  // debug_sa("dirs.this", &dirs.this.sa);
-  // debug_sa("dirs.out", &dirs.out.sa);
-  // debug_sa("dirs.build", &dirs.build.sa);
-
-  if(tools.preproc)
-    var_set("CPP", tools.preproc);
-
-  strarray_foreach(&libdirs, it) { push_linkdir("LIBS", *it); }
-  strarray_foreach(&libs, it) { with_lib(*it); }
-  strarray_foreach(&includes, it) { includes_add(*it); }
-
-  includes_cppflags();
-
-  // debug_sa("dirs.work", &dirs.work.sa);
-  strlist_nul(&dirs.this);
-  strlist_nul(&dirs.out);
-  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
-  stralloc_nul(&sources_dir);
-  // debug_sa("srcdir", &srcdir);
-
-  if(dirs.out.sa.len) {
-    stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    // debug_sa("dirs.this", &dirs.this.sa);
-    // debug_sa("dirs.out", &dirs.out.sa);
-    path_absolute_sa(&dirs.out.sa);
-    stralloc_zero(&tmp);
-    path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
-    stralloc_copy(&sources_dir, &tmp);
-    stralloc_nul(&sources_dir);
-
-    stralloc_zero(&tmp);
-  }
-
-  path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
-
-  strlist_nul(&dirs.work);
-  stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
-
-  mkdir_components(&dirs.out, 0755);
-
-  if(stralloc_diffs(&dirs.work.sa, "."))
-    mkdir_components(&dirs.work, 0755);
-
-  mkdir_components(&dirs.build, 0755);
-
-  if(outfile) {
-    if('\\' != PATHSEP_C)
-      stralloc_replacec(&dirs.out.sa, '\\', PATHSEP_C);
-
-    if(stralloc_equals(&dirs.out.sa, "."))
-      stralloc_zero(&dirs.out.sa);
-    else
-      stralloc_catc(&dirs.out.sa, pathsep_make);
-
-    byte_zero(&filebuf, sizeof(filebuf));
-
-    if(buffer_truncfile(&filebuf, outfile)) {
-      errmsg_warnsys("ERROR: opening '", outfile, "'", 0);
-      ret = 2;
-      goto quit;
-    }
-
-    out = &filebuf;
-    // path_absolute_sa(&dirs.out.sa);
-  }
-
-  all = rule_get("all");
-  all->phony = true;
-
-  stralloc_catc(&all->recipe, '\n');
-
-  if(make_capabs & (MAKE_RULE_PATTERN | MAKE_RULE_IMPLICIT)) {
-    stralloc rn;
-    bool outputs = false;
-
-    stralloc_init(&rn);
-
-    if(make_capabs & MAKE_RULE_PATTERN) {
-      stralloc_copys(&rn, "$(BUILDDIR)");
-      stralloc_cats(&rn, "%");
-      stralloc_cats(&rn, exts.obj);
-      stralloc_cats(&rn, ": %");
-      stralloc_cats(&rn, exts.src);
-      outputs = true;
-    } else {
-      stralloc_copys(&rn, exts.src);
-      stralloc_cats(&rn, exts.obj);
-    }
-
-    compile_target = rule_get_sa(&rn);
-    compile_target->outputs = outputs;
-
-    if(stralloc_length(&compile_target->recipe) == 0)
-      stralloc_copy(&compile_target->recipe, &commands.compile);
-
-    stralloc_free(&rn);
-  }
-
-  if(str_equal(exts.src, ".asm")) {
-    target* assemble = rule_get(".asm.o");
-
-    stralloc_copy(&assemble->recipe, &commands.compile);
-  }
-
-  // strarray_init(&sources_list);
-
-  if(infile) {
-    input_process_file(infile, all);
-
-    MAP_PAIR_T iter;
-
-    MAP_FOREACH(rule_map, iter) {
-      target* rule = MAP_ITER_VALUE(iter);
-      static const char* varnames[] = {
-          "CFLAGS",
-          "CPPFLAGS",
-          "LDFLAGS",
-          0,
-      };
-      bool modified = false;
-
-      for(size_t i = 0; varnames[i]; ++i) {
-        const char* value;
-
-        if(!(value = var_get(varnames[i])) || !value[0])
-          continue;
-
-#ifdef DEBUG_OUTPUT_
-        buffer_putm_internal(debug_buf, "Rule: ", rule->name, 0);
-        buffer_putm_internal(debug_buf, " ", "Variable: ", varnames[i], 0);
-        buffer_putm_internal(debug_buf, " ", "Value: ", value, 0);
-        buffer_putnlflush(debug_buf);
-#endif
-
-        if(stralloc_contains(&rule->recipe, value)) {
-          stralloc tmp;
-          stralloc_init(&tmp);
-
-          var_subst_b(varnames[i], &tmp, rule->recipe.s, rule->recipe.len, 0, 0);
-
-          stralloc_copy(&rule->recipe, &tmp);
-          stralloc_nul(&rule->recipe);
-          stralloc_free(&tmp);
-
-          modified = true;
-        }
-      }
-
-      set_subst_sa(&rule->prereq, &rule->recipe, rule->type == COMPILE ? "$<" : "$^");
-      set_subst_sa(&rule->output, &rule->recipe, "$@");
-
-#ifdef DEBUG_OUTPUT_
-      if(modified) {
-        buffer_putm_internal(buffer_1, "Modified: ", rule->name, 0);
-        buffer_putm_internal(buffer_1, " ", "Recipe: ", rule->recipe.s, 0);
-        buffer_putnlflush(buffer_1);
-      }
-#endif
-
-      if(rule->type == COMPILE && stralloc_length(&rule->recipe)) {
-        if(compile_target && !stralloc_length(&compile_target->recipe)) {
-          stralloc_copy(&compile_target->recipe, &rule->recipe);
-        }
-      }
-    }
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "build_directories =\n\t");
-    buffer_putset(debug_buf, &build_directories, "\n\t", 2);
-    buffer_putnlflush(debug_buf);
-#endif
-
-    {
-      stralloc builddir;
-
-      stralloc_init(&builddir);
-
-      set_at_sa(&build_directories, 0, &builddir);
-
-      var_set_b(builddir_varname, builddir.s, builddir.len);
-      stralloc_free(&builddir);
-    }
-  }
-
-  {
-    static const char* varnames[] = {
-        "CFLAGS",
-        "CPPFLAGS",
-        "LDFLAGS",
-        0,
-    };
-
-    var_list("COMMON_FLAGS", 0)->value.sep = ' ';
-
-    for(size_t i = 0; varnames[i]; ++i) {
-      var_t* v;
-
-      if((v = var_list(varnames[i], 0))) {
-        var_subst_sa("COMMON_FLAGS", &v->value.sa, NULL, NULL);
-      }
-    }
-  }
-
-  if(compile_target) {
-    // stralloc_weak(&compile_target->recipe, &commands.compile);
-  }
-
-  if(compile_target) {
-    MAP_PAIR_T it;
-
-    strlist_nul(&dirs.work);
-    strlist_push_unique(&vpath, ".");
-    strlist_push_unique_sa(&vpath, &dirs.work.sa);
-
-    set_clear(&compile_target->output);
-
-    MAP_FOREACH(rule_map, it) {
-      target* rule = MAP_ITER_VALUE(it);
-
-      if(rule_is_compile(rule) && rule != compile_target) {
-        stralloc_free(&rule->recipe);
-        stralloc_init(&rule->recipe);
-
-        if(str_equal(tools.make, "gmake"))
-          rule->disabled = 1;
-
-        // set_cat(&compile_target->prereq, &rule->prereq);
-        set_cat(&compile_target->output, &rule->output);
-      }
-    }
-  }
-
-  while(unix_optind < argc) {
-    stralloc arg;
-
-    stralloc_init(&arg);
-    stralloc_copys(&arg, argv[unix_optind]);
-    stralloc_nul(&arg);
-
-    if(stralloc_contains(&arg, "=")) {
-      size_t eqpos;
-      const char* v;
-      // debug_sa("Setting var", &arg);
-      eqpos = str_chr(arg.s, '=');
-      arg.s[eqpos++] = '\0';
-      v = &arg.s[eqpos];
-      var_set(arg.s, v);
-      ++unix_optind;
-      continue;
-    }
-
-    stralloc_replacec(&arg, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    stralloc_nul(&arg);
-
-#if WINDOWS_NATIVE || defined(__MINGW32__)
-    if(str_rchrs(argv[unix_optind], "*?", 2) < str_len(argv[unix_optind]))
-      strarray_glob(&args, arg.s);
-    else
-#endif
-
-      strarray_push(&args, arg.s);
-    ++unix_optind;
-
-    stralloc_free(&arg);
-  }
-
-  path_canonical_sa(&dirs.out.sa);
-  path_collapse_sa(&dirs.out.sa);
-
-#ifdef DEBUG_OUTPUT
-  debug_sa("dirs.work", &dirs.work.sa);
-  debug_sa("dirs.build", &dirs.build.sa);
-  debug_sa("dirs.out", &dirs.out.sa);
-  debug_sa("dirs.this", &dirs.this.sa);
-  buffer_putnlflush(debug_buf);
-#endif
-
-  /* No arguments given */
-
-  if(strarray_size(&args) == 0 && !infile) {
-    buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
-    usage(argv[0]);
-    ret = 1;
+  if((ret = resolve_toolchain(argv[0])))
     goto quit;
-  }
 
-#ifdef DEBUG_OUTPUT_
-  {
-    size_t n;
+  resolve_directories();
 
-    buffer_puts(buffer_2, "dirs.out[]: ");
-    buffer_putulong(buffer_2, strlist_count(&dirs.out));
-    buffer_puts(buffer_2, ", dirs.out[0]: ");
-    buffer_put(buffer_2, strlist_at_n(&dirs.out, 0, &n), n);
-    buffer_putnlflush(buffer_2);
-  }
-#endif
+  setup_search_paths(&libdirs, &libs, &includes);
 
-#ifdef DEBUG_OUTPUT_
-  buffer_puts(debug_buf, "args: ");
-  strarray_dump(debug_buf, &args);
-#endif
+  if((ret = open_output_file(&filebuf, &out)))
+    goto quit;
 
-  strarray_foreach(&args, arg) {
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "argument: ");
-    buffer_puts(debug_buf, *arg);
-    buffer_putnlflush(debug_buf);
-#endif
-#if 0 // WINDOWS_NATIVE
-    glob_t gl;
-    size_t i;
+  seed_base_rules(&all, &compile_target);
 
-    if(glob(*arg, GLOB_TILDE | GLOB_BRACE, 0, &gl)) {
-      buffer_putm_internal(buffer_2, "ERROR: glob() ", *arg, newline, NULL);
-      buffer_flush(buffer_2);
-      continue;
-    }
+  if(infile)
+    ingest_input_file(all, compile_target);
 
-    for(i = 0; i < gl.gl_matchc; i++)
-#else
+  compute_common_flags();
 
-#endif
+  consolidate_compile_target(compile_target);
 
-    {
-#if 0 // WINDOWS_NATIVE
-      const char* p = gl.gl_pathv[i];
-#else
-      const char* p = *arg;
-#endif
+  if((ret = consume_positional_args(argc, argv, &args)))
+    goto quit;
 
-      if(!path_exists(p)) {
-        buffer_putm_internal(buffer_2, "ERROR: Doesn't exist: ", p, newline, NULL);
-        buffer_flush(buffer_2);
-        ret = 127;
-        goto fail;
-      }
+  if((ret = discover_sources(&args, &sources)))
+    goto fail;
 
-      if(is_source(p) || is_include(p))
-        sources_add(p);
-      else if(path_is_directory(p))
-        sources_get(p);
-    }
-  }
+  finalize_build_metadata();
 
-  {
-    set_iterator_t it;
-    set_foreach(&sources_set, it, x, n) {
+  if(!infile)
+    generate_all_rules(&sources, all);
 
-#ifdef DEBUG_OUTPUT_
-      buffer_puts(debug_buf, "adding to sources: ");
-      buffer_put(debug_buf, x, n);
-      buffer_putnlflush(debug_buf);
-#endif
+  generate_auxiliary_rules(all);
 
-      if(is_source_b(x, n))
-        strarray_pushb(&sources, x, n);
-    }
+  dump_state();
 
-    strarray_sort(&sources, &sources_sort_callback);
-  }
-
-  if(str_start(tools.make, "g")) {
-    stralloc builddir, workabs;
-
-    /* dirs.build.sa was made absolute above (path_absolute_sa), but
-     * dirs.work.sa never is -- path_relative_to() needs both sides
-     * absolute to produce a sane result, so resolve a throwaway
-     * absolute copy of dirs.work.sa here (same trick path_output2()
-     * uses for the same reason). */
-    stralloc_init(&workabs);
-    path_absolute(dirs.work.sa.s, &workabs);
-
-    stralloc_init(&builddir);
-    path_relative_to_sa(&dirs.build.sa, &workabs, &builddir);
-    stralloc_nul(&builddir);
-
-    if(!stralloc_endc(&builddir, PATHSEP_C))
-      stralloc_catc(&builddir, PATHSEP_C);
-    var_set(builddir_varname, builddir.s);
-    stralloc_free(&builddir);
-    stralloc_free(&workabs);
-  }
-
-  if(((build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) && stralloc_equals(&dirs.work.sa, ".")))
-    batchmode = 1;
-
-  if(output_name.len) {
-    project_name = str_ndup(output_name.s, output_name.len);
-  } else {
-    stralloc abspath;
-
-    stralloc_init(&abspath);
-    path_absolute(dirs.this.sa.s, &abspath);
-    stralloc_nul(&abspath);
-    project_name = str_dup(path_basename(abspath.s));
-    stralloc_free(&abspath);
-  }
-
-  if(!infile) {
-    int link_rules = 0;
-    stralloc src;
-    strarray sources2;
-
-    stralloc_init(&src);
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "strarray sources: ");
-    strarray_dump(debug_buf, &sources);
-    buffer_putnlflush(debug_buf);
-#endif
-
-    strarray_init(&sources2);
-    strarray_copy(&sources2, &sources);
-
-    strarray_foreach(&sources2, ptr) { sourcedir_addsource(*ptr, &sources, &progs, &bins, pathsep_make); }
-
-    sourcedir_populate(&sources);
-    strarray_free(&sources);
-    stralloc_free(&src);
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "targetdirs:\n");
-
-    MAP_FOREACH(targetdirs, t) {
-      uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
-
-      buffer_puts(debug_buf, "  '");
-      buffer_puts(debug_buf, MAP_ITER_KEY(t));
-      buffer_puts(debug_buf, "' => ");
-      buffer_putulong(debug_buf, *count_ptr);
-      buffer_putnlflush(debug_buf);
-    }
-    buffer_putnlflush(debug_buf);
-#endif
-
-#ifdef DEBUG_OUTPUT_
-    buffer_puts(debug_buf, "cmd_libs = ");
-    buffer_putlong(debug_buf, cmd_libs);
-    buffer_puts(debug_buf, " cmd_bins = ");
-    buffer_putlong(debug_buf, cmd_libs);
-    buffer_puts(debug_buf, " cmd_objs = ");
-    buffer_putlong(debug_buf, cmd_objs);
-    buffer_putnlflush(debug_buf);
-#endif
-
-#ifdef DEBUG_OUTPUT_
-    MAP_FOREACH(targetdirs, t) {
-      uint32* count_ptr = (uint32*)MAP_ITER_VALUE(t);
-
-      buffer_puts(debug_buf, "  '");
-      buffer_puts(debug_buf, MAP_ITER_KEY(t));
-      buffer_puts(debug_buf, "' => ");
-      buffer_putulong(debug_buf, *count_ptr);
-      buffer_putnlflush(debug_buf);
-    }
-    buffer_putnlflush(debug_buf);
-    sourcedir_dump_all(debug_buf, sourcedir_map);
-#endif
-
-    if(cmd_libs) {
-      generate_lib_rules(build_tool == TOOL_SHELL, build_tool == TOOL_BATCH, batchmode, pathsep_args, pathsep_make);
-      deps_for_libs();
-    } else {
-      MAP_PAIR_T t;
-      MAP_FOREACH(sourcedir_map, t) {
-        sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
-        /*if(tools.preproc) {
-          generate_simple_compile_rules(rule_map, srcdir, MAP_ITER_KEY(t),
-        exts.src, exts.pps, &commands.preprocess);
-          generate_simple_compile_rules(rule_map, srcdir, MAP_ITER_KEY(t),
-        exts.pps, exts.obj, &commands.compile); } else */
-        {
-          generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args);
-        }
-      }
-    }
-
-    if(cmd_bins) {
-      int ret;
-
-#ifdef DEBUG_OUTPUT
-      buffer_puts(debug_buf, "sources_list.length = ");
-      buffer_putulong(debug_buf, dlist_length(&sources_list));
-      buffer_putnlflush(debug_buf);
-#endif
-
-      if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
-        cmd_bins = 0;
-
-      link_rules += ret;
-
-#ifdef DEBUG_OUTPUT
-      buffer_puts(debug_buf, "bins = ");
-      buffer_putstra(debug_buf, &bins, ", ");
-      buffer_putnlflush(debug_buf);
-#endif
-
-#ifdef DEBUG_OUTPUT
-      buffer_puts(debug_buf, "progs = ");
-      buffer_putstra(debug_buf, &progs, ", ");
-      buffer_putnlflush(debug_buf);
-#endif
-    }
-
-    if(cmd_module) {
-    }
-
-    if(cmd_bins == 0 || cmd_libs == 1) {
-      MAP_PAIR_T t;
-
-      MAP_FOREACH(rule_map, t) {
-        target* tgt = MAP_ITER_VALUE(t);
-
-        if(stralloc_equal(&tgt->recipe, &commands.lib) && cmd_libs)
-          set_adds(&all->prereq, MAP_ITER_KEY(t));
-      }
-    }
-  }
-
-  {
-    MAP_PAIR_T t;
-    set_t rule_dirs = SET();
-    set_iterator_t it;
-    const char* d;
-    size_t dlen;
-
-    MAP_FOREACH(rule_map, t) {
-      target* rule = MAP_ITER_VALUE(t);
-      stralloc dir, name;
-      size_t namelen;
-
-      /* some rule names are "target: mask" pattern-rule keys (see
-       * generate_srcdir_rule()/generate_srcdir_compile_rules()), not a
-       * plain path -- only the part before ": " is an actual target.
-       * path_dirname_b() can't be handed that bound directly: its
-       * "no separator" check reads path[size], which for a bound
-       * short of the real NUL isn't '\0' -- so cut a properly
-       * NUL-terminated copy first. */
-      namelen = str_find(rule->name, ": ");
-
-      stralloc_init(&name);
-      stralloc_copyb(&name, rule->name, namelen);
-      stralloc_nul(&name);
-
-      stralloc_init(&dir);
-      path_dirname(name.s, &dir);
-      stralloc_nul(&dir);
-      stralloc_free(&name);
-
-      if(dir.len && !stralloc_equals(&dir, "."))
-        set_insert(&rule_dirs, dir.s, dir.len);
-
-      stralloc_free(&dir);
-    }
-
-    set_foreach(&rule_dirs, it, d, dlen) {
-      stralloc dirsa;
-
-      stralloc_init(&dirsa);
-      stralloc_copyb(&dirsa, d, dlen);
-      stralloc_nul(&dirsa);
-
-      generate_mkdir_rule(&dirsa);
-      set_insert(&all->prereq, dirsa.s, dirsa.len);
-
-      stralloc_free(&dirsa);
-    }
-
-    set_free(&rule_dirs);
-  }
-
-  generate_clean_rule(pathsep_make);
-
-  {
-    MAP_PAIR_T t;
-    MAP_FOREACH(rule_map, t) {
-      target* rule = MAP_ITER_VALUE(t);
-
-      if(rule_is_link(rule))
-        set_adds(&all->prereq, rule->name);
-    }
-  }
-
-  if(inst_bins || inst_libs)
-    generate_install_rules();
-
-  {
-    MAP_PAIR_T t;
-
-    MAP_FOREACH(sourcedir_map, t) {
-      sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
-
-#if DEBUG_OUTPUT_
-      buffer_putm_internal(debug_buf, "key: ", t->key, " pptoks: ", NULL);
-      buffer_putset(debug_buf, &srcdir->pptoks, ", ", 2);
-#endif
-    }
-  }
-
-#ifdef DEBUG_OUTPUT
-  buffer_puts(debug_buf, "Dumping all rule_map...\n");
-
-  {
-    int i = 0;
-    MAP_PAIR_T t;
-
-    MAP_FOREACH(rule_map, t) {
-      target* rule = MAP_ITER_VALUE(t);
-
-      buffer_puts(debug_buf, PINK256 "Rule" NC " #");
-      buffer_putlong(debug_buf, ++i);
-      rule_dump(rule);
-      buffer_putnlflush(debug_buf);
-    }
-  }
-#endif
 fail:
+  if(!write_project_file(out))
+    write_makefile_output(out, &cmdline);
 
-  if(!case_diffs(tools.make, "mplab")) {
-    output_mplab_project(out, 0, 0, &include_dirs);
-    goto quit;
-  }
-
-#ifdef DEBUG_OUTPUT_
-  {
-    strlist rule_names;
-
-    strlist_init(&rule_names, '\0');
-
-    map_keys_get(&rule_map, &rule_names);
-
-    buffer_puts(debug_buf, "rule_names:\n\t");
-    buffer_putsl(debug_buf, &rule_names, " \\\n\t");
-    buffer_putnlflush(debug_buf);
-    strlist_free(&rule_names);
-  }
-#endif
-
-  if(!case_diffs(tools.make, "cmake")) {
-    output_cmake_project(out, &rule_map, &vars, &include_dirs, &link_dirs);
-    goto quit;
-  }
-
-  buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
-  buffer_putsa(out, &cmdline.sa);
-  buffer_putsflush(out, newline);
-  stralloc_nul(&cfg.chip);
-  var_set("CHIP", cfg.chip.s);
-
-  if(build_tool == TOOL_NINJA) {
-    stralloc tmp;
-
-    stralloc_init(&tmp);
-    path_relative_to_sa(&dirs.build.sa, &dirs.out.sa, &tmp);
-
-    while(stralloc_endb(&tmp, &pathsep_args, 1))
-      tmp.len--;
-
-    var_set_b("objdir", tmp.s, tmp.len);
-    var_set("extra_cflags", "$$EXTRA_CFLAGS");
-    var_set("extra_ldflags", "$$EXTRA_LDFLAGS");
-
-    stralloc_free(&tmp);
-  }
-
-  {
-    strlist varnames;
-
-    strlist_init(&varnames, '\0');
-    map_keys_get(&vars, &varnames);
-
-#ifdef DEBUG_OUTPUT
-    buffer_puts(debug_buf, "varnames: ");
-    strlist_dump(debug_buf, &varnames);
-#endif
-
-    output_all_vars(out, &vars, &varnames, build_tool);
-    strlist_free(&varnames);
-  }
-
-  if(str_equal(tools.make, "gmake")) {
-    strlist_nul(&vpath);
-    // buffer_putm_internal(out,   "\nvpath ", vpath.sa.s,   "\n", NULL);
-    stralloc_replacec(&vpath.sa, ' ', ':');
-    buffer_putm_internal(out, "VPATH = ", vpath.sa.s, "\n\n", NULL);
-    buffer_flush(out);
-  }
-
-  if(build_tool == TOOL_NINJA) {
-    output_ninja_rule(out, "cc", &commands.compile);
-    output_ninja_rule(out, "link", &commands.link);
-    output_ninja_rule(out, "lib", &commands.lib);
-    buffer_putnl(out, 0);
-  }
-
-  {
-    MAP_PAIR_T t;
-
-    MAP_FOREACH(rule_map, t) {
-      const char* name = MAP_ITER_KEY(t);
-      target* rule = MAP_ITER_VALUE(t);
-
-      if(rule->recipe.len)
-        continue;
-
-      if(str_end(name, exts.obj))
-
-        if(!str_end(tools.make, "make"))
-          stralloc_weak(&rule->recipe, &commands.compile);
-
-#if DEBUG_OUTPUT_
-      buffer_puts(debug_buf, "Empty RULE '");
-      buffer_puts(debug_buf, name);
-      buffer_putc(debug_buf, '\'');
-      buffer_putnlflush(debug_buf);
-#endif
-    }
-  }
-
-  if(build_tool == TOOL_BATCH || build_tool == TOOL_SHELL) {
-    if(build_tool == TOOL_BATCH)
-      buffer_putm_internal(out, "CD %~dp0", newline, NULL);
-    else
-      buffer_putm_internal(out, "cd \"$(dirname \"$0\")\"\n\n", NULL);
-
-    output_script(out, NULL, build_tool, quote_args, pathsep_args, make_sep_inline);
-  } else {
-    output_all_rules(out, build_tool, quote_args, pathsep_args, pathsep_make, make_sep_inline);
-  }
-
-quit: {
-  strlist deps;
-  MAP_PAIR_T t;
-
-  strlist_init(&deps, '\0');
-
-  MAP_FOREACH(sourcedir_map, t) {
-    sourcedir* sdir = *(sourcedir**)MAP_ITER_VALUE(t);
-
-    if(1 /* && set_size(&sdir->deps)*/) {
-      strlist_zero(&deps);
-      sourcedir_deps(sdir, &deps);
-
-#ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(debug_buf, "source directory '", MAP_ITER_KEY(t), "' deps =\n", NULL);
-      strlist_dump(debug_buf, &deps);
-      buffer_putnlflush(debug_buf);
-#endif
-    }
-  }
-
-  strlist_free(&deps);
-}
-
-  {
-    struct dnode* link;
-    strlist deps;
-
-    strlist_init(&deps, '\0');
-
-    dlist_foreach_down(&sources_list, link) {
-      sourcefile* source = dlist_data(link, sourcefile*);
-
-#ifdef DEBUG_OUTPUT_
-      buffer_putm_internal(debug_buf, "source: ", source->name, " deps: ", NULL);
-      strlist_zero(&deps);
-      sources_deps(source, &deps);
-      buffer_puts(debug_buf, " includes: ");
-      strlist_dump(debug_buf, &source->includes);
-      buffer_putnlflush(debug_buf);
-#endif
-    }
-
-    strlist_free(&deps);
-  }
-
+quit:
   strarray_free(&args);
   strarray_free(&sources);
   strlist_free(&cmdline);
@@ -2859,7 +2814,6 @@ quit: {
   strarray_free(&libs);
   strarray_free(&libdirs);
   strarray_free(&includes);
-  stralloc_free(&tmp);
 
   MAP_DESTROY(sourcedir_map);
 

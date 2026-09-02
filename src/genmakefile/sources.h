@@ -31,6 +31,7 @@ bool sources_iscplusplus(void);
 void sources_deps(sourcefile*, strlist* out);
 void sources_readdir(stralloc*, strarray* out);
 void sources_addincludes(sourcefile*, sourcedir* sdir, const strlist* includes, strarray* sources);
+void sourcefile_dump(sourcefile*);
 
 extern set_t sources_set;
 extern stralloc sources_dir;

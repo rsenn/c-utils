@@ -353,5 +353,26 @@ var_subst_sa(const char* name, stralloc* sa, const char* prefix, const char* suf
 }
 
 /**
+ * @brief      Dump a variable to debug_buf
+ *
+ * @param      name  Variable name
+ * @param      var   Variable
+ */
+void
+var_dump(const char* name, var_t* var) {
+  buffer_putm_internal(debug_buf, "Var '", name, "'", NULL);
+  buffer_putm_internal(debug_buf, " serial=", 0, NULL);
+  buffer_putlong(debug_buf, (long)var->serial);
+
+  if(var->value.sa.len) {
+    buffer_puts(debug_buf, " value=\"");
+    buffer_putsa(debug_buf, &var->value.sa);
+    buffer_putc(debug_buf, '"');
+  }
+
+  buffer_putnlflush(debug_buf);
+}
+
+/**
  * @}
  */

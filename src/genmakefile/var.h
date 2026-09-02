@@ -46,6 +46,7 @@ void with_lib(const char*);
 void push_define(const char*);
 void var_subst_b(const char*, stralloc*, const char*, size_t, const char*, const char*);
 void var_subst_sa(const char*, stralloc*, const char*, const char*);
+void var_dump(const char* name, var_t* var);
 
 extern linklib_fmt *format_linklib_fn, *format_linkdir_fn;
 

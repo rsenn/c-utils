@@ -1,10 +1,3 @@
-- http-socket-read-unconditional-debug-output: `http_socket_read()` in
-  `lib/http/http_socket.c` has an unconditional `#if 1 // def
-  DEBUG_OUTPUT` block that writes "recv() = ..." to stderr on every
-  single read, plus a "verify callback ok=0" debug line elsewhere from
-  the TLS verify callback -- these look like leftover debugging output
-  that should be gated behind `DEBUG_HTTP` rather than always-on.
-
 - socket-intercept-unconditional-logging: every intercepted libc call in
   `socket-intercept.c` (socket, listen, bind, connect, accept, send*,
   recv*, read/write/readv/writev, getsockopt, setsockopt, close,
@@ -186,34 +179,76 @@
   `tests/test_str.c`; the test documents the current (buggy) behavior
   instead of asserting the case-insensitive result a caller would expect.
 
-- genmakefile-workdir-flag-overridden-by-outfile: passing `-w DIR`
-  (`--workdir`) has no effect whenever `-o FILE` is also given: in
-  `genmakefile.c` (~line 1974), `dirs.work.sa` is unconditionally
-  overwritten from `path_dirname(outfile, &dirs.work.sa)` right after
-  option parsing, regardless of whether `-w` already set it. Either `-w`
-  is dead when combined with `-o` (the common case), or the intent was
-  `if(dirs.work.sa.len == 0)` before falling back to `-o`'s dirname.
+- genmakefile-build-type-autodetect-unreachable: the directory-name-based
+  `cfg.build_type` autodetection in `resolve_toolchain()`
+  (`genmakefile.c`, guarded by `if(cfg.build_type == -1)`, both in the
+  early `extract_build_type()` chain and again in the token-scanning
+  loop) can never fire: `main()` zeroes `cfg` wholesale via
+  `byte_zero(&cfg, sizeof(cfg))` before this runs, and
+  `BUILD_TYPE_RELEASE == 0`, so `cfg.build_type` is always `0`, never
+  `-1`, by the time these checks run. The file-scope `config_t cfg = {...,
+  1, LANG_CXX}` initializer (`genmakefile.c` top) is equally moot, since
+  it's discarded by the same `byte_zero()`. Feature (infer build type
+  from `Debug`/`Release`/etc. appearing in the build/work/out directory
+  name) is dead code. Not fixed.
 
-- genmakefile-shell-backend-flaky: `tests/genmakefile/testsuite.sh --all`
-  gives a different set of pass/fail results for `-m shell` cases on
-  every run, with an unchanged `genmakefile` binary and unchanged mock
-  source tree -- e.g. two back-to-back runs each had ~20 shell-mode
-  cases flip between pass and fail, while `make`/`gmake`/`ninja` cases
-  for the same compilers stayed identical across both runs. Points at a
-  race or an ordering assumption in the generated `build.sh` (or in how
-  `gm_run_build`/`sh -x` executes it) rather than anything
-  compiler/toolchain-specific. Not investigated yet.
+- genmakefile-objdir-flag-unused: `-R`/`--objdir` is parsed in `main()`'s
+  getopt loop (`case 'R': objdir = arg; break;`) but the `objdir` local is
+  never read anywhere afterward -- the flag silently accepts a value and
+  does nothing with it. Also missing from the `-h` usage text. Not fixed.
 
-- genmakefile-shell-backend-missing-compile-command: `-m shell` output
-  (`build.sh`) silently drops the compile command for one of the
-  library source files (e.g. `lib/extra/bar.c` -> `bar.o`) while still
-  emitting the `ar rcs extra.a bar.o` archive step that depends on it,
-  so `ar` fails with "bar.o: No such file or directory" and the
-  subsequent link fails with "cannot find _out/out/extra.a". The other
-  library's object (`foo.o`) compiles fine in the same run,
-  `main.c`/`main.o` compiles fine too -- only one source directory's
-  compile step goes missing. Reproduce: `tests/genmakefile/testsuite.sh`
-  with `-t gcc -m shell` on the standard host mock tree
-  (`gcc-shell-all-same` case). Not yet investigated; likely in the
-  `(shell | batch) && batchmode` branch of
-  `generate_srcdir_compile_rules()` (`src/genmakefile/generate.c`).
+- genmakefile-sources2-leak: in `generate_all_rules()` (`genmakefile.c`,
+  factored out of `main()`'s former `if(!infile) {...}` block),
+  `sources2` (a `strarray` copy of the discovered source list, iterated
+  for `sourcedir_addsource()`) is never freed -- a leak on every run that
+  doesn't use `-f/--input-file`. Present in the original inline code
+  before the refactor too; not fixed (preserved as-is to keep the
+  refactor behavior-identical).
+
+- genmakefile-cmd-module-stub: `--create-module`/`cmd_module` is parsed
+  and threaded through bookkeeping (e.g. the getopt table, `cmd_bins`-style
+  flags) but the one place in `generate_all_rules()` that would generate
+  module rules (`if(cmd_module) { }`) is an empty stub -- the feature does
+  nothing. Not fixed.
+
+- genmakefile-getopt-optstring-duplicate-and-unhandled: `main()`'s
+  `unix_getopt_long()` optstring
+  (`"ha:bo:O:B:E:d:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:"`) lists
+  `O:` twice and declares `E:` (an option requiring an argument) with no
+  corresponding `case 'E':` or long-option mapping -- passing `-E foo`
+  consumes an argument via getopt and then falls through to `default:`
+  ("No such option"). Not fixed.
+
+- genmakefile-lcc-dead-link-command: `set_compiler_type()`'s `lcc` branch
+  (`genmakefile.c`, ~line 951) assigns `commands.link` twice in a row with
+  no condition between them -- the first `stralloc_copys(&commands.link,
+  "$(CC) ... -o $@ $^ ...")` is unconditionally overwritten by the second
+  (`"$(LINK) ..."`) immediately after. The first assignment is a dead
+  store. Not fixed.
+
+- mediathek-list-header-row-trailing-garbage: the header record's last field
+  (`"neu"`) consistently gets a few bytes of binary garbage appended after it,
+  e.g. `"neu ;\x60^\xe4}"` -- observed identically shaped (though not
+  byte-identical) across independent runs, and *only* on the first record
+  mediathek-list ever emits in a run. Confirmed no longer a symptom of
+  `output_entry()`'s escaping (fixed -- see the fixed-bugs note below) since
+  it survives with clean escaping and reproduces on every fresh `-u` fetch.
+  Most likely cause given it's isolated to the very first record: `char
+  buf2[BUFSIZE]` in `parse_mediathek_list()` (mediathek-list.c:842, a
+  stack-local array with no initializer) getting a few bytes of leftover
+  uninitialized stack memory included past the true end of the first
+  record's content, from an off-by-a-few miscount in the record-assembly
+  loop above it (mediathek-list.c:882-907, the `buffer_get_token`/
+  `buffer_get` extend-until-`"],`-heuristic loop) that only manifests on the
+  first iteration (before `prev`/state from a previous record could mask
+  it). Not fixed -- would need instrumenting that loop's byte counts against
+  the first record specifically to confirm.
+
+  (Fixed, for the record: `output_entry()` not escaping backslashes or
+  control characters, and `split_fields()`/`push_unescaped()` not resolving
+  the upstream data's own `\"` escapes before re-emitting them -- see git
+  history for `mediathek-list.c`. That combination was producing >25% of all
+  entries with mis-split, spliced-in-from-a-different-record fields whenever
+  a Beschreibung contained a quoted phrase or an embedded literal newline;
+  confirmed down to <0.1% (residual is truncation artifacts, not this tool)
+  against live fetches after the fix.)

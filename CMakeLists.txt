@@ -1015,6 +1015,7 @@ set(genmakefile_SOURCES
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c
     src/genmakefile/sources.c
+    src/genmakefile/types.c
     src/genmakefile/var.c
     src/genmakefile/generate.c
     src/genmakefile/input.c
@@ -1322,6 +1323,7 @@ set(socket_intercept_SOURCES
 
 add_library(socket-intercept SHARED socket-intercept.c
                                     ${socket_intercept_SOURCES})
+set_target_properties(socket-intercept PROPERTIES PREFIX "")
 
 check_flag(-fvisibility=hidden F_VISIBILITY)
 
@@ -1336,11 +1338,61 @@ target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
                                                     HAVE_LIBLZMA=0)
 target_link_libraries(socket-intercept PUBLIC dl pthread)
 
-install(TARGETS socket-intercept DESTINATION "${CMAKE_ARCH_LIBDIR}")
+install(TARGETS socket-intercept DESTINATION "lib")
+endif(NOT WINDOWS_NATIVE)
+
+# exec-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc exec*() calls)
+# that redirects execs by basename -- LD_PRELOAD and <dlfcn.h> have no
+# WINDOWS_NATIVE (mingw/MSVC) equivalent, so this tool is POSIX-only.
+if(NOT WINDOWS_NATIVE)
+set(exec_intercept_SOURCES
+    lib/alloc/alloc.c
+    lib/buffer/buffer_flush.c
+    lib/buffer/buffer_free.c
+    lib/buffer/buffer_put.c
+    lib/buffer/buffer_putflush.c
+    lib/buffer/buffer_putlong.c
+    lib/buffer/buffer_putnlflush.c
+    lib/buffer/buffer_puts.c
+    lib/buffer/buffer_stubborn.c
+    lib/buffer/buffer_write_fd.c
+    lib/byte/byte_copy.c
+    lib/byte/byte_diff.c
+    lib/env/env_get.c
+    lib/fmt/fmt_iso8601.c
+    lib/fmt/fmt_long.c
+    lib/fmt/fmt_str.c
+    lib/fmt/fmt_ulong.c
+    lib/open/open_append.c
+    lib/open/open_read.c
+    lib/open/open_trunc.c
+    lib/str/str_basename.c
+    lib/str/str_chr.c
+    lib/str/str_copy.c
+    lib/str/str_diff.c
+    lib/str/str_dup.c
+    lib/str/str_len.c
+    lib/str/str_rchr.c
+    lib/str/str_tok.c
+)
+
+add_library(exec-intercept SHARED exec-intercept.c ${exec_intercept_SOURCES})
+set_target_properties(exec-intercept PROPERTIES PREFIX "")
+
+if(F_VISIBILITY)
+  target_compile_options(exec-intercept PUBLIC ${F_VISIBILITY})
+  target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=1)
+else(F_VISIBILITY)
+  target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=0)
+endif(F_VISIBILITY)
+
+target_link_libraries(exec-intercept PUBLIC dl)
+
+install(TARGETS exec-intercept DESTINATION "lib")
 endif(NOT WINDOWS_NATIVE)
 
 
-file(GLOB MAN3 
+file(GLOB MAN3
   lib/*.3
   lib/*/*.3
 )

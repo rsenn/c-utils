@@ -508,10 +508,16 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
   int flush = 0;
 
   if(rule == NULL) {
+    /* decrement (like rule_dep_serial in rule.c) rather than increment --
+     * target_s.serial doubles as rule_get()'s ascending creation-order
+     * stamp (1, 2, 3, ...), so an ascending visited-marker here would
+     * eventually collide with a real rule's creation serial and make
+     * output_script() think it had already emitted that rule the very
+     * first time it reached it, silently dropping its recipe. */
     flush = 1;
-    ++serial;
+    --serial;
     rule = rule_get("all");
-    ++serial;
+    --serial;
   }
 
   if(rule->serial == serial)

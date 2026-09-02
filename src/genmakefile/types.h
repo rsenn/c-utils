@@ -48,4 +48,8 @@ typedef struct commands {
   stralloc preprocess, compile, lib, link, mkdir, delete;
 } commands_t;
 
+void config_dump(const config_t*);
+void exts_dump(const exts_t*);
+void commands_dump(const commands_t*);
+
 #endif /* defined(GENMAKEFILE_TYPES_H) */

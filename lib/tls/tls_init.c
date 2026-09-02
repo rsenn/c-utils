@@ -15,11 +15,15 @@ SSL_CTX *tls_client_ctx = 0, *tls_server_ctx = 0;
 
 int
 tls_verify(int ok, X509_STORE_CTX* cert) {
+#ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "verify callback ok=");
   buffer_putlong(buffer_2, ok);
   buffer_puts(buffer_2, " cert=");
   buffer_putptr(buffer_2, cert);
   buffer_putnlflush(buffer_2);
+#else
+  (void)cert;
+#endif
 
   if(!ok)
     return 0; // stop immediately

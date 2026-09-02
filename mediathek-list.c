@@ -93,7 +93,105 @@ count_field_lengths(strlist* sl, int lengths[21]) {
 }
 
 /**
- * @brief split_fields
+ * @brief find_unescaped_quote  Scans forward for the next '"' that isn't
+ * preceded by an odd number of backslashes (i.e. isn't `\"` inside the
+ * field's own escaped content). Returns n if none is found.
+ * @param buf
+ * @param n
+ * @return
+ */
+static size_t
+find_unescaped_quote(const char* buf, size_t n) {
+  size_t i;
+  int escaped = 0;
+
+  for(i = 0; i < n; ++i) {
+    if(escaped) {
+      escaped = 0;
+      continue;
+    }
+
+    if(buf[i] == '\\') {
+      escaped = 1;
+      continue;
+    }
+
+    if(buf[i] == '"')
+      return i;
+  }
+
+  return n;
+}
+
+/**
+ * @brief push_unescaped  Pushes `buf[0..n)` onto `sl` after resolving JSON
+ * backslash escapes (`\"`, `\\`, `\/`, `\b`, `\f`, `\n`, `\r`, `\t`, `\uXXXX`)
+ * to their literal characters. find_unescaped_quote() only *finds* field
+ * boundaries around escapes; without this, the escaped bytes it skipped
+ * over would be copied into the field verbatim (backslash and all) and
+ * output_entry() would then re-escape the quote it still contains, leaving
+ * a `\\"` in mediathek-list's own output that terminates the JSON string
+ * one character early for any downstream JSON-aware reader (see BUGS:
+ * mediathek-list-field-splitter-not-escape-aware).
+ * @param sl
+ * @param buf
+ * @param n
+ */
+static void
+push_unescaped(strlist* sl, const char* buf, size_t n) {
+  static stralloc tmp;
+  size_t i;
+
+  stralloc_zero(&tmp);
+
+  for(i = 0; i < n; ++i) {
+    char c = buf[i];
+
+    if(c == '\\' && i + 1 < n) {
+      char e = buf[++i];
+
+      switch(e) {
+        case '"':
+        case '\\':
+        case '/': stralloc_append(&tmp, &e); continue;
+        case 'n': c = '\n'; break;
+        case 't': c = '\t'; break;
+        case 'r': c = '\r'; break;
+        case 'b': c = '\b'; break;
+        case 'f': c = '\f'; break;
+
+        case 'u': {
+          unsigned long cp;
+          char utf8[8];
+
+          if(i + 4 < n && scan_xlongn(&buf[i + 1], 4, &cp) == 4) {
+            size_t ulen = fmt_utf8(utf8, (uint32)cp);
+            stralloc_catb(&tmp, utf8, ulen);
+            i += 4;
+            continue;
+          }
+
+          stralloc_append(&tmp, &e);
+          continue;
+        }
+
+        default: stralloc_append(&tmp, &e); continue;
+      }
+    }
+
+    stralloc_append(&tmp, &c);
+  }
+
+  strlist_pushb(sl, tmp.s, tmp.len);
+}
+
+/**
+ * @brief split_fields  Splits one record's `[ "f0", "f1", ..., "fN" ]` byte
+ * range into its field strings. Finds each field's closing quote with
+ * find_unescaped_quote() rather than a raw `","`/`"],` substring search, so
+ * a field whose escaped content (`\"`) happens to look like a delimiter
+ * can't desync field counting for the rest of the record (see BUGS:
+ * mediathek-list-field-splitter-not-escape-aware).
  * @param sl
  * @param prev
  * @param buf
@@ -113,27 +211,46 @@ split_fields(strlist* sl, strlist* prev, char* buf, size_t n) {
 
   strlist_zero(sl);
 
-  for(i = 0; n; ++i) {
-    offs = byte_finds(buf, n, "\",\"");
+  for(i = 0;; ++i) {
+    size_t q = find_unescaped_quote(buf, n);
 
-    if(offs == n)
-      offs = byte_finds(buf, n, "\"],");
-
-    if(offs == 0) {
+    if(q == 0) {
       const char* p = strlist_at(prev, i);
       strlist_push(sl, p ? p : "");
     } else {
-      strlist_pushb(sl, buf, offs);
+      push_unescaped(sl, buf, q);
     }
 
-    if(offs == n)
+    if(q >= n)
       break;
 
-    buf += offs + 3;
-    n -= offs + 3;
+    buf += q + 1;
+    n -= q + 1;
+
+    if(n == 0)
+      break;
+
+    /* A comma right after the closing quote means another field follows;
+       skip past it and its opening quote. Anything else (a closing ']',
+       trailing whitespace, ...) means this was the record's last field. */
+    if(buf[0] == ',') {
+      size_t skip = 1;
+
+      while(skip < n && buf[skip] != '"')
+        ++skip;
+
+      if(skip >= n)
+        break;
+
+      buf += skip + 1;
+      n -= skip + 1;
+      continue;
+    }
+
+    break;
   }
 
-  return i;
+  return i + 1;
 }
 
 /**
@@ -684,8 +801,28 @@ output_entry(buffer* b, strlist* sl) {
       s = "";
 
     while((c = *s++)) {
-      if(c == '"')
-        buffer_putc(b, '\\');
+      /* Backslash and control characters (bare newlines/CRs/tabs turn up in
+         real Beschreibung text) need escaping too, not just '"' -- an
+         unescaped literal newline here breaks both JSON syntax and any
+         line-based reader downstream (mediathek-parser.c, or a JSON-aware
+         consumer splitting on '\n'). See BUGS:
+         mediathek-list-field-splitter-not-escape-aware. */
+      switch(c) {
+        case '"': buffer_puts(b, "\\\""); continue;
+        case '\\': buffer_puts(b, "\\\\"); continue;
+        case '\n': buffer_puts(b, "\\n"); continue;
+        case '\r': buffer_puts(b, "\\r"); continue;
+        case '\t': buffer_puts(b, "\\t"); continue;
+        default: break;
+      }
+
+      if((unsigned char)c < 0x20) {
+        char hex[8];
+        size_t len = fmt_str(hex, "\\u00");
+        len += fmt_xlong0(&hex[len], (unsigned char)c, 2);
+        buffer_put(b, hex, len);
+        continue;
+      }
 
       buffer_PUTC(b, c);
     }
@@ -883,8 +1020,10 @@ main(int argc, char* argv[]) {
   /* if(strlist_count(&include) == 0)
      strlist_push(&include, "");*/
 
-  strlist_dump(console, &include);
-  strlist_dump(console, &exclude);
+  if(debug) {
+    strlist_dump(console, &include);
+    strlist_dump(console, &exclude);
+  }
 
   /*  stralloc sa;
     stralloc_init(&sa);

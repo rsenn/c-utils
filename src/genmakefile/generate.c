@@ -217,7 +217,7 @@ generate_mkdir_rule(stralloc* name) {
  */
 target*
 generate_srcdir_compile_rules(
-    sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm) {
+    sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm, array* objs_out) {
   sourcefile* src;
   target* rule = 0;
   MAP_PAIR_T t;
@@ -301,7 +301,13 @@ generate_srcdir_compile_rules(
     } else {
     }
 
-    if(!rule) {
+    /* the pattern-rule cases (is_gmake_pattern, or plain batchmode==0) share
+     * one rule object across every file in the directory, so caching `rule`
+     * across iterations is correct there -- but the (shell|batch)&&batchmode
+     * branch above builds a target unique to *this* source file, so it must
+     * re-look-up (or create) a fresh rule every iteration; reusing the first
+     * file's `rule` there silently dropped every other file's recipe. */
+    if(!rule || ((shell | batch) && batchmode && !is_gmake_pattern)) {
       if(is_gmake_pattern) {
         stralloc key;
 
@@ -321,6 +327,16 @@ generate_srcdir_compile_rules(
       } else {
         rule = rule_get_sa(&target);
       }
+
+      /* one push per genuinely distinct rule this loop produces: the
+       * pattern-rule cases only ever (re)enter this block on the first
+       * file (see the `if(!rule || ...)` guard above), so they contribute
+       * exactly one shared aggregate entry; the shell/batch-mode case
+       * re-enters every iteration, contributing one entry per file -- both
+       * match what generate_srcdir_lib_rule() needs to walk every compiled
+       * file's own recipe via `rule->objs` (see output_script()). */
+      if(objs_out && rule)
+        array_catb(objs_out, &rule, sizeof(rule));
     }
 
     if(rule) {
@@ -465,7 +481,9 @@ generate_srcdir_lib_rule(
     sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm) {
   target *dep = 0, *rule;
   stralloc sa;
+  array objs;
 
+  array_init(&objs);
   stralloc_init(&sa);
   path_prefix_s(&dirs.work.sa, name, &sa, psm);
   stralloc_cats(&sa, exts.lib);
@@ -478,9 +496,12 @@ generate_srcdir_lib_rule(
   if((str_start(tools.make, "g") || batchmode) && cfg.mach.arch != PIC) {
     buffer_putm_internal(buffer_2, "generate_srcdir_compile_rules: ", name, NULL);
     buffer_flush(buffer_2);
-    dep = generate_srcdir_compile_rules(srcdir, name, shell, batch, batchmode, psa, psm);
+    dep = generate_srcdir_compile_rules(srcdir, name, shell, batch, batchmode, psa, psm, &objs);
   } else {
     dep = generate_simple_compile_rules(srcdir, name, exts.src, exts.obj, &commands.compile, psa);
+
+    if(dep)
+      array_catb(&objs, &dep, sizeof(target*));
   }
 
   if((rule = rule_get_sa(&sa))) {
@@ -488,8 +509,17 @@ generate_srcdir_lib_rule(
     set_init(&rule->prereq, 0);
 
     if(dep) {
-      set_cat(&rule->prereq, &dep->output);
-      array_catb(&rule->objs, &dep, sizeof(target*));
+      /* objs holds one target* per compiled source file in shell/batch
+       * mode (each with its own recipe), or a single aggregate entry for
+       * every other mode -- union all of their outputs into this archive
+       * rule's own prereq list, and hand the whole set to `rule->objs` so
+       * output_script() visits (and emits the recipe for) every one of
+       * them, not just whichever file happened to be processed first. */
+      target** tptr;
+
+      array_foreach_t(&objs, tptr) { set_cat(&rule->prereq, &(*tptr)->output); }
+
+      array_cat(&rule->objs, &objs);
     } else {
       slist_foreach(srcdir->sources, pfile) {
 
@@ -512,6 +542,7 @@ generate_srcdir_lib_rule(
     stralloc_weak(&rule->recipe, &commands.lib);
   }
 
+  array_reset(&objs);
   stralloc_free(&sa);
 
   return rule;

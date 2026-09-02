@@ -89,7 +89,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, buffer* b) {
     }
   }
 
-#if 1 // def DEBUG_OUTPUT
+#ifdef DEBUG_OUTPUT
   buffer_putspad(buffer_2, "\x1b[38;5;197mhttp_socket_read\x1b[0m", 30);
   buffer_puts(buffer_2, "recv() = ");
   buffer_putlong(buffer_2, ret);

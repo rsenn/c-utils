@@ -468,5 +468,35 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
 }
 
 /**
+ * @brief      Dump a source file to debug_buf
+ *
+ * @param      file  Source file
+ */
+void
+sourcefile_dump(sourcefile* file) {
+  buffer_putm_internal(debug_buf, "Source '", file->name, "'", NULL);
+
+  if(file->has_main)
+    buffer_puts(debug_buf, " has_main");
+
+  if(strlist_count(&file->includes)) {
+    buffer_puts(debug_buf, "\n  includes: ");
+    buffer_putsl(debug_buf, &file->includes, " ");
+  }
+
+  if(set_size(&file->deps)) {
+    buffer_puts(debug_buf, "\n  deps: ");
+    buffer_putset(debug_buf, &file->deps, " ", 1);
+  }
+
+  if(set_size(&file->pptoks)) {
+    buffer_puts(debug_buf, "\n  pptoks: ");
+    buffer_putset(debug_buf, &file->pptoks, " ", 1);
+  }
+
+  buffer_putnlflush(debug_buf);
+}
+
+/**
  * @}
  */

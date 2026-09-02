@@ -9,7 +9,7 @@ target* generate_single_rule(stralloc* output, stralloc* cmd);
 void generate_clean_rule(char psm);
 target* generate_mkdir_rule(stralloc* dir);
 target* generate_srcdir_compile_rules(
-    sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm);
+    sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm, array* objs_out);
 target* generate_simple_compile_rules(
     sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa);
 target* generate_srcdir_lib_rule(

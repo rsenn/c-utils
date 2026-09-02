@@ -8,3 +8,12 @@ TODO
   can wait on. Noted while making the module more generally reusable
   (see `doc/sig.md`) -- this is usually the actual reason a server-oriented
   program reaches for a signal library.
+
+- exec-intercept-system-signal-semantics: `exec-intercept.c`'s `system()`/
+  `popen()` overrides (used when the map redirects `sh`/`/bin/sh` to another
+  shell) reimplement the fork+exec+wait sequence directly instead of calling
+  the libc functions, so they skip the POSIX-mandated signal handling around
+  the child (`SIGINT`/`SIGQUIT` ignored and `SIGCHLD` blocked in the parent
+  for the duration of the call). Fine for the compatibility-testing use case
+  this tool targets, but a caller relying on that signal behavior around
+  `system()`/`popen()` would see a difference when the shell is redirected.
