@@ -179,19 +179,6 @@
   `tests/test_str.c`; the test documents the current (buggy) behavior
   instead of asserting the case-insensitive result a caller would expect.
 
-- genmakefile-build-type-autodetect-unreachable: the directory-name-based
-  `cfg.build_type` autodetection in `resolve_toolchain()`
-  (`genmakefile.c`, guarded by `if(cfg.build_type == -1)`, both in the
-  early `extract_build_type()` chain and again in the token-scanning
-  loop) can never fire: `main()` zeroes `cfg` wholesale via
-  `byte_zero(&cfg, sizeof(cfg))` before this runs, and
-  `BUILD_TYPE_RELEASE == 0`, so `cfg.build_type` is always `0`, never
-  `-1`, by the time these checks run. The file-scope `config_t cfg = {...,
-  1, LANG_CXX}` initializer (`genmakefile.c` top) is equally moot, since
-  it's discarded by the same `byte_zero()`. Feature (infer build type
-  from `Debug`/`Release`/etc. appearing in the build/work/out directory
-  name) is dead code. Not fixed.
-
 - genmakefile-objdir-flag-unused: `-R`/`--objdir` is parsed in `main()`'s
   getopt loop (`case 'R': objdir = arg; break;`) but the `objdir` local is
   never read anywhere afterward -- the flag silently accepts a value and
@@ -204,12 +191,6 @@
   doesn't use `-f/--input-file`. Present in the original inline code
   before the refactor too; not fixed (preserved as-is to keep the
   refactor behavior-identical).
-
-- genmakefile-cmd-module-stub: `--create-module`/`cmd_module` is parsed
-  and threaded through bookkeeping (e.g. the getopt table, `cmd_bins`-style
-  flags) but the one place in `generate_all_rules()` that would generate
-  module rules (`if(cmd_module) { }`) is an empty stub -- the feature does
-  nothing. Not fixed.
 
 - genmakefile-getopt-optstring-duplicate-and-unhandled: `main()`'s
   `unix_getopt_long()` optstring
@@ -225,6 +206,16 @@
   "$(CC) ... -o $@ $^ ...")` is unconditionally overwritten by the second
   (`"$(LINK) ..."`) immediately after. The first assignment is a dead
   store. Not fixed.
+
+- genmakefile-srcdir-lib-rule-dead-dep-check: `generate_srcdir_lib_rule()`'s
+  non-gmake/PIC branch (`src/genmakefile/generate.c`, ~line 501) does
+  `dep = generate_simple_compile_rules(...); if(dep) array_catb(&objs,
+  &dep, sizeof(target*));` but `generate_simple_compile_rules()`'s only
+  `return` statement is `return 0;` (generate.c:463) -- `dep` is always
+  NULL here, so the `if(dep)` never fires and this path always falls
+  through to the plain `else` branch below it in the caller instead of
+  getting the same objs/rule->objs multi-file-recipe treatment the
+  gmake/non-PIC path (`generate_srcdir_compile_rules()`) gets. Not fixed.
 
 - mediathek-list-header-row-trailing-garbage: the header record's last field
   (`"neu"`) consistently gets a few bytes of binary garbage appended after it,

@@ -65,7 +65,9 @@ exts_t exts = {
 };
 dirs_t dirs;
 tools_t tools;
-config_t cfg = {{0, 0}, {0, 0}, {0, 0, 0}, 1, LANG_CXX};
+/* zeroed for real by byte_zero(&cfg, ...) in main() before any of this is
+ * read -- build_type/lang here are moot, not a meaningful default. */
+config_t cfg = {0};
 MAP_T targetdirs;
 
 /**
@@ -217,25 +219,6 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
 
   if(str_start(tools.make, "nmake"))
     stralloc_replaces(sa, "$^", "$**");
-}
-
-/**
- * @brief      extract_build_type
- *
- * @param      s     { parameter_description }
- *
- * @return     { description_of_the_return_value }
- */
-static int
-extract_build_type(const stralloc* s) {
-  size_t i;
-
-  for(i = 0; i < sizeof(build_types) / sizeof(build_types[0]); ++i)
-
-    if(stralloc_contains(s, build_types[i]))
-      return i;
-
-  return -1;
 }
 
 /**
@@ -750,6 +733,16 @@ set_compiler_type(const char* compiler) {
       var_push("LDFLAGS", "-g");
     }
 
+    /* --create-module: every source becomes its own -shared, -fPIC
+     * loadable module (foo.c -> foo.so, no "lib" prefix) instead of an
+     * executable -- see generate_module_rules(). -fPIC has to be a
+     * compile flag (applies to every object genmakefile compiles in
+     * this run), while -shared only belongs on the module's own link
+     * recipe, kept separate from the ordinary commands.link so it
+     * never leaks into a --create-bins/--create-libs run. */
+    if(cmd_module)
+      var_push("CFLAGS", "-fPIC");
+
     /*
      * GNU GCC compatible compilers
      */
@@ -775,7 +768,20 @@ set_compiler_type(const char* compiler) {
                 "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) "
                 "$(EXTRA_LDFLAGS) -o $@",
                 "$^ $(LIBS)");
-    exts.bin = "";
+
+    set_command(&commands.link_module,
+                "$(CC) -shared $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) "
+                "$(EXTRA_LDFLAGS) -o $@",
+                "$^ $(LIBS)");
+
+    /* cygming (mingw/msys/cygwin cross toolchain, selected via
+     * -c/--cross) targets Windows regardless of the host this
+     * genmakefile binary happened to be built on -- exts.bin/exts.slib
+     * otherwise stay at their DEFAULT_* values baked in at genmakefile's
+     * own compile time (see the cfg struct init and genmakefile.h),
+     * which is wrong (.so instead of .dll) when cross-building. */
+    exts.bin = cygming ? ".exe" : "";
+    exts.slib = cygming ? ".dll" : DEFAULT_DSOEXT;
 
     format_linklib_fn = &format_linklib_switch;
 
@@ -1485,14 +1491,20 @@ usage(char* argv0) {
  * @brief      Resolve the build type, make tool and compiler to use, and
  *             apply the selected compiler's variable/command defaults.
  *
- *             Auto-detects `cfg.build_type` from directory names, infers
- *             `tools.make` from `tools.compiler` (or vice versa by
+ *             Infers `tools.make` from `tools.compiler` (or vice versa by
  *             scanning tokens split out of the build dir / output file
  *             name), classifies `build_tool` (batch/ninja/shell/make), and
  *             finally calls `set_make_type()`/`set_compiler_type()` to
  *             populate `commands`/`exts`/`var_*` for the resolved
  *             compiler. Also applies `-c/--cross` prefixing and computes
  *             `batchmode`.
+ *
+ *             `cfg.build_type` itself is explicit-only: it comes from
+ *             `--debug`/`--release`/`--relwithdebinfo`/`--minsizerel` (see
+ *             the `getopt_long` table in `main()`) or, absent any of
+ *             those, stays `BUILD_TYPE_RELEASE` (0) from the `byte_zero()`
+ *             reset in `main()` -- inferring it from a directory name is
+ *             a non-goal.
  *
  * @param      argv0  argv[0], for usage() on failure
  *
@@ -1502,18 +1514,6 @@ usage(char* argv0) {
 static int
 resolve_toolchain(const char* argv0) {
   path_getcwd(&dirs.this.sa);
-
-  /* NB: cfg.build_type is always BUILD_TYPE_RELEASE (0) here in practice --
-   * byte_zero(&cfg, ...) in main() means it can never be -1, so this
-   * directory-name autodetection is unreachable dead code. Left as-is
-   * (not fixed) in this refactor; see BUGS. */
-  if(cfg.build_type == -1)
-    if((cfg.build_type = extract_build_type(&dirs.build.sa)) == -1)
-      if((cfg.build_type = extract_build_type(&dirs.this.sa)) == -1)
-        cfg.build_type = extract_build_type(&dirs.out.sa);
-
-  if(cfg.build_type == -1)
-    cfg.build_type = BUILD_TYPE_DEBUG;
 
   if(tools.make == NULL && tools.compiler) {
     if(str_start(tools.compiler, "b")) {
@@ -1558,10 +1558,9 @@ resolve_toolchain(const char* argv0) {
   if(build_tool == TOOL_BATCH)
     comment = "REM ";
 
-  /* auto-detect tools.compiler (and, as a byproduct, cfg.build_type again)
-   * by splitting the build dir / output file name into '/'-'-'-'.'
-   * separated tokens and checking each one against known compiler/build
-   * type names. */
+  /* auto-detect tools.compiler by splitting the build dir / output file
+   * name into '/'-'-'-'.' separated tokens and checking each one against
+   * known compiler names. */
   {
     set_t toks;
     const char* s;
@@ -1585,7 +1584,6 @@ resolve_toolchain(const char* argv0) {
     }
 
     {
-      size_t i;
       set_iterator_t it;
       stralloc tok;
 
@@ -1598,15 +1596,6 @@ resolve_toolchain(const char* argv0) {
         if(!tools.compiler && is_compiler(tok.s)) {
           tools.compiler = (char*)s;
           break;
-        }
-
-        if(cfg.build_type == -1) {
-          for(i = 0; i < (sizeof(build_types) / sizeof(build_types[0])); ++i) {
-            if(s[case_find(s, build_types[i])]) {
-              cfg.build_type = i;
-              break;
-            }
-          }
         }
       }
 
@@ -2195,12 +2184,8 @@ generate_all_rules(strarray* sources, target* all) {
     link_rules += ret;
   }
 
-  if(cmd_module) {
-    /* --create-module is parsed and threaded through here but this
-     * branch has always been empty -- module rule generation was never
-     * implemented. See BUGS (genmakefile-cmd-module-stub); not fixed in
-     * this refactor. */
-  }
+  if(cmd_module)
+    generate_module_rules(pathsep_args, pathsep_make);
 
   if(cmd_bins == 0 || cmd_libs == 1) {
     MAP_FOREACH(rule_map, t) {
@@ -2752,7 +2737,7 @@ main(int argc, char* argv[]) {
 
   cmd_libs_explicit = cmd_libs;
 
-  if(!cmd_bins && !cmd_libs && !cmd_objs) {
+  if(!cmd_bins && !cmd_libs && !cmd_objs && !cmd_module) {
     cmd_bins = 1;
     cmd_objs = 1;
     cmd_libs = 1;

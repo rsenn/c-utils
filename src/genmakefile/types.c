@@ -84,6 +84,12 @@ commands_dump(const commands_t* cmds) {
     buffer_putc(debug_buf, '"');
   }
 
+  if(cmds->link_module.len) {
+    buffer_puts(debug_buf, " link_module=\"");
+    buffer_putsa(debug_buf, &cmds->link_module);
+    buffer_putc(debug_buf, '"');
+  }
+
   if(cmds->mkdir.len) {
     buffer_puts(debug_buf, " mkdir=\"");
     buffer_putsa(debug_buf, &cmds->mkdir);

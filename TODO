@@ -17,3 +17,30 @@ TODO
   for the duration of the call). Fine for the compatibility-testing use case
   this tool targets, but a caller relying on that signal behavior around
   `system()`/`popen()` would see a difference when the shell is redirected.
+
+- genmakefile-create-module-gcc-only: `--create-module` (loadable
+  `-shared`/`-fPIC` modules, e.g. QuickJS native modules) only sets
+  `commands.link_module` in the gcc/clang branch of `set_compiler_type()`
+  (`genmakefile.c`, alongside `commands.link`). Every other compiler
+  branch (msvc, borland, sdcc, xc8, ...) leaves it empty, so
+  `--create-module` with `-t msvc` etc. silently generates a module rule
+  with an empty recipe instead of failing loudly. Only gcc-family
+  toolchains make sense as loadable-module builders in practice, but the
+  silent-empty-recipe failure mode for the rest is worth a guard/warning
+  (mirroring the existing sdcc `--create-libs` warning) rather than a
+  quiet no-op Makefile rule.
+
+- genmakefile-cross-compile-flag-disabled: the `if(cygming && 0) { ... }`
+  block in `set_compiler_type()`'s trailer (`genmakefile.c`, right after
+  the compiler-branch chain) that would set `CROSS_COMPILE` from
+  `tools.toolchain` (e.g. `x86_64-w64-mingw32-`) is permanently disabled
+  by the `&& 0`. In practice this doesn't block cross-compiling -- the
+  separate `-c/--cross PREFIX` flag (`cross_compile` global, applied a
+  few lines below via `if(*cross_compile) { var_set("CROSS_COMPILE",
+  cross_compile); ... }`) already does the same job when passed
+  explicitly -- but `-t mingw64` alone (without also passing `-c
+  x86_64-w64-mingw32-`) silently produces a plain, non-prefixed `CC =
+  gcc` instead of a real cross compiler. Worth either wiring up the
+  disabled block (auto-deriving the prefix from `tools.toolchain`) or
+  documenting in `--help` that `-c` is required alongside `-t
+  mingw64`/`msys`/`cygwin`.

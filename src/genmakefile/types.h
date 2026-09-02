@@ -45,7 +45,7 @@ typedef enum {
 } command_type;
 
 typedef struct commands {
-  stralloc preprocess, compile, lib, link, mkdir, delete;
+  stralloc preprocess, compile, lib, link, link_module, mkdir, delete;
 } commands_t;
 
 void config_dump(const config_t*);

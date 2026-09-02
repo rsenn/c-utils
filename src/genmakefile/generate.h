@@ -18,6 +18,7 @@ void generate_srcdir_rule(sourcedir* sdir, bool batchmode, char psm);
 void generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm);
 target* generate_program_rule(const char* filename, char psa, char psm, strarray* other_sources, set_t* main_dirs);
 int generate_link_rules(char psa, char psm);
+int generate_module_rules(char psa, char psm);
 target* generate_install_rules(void);
 
 extern strarray bins, progs;

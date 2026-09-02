@@ -941,6 +941,72 @@ generate_link_rules(char psa, char psm) {
 }
 
 /**
+ * @brief      Generate one -shared/-fPIC loadable-module rule per source
+ *             file (`--create-module`): unlike `generate_link_rules()`,
+ *             every source becomes its own module regardless of whether
+ *             it has a `main()` -- a runtime-loaded module (e.g. a
+ *             QuickJS native module with `js_init_module()`) normally
+ *             doesn't -- and the output has no "lib" prefix (`fib.c` ->
+ *             `fib.so`, not `libfib.so`), matching how such modules are
+ *             actually named and `dlopen()`-ed.
+ *
+ * @param[in]  psa   Path separator for arguments
+ * @param[in]  psm   Path separator for makefile
+ *
+ * @return     Number of module rules generated
+ */
+int
+generate_module_rules(char psa, char psm) {
+  int count = 0;
+  struct dnode* node;
+  target* all = rule_get("all");
+
+  dlist_foreach_down(&sources_list, node) {
+    sourcefile* file = dlist_data(node, sourcefile*);
+    const char* filename = (char*)file->name;
+    stralloc obj, mod, outname;
+    target *compile, *rule;
+
+    if(!is_source(filename) || is_include(filename))
+      continue;
+
+    stralloc_init(&obj);
+    stralloc_init(&mod);
+    stralloc_init(&outname);
+
+    path_output(filename, &obj, exts.obj, psa);
+
+    if((compile = rule_get_sa(&obj))) {
+      add_source(&compile->prereq, filename, psa);
+      stralloc_weak(&compile->recipe, &commands.compile);
+    }
+
+    stralloc_cats(&outname, path_basename(filename));
+
+    if(stralloc_endb(&outname, exts.src, str_len(exts.src)))
+      outname.len -= str_len(exts.src);
+
+    stralloc_nul(&outname);
+    path_output(outname.s, &mod, exts.slib, psa);
+
+    add_path_b(&all->prereq, mod.s, mod.len);
+
+    if((rule = rule_get_sa(&mod))) {
+      add_path_sa(&rule->prereq, &obj);
+      stralloc_weak(&rule->recipe, &commands.link_module);
+      stralloc_nul(&rule->recipe);
+      count++;
+    }
+
+    stralloc_free(&obj);
+    stralloc_free(&mod);
+    stralloc_free(&outname);
+  }
+
+  return count;
+}
+
+/**
  * @brief      Generates installation rule
  *
  * @return     Rule
