@@ -417,12 +417,6 @@ if(SIZEOF_SIGSET_T)
   add_definitions(-DSIZEOF_SIGSET_T=${SIZEOF_SIGSET_T})
 endif(SIZEOF_SIGSET_T)
 
-# check_include_file(alloca.h HAVE_ALLOCA_H) if(HAVE_ALLOCA_H) # add_definitions(-DHAVE_ALLOCA_H) endif(HAVE_ALLOCA_H)
-
-# check_include_file(errno.h HAVE_ERRNO_H) if(HAVE_ERRNO_H) add_definitions(-DHAVE_ERRNO_H) endif(HAVE_ERRNO_H)
-
-# check_include_file(sys/wait.h HAVE_SYS_WAIT_H) if(HAVE_SYS_WAIT_H) add_definitions(-DHAVE_SYS_WAIT_H) endif(HAVE_SYS_WAIT_H)
-
 string(REGEX REPLACE ".*/" "" COMPILER_NAME "${CMAKE_C_COMPILER}")
 
 if(COMPILER_NAME MATCHES "em.*")
