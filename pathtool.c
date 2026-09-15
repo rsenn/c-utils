@@ -1,5 +1,6 @@
 #include "lib/unix.h"
 #include "lib/buffer.h"
+#include "lib/dir.h"
 #include "lib/errmsg.h"
 #include "lib/path_internal.h"
 #include "lib/stralloc.h"
@@ -188,7 +189,13 @@ static column_t
 KEY(const MAP_PAIR_T pair) {
   column_t ret;
   ret.s = MAP_ITER_KEY(pair);
-  ret.n = MAP_ITER_KEY_LEN(pair);
+  /* MAP_ITER_KEY_LEN, under MAP_USE_HMAP, returns the raw length given
+   * at insertion time -- mounts_add()/mounts_read() always insert with
+   * str_len(x) + 1 (to store the NUL), so that raw length is one past
+   * the actual string length. mounts_match()'s prefix comparisons need
+   * the real length, so recompute it here instead of trusting the
+   * stored one. */
+  ret.n = str_len(ret.s);
   return ret;
 }
 
@@ -196,7 +203,7 @@ static column_t
 VAL(const MAP_PAIR_T pair) {
   column_t ret;
   ret.s = MAP_ITER_VALUE(pair);
-  ret.n = MAP_ITER_VALUE_LEN(pair);
+  ret.n = str_len(ret.s);
   return ret;
 }
 
@@ -341,6 +348,102 @@ mingw_prefix(stralloc* sa) {
 }
 #endif
 
+#if !WINDOWS_NATIVE && !defined(__CYGWIN__) && !defined(__MSYS__)
+/* Read drive-letter symlinks out of a Wine prefix's dosdevices/ (as
+ * created by winecfg) into the same dev/mountpoint map used for
+ * cygwin's /proc/mounts, so --windows/--mixed can produce a path with
+ * a drive prefix that's valid when handed to a program running under
+ * `wine`. */
+static int
+wine_mounts_read(MAP_T map) {
+  const char* wineprefix;
+  const char* home;
+  stralloc prefix, full, target, key;
+  dir_t d;
+  char* name;
+  int ret = 0;
+
+  stralloc_init(&prefix);
+
+  if((wineprefix = getenv("WINEPREFIX")) && *wineprefix) {
+    stralloc_copys(&prefix, wineprefix);
+  } else {
+    home = getenv("HOME");
+    stralloc_copys(&prefix, home ? home : "");
+    stralloc_cats(&prefix, "/.wine");
+  }
+
+  stralloc_cats(&prefix, "/dosdevices");
+  stralloc_nul(&prefix);
+
+  if(dir_open(&d, prefix.s)) {
+    stralloc_free(&prefix);
+    return -1;
+  }
+
+  stralloc_init(&full);
+  stralloc_init(&target);
+  stralloc_init(&key);
+
+  while((name = dir_read(&d))) {
+    size_t len = str_len(name);
+
+    /* only bare drive-letter symlinks ("c:", "z:", ...) -- skip
+     * device symlinks like "com1"/"lpt1" and anything else */
+    if(len != 2 || name[1] != ':' || !((name[0] >= 'a' && name[0] <= 'z') || (name[0] >= 'A' && name[0] <= 'Z')))
+      continue;
+
+    stralloc_zero(&full);
+    path_concatb(prefix.s, prefix.len, name, len, &full);
+    stralloc_nul(&full);
+
+    /* read the raw link target with a single readlink() rather than
+     * path_realpath()/path_canonicalize() -- the latter special-cases
+     * any 2-char "X:" path component (meant for a leading Windows
+     * drive letter) by appending a trailing separator, which under
+     * Linux causes lstat() to follow the symlink through the trailing
+     * slash and makes it look like a plain directory instead of a
+     * link, so "c:" itself never gets resolved to its target. */
+    stralloc_zero(&target);
+
+    if(path_readlink(full.s, &target) < 0)
+      continue;
+
+    stralloc_nul(&target);
+
+    if(!path_is_absolute(target.s)) {
+      stralloc resolved;
+
+      stralloc_init(&resolved);
+      path_concatb(prefix.s, prefix.len, target.s, target.len, &resolved);
+      stralloc_nul(&resolved);
+      stralloc_copy(&target, &resolved);
+      stralloc_nul(&target);
+      stralloc_free(&resolved);
+    }
+
+    path_collapse_sa(&target);
+
+    stralloc_zero(&key);
+    stralloc_catc(&key, toupper(name[0]));
+    stralloc_catc(&key, ':');
+    stralloc_nul(&key);
+
+    mounts_add(map, key.s, target.s);
+    ++ret;
+  }
+
+  dir_close(&d);
+
+  stralloc_free(&key);
+  stralloc_free(&target);
+  stralloc_free(&full);
+  stralloc_free(&prefix);
+
+  return ret;
+}
+#endif
+
 int
 pathtool(const char* arg, stralloc* sa) {
   strlist path;
@@ -423,6 +526,10 @@ pathtool(const char* arg, stralloc* sa) {
     }
   }
 #endif
+#endif
+
+#if !WINDOWS_NATIVE && !defined(__CYGWIN__) && !defined(__MSYS__)
+  mounts_replace(mtab, sa, format != UNX, false);
 #endif
 
 #ifdef DEBUG_OUTPUT_
@@ -592,6 +699,10 @@ main(int argc, char* argv[]) {
 #endif
 
   mounts_read(mtab);
+
+#if !WINDOWS_NATIVE && !defined(__CYGWIN__) && !defined(__MSYS__)
+  wine_mounts_read(mtab);
+#endif
 
 #if defined(__MINGW32__) || defined(__MSYS__)
   mingw_prefix(&mingw);
