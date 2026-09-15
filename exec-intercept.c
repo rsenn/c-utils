@@ -57,7 +57,8 @@
 typedef int execve_function(const char*, char* const[], char* const[]);
 typedef int execvp_function(const char*, char* const[]);
 typedef int fexecve_function(int, char* const[], char* const[]);
-typedef int posix_spawn_function(pid_t*, const char*, const posix_spawn_file_actions_t*, const posix_spawnattr_t*, char* const[], char* const[]);
+typedef int posix_spawn_function(
+    pid_t*, const char*, const posix_spawn_file_actions_t*, const posix_spawnattr_t*, char* const[], char* const[]);
 typedef int system_function(const char*);
 typedef FILE* popen_function(const char*, const char*);
 typedef int pclose_function(FILE*);
@@ -409,7 +410,12 @@ fexecve(int fd, char* const argv[], char* const envp[]) {
 }
 
 VISIBLE int
-posix_spawn(pid_t* pid, const char* path, const posix_spawn_file_actions_t* file_actions, const posix_spawnattr_t* attrp, char* const argv[], char* const envp[]) {
+posix_spawn(pid_t* pid,
+            const char* path,
+            const posix_spawn_file_actions_t* file_actions,
+            const posix_spawnattr_t* attrp,
+            char* const argv[],
+            char* const envp[]) {
   const remap_t* r;
   const char* to = path;
 
@@ -426,7 +432,12 @@ posix_spawn(pid_t* pid, const char* path, const posix_spawn_file_actions_t* file
 }
 
 VISIBLE int
-posix_spawnp(pid_t* pid, const char* file, const posix_spawn_file_actions_t* file_actions, const posix_spawnattr_t* attrp, char* const argv[], char* const envp[]) {
+posix_spawnp(pid_t* pid,
+             const char* file,
+             const posix_spawn_file_actions_t* file_actions,
+             const posix_spawnattr_t* attrp,
+             char* const argv[],
+             char* const envp[]) {
   const remap_t* r;
 
   init();

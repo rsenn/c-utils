@@ -42,7 +42,7 @@ static const char* compiler_types[] = {
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "",
-                   *quote_args = "";
+                                                                          *quote_args = "";
 static bool batchmode, cygming;
 static strlist system_path;
 static build_tool_t build_tool = 0;
@@ -559,8 +559,14 @@ set_make_type() {
   } else if(str_start(tools.make, "gmake") || str_start(tools.make, "gnu")) {
     newline = "\n";
     pathsep_make = '/';
-    stralloc_copys(&commands.mkdir, "test -d $@ || mkdir -p $@");
-    stralloc_copys(&commands.delete, "rm -f");
+
+    if(cfg.sys.os == OS_WIN) {
+      stralloc_copys(&commands.mkdir, "IF NOT EXIST $@ MKDIR $@");
+      stralloc_copys(&commands.delete, "DEL /F");
+    } else {
+      stralloc_copys(&commands.mkdir, "test -d $@ || mkdir -p $@");
+      stralloc_copys(&commands.delete, "rm -f");
+    }
   } else if(str_start(tools.make, "omake") || str_start(tools.make, "orange")) {
     pathsep_make = '\\';
 
@@ -1070,8 +1076,10 @@ set_compiler_type(const char* compiler) {
                    "$(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     if(cmd_libs_explicit) {
-      buffer_putm_internal(
-          buffer_2, "WARNING: the \"sdcc\" compiler doesn't support --create-libs, ignoring", newline, NULL);
+      buffer_putm_internal(buffer_2,
+                           "WARNING: the \"sdcc\" compiler doesn't support --create-libs, ignoring",
+                           newline,
+                           NULL);
       buffer_flush(buffer_2);
     }
 
@@ -1347,14 +1355,9 @@ set_compiler_type(const char* compiler) {
     stralloc_free(&chipdef);
   }
 
-  if(cfg.sys.os == OS_WIN) {
-    // push_lib("EXTRA_LIBS", "advapi32");
-    /*  if(str_start(compiler, "dmc"))
-        push_lib("EXTRA_LIBS", "wsock32"); else
-        push_lib("EXTRA_LIBS", "ws2_32");
-    */
-    push_lib("EXTRA_LIBS", "kernel32");
-  }
+  if(!cfg.chip.len)
+    if(cfg.sys.os == OS_WIN)
+      push_lib("EXTRA_LIBS", "kernel32");
 
   if(cygming) {
     if(build_tool != TOOL_NINJA)
