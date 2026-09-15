@@ -273,7 +273,42 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
 
     stralloc_init(&cmd);
 
-    if(rule->type == LINK && (make_capabs & MAKE_RULE_IMPLICIT))
+    if(cfg.sys.os == OS_WIN && rule->recipe.s == commands.mkdir.s && str_chr(rule->name, '/') < str_len(rule->name)) {
+      /* IF NOT EXIST $@ MKDIR $@ only tests/creates the leaf component --
+       * for a multi-component directory that doesn't already exist, emit
+       * one guarded MKDIR per path component instead of a single $@. */
+      strlist dirs;
+      size_t i, n;
+
+      strlist_init(&dirs, '/');
+      strlist_froms(&dirs, rule->name, '/');
+      n = strlist_count(&dirs);
+
+      for(i = 1; i <= n; ++i) {
+        strlist r = strlist_range(&dirs, 0, i);
+        size_t rlen = r.sa.len, p;
+
+        if(rlen && r.sa.s[rlen - 1] == '/')
+          rlen--;
+
+        if(i > 1) {
+          stralloc_catc(&cmd, '\n');
+          stralloc_catc(&cmd, '\t');
+        }
+
+        stralloc_cats(&cmd, "IF NOT EXIST ");
+        p = cmd.len;
+        stralloc_catq(&cmd, r.sa.s, rlen, quote);
+        byte_replace(&cmd.s[p], cmd.len - p, '/', psa);
+
+        stralloc_cats(&cmd, " MKDIR ");
+        p = cmd.len;
+        stralloc_catq(&cmd, r.sa.s, rlen, quote);
+        byte_replace(&cmd.s[p], cmd.len - p, '/', psa);
+      }
+
+      strlist_free(&dirs);
+    } else if(rule->type == LINK && (make_capabs & MAKE_RULE_IMPLICIT))
       stralloc_copy(&cmd, &commands.link);
     else
       /* XXX
