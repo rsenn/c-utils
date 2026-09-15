@@ -155,6 +155,14 @@ generate_clean_rule(char psm) {
         arg = path_wildcard(&fn, "*");
       }
 
+      /* DEL is handed to cmd.exe regardless of the make tool (even under
+       * mingw32-make), and cmd.exe doesn't expand wildcards through
+       * forward slashes -- force backslashes here independently of psm. */
+      if(cfg.sys.type == NTOS) {
+        stralloc_replacec(&fn, '/', '\\');
+        arg = fn.s;
+      }
+
       /* Add to deletion list */
       strlist_push_unique(&delete_args, arg);
     }
