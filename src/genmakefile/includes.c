@@ -76,17 +76,7 @@ includes_extract(const char* x, size_t n, strlist* includes, int sys) {
 void
 includes_cppflags(void) {
   const char* dir;
-  stralloc arg, absdir, workabs;
-
-  /* dirs.work.sa is never absolute, so it has to be resolved against
-   * dirs.this.sa (the invocation directory genmakefile recorded up
-   * front) rather than path_absolute()'s live getcwd() -- by the time
-   * this runs, the process may have chdir'd elsewhere (e.g. while
-   * processing an --infile, see input.c) and a getcwd()-based
-   * resolution would silently pick up the wrong base. */
-  stralloc_init(&workabs);
-  path_concat_sa(&dirs.this.sa, &dirs.work.sa, &workabs);
-  stralloc_nul(&workabs);
+  stralloc arg, absdir;
 
   stralloc_init(&absdir);
   stralloc_init(&arg);
@@ -94,13 +84,19 @@ includes_cppflags(void) {
   strlist_foreach_s(&include_dirs, dir) {
     /* include_dirs entries are stored relative to dirs.this.sa (see
      * includes_add_b()) -- rebuild the absolute path before making it
-     * relative to the workdir. */
+     * relative to dirs.out.sa, the directory the generated makefile
+     * itself lives in and is invoked from (resolve_directories() has
+     * already made it absolute by the time this runs). Source-file
+     * prerequisites (sources.c/generate.c's add_source()) and the
+     * BUILDDIR variable are anchored the same way via sources_dir --
+     * anchoring these -I paths on dirs.build instead used to produce a
+     * mismatched depth whenever dirs.build sits deeper than dirs.out. */
     stralloc_zero(&absdir);
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir, str_len(dir), &absdir);
     stralloc_nul(&absdir);
 
     stralloc_zero(&arg);
-    path_relative_to(absdir.s, dirs.build.sa.s, &arg);
+    path_relative_to(absdir.s, dirs.out.sa.s, &arg);
     stralloc_nul(&arg);
 
 #ifdef DEBUG_OUTPUT
@@ -115,7 +111,6 @@ includes_cppflags(void) {
 
   stralloc_free(&arg);
   stralloc_free(&absdir);
-  stralloc_free(&workabs);
 }
 
 /**
