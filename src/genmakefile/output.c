@@ -296,15 +296,18 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
           stralloc_catc(&cmd, '\t');
         }
 
+        /* IF NOT EXIST/MKDIR run under cmd.exe regardless of the make
+         * tool (mingw32-make included, where psa stays '/'), and cmd.exe
+         * doesn't accept forward slashes here -- force backslashes. */
         stralloc_cats(&cmd, "IF NOT EXIST ");
         p = cmd.len;
         stralloc_catq(&cmd, r.sa.s, rlen, quote);
-        byte_replace(&cmd.s[p], cmd.len - p, '/', psa);
+        byte_replace(&cmd.s[p], cmd.len - p, '/', '\\');
 
         stralloc_cats(&cmd, " MKDIR ");
         p = cmd.len;
         stralloc_catq(&cmd, r.sa.s, rlen, quote);
-        byte_replace(&cmd.s[p], cmd.len - p, '/', psa);
+        byte_replace(&cmd.s[p], cmd.len - p, '/', '\\');
       }
 
       strlist_free(&dirs);
