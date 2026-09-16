@@ -865,7 +865,7 @@ set_subst_b(const set_t* set, const char* in, size_t len, stralloc* out, const c
   stralloc_nul(&value);
 
   for(size_t i = 0; i < len;) {
-    if(i + value.len <= len)
+    if(value.len > 0 && i + value.len <= len)
       if(i == 0 || isspace(in[i - 1]))
         if(i + value.len == len || isspace(in[i + value.len]))
           if(byte_equal(&in[i], value.len, value.s)) {
