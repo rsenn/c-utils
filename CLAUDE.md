@@ -28,6 +28,8 @@ Tests are off by default (`BUILD_TESTS` option). To enable, reconfigure with `-D
 
 **socket-intercept.c**: an `LD_PRELOAD` shim that intercepts libc socket/TLS calls per-thread (`thread_local` state throughout) to log traffic; not linked into the module system above.
 
+**No `<stdio.h>`/`<stdlib.h>`/`<string.h>` in program code**: use the matching `lib/` module instead -- `lib/buffer.h` (+ `buffer_2`/`buffer_1`) instead of `stdio.h`'s `printf`/`fprintf`/`FILE*`, `lib/errmsg.h` instead of hand-rolled `fprintf(stderr, ...)` diagnostics, `lib/str.h`/`lib/byte.h`/`lib/stralloc.h` instead of `string.h`'s `str*`/`mem*` functions, `lib/alloc.h`/`lib/env.h` instead of `stdlib.h`'s `malloc`/`free`/`getenv`/`setenv`. This keeps every tool built on the same primitives (and portable to the `WINDOWS_NATIVE` targets those primitives already abstract over) instead of mixing two parallel string/IO/allocation vocabularies in the same codebase. A module's own `lib/<name>/*.c` implementation is exempt -- it's the bottom layer and legitimately calls the real libc function once; exact-signature libc interposition (e.g. `exec-intercept.c`/`socket-intercept.c`'s `LD_PRELOAD` shims, which must match glibc's own prototypes to override them) is exempt for the same reason.
+
 ## Testing
 
 Do not run `tests/genmakefile/testsuite.sh` on your own initiative -- only when the user explicitly

@@ -243,3 +243,19 @@
   a Beschreibung contained a quoted phrase or an embedded literal newline;
   confirmed down to <0.1% (residual is truncation artifacts, not this tool)
   against live fetches after the fix.)
+
+- exec-intercept-log-truncate-race: `exec-intercept.c`'s `init()` opens
+  `EXEC_INTERCEPT_LOG` with `open_trunc()` (unless the value has a leading
+  `+` for append mode) and `initialized` is a plain process-local static,
+  not something that survives `fork()` into a sibling. A shell session
+  preloaded with this shim forks a fresh child per command, and each
+  child's first hooked call re-runs `init()` from scratch (its copy of
+  `initialized` is whatever the *parent* shell's memory had at fork
+  time -- 0, if the shell itself never triggered a hook), truncating the
+  shared log file again. Confirmed: `bash -c 'ls; date'` under this shim
+  with a non-`+`-prefixed log file ends up with only the *last* forked
+  child's log lines -- the `ls` child's own write already happened, but
+  the `date` child's later `open_trunc()` on the same path zeroes the
+  file out from under it. Log consumers should be told to always use
+  `+file` (append mode) for any session that forks more than once, or
+  `init()` should default to append instead of truncate.

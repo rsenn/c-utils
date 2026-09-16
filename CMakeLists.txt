@@ -1360,6 +1360,7 @@ set(exec_intercept_SOURCES
     lib/open/open_append.c
     lib/open/open_read.c
     lib/open/open_trunc.c
+    lib/path/path_fnmatch.c
     lib/str/str_basename.c
     lib/str/str_chr.c
     lib/str/str_copy.c
@@ -1383,6 +1384,21 @@ endif(F_VISIBILITY)
 target_link_libraries(exec-intercept PUBLIC dl)
 
 install(TARGETS exec-intercept DESTINATION "lib")
+
+# exec-intercept, compiled a second time with -DEXEC_INTERCEPT_MAIN=1: a
+# standalone launcher (`exec-intercept [-o FILE] [--] <program> [args...]`)
+# that sets LD_PRELOAD to the .so above (and EXEC_INTERCEPT_LOG, if -o was
+# given) and execs <program> -- see the EXEC_INTERCEPT_MAIN block at the
+# top of exec-intercept.c. Only main() and its own helpers are compiled
+# in this mode; none of the interception code above is needed or built.
+add_executable(exec-intercept-launcher exec-intercept.c)
+set_target_properties(exec-intercept-launcher PROPERTIES
+    OUTPUT_NAME "exec-intercept"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+target_compile_definitions(exec-intercept-launcher PRIVATE EXEC_INTERCEPT_MAIN=1)
+target_link_libraries(exec-intercept-launcher buffer str errmsg env alloc byte stralloc path)
+
+install(TARGETS exec-intercept-launcher DESTINATION "bin")
 endif(NOT WINDOWS_NATIVE)
 
 

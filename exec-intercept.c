@@ -6,6 +6,10 @@
  * POSIX shell makes every such assumption fail loudly at the exact
  * command that isn't portable, instead of staying silently bash-locked.
  *
+ * EXEC_INTERCEPT_MAP entries are path_fnmatch() patterns, not just
+ * literal names -- EXEC_INTERCEPT_MAP="*" logs every exec*() call made
+ * by the process tree without redirecting any of it.
+ *
  * glibc's execv/execl/execvp/... call their own internal aliases of
  * execve(), not the exported symbol -- overriding only execve() here
  * would NOT catch calls made through those other entry points. Each one
@@ -34,6 +38,16 @@
  * came out of this reimplemented popen() (they carry a pid libc's own
  * pclose() never learned about), so successful streams are recorded in
  * `popens` and pclose() checks there before falling back to libc.
+ *
+ * This same source file also builds a small standalone launcher binary
+ * ("exec-intercept") when compiled with -DEXEC_INTERCEPT_MAIN=1: it just
+ * sets LD_PRELOAD to the shared object built from this same file (and
+ * EXEC_INTERCEPT_LOG, if -o FILE was given) and execs the program named
+ * on its own command line, so `exec-intercept prog args...` behaves like
+ * `LD_PRELOAD=/path/to/exec-intercept.so prog args...`. When that macro
+ * is defined, everything below except main() itself is left out -- the
+ * interception code (execve/execvp/.../pclose) is only ever needed in
+ * the .so, never in the launcher.
  */
 #define _GNU_SOURCE 1
 
@@ -51,8 +65,228 @@
 #include "lib/env.h"
 #include "lib/fmt.h"
 #include "lib/open.h"
+#include "lib/path.h"
 #include "lib/str.h"
 #include "lib/util.h"
+
+#ifdef EXEC_INTERCEPT_MAIN
+
+#include "lib/byte.h"
+#include "lib/errmsg.h"
+#include "lib/stralloc.h"
+
+static void
+usage(const char* argv0) {
+  buffer_putm_internal_flush(buffer_2,
+                              "Usage: ",
+                              path_basename(argv0),
+                              " [-o FILE] [from[=to] ...] -- <program> [args...]\n",
+                              "  -o FILE  set EXEC_INTERCEPT_LOG=FILE before exec'ing <program>\n",
+                              "  from=to  add a remap to EXEC_INTERCEPT_MAP (replacing any existing\n",
+                              "           entry for the same \"from\"), e.g. bash=/usr/local/bin/shish\n",
+                              "  from     log-only: log every matching exec*() call without\n",
+                              "           redirecting it, e.g. \"*\" logs every exec*() call\n",
+                              "\n",
+                              "\"from\" (on either side of a bare \"=\", too) is a path_fnmatch()\n",
+                              "pattern matched against the exec'd basename, not just a literal name.\n",
+                              "\n",
+                              "A bare (no \"=\") \"from\" is only recognized as a remap when \"--\" is\n",
+                              "also given, to tell it apart from <program>; with \"from=to\" the \"=\"\n",
+                              "already does that, so \"--\" stays optional in that case.\n",
+                              0);
+}
+
+/* `map` holds EXEC_INTERCEPT_MAP's comma-separated "from=to" entries
+ * (see exec-intercept.so's own init(), which parses the exact same
+ * format). Add `entry` ("from=to", `key_len` bytes of "from" before
+ * the "="): if a token with the same "from" already exists, replace it
+ * in place instead of duplicating it -- last one wins, same as if the
+ * .so itself scanned the map back-to-front, but without ever handing
+ * it two conflicting entries for the same key to begin with. */
+static void
+map_replace_or_append(stralloc* map, const char* entry, size_t entry_len, size_t key_len) {
+  size_t pos = 0;
+
+  while(pos < map->len) {
+    size_t rest = map->len - pos;
+    size_t tok_len = byte_chr(map->s + pos, rest, ',');
+    size_t eq = byte_chr(map->s + pos, tok_len, '=');
+    size_t tok_key_len = eq == tok_len ? tok_len : eq;
+
+    if(tok_key_len == key_len && byte_equal(map->s + pos, key_len, entry)) {
+      stralloc_remove(map, pos, tok_len);
+      stralloc_insertb(map, entry, pos, entry_len);
+      return;
+    }
+
+    if(tok_len == rest)
+      break;
+
+    pos += tok_len + 1;
+  }
+
+  if(map->len)
+    stralloc_catb(map, ",", 1);
+
+  stralloc_catb(map, entry, entry_len);
+}
+
+/* Locate exec-intercept.so relative to this launcher's own resolved
+ * binary path, without assuming it has been installed yet -- tries the
+ * installed layout (.../bin/../lib/exec-intercept.so) first, then the
+ * flat layout every target lands in inside the build tree by default
+ * (.../bin/../exec-intercept.so), then the launcher's own directory,
+ * before giving up and letting the dynamic linker's own search path
+ * have a shot at a bare "exec-intercept.so". */
+static int
+find_so(char* out, size_t outsize) {
+  static const char* const candidates[] = {
+      "../lib/exec-intercept.so",
+      "../exec-intercept.so",
+      "exec-intercept.so",
+      NULL,
+  };
+  char self[PATH_MAX];
+  ssize_t n;
+  size_t slash, dirlen;
+
+  if((n = readlink("/proc/self/exe", self, sizeof(self) - 1)) <= 0)
+    return 0;
+
+  self[n] = 0;
+
+  if((slash = str_rchr(self, '/')) == (size_t)n)
+    return 0;
+
+  self[slash] = 0;
+  dirlen = slash;
+
+  for(int i = 0; candidates[i]; i++) {
+    size_t need = dirlen + 1 + str_len(candidates[i]) + 1;
+
+    if(need > outsize)
+      continue;
+
+    str_copy(out, self);
+    out[dirlen] = '/';
+    str_copy(out + dirlen + 1, candidates[i]);
+
+    if(access(out, F_OK) == 0)
+      return 1;
+  }
+
+  return 0;
+}
+
+int
+main(int argc, char* argv[]) {
+  const char* logfile = NULL;
+  char so_path[PATH_MAX];
+  stralloc map;
+  int have_map = 0;
+  int i, dashdash = -1;
+
+  errmsg_iam(argv[0]);
+
+  /* look ahead for "--": when it's there, every non-option argument
+   * before it is a remap/log directive, "=" or not -- a bare token
+   * like "*" only makes sense as a log-only pattern (see lookup()),
+   * never as a program to exec, so it's only safe to treat it that
+   * way once "--" marks unambiguously where <program> starts. Without
+   * "--" at all, only "from=to" arguments (the "=" already sets them
+   * apart) are remaps, and the first argument without one ends the
+   * option list and starts <program>, same as before this existed. */
+  for(i = 1; i < argc; i++) {
+    if(str_equal(argv[i], "--")) {
+      dashdash = i;
+      break;
+    }
+  }
+
+  for(i = 1; i < argc; i++) {
+    size_t eq, len;
+
+    if(i == dashdash) {
+      i++;
+      break;
+    }
+
+    if(str_equal(argv[i], "-o")) {
+      if(++i >= argc) {
+        usage(argv[0]);
+        return 2;
+      }
+
+      logfile = argv[i];
+      continue;
+    }
+
+    if(str_start(argv[i], "-o")) {
+      logfile = argv[i] + 2;
+      continue;
+    }
+
+    if(str_equal(argv[i], "-h") || str_equal(argv[i], "--help")) {
+      usage(argv[0]);
+      return 0;
+    }
+
+    len = str_len(argv[i]);
+    eq = str_chr(argv[i], '=');
+
+    if(dashdash >= 0 || eq < len) {
+      if(!have_map) {
+        const char* existing;
+
+        stralloc_init(&map);
+
+        if((existing = env_get("EXEC_INTERCEPT_MAP")))
+          stralloc_copys(&map, existing);
+
+        have_map = 1;
+      }
+
+      map_replace_or_append(&map, argv[i], len, eq);
+      continue;
+    }
+
+    break;
+  }
+
+  if(i >= argc) {
+    if(have_map)
+      stralloc_free(&map);
+
+    usage(argv[0]);
+    return 2;
+  }
+
+  if(!find_so(so_path, sizeof(so_path))) {
+    if(have_map)
+      stralloc_free(&map);
+
+    errmsg_warn("can't find exec-intercept.so", (char*)0);
+    return 1;
+  }
+
+  env_set("LD_PRELOAD", so_path);
+
+  if(logfile)
+    env_set("EXEC_INTERCEPT_LOG", logfile);
+
+  if(have_map) {
+    stralloc_nul(&map);
+    env_set("EXEC_INTERCEPT_MAP", map.s);
+    stralloc_free(&map);
+  }
+
+  execvp(argv[i], &argv[i]);
+
+  errmsg_warnsys("exec ", argv[i], (char*)0);
+  return 127;
+}
+
+#else /* !EXEC_INTERCEPT_MAIN */
 
 typedef int execve_function(const char*, char* const[], char* const[]);
 typedef int execvp_function(const char*, char* const[]);
@@ -120,7 +354,11 @@ init(void) {
     size_t eq = str_chr(tok, '=');
 
     /* no "=" at all (or nothing after it, e.g. "bash=") means log-only:
-       record the call but let it run unredirected */
+       record the call but let it run unredirected. "from" (on either
+       side of "=", or alone) is a path_fnmatch() pattern matched
+       against the exec'd basename -- lookup() does the matching -- so
+       e.g. EXEC_INTERCEPT_MAP="*" logs every exec*() call without
+       redirecting any of them. */
     if(tok[eq] == '=') {
       tok[eq] = 0;
       remaps[nremaps].from = tok;
@@ -168,12 +406,22 @@ init(void) {
 
 static const remap_t*
 lookup(const char* base) {
+  size_t blen = str_len(base);
+
   /* basename the map's own "from" too, so a key given as a full path (e.g.
    * "/bin/sh=...") matches the same way a bare basename key ("sh=...")
-   * would */
-  for(int i = 0; i < nremaps; i++)
-    if(str_equal(base, str_basename(remaps[i].from)))
+   * would -- and match it as a path_fnmatch() pattern rather than by
+   * exact equality, so a plain name still matches exactly (there's
+   * nothing for a wildcard to expand) while a pattern like "*" matches
+   * every basename, turning "EXEC_INTERCEPT_MAP=*" into "log every
+   * exec*() call" (a bare pattern with no "=" is log-only -- see
+   * init()'s parsing of each map entry above). */
+  for(int i = 0; i < nremaps; i++) {
+    const char* pattern = str_basename(remaps[i].from);
+
+    if(path_fnmatch(pattern, (unsigned int)str_len(pattern), base, (unsigned int)blen, 0) == 0)
       return &remaps[i];
+  }
 
   return NULL;
 }
@@ -577,3 +825,5 @@ pclose(FILE* fp) {
 
   return libc_pclose(fp);
 }
+
+#endif /* !EXEC_INTERCEPT_MAIN */
