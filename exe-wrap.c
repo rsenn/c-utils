@@ -1,3 +1,27 @@
+/* exe-wrap: a same-named drop-in stand-in for another executable.
+ *
+ * Copy/rename this binary to e.g. "gcc.exe" and place an ini file with
+ * the same base name next to it ("gcc.ini", read via base_file(".ini")
+ * from the wrapper's own resolved path). When something invokes
+ * "gcc.exe args...", the wrapper reads that ini file and, before
+ * actually running anything:
+ *   - "cwd"       chdir()s into this directory, if given;
+ *   - "[env]"     sets each key=value as an environment variable
+ *                 (value may reference other vars as "%NAME%");
+ *   - "exec"      the real program to run -- resolved relative to the
+ *                 wrapper's own directory if not absolute and not
+ *                 found there, else looked up on PATH/PATHEXT;
+ *   - "name"      argv[0] to report to the real program (defaults to
+ *                 the resolved executable's basename).
+ *
+ * It then execs "exec" with argv[0] replaced as above and the
+ * original argv[1..] appended, waits for it, and exits with its
+ * status. $LOGFILE, if set, gets one line per invocation with the
+ * final argv. Useful for transparently redirecting/renaming a
+ * hardcoded toolchain executable (compiler, linker, ...) to another
+ * one, or for injecting environment/cwd setup a caller can't be told
+ * about directly.
+ */
 #include "lib/windoze.h"
 #include "lib/stralloc.h"
 #include "lib/buffer.h"
@@ -129,8 +153,8 @@ stralloc* out) { char** ptr;
       return 1;
   }
   return 0;
-}
-*/
+}*/
+
 static stralloc
 expand_env(const char* src) {
   size_t len = str_len(src);
