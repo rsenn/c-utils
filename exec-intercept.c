@@ -373,15 +373,20 @@ init(void) {
 
   {
     const char* file = env_get("EXEC_INTERCEPT_LOG");
-    int append = 0;
     int fd;
 
-    if(file && file[0] == '+') {
+    /* always append, never truncate: a shell session preloaded with
+     * this shim forks a fresh child per command, and each child's
+     * first hooked call re-runs init() from scratch, with its own
+     * copy of `initialized` starting back at 0 -- truncating here
+     * would let a later sibling's open() wipe out an earlier
+     * sibling's already-written log lines. A leading "+" is still
+     * accepted (and stripped) so an existing "+file" value keeps
+     * working, but it's redundant now. */
+    if(file && file[0] == '+')
       ++file;
-      append = 1;
-    }
 
-    if((fd = (append ? open_append : open_trunc)(file && file[0] ? file : "exec-intercept.log")) == -1)
+    if((fd = open_append(file && file[0] ? file : "exec-intercept.log")) == -1)
       fd = STDERR_FILENO;
 
     buffer_write_fd(&o, fd);

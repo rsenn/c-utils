@@ -1359,7 +1359,6 @@ set(exec_intercept_SOURCES
     lib/fmt/fmt_ulong.c
     lib/open/open_append.c
     lib/open/open_read.c
-    lib/open/open_trunc.c
     lib/path/path_fnmatch.c
     lib/str/str_basename.c
     lib/str/str_chr.c
