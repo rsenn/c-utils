@@ -243,3 +243,20 @@
   a Beschreibung contained a quoted phrase or an embedded literal newline;
   confirmed down to <0.1% (residual is truncation artifacts, not this tool)
   against live fetches after the fix.)
+
+- genmakefile-resolve-toolchain-null-make-crash: `resolve_toolchain()`
+  (`genmakefile.c:1515`) does `if(str_equal(tools.make, "gmake"))` (and
+  the `"make"` check right after it) with no null check, but
+  `tools.make` is only set a few lines above inside `if(tools.make ==
+  NULL && tools.compiler) { ... }` -- if `tools.compiler` is also unset
+  (i.e. neither `-t/--compiler-type` nor `-m/--make-type` was passed),
+  `tools.make` stays `NULL` and `str_equal()` -> `str_diff()`
+  (`lib/str/str_diff.c:13`, `if((j = (*a - *b)))`) dereferences it
+  unconditionally. Any bare `genmakefile -f infile` (no `-t`/`-m`)
+  segfaults immediately. Confirmed via gdb: `SIGSEGV` in `str_diff`
+  with `a=0x0`, called from `resolve_toolchain` at `genmakefile.c:1515`,
+  called from `main`. Found while testing `src/genmakefile/input.c`'s
+  prefix-detection feature (routed around by
+  passing `-t gcc -m gmake` explicitly). Not fixed -- needs a null
+  check before both `str_equal(tools.make, ...)` calls, or defaulting
+  `tools.make` before this point when `tools.compiler` is also unset.
