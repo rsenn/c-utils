@@ -1228,6 +1228,365 @@ input_process_rules(target* all) {
   strlist_free(&outdir);
 }
 
+/* A --infile line can come decorated with arbitrary junk in front of
+ * its actual argument list -- a shell "set -x" trace's "+ ", a
+ * logging LD_PRELOAD shim's timestamp/pid/basename banner, or
+ * anything else -- and none of that shape is known ahead of time.
+ * Instead of hardcoding any particular format, input_word_is_command()
+ * + input_find_command_start() locate, on a single line, the first
+ * word that (a) actually resolves to a real command and (b) is
+ * followed only by words that still look like plausible arguments
+ * (see input_word_looks_like_arg()) -- everything before that word is
+ * the decoration to strip. input_build_prefix_pattern() then turns
+ * that decoration into a reusable pattern (runs of non-space,
+ * non-punctuation collapsed to a single '*', every space/punctuation
+ * character kept literal, since those are what actually carries a
+ * decoration format's fixed shape -- brackets, colons, dashes, ...),
+ * and input_match_prefix_pattern() applies that pattern to another
+ * line to see if it independently reproduces the same split point --
+ * see input_detect_prefix_pattern() for how the two combine. */
+
+/**
+ * @brief      is_command_b(), but safe to call on a token that's a
+ *             slice of a larger buffer (e.g. straight out of an
+ *             mmap()'d file) rather than its own NUL-terminated
+ *             string. is_command_b()'s absolute-path branch ignores
+ *             the length it's given and calls path_exists() directly
+ *             on the pointer, which -- unlike its relative-path
+ *             branch, which does copy exactly `len` bytes into its
+ *             own buffer first -- means it reads until it happens to
+ *             hit a real NUL byte, not just `len` bytes in.
+ *
+ * @param[in]  x  Token (need not be its own NUL-terminated string)
+ * @param[in]  n  Length
+ */
+static bool
+input_word_is_command(const char* x, size_t n) {
+  stralloc tmp;
+  bool ret;
+
+  stralloc_init(&tmp);
+  stralloc_copyb(&tmp, x, n);
+  stralloc_nul(&tmp);
+  ret = is_command_b(tmp.s, tmp.len) != 0;
+  stralloc_free(&tmp);
+
+  return ret;
+}
+
+/**
+ * @brief      Whether a token looks like something that could plausibly
+ *             be a real command-line argument, as opposed to a stray
+ *             word from surrounding log/prose text (which is what a
+ *             day's decoration in front of the real argument list is
+ *             made of).
+ *
+ * @param[in]  x  Token
+ * @param[in]  n  Length
+ */
+static bool
+input_word_looks_like_arg(const char* x, size_t n) {
+  if(n == 2 && byte_equal(x, 2, "->"))
+    return false;
+
+  if(byte_chr(x, n, '(') < n || byte_chr(x, n, ')') < n)
+    return false;
+
+  if(n > 0 && x[n - 1] == ',')
+    return false;
+
+  /* a bare word ending in ':' ("argv:", "Note:", ...) reads as prose,
+   * not an argument -- but a flag/path that merely happens to end in
+   * ':' (e.g. "-Wl,-rpath,/some/dir:") is fine, so only reject this
+   * when the token doesn't otherwise look like one of those. */
+  if(n > 0 && x[n - 1] == ':' && x[0] != '-' && x[0] != '/')
+    return false;
+
+  return true;
+}
+
+/**
+ * @brief      Find the offset of the first token on a line that both
+ *             resolves to a real command (@see is_command_b()) and is
+ *             followed only by tokens that still look like plausible
+ *             arguments -- the start of the line's actual argument
+ *             list, with everything before it being decoration to
+ *             strip.
+ *
+ * @param[in]  x  Line (no trailing \r\n)
+ * @param[in]  n  Line length
+ *
+ * @return     Offset of the argument list, or (size_t)-1 if no token
+ *             on this line qualifies
+ */
+static size_t
+input_find_command_start(const char* x, size_t n) {
+  size_t pos = 0;
+
+  while(pos < n) {
+    size_t i, start;
+
+    if((i = scan_whitenskip_escaped(x + pos, n - pos)) == n - pos)
+      break;
+
+    pos += i;
+    start = pos;
+    i = scan_nonwhitenskip_escaped(x + pos, n - pos);
+
+    if(input_word_is_command(x + start, i)) {
+      size_t rest = start + i;
+      bool all_args = true;
+
+      while(rest < n) {
+        size_t j, wstart;
+
+        if((j = scan_whitenskip_escaped(x + rest, n - rest)) == n - rest)
+          break;
+
+        rest += j;
+        wstart = rest;
+        j = scan_nonwhitenskip_escaped(x + rest, n - rest);
+
+        if(!input_word_looks_like_arg(x + wstart, j)) {
+          all_args = false;
+          break;
+        }
+
+        rest += j;
+      }
+
+      if(all_args)
+        return start;
+    }
+
+    pos = start + i;
+  }
+
+  return (size_t)-1;
+}
+
+/**
+ * @brief      Turn a confirmed decoration prefix into a reusable
+ *             pattern: every run of characters that's neither
+ *             whitespace nor punctuation (the "variable" parts -- a
+ *             timestamp's digits, a pid, a process name, ...) becomes
+ *             a single '*'; every space/punctuation character (the
+ *             fixed shape -- brackets, colons, dashes, ...) is kept
+ *             literal.
+ *
+ * @param[in]  prefix  Decoration text (before the argument list)
+ * @param[in]  len     Length
+ * @param      out     Pattern, built fresh (not appended to)
+ */
+static void
+input_build_prefix_pattern(const char* prefix, size_t len, stralloc* out) {
+  size_t i = 0;
+
+  stralloc_zero(out);
+
+  while(i < len) {
+    unsigned char c = prefix[i];
+
+    if(isspace(c) || ispunct(c)) {
+      stralloc_catb(out, (const char*)&prefix[i], 1);
+      i++;
+    } else {
+      size_t j = i;
+
+      while(j < len && !isspace((unsigned char)prefix[j]) && !ispunct((unsigned char)prefix[j]))
+        j++;
+
+      stralloc_catb(out, "*", 1);
+      i = j;
+    }
+  }
+}
+
+/**
+ * @brief      Apply a pattern built by input_build_prefix_pattern()
+ *             to another line: walk both in lockstep, a literal
+ *             pattern byte requiring an exact match and a '*'
+ *             consuming a run of non-space/non-punctuation characters
+ *             (of any length, including zero) in the line.
+ *
+ * @param[in]  pattern  Pattern text
+ * @param[in]  plen     Pattern length
+ * @param[in]  x        Line to test
+ * @param[in]  n        Line length
+ *
+ * @return     Number of leading bytes of `x` consumed by the match, or
+ *             (size_t)-1 if the pattern doesn't match at all
+ */
+static size_t
+input_match_prefix_pattern(const char* pattern, size_t plen, const char* x, size_t n) {
+  size_t pi = 0, xi = 0;
+
+  while(pi < plen) {
+    if(pattern[pi] == '*') {
+      while(xi < n && !isspace((unsigned char)x[xi]) && !ispunct((unsigned char)x[xi]))
+        xi++;
+
+      pi++;
+    } else {
+      if(xi >= n || x[xi] != pattern[pi])
+        return (size_t)-1;
+
+      xi++;
+      pi++;
+    }
+  }
+
+  return xi;
+}
+
+typedef struct {
+  bool is_command;        /* argv[0] resolves to a real executable */
+  bool has_dash_c;        /* has a bare "-c" token (compile-only) */
+  bool has_source;        /* has a .c/.cc/.S/... source argument */
+  bool has_object_or_lib; /* has a .o/.a argument, or a "-l..." flag */
+  bool has_o_nonobj;      /* "-o NAME"/"-oNAME" where NAME isn't a .o -- a link/compile+link output */
+} line_shape_t;
+
+/**
+ * @brief      Tokenize an already-de-prefixed line the same way
+ *             input_process_line() does, and classify it as looking
+ *             like a compile command, a link command, both (a single
+ *             "cc -o prog prog.c" compile+link invocation), or
+ *             neither.
+ *
+ * @param[in]  x      Argument list (decoration already stripped)
+ * @param[in]  n      Length
+ * @param      shape  Filled in with what was found
+ */
+static void
+input_line_classify(const char* x, size_t n, line_shape_t* shape) {
+  size_t idx = 0;
+
+  byte_zero((char*)shape, sizeof(*shape));
+
+  while(n > 0) {
+    size_t i;
+
+    if((i = scan_whitenskip_escaped(x, n)) == n)
+      break;
+
+    x += i;
+    n -= i;
+
+    i = scan_nonwhitenskip_escaped(x, n);
+
+    if(idx == 0) {
+      shape->is_command = input_word_is_command(x, i);
+    } else if(i == 2 && byte_equal(x, 2, "-c")) {
+      shape->has_dash_c = 1;
+    } else if(i == 2 && byte_equal(x, 2, "-o")) {
+      size_t j = scan_whitenskip_escaped(x + i, n - i);
+      const char* name = x + i + j;
+      size_t namelen = scan_nonwhitenskip_escaped(name, n - i - j);
+
+      if(namelen && !is_object_b(name, namelen))
+        shape->has_o_nonobj = 1;
+    } else if(i > 2 && x[0] == '-' && x[1] == 'o') {
+      if(!is_object_b(x + 2, i - 2))
+        shape->has_o_nonobj = 1;
+    } else if(is_source_b(x, i)) {
+      shape->has_source = 1;
+    } else if(is_object_b(x, i) || is_lib_b(x, i) || byte_ends(x, i, ".so") || (i > 2 && x[0] == '-' && x[1] == 'l')) {
+      shape->has_object_or_lib = 1;
+    }
+
+    x += i;
+    n -= i;
+    idx++;
+  }
+}
+
+static bool
+input_line_skip_uninteresting(const char* x, size_t len) {
+  return (len > 2 && x[0] == '-' && x[1] == '-') || byte_finds(x, len, "ing directory '") < len;
+}
+
+/**
+ * @brief      Pre-read the whole --infile once to figure out, from its
+ *             own content, whether its lines carry a decoration prefix
+ *             in front of the actual argument list, and if so what
+ *             pattern that decoration follows.
+ *
+ *             The first line where input_find_command_start() finds a
+ *             split point becomes the anchor: its prefix (if any)
+ *             seeds a candidate pattern via input_build_prefix_pattern().
+ *             That candidate is trusted only once two things are both
+ *             true: (1) it independently reproduces the same split
+ *             point input_find_command_start() finds on some *other*
+ *             line (input_match_prefix_pattern()'s result equals that
+ *             line's own independently-found split), confirming the
+ *             shape actually recurs rather than being a one-off; and
+ *             (2) across the lines examined along the way, at least
+ *             one looked like a compile command and at least one
+ *             (possibly the same line) looked like a link command --
+ *             see input_line_classify(). Requiring both guards against
+ *             a single stray line (or a false command-word match
+ *             inside a genuinely clean argument list) deciding the
+ *             whole file's format.
+ *
+ * @param[in]  x    Whole file contents
+ * @param[in]  n    Length
+ * @param      out  Set to the confirmed pattern (possibly empty, if
+ *                   lines turned out to already be clean argument
+ *                   lists) when this returns true
+ *
+ * @return     true if a pattern was confirmed, false if no consistent
+ *             decoration shape could be established (out is left
+ *             untouched, callers should skip 0 bytes on every line)
+ */
+static bool
+input_detect_prefix_pattern(const char* x, size_t n, stralloc* out) {
+  const char* p = x;
+  size_t remaining = n;
+  bool have_anchor = false, validated = false, saw_compile = false, saw_link = false;
+
+  while(remaining > 0) {
+    size_t i = scan_lineskip_escaped(p, remaining);
+    size_t len = byte_trimr(p, i, "\r\n", 2);
+
+    if(len > 0 && !input_line_skip_uninteresting(p, len)) {
+      size_t split = input_find_command_start(p, len);
+
+      if(split != (size_t)-1) {
+        line_shape_t shape;
+
+        input_line_classify(p + split, len - split, &shape);
+
+        if(shape.is_command && shape.has_source)
+          saw_compile = true;
+
+        if(shape.is_command && !shape.has_dash_c && (shape.has_object_or_lib || shape.has_o_nonobj))
+          saw_link = true;
+
+        if(!have_anchor) {
+          input_build_prefix_pattern(p, split, out);
+          have_anchor = true;
+
+          if(split == 0)
+            validated = true; /* no decoration at all -- trivially consistent */
+
+        } else if(!validated) {
+          if(input_match_prefix_pattern(out->s, out->len, p, len) == split)
+            validated = true;
+        }
+
+        if(have_anchor && validated && saw_compile && saw_link)
+          return true;
+      }
+    }
+
+    p += i;
+    remaining -= i;
+  }
+
+  return false;
+}
+
 /**
  * @brief      Process commands from file
  *
@@ -1241,11 +1600,21 @@ input_process_file(const char* infile, target* all) {
   const char* x;
   size_t n, line = 1;
   int ret = 0;
+  stralloc prefix_pattern;
+  bool have_prefix_pattern;
 
   path_dirname(infile, &dirs.this.sa);
   strlist_nul(&dirs.this);
 
   if((x = mmap_read(infile, &n))) {
+    /* figure out, from the file's own content, whether its lines
+     * carry a decoration prefix in front of the actual argument list
+     * and if so what shape it follows -- then process the file for
+     * real, from the beginning, applying whatever was found
+     * consistently to every line (see input_detect_prefix_pattern()). */
+    stralloc_init(&prefix_pattern);
+    have_prefix_pattern = input_detect_prefix_pattern(x, n, &prefix_pattern);
+
     while(n > 0) {
       size_t i = scan_lineskip_escaped(x, n);
       size_t ln = byte_count(x, i, '\n');
@@ -1266,7 +1635,37 @@ input_process_file(const char* infile, target* all) {
             builddir_leave(&x[pos], len);
 
         } else if(i > 0) {
-          if((ret = input_process_line(x, byte_trimr(x, i, "\r\n", 2), infile, line)) < 0)
+          size_t len = byte_trimr(x, i, "\r\n", 2);
+          size_t skip = 0;
+
+          if(have_prefix_pattern) {
+            size_t matched = input_match_prefix_pattern(prefix_pattern.s, prefix_pattern.len, x, len);
+
+            /* the pattern's own "*"s can't split a word in half (each
+             * one always consumes a *complete* run of non-space/
+             * non-punct characters, never stops partway through one),
+             * but a line whose decoration doesn't perfectly conform
+             * to the one shape the pattern was derived from could
+             * still make it land on the wrong boundary entirely --
+             * e.g. a derived pattern ending in a bare "* * ", with no
+             * distinguishing punctuation right before the split,
+             * could keep matching past the true boundary on a
+             * differently-shaped line and eat into its real argv[].
+             * Guard against that the same way input_find_command_start()
+             * itself does: only trust the match if the word sitting
+             * right at the landing spot actually resolves to a real
+             * command -- if it doesn't, this line's decoration wasn't
+             * really this shape after all, so leave it unstripped
+             * rather than risk a silently wrong split. */
+            if(matched != (size_t)-1) {
+              size_t wlen = scan_nonwhitenskip_escaped(x + matched, len - matched);
+
+              if(wlen > 0 && input_word_is_command(x + matched, wlen))
+                skip = matched;
+            }
+          }
+
+          if((ret = input_process_line(x + skip, len - skip, infile, line)) < 0)
             break;
         }
       }
@@ -1277,6 +1676,7 @@ input_process_file(const char* infile, target* all) {
     }
 
     mmap_unmap(x, n);
+    stralloc_free(&prefix_pattern);
   }
 
   if(set_size(&common_flags)) {

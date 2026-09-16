@@ -45,32 +45,25 @@ TODO
   documenting in `--help` that `-c` is required alongside `-t
   mingw64`/`msys`/`cygwin`.
 
-- input-c-prefix-detection-needs-more-testing: `src/genmakefile/input.c`
-  has an uncommitted feature (`input_word_is_command()`,
+- input-c-prefix-detection-more-coverage: `src/genmakefile/input.c`'s
+  decoration-prefix detection (`input_word_is_command()`,
   `input_find_command_start()`, `input_build_prefix_pattern()`,
   `input_match_prefix_pattern()`, `input_line_classify()`,
-  `input_detect_prefix_pattern()`, and the `input_process_file()`
-  changes that call `input_detect_prefix_pattern()` up front and apply
-  the confirmed pattern per line) that lets a `--infile`'s lines carry
-  an arbitrary decoration prefix (shell trace markers, logging-shim
-  banners, ...) in front of the real command, detecting the
-  decoration's shape from the file's own content instead of
-  hardcoding one.
+  `input_detect_prefix_pattern()`, wired into `input_process_file()`)
+  lets a `--infile`'s lines carry an arbitrary decoration prefix (shell
+  trace markers, logging-shim banners, ...) in front of the real
+  command, detecting the decoration's shape from the file's own content
+  instead of hardcoding one. Committed after smoke-testing four
+  one-rule (`gcc -c ...` + `gcc -o ...`) `--infile` samples --
+  undecorated, a `[timestamp] pidNNNN:`-style prefix, a shell
+  `set -x`-style `+ ` prefix, and one deliberately ending in a lone
+  trailing `\` with no newline -- all producing identical generated
+  rules with no hang under a 2GB `ulimit -v`.
 
-  Smoke-tested against four one-rule (`gcc -c ...` + `gcc -o ...`)
-  `--infile` samples -- undecorated, a `[timestamp] pidNNNN:`-style
-  prefix, a shell `set -x`-style `+ ` prefix, and one deliberately
-  ending in a lone trailing `\` with no newline (the exact edge case
-  `scan_whitenskip_escaped()`/`scan_lineskip_escaped()` used to
-  mishandle, see the now-fixed off-by-one in `lib/scan/scan_whitenskip.c`
-  and `lib/scan/scan_lineskip.c`) -- all four ran to completion under a
-  2GB `ulimit -v` with no hang and produced identical generated rules,
-  confirming the decoration was stripped correctly in every case.
-
-  Still needed before committing: coverage of messier real-world
-  decoration (multi-line/wrapped log entries, decoration containing
-  characters that look like flags or paths, a file with no compile+link
-  pair at all so `input_detect_prefix_pattern()` never confirms a
-  pattern) and a look at whether `input_word_is_command()`'s
-  `is_command_b()` calls (one per token, on every line) are a
-  performance concern on large `--infile`s.
+  Still worth covering: messier real-world decoration (multi-line/
+  wrapped log entries, decoration containing characters that look like
+  flags or paths, a file with no compile+link pair at all so
+  `input_detect_prefix_pattern()` never confirms a pattern) and
+  whether `input_word_is_command()`'s `is_command_b()` calls (one per
+  token, on every line) are a performance concern on large
+  `--infile`s.
