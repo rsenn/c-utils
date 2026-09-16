@@ -243,3 +243,47 @@
   a Beschreibung contained a quoted phrase or an embedded literal newline;
   confirmed down to <0.1% (residual is truncation artifacts, not this tool)
   against live fetches after the fix.)
+
+- genmakefile-dual-root-source-path-explosion: feeding `genmakefile
+  -f infile` a large real-world `--infile` (an `exec-intercept.c` log
+  of an actual CMake build, 6066 lines/4.3MB) is severely and
+  non-deterministically slow -- most runs finish in <1s, but roughly
+  1 in 8 takes 20-60+ seconds, genuinely CPU-bound the whole time (not
+  waiting/scheduling: `user` time tracks `real` time almost exactly).
+  Confirmed independent of `src/genmakefile/input.c`'s prefix-detection
+  feature (reproduces identically on a manually-decoration-stripped
+  copy of the same log).
+
+  Caught live with gdb (SIGINT + `bt` on the hung process): the time is
+  spent in `discover_sources()` (`genmakefile.c:2080`) ->
+  `strarray_sort()` -> glibc `qsort_r`/`msort_with_tmp` ->
+  `sources_sort_callback()` (`src/genmakefile/sources.c:138`) ->
+  `path_basename()` -> `str_len()`, sorting several thousand entries
+  whose strings are absurdly long chains of `../../../../...` (debug
+  output showed dozens of near-duplicate `rule_map` entries differing
+  only in how many `../` segments they carry).
+
+  Root cause (source-level, not yet fixed): `input_process_path_b()`'s
+  absolute-path branch (`src/genmakefile/input.c`, ~line 124-133) calls
+  `path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len,
+  out)` to turn an absolute source path from the log into one relative
+  to `dirs.out`. This particular test log's build happened to reach the
+  same physical files through two different absolute-path roots to the
+  same repo (a bind-mount/symlink situation -- confirmed 5637 lines
+  reference `/mnt/data/Projects/c-utils/...` and 3294 reference
+  `/home/roman/Projects/c-utils/...` for what is on disk the same
+  tree). `dirs.out` is anchored under only one of those roots, so every
+  source path using the *other* root computes a long, ugly
+  `../`-climbing relative path instead of recognizing it as the same
+  file -- multiplying the effective source/rule count several-fold and
+  inflating average key length, which is what makes the qsort
+  comparator (already O(path length) per call) dominate. Needs either
+  canonicalizing/realpath()-resolving both the source path and
+  `dirs.out` before computing the relative path (so bind-mounts/
+  symlinked roots collapse to the same key), or detecting and merging
+  rule_map entries that resolve to the same underlying file. The
+  run-to-run non-determinism (same input, wildly different timing) is
+  not yet explained -- worth checking whether `rule_map`'s hash
+  iteration order (and therefore which of a set of equivalent long
+  paths ends up "the" entry, or how many distinct one accumulate before
+  something dedupes) is address/ASLR-sensitive.
