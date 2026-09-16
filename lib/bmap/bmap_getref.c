@@ -9,11 +9,12 @@ bmap_getref(bmap_base_t* m, const char* key) {
     next = &m->buckets[bmap_bucketidx(m, hash)];
 
     while(*next) {
-      if((*next)->hash == hash && !str_diff((char*)(*next + 1), key)) {
+      if((*next)->hash == hash && !str_diff((char*)(*next + 1), key))
         return next;
-      }
+
       next = &(*next)->next;
     }
   }
+
   return NULL;
 }

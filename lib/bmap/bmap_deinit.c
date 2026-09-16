@@ -3,8 +3,7 @@
 void
 bmap_deinit_(bmap_base_t* m) {
   bmap_node_t *next, *node;
-  int i;
-  i = m->nbuckets;
+  int i = m->nbuckets;
 
   while(i--) {
     node = m->buckets[i];
@@ -15,5 +14,6 @@ bmap_deinit_(bmap_base_t* m) {
       node = next;
     }
   }
+
   free(m->buckets);
 }

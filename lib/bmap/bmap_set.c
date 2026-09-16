@@ -13,29 +13,29 @@ bmap_newnode(const char* key, void* value, int vsize) {
 
   if(!node)
     return NULL;
+
   byte_copy(node + 1, ksize, key);
   node->hash = bmap_hash(key);
   node->value = ((char*)(node + 1)) + voffset;
   byte_copy(node->value, vsize, value);
+
   return node;
 }
 
 static void
 bmap_addnode(bmap_base_t* m, bmap_node_t* node) {
   int n = bmap_bucketidx(m, node->hash);
+
   node->next = m->buckets[n];
   m->buckets[n] = node;
 }
 
 static int
 bmap_resize(bmap_base_t* m, int nbuckets) {
-  bmap_node_t *nodes, *node, *next;
-  bmap_node_t** buckets;
-  int i;
-  /* Chain all nodes together */
-  nodes = NULL;
-  i = m->nbuckets;
+  bmap_node_t *nodes = NULL, *node, *next, **buckets;
+  int i = m->nbuckets;
 
+  /* Chain all nodes together */
   while(i--) {
     node = (m->buckets)[i];
 
@@ -46,6 +46,7 @@ bmap_resize(bmap_base_t* m, int nbuckets) {
       node = next;
     }
   }
+
   /* Reset buckets */
   buckets = m->buckets;
   alloc_re(&buckets, sizeof(*m->buckets) * m->nbuckets, sizeof(*m->buckets) * nbuckets);
@@ -66,6 +67,7 @@ bmap_resize(bmap_base_t* m, int nbuckets) {
       node = next;
     }
   }
+
   /* Return error code if alloc_re() failed */
   return (buckets == NULL) ? -1 : 0;
 }
@@ -73,14 +75,15 @@ bmap_resize(bmap_base_t* m, int nbuckets) {
 int
 bmap_set_(bmap_base_t* m, const char* key, void* value, int vsize) {
   int n, err;
-  bmap_node_t **next, *node;
+
   /* Find & replace existing node */
-  next = bmap_getref(m, key);
+  bmap_node_t *node, **next = bmap_getref(m, key);
 
   if(next) {
     byte_copy((*next)->value, vsize, value);
     return 0;
   }
+
   /* Add new node */
   node = bmap_newnode(key, value, vsize);
 
@@ -94,9 +97,11 @@ bmap_set_(bmap_base_t* m, const char* key, void* value, int vsize) {
     if(err)
       goto fail;
   }
+
   bmap_addnode(m, node);
   m->nnodes++;
   return 0;
+
 fail:
 
   if(node)
