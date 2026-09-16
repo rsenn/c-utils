@@ -571,8 +571,7 @@ process_loop(fd_type serial_fd, int64 timeout) {
             buffer_puts(buffer_2, "Queued ");
             buffer_putulong(buffer_2, bytes);
             buffer_puts(buffer_2,
-                        " bytes to "
-                        "serial port");
+                        " bytes to serial port");
             buffer_putnlflush(buffer_2);
           }
         }
@@ -602,8 +601,7 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --baud, -b RATE                   baud rate\n");
   buffer_puts(buffer_1, "  --send, -i FILE                   send file\n");
   buffer_puts(buffer_1,
-              "  --debug                           show verbose debug "
-              "information\n");
+              "  --debug                           show verbose debug information\n");
   buffer_putnlflush(buffer_1);
 }
 
@@ -672,8 +670,7 @@ main(int argc, char* argv[]) {
 
       default:
         buffer_puts(buffer_2,
-                    "WARNING: Invalid "
-                    "argument -");
+                    "WARNING: Invalid argument -");
         buffer_putc(buffer_2, isprint(c) ? c : '?');
         buffer_putm_internal(buffer_2, " '", unix_optarg ? unix_optarg : argv[unix_optind], "'", NULL);
         buffer_putnlflush(buffer_2);

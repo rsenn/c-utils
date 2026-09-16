@@ -1270,8 +1270,7 @@ void
 server_connection_count() {
 #ifdef USE_SYSTEMD
   sd_notifyf(0,
-             "STATUS=Ready. %d "
-             "connections processed.\n",
+             "STATUS=Ready. %d connections processed.\n",
              connections_processed);
 #endif
 }

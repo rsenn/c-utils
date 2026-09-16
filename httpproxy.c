@@ -165,8 +165,7 @@ main(int argc, char* argv[]) {
 
   if(!lookup_hosts(&host, &ips)) {
     if(dns_ip4(&ips, &host) == -1) {
-      errmsg_warnsys("unable to find "
-                     "IP address for ",
+      errmsg_warnsys("unable to find IP address for ",
                      argv[unix_optind],
                      0);
       return 111;
@@ -271,8 +270,7 @@ main(int argc, char* argv[]) {
     } else {
       if(verbose)
         buffer_putsflush(buffer_2,
-                         "error: select: sock not "
-                         "set\n");
+                         "error: select: sock not set\n");
       return 3;
     }
   }

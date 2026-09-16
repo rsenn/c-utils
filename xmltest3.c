@@ -96,8 +96,7 @@ create_xml_document() {
 
   xml_child_element_text("makeCustomizationPreStepEnabled", make_customization_type, "false");
   xml_child_element("makeCustomizationPreStep", make_customization_type);
-  xml_child_element_text("makeCustomizationPostStepEnable"
-                         "d",
+  xml_child_element_text("makeCustomizationPostStepEnabled",
                          make_customization_type,
                          "false");
   xml_child_element("makeCustomizationPostStep", make_customization_type);
@@ -118,11 +117,7 @@ create_xml_document() {
                           "key",
                           "define-macros",
                           "value",
-                          "__18f2550=1;XTAL_FREQ=20000000;"
-                          "UART_BAUD=38400;USE_TIMER0=1;"
-                          "USE_TIMER1=1;USE_TIMER2=1;USE_"
-                          "SOFTPWM=1;USE_SOFTSER=1;HAVE_"
-                          "COMPARATOR=1",
+                          "__18f2550=1;XTAL_FREQ=20000000;UART_BAUD=38400;USE_TIMER0=1;USE_TIMER1=1;USE_TIMER2=1;USE_SOFTPWM=1;USE_SOFTSER=1;HAVE_COMPARATOR=1",
                           0);
   xml_child_element_attrs("property", hitechcomp, "key", "disable-optimizations", "value", "false", 0);
   xml_child_element_attrs("property",
@@ -130,8 +125,7 @@ create_xml_document() {
                           "key",
                           "extra-include-directories",
                           "value",
-                          "../../..;../../../lib;../../../"
-                          "src",
+                          "../../..;../../../lib;../../../src",
                           0);
   xml_child_element_attrs("property", hitechcomp, "key", "favor-optimization-for", "value", "-speed,+space", 0);
   xml_child_element_attrs("property", hitechcomp, "key", "garbage-collect-data", "value", "true", 0);

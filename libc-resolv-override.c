@@ -500,8 +500,7 @@ dns_init() {
 
   for(i = 0; byte_diff(ns + i,
                        16,
-                       "\0\0\0\0\0\0\0\0\0\0\0"
-                       "\0\0\0\0\0");
+                       "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
       i += 16) {
     b[fmt_ip6(b, ns + i)] = '\0';
     errmsg_info("nameserver: ", b, 0);
@@ -525,8 +524,7 @@ main(int argc, char* argv[]) {
     }
 
     if(dns_ip4(&out, &fqdn) == -1) {
-      errmsg_warnsys("unable to find "
-                     "IP address for ",
+      errmsg_warnsys("unable to find IP address for ",
                      *argv,
                      0);
       return 111;
@@ -560,8 +558,7 @@ resolve_ip6(const char* name, int* nptr) {
   }
 
   if(dns_ip6(&out, &fqdn) == -1) {
-    errmsg_warnsys("unable to find IP "
-                   "address for ",
+    errmsg_warnsys("unable to find IP address for ",
                    name,
                    0);
     return 0;

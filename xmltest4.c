@@ -79,8 +79,7 @@ static void
 xml_print_tree(xmlnode* node, buffer* b) {
   if(node->type == XML_DOCUMENT) {
     buffer_puts(b,
-                "<?xml version=\"1.0\" "
-                "encoding=\"utf-8\"?>\n");
+                "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     node = node->children;
   }
 
@@ -96,9 +95,7 @@ main(int argc, char* argv[]) {
   size_t i = 0;
 
   if(!argv[1]) {
-    argv[1] = "C:"
-              "\\Users\\roman\\Desktop"
-              "\\dirlist\\pelist.cbp";
+    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
   }
 
   buffer_mmapprivate(&input, argv[1]);

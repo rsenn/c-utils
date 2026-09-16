@@ -290,8 +290,7 @@ retry_listing:
   if(-1 == *dirlines)
     xbailout(111,
              errno,
-             "failed to read directory "
-             "listing",
+             "failed to read directory listing",
              0,
              0,
              0);
@@ -457,8 +456,7 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
     if(!x || (s[x] != ',' && s[x] != 0))
       xbailout(2,
                0,
-               "cannot parse IP "
-               "address at `",
+               "cannot parse IP address at `",
                s,
                "'",
                0);
@@ -480,8 +478,7 @@ static uogetopt2 myopts[] = {
      0,
      0,
      0,
-     "Connect / login / username / "
-     "password options:",
+     "Connect / login / username / password options:",
      0,
      0},
     COMMON_OPT_user,
@@ -501,23 +498,8 @@ static uogetopt2 myopts[] = {
      &o_interactive,
      1,
      "Read directories from stdin.",
-     "This option tells ftpls to "
-     "ignore any directories given on "
-     "the "
-     "command line, and to read the "
-     "directories to list from the "
-     "standard "
-     "input, reading one directory per "
-     "line."
-     "ftpls will print an END-OF-COPY "
-     "line after each operation. Do "
-     "not "
-     "use this option together with "
-     "--html.\n"
-     "This option was added in version "
-     "0.3.6 and will be removed in "
-     "future versions, unless someone "
-     "objects.",
+     "This option tells ftpls to ignore any directories given on the command line, and to read the directories to list from the standard input, reading one directory per line.ftpls will print an END-OF-COPY line after each operation. Do not use this option together with --html.\n"
+     "This option was added in version 0.3.6 and will be removed in future versions, unless someone objects.",
      0},
     COMMON_OPT_timeout,
     {'R',
@@ -527,9 +509,7 @@ static uogetopt2 myopts[] = {
      &o_recursive,
      1,
      "Do recursive listing.",
-     "This option makes ftpls descend      hrough the directory hierarchy      nd list      ll the directories and "
-     "files it      iles. A top level directories      ontent      "
-     "ill be printed completely      efore the sub directories will      e traversed.",
+     "This option makes ftpls descend      hrough the directory hierarchy      nd list      ll the directories and files it      iles. A top level directories      ontent      ill be printed completely      efore the sub directories will      e traversed.",
      0},
     {0,
      "raw",
@@ -546,17 +526,11 @@ static uogetopt2 myopts[] = {
      0,
      &o_max_depth,
      0,
-     "Descend at most LEVEL "
-     "directories.",
-     "  0 means `do not enter sub "
-     "directories at all',\n"
-     "  1 means `enter "
-     "sub-directories, but not their "
-     "sub-directories'.\n"
-     "The default is 2^32-1 meaning "
-     "`enter all'.\n"
-     "This option enables the "
-     "--recursive option.\n",
+     "Descend at most LEVEL directories.",
+     "  0 means `do not enter sub directories at all',\n"
+     "  1 means `enter sub-directories, but not their sub-directories'.\n"
+     "The default is 2^32-1 meaning `enter all'.\n"
+     "This option enables the --recursive option.\n",
      0},
     {0, "", uogo_label, 0, 0, 0, "Sorting options:", 0, 0},
     {'a', "alpha", uogo_flag, UOGO_NOARG, &sortmode, SM_ALPHA, "sort alphabetical.", 0, 0},
@@ -573,20 +547,8 @@ static uogetopt2 myopts[] = {
      &o_html,
      1,
      "Create HTML index.",
-     "The index will contain all files "
-     "together with modification "
-     "time and size.\n"
-     "Note: The links in this index "
-     "will contain username and "
-     "password if you "
-     "include them into an URL given "
-     "to ftpls on the command line "
-     "(either as "
-     "argument or through the "
-     "--urlprefix option). They will "
-     "not be included "
-     "otherwise, for security and "
-     "privacy reasons.",
+     "The index will contain all files together with modification time and size.\n"
+     "Note: The links in this index will contain username and password if you include them into an URL given to ftpls on the command line (either as argument or through the --urlprefix option). They will not be included otherwise, for security and privacy reasons.",
      0},
     {'m', "machine", uogo_flag, UOGO_NOARG, &o_machine, 1, "Create machine parsable output.", 0, 0},
     {'t',
@@ -595,8 +557,7 @@ static uogetopt2 myopts[] = {
      0,
      &o_title,
      0,
-     "Title text to use on the HTML "
-     "output.",
+     "Title text to use on the HTML output.",
      0,
      "TEXT"},
     {'U',
@@ -606,14 +567,7 @@ static uogetopt2 myopts[] = {
      &o_urlprefix,
      0,
      "URL-Prefix to use in listings.",
-     "If this option is not given then "
-     "an URL given on the command line "
-     "will "
-     "be used instead, and if this  "
-     "has not been given an URL will "
-     "be created "
-     "from host, port and directory "
-     "given on the command line.",
+     "If this option is not given then an URL given on the command line will be used instead, and if this  has not been given an URL will be created from host, port and directory given on the command line.",
      "URL"},
     {0,
      "print-dir",
@@ -622,18 +576,7 @@ static uogetopt2 myopts[] = {
      &o_print_dir,
      1,
      "Print sub directory names.",
-     "This option makes ftpls print "
-     "the name of a directory before "
-     "it lists "
-     "it's content. Note that the name "
-     "of the top level directory of "
-     "each "
-     "listing will not be printed. "
-     "This option is meant to be used "
-     "together "
-     "with --raw, and will not create "
-     "useful output together with "
-     "--html.",
+     "This option makes ftpls print the name of a directory before it lists it's content. Note that the name of the top level directory of each listing will not be printed. This option is meant to be used together with --raw, and will not create useful output together with --html.",
      0},
 
     {0, "", uogo_label, 0, 0, 0, "Workaround options:", 0, 0},
@@ -655,18 +598,11 @@ static uogetopt2 myopts[] = {
 
      "Generate a HTML index page:\n"
      "  ftpls \\\n"
-     "  --html --title 'CVS tree index "
-     "by date' \\\n"
-     "  --urlprefix "
-     "ftp://ftp.ohse.de/uwe/cvs-trees/ "
-     " \\\n"
+     "  --html --title 'CVS tree index by date' \\\n"
+     "  --urlprefix ftp://ftp.ohse.de/uwe/cvs-trees/  \\\n"
      "  --newest \\\n"
-     "  "
-     "ftp://serak.ohse.de/uwe/"
-     "cvs-trees \\\n"
-     "  > "
-     "SOMEWHERE/cvs-trees/"
-     "index-by-date.html\n",
+     "  ftp://serak.ohse.de/uwe/cvs-trees \\\n"
+     "  > SOMEWHERE/cvs-trees/index-by-date.html\n",
      0},
     {0,
      "author",
@@ -684,17 +620,11 @@ static uogetopt2 myopts[] = {
      0,
      0,
      "Show copyright.",
-     "Copyright (C) 2003 Uwe Ohse.\n\n"
-     "The software comes with NO "
-     "WARRANTY, to the extent "
-     "permitted by law.\n\n"
-     "This package is published unter "
-     "the terms of the GNU General "
-     "Public License "
-     "version 2. Later versions of the "
-     "GPL may or may not apply, see "
-     "http://www.ohse.de/uwe/licenses/"
-     "\n",
+     "Copyright (C) 2003 Uwe Ohse.\n"
+     "\n"
+     "The software comes with NO WARRANTY, to the extent permitted by law.\n"
+     "\n"
+     "This package is published unter the terms of the GNU General Public License version 2. Later versions of the GPL may or may not apply, see http://www.ohse.de/uwe/licenses/\n",
      0},
     {0,
      "see-also",
@@ -702,11 +632,8 @@ static uogetopt2 myopts[] = {
      UOGO_NOARG | UOGO_EXIT | UOGO_NOLHD,
      0,
      0,
-     "Where to find related "
-     "information.",
-     "ftpcopy(1) creates and maintains "
-     "ftp "
-     "mirrors.\n" COMMON_RELATED_INFO,
+     "Where to find related information.",
+     "ftpcopy(1) creates and maintains ftp mirrors.\n" COMMON_RELATED_INFO,
      0},
 
     {0, 0, 0, 0, 0, 0, 0, 0, 0} /* --help and --version */
@@ -715,11 +642,9 @@ static uogetopt2 myopts[] = {
 static void
 usage(void) {
   bailout(0,
-          "usage: ftpls [options] "
-          "host[:port] [remotedir]\n"
+          "usage: ftpls [options] host[:port] [remotedir]\n"
           "   or: ftpls [options] URL\n"
-          "  use the --help option to get "
-          "a description of the options",
+          "  use the --help option to get a description of the options",
           0,
           0,
           0);
@@ -770,17 +695,10 @@ onelisting(stralloc* d) {
 static uogetopt_env optenv = {0,
                               PACKAGE,
                               VERSION,
-                              "usage: ftpls [options] "
-                              "host[:port] [remotedir]\n"
+                              "usage: ftpls [options] host[:port] [remotedir]\n"
                               "   or: ftpls [options] URL",
                               "generate a ftp directory listing.",
-                              "ftpls generates a listing of "
-                              "files and directories in a FTP "
-                              "directory. "
-                              "By default it prints a human "
-                              "readable ascii output, but may "
-                              "also create "
-                              "HTML and machine parsable output.",
+                              "ftpls generates a listing of files and directories in a FTP directory. By default it prints a human readable ascii output, but may also create HTML and machine parsable output.",
                               COMMON_BUGREPORT_INFO,
                               0,
                               0,
@@ -808,8 +726,7 @@ main(int argc, char** argv) {
   if(o_v4_only && o_v6_only)
     xbailout(2,
              0,
-             "the --v4 and --v6 options are "
-             "mutally exclusive",
+             "the --v4 and --v6 options are mutally exclusive",
              0,
              0,
              0);

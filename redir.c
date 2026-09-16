@@ -149,100 +149,51 @@ static int
 usage(const char* prognm, int code) {
   fprintf(stdout,
           "\n"
-          "Usage: %s [-hinspv] [-b IP] "
-          " [-f TYPE] [-I NAME] [-l "
-          "LEVEL] [-t SEC]\n"
-          "                       [-x "
-          "STR] [-m BPS] [-o FLAG] [-w "
-          "MSEC] [-z BYTES]\n"
-          "                       "
-          "[SRC]:PORT [DST]:PORT\n",
+          "Usage: %s [-hinspv] [-b IP]  [-f TYPE] [-I NAME] [-l LEVEL] [-t SEC]\n"
+          "                       [-x STR] [-m BPS] [-o FLAG] [-w MSEC] [-z BYTES]\n"
+          "                       [SRC]:PORT [DST]:PORT\n",
           prognm);
   fprintf(stdout,
           "\n"
           "Options:\n"
-          " -b, --bind=IP            Force "
-          "specific IP to bind() to when "
-          "listening for\n"
-          "                          "
-          "incoming connections.  Not "
-          "applicable with -p\n"
+          " -b, --bind=IP            Force specific IP to bind() to when listening for\n"
+          "                          incoming connections.  Not applicable with -p\n"
 #ifndef NO_FTP
-          " -f, --ftp=TYPE           "
-          "Redirect FTP connections.  "
-          "Where type is\n"
-          "                          one "
-          "of: 'port', 'pasv', or 'both'\n"
+          " -f, --ftp=TYPE           Redirect FTP connections.  Where type is\n"
+          "                          one of: 'port', 'pasv', or 'both'\n"
 #endif
-          " -h, --help               Show "
-          "this help text\n"
-          " -i, --inetd              Run "
-          "from inetd, SRC:PORT comes from "
-          "stdin\n"
-          "                          "
-          "Usage: %s [OPTIONS] [DST]:PORT\n"
-          " -I, --ident=NAME         "
-          "Identity, tag syslog messages "
-          "with NAME\n"
+          " -h, --help               Show this help text\n"
+          " -i, --inetd              Run from inetd, SRC:PORT comes from stdin\n"
+          "                          Usage: %s [OPTIONS] [DST]:PORT\n"
+          " -I, --ident=NAME         Identity, tag syslog messages with NAME\n"
 #ifdef USE_TCP_WRAPPERS
-          "                          Also "
-          "used as service name for TCP "
-          "wrappers\n"
+          "                          Also used as service name for TCP wrappers\n"
 #endif
-          " -l, --loglevel=LEVEL     Set "
-          "log level: none, err, notice*, "
-          "info, debug\n"
-          " -n, --foreground         Run "
-          "in foreground, do not detach "
-          "from terminal\n"
-          " -p, --transproxy         Run "
-          "in Linux's transparent proxy "
-          "mode\n"
-          " -s, --syslog             Log "
-          "messages to syslog\n"
-          " -t, --timeout=SEC        Set "
-          "timeout to SEC seconds, default "
-          "off (0)\n"
-          " -v, --version            Show "
-          "program version\n"
-          " -x, --connect=STR        "
-          "CONNECT string passed to proxy "
-          "server\n"
+          " -l, --loglevel=LEVEL     Set log level: none, err, notice*, info, debug\n"
+          " -n, --foreground         Run in foreground, do not detach from terminal\n"
+          " -p, --transproxy         Run in Linux's transparent proxy mode\n"
+          " -s, --syslog             Log messages to syslog\n"
+          " -t, --timeout=SEC        Set timeout to SEC seconds, default off (0)\n"
+          " -v, --version            Show program version\n"
+          " -x, --connect=STR        CONNECT string passed to proxy server\n"
 #ifdef COMPAT_OPTIONS
           "\n"
           "Compatibility options:\n"
-          "     --lport=PORT         Local "
-          "port (when not running from "
-          "inetd)\n"
-          "     --laddr=ADDRESS      Local "
-          "address (when not running from "
-          "inetd)\n"
-          "     --cport=PORT         "
-          "Remote port to redirect traffic "
-          "to\n"
-          "     --caddr=ADDRESS      "
-          "Remote address to redirect "
-          "traffic to\n"
+          "     --lport=PORT         Local port (when not running from inetd)\n"
+          "     --laddr=ADDRESS      Local address (when not running from inetd)\n"
+          "     --cport=PORT         Remote port to redirect traffic to\n"
+          "     --caddr=ADDRESS      Remote address to redirect traffic to\n"
 #endif
 #ifndef NO_SHAPER
           "\n"
           "Traffic Shaping:\n"
-          " -m, --max-bandwidth=BPS  Limit "
-          "the bandwidth to BPS "
-          "bits/second\n"
-          " -o, --wait-in-out=FLAG   Wait "
-          "for in(1), out(2), or "
-          "in&out(3)\n"
-          " -w, --random-wait=MSEC   Wait "
-          "MSEC milliseconds before each "
-          "packet\n"
-          " -z, --bufsize=BYTES      Size "
-          "of the traffic shaping buffer\n"
+          " -m, --max-bandwidth=BPS  Limit the bandwidth to BPS bits/second\n"
+          " -o, --wait-in-out=FLAG   Wait for in(1), out(2), or in&out(3)\n"
+          " -w, --random-wait=MSEC   Wait MSEC milliseconds before each packet\n"
+          " -z, --bufsize=BYTES      Size of the traffic shaping buffer\n"
 #endif
           "\n"
-          "SRC and DST are optional, %s "
-          "will revert to use 0.0.0.0 "
-          "(ANY)\n"
+          "SRC and DST are optional, %s will revert to use 0.0.0.0 (ANY)\n"
           "\n",
           prognm,
           prognm);
@@ -612,8 +563,7 @@ ftp_clean(int send, char* buf, ssize_t* bytes, int ftpsrv) {
     /* send the new port and ipaddress
      * to the client */
     (*bytes) = sprintf(buf,
-                       "227 Entering Passive Mode "
-                       "(%d,%d,%d,%d,%d,%d)\n",
+                       "227 Entering Passive Mode (%d,%d,%d,%d,%d,%d)\n",
                        sockname.sin_addr.s_addr & 0xff,
                        (sockname.sin_addr.s_addr >> 8) & 0xff,
                        (sockname.sin_addr.s_addr >> 16) & 0xff,

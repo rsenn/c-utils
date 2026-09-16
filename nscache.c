@@ -652,8 +652,7 @@ main(int argc, char* argv[]) {
   if(udp53 == -1)
     diesys(111,
            FATAL,
-           "unable to create UDP "
-           "socket: ");
+           "unable to create UDP socket: ");
 
   if(socket_bind6_reuse(udp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind UDP socket: ");
@@ -665,8 +664,7 @@ main(int argc, char* argv[]) {
   if(tcp53 == -1)
     diesys(111,
            FATAL,
-           "unable to create TCP "
-           "socket: ");
+           "unable to create TCP socket: ");
 
   if(socket_bind6_reuse(tcp53, bindaddr, 53, bindscope) == -1)
     diesys(111, FATAL, "unable to bind TCP socket: ");
@@ -704,8 +702,7 @@ main(int argc, char* argv[]) {
     if(!cache_init(cachesize))
       die(111,
           FATAL,
-          "not enough memory for cache "
-          "of size ",
+          "not enough memory for cache of size ",
           x);
   }
 
@@ -721,8 +718,7 @@ main(int argc, char* argv[]) {
   if(socket_listen(tcp53, 20) == -1)
     diesys(111,
            FATAL,
-           "unable to listen on TCP "
-           "socket: ");
+           "unable to listen on TCP socket: ");
 
   log_startup();
   nscache_run();

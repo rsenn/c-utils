@@ -174,8 +174,7 @@ xml_dump(xmlnode* n, buffer* b, const char* parent, int depth) {
           } else {
           }
           buffer_puts(b,
-                      "->attributes = "
-                      "xml_attributes(");
+                      "->attributes = xml_attributes(");
           i = 0;
           hmap_foreach(n->attributes, t) {
             if(1)

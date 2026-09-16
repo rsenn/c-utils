@@ -13,8 +13,7 @@ xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../..
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/oscillator.h");
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/ser.h");
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/typedef.h");
-xml_child_element("itemPath", logical_folder)->children = xml_textnode("/home/roman/Dokumente/Sources/"
-                                                                       "lc-meter/lib/delay.h");
+xml_child_element("itemPath", logical_folder)->children = xml_textnode("/home/roman/Dokumente/Sources/lc-meter/lib/delay.h");
 logical_fo1 = xml_child_element("logicalFolder", logical_folder) logical_fo1->attributes =
     xml_attributes("name", "LinkerScript", "displayName", "Linker Files", "projectFiles", "true", 0);
 logical_fo1 = xml_child_element("logicalFolder", logical_folder) logical_fo1->attributes =
@@ -22,8 +21,7 @@ logical_fo1 = xml_child_element("logicalFolder", logical_folder) logical_fo1->at
 logical_folder = xml_child_element("logicalFolder", logical_fo1) logical_folder->attributes =
     xml_attributes("name", "f1", "displayName", "lib", "projectFiles", "true", 0);
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/buffer.c");
-xml_child_element("itemPath", logical_folder)->children = xml_textnode("/home/roman/Dokumente/Sources/"
-                                                                       "lc-meter/lib/delay.c");
+xml_child_element("itemPath", logical_folder)->children = xml_textnode("/home/roman/Dokumente/Sources/lc-meter/lib/delay.c");
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/lcd44780.c");
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/ser.c");
 xml_child_element("itemPath", logical_folder)->children = xml_textnode("../../../lib/timer.c");
@@ -47,8 +45,7 @@ xmlnode* tools_set = xml_child_element("toolsSet", conf) xml_child_element("deve
 xml_child_element("targetDevice", tools_set)->children = xml_textnode("PIC18F2550");
 xmlnode* target_header = xml_child_element("targetHeader", tools_set) xmlnode* target_plugin_board =
     xml_child_element("targetPluginBoard", tools_set) xml_child_element("platformTool", tools_set)->children =
-        xml_textnode("PICkit3PlatformToo"
-                     "l");
+        xml_textnode("PICkit3PlatformTool");
 xml_child_element("languageToolchain", tools_set)->children = xml_textnode("XC8");
 xml_child_element("languageToolchainVersion", tools_set)->children = xml_textnode("1.45");
 xml_child_element("platform", tools_set)->children = xml_textnode("2");
@@ -58,29 +55,22 @@ xmlnode* compile_type = xml_child_element("compileType", conf) xmlnode* linker_t
     xml_child_element("linkerTool", compile_type) xmlnode* linker_lib_items =
         xml_child_element("linkerLibItems", linker_tool) xmlnode* archiver_tool =
             xml_child_element("archiverTool", compile_type) xmlnode* loading =
-                xml_child_element("loading", compile_type) xml_child_element("useAlterna"
-                                                                             "teLoadable"
-                                                                             "File",
+                xml_child_element("loading", compile_type) xml_child_element("useAlternateLoadableFile",
                                                                              loading)
                     ->children = xml_textnode("false");
 xml_child_element("parseOnProdLoad", loading)->children = xml_textnode("false");
 xmlnode* alternate_loadable_file = xml_child_element("alternateLoadableFile", loading) xmlnode* subordinates =
     xml_child_element("subordinates", compile_type) xmlnode* make_customization_type =
-        xml_child_element("makeCustomizationT"
-                          "ype",
-                          conf) xml_child_element("makeCustomizat"
-                                                  "ionPreStepEnab"
-                                                  "led",
+        xml_child_element("makeCustomizationType",
+                          conf) xml_child_element("makeCustomizationPreStepEnabled",
                                                   make_customization_type)
             ->children = xml_textnode("false");
 xmlnode* make_customization_pre_step = xml_child_element("makeCustomizationPreStep", make_customization_type)
-                                           xml_child_element("makeCustomizationPostStepE"
-                                                             "nabled",
+                                           xml_child_element("makeCustomizationPostStepEnabled",
                                                              make_customization_type)
                                                ->children = xml_textnode("false");
 xmlnode* make_customization_post_step = xml_child_element("makeCustomizationPostStep", make_customization_type)
-                                            xml_child_element("makeCustomizationPutChecks"
-                                                              "umInUserID",
+                                            xml_child_element("makeCustomizationPutChecksumInUserID",
                                                               make_customization_type)
                                                 ->children = xml_textnode("false");
 xml_child_element("makeCustomizationEnableLongLines", make_customization_type)->children = xml_textnode("false");
@@ -98,11 +88,7 @@ property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key",
                    "define-macros",
                    "value",
-                   "__XC=1;__18f2550=1;USE_SER=1;"
-                   "USE_HD44780_LCD=1;_XTAL_FREQ="
-                   "20000000;BAUD_RATE="
-                   "38400;USE_TIMER0=1;"
-                   "MCHP_XC8=1;NDEBUG=1",
+                   "__XC=1;__18f2550=1;USE_SER=1;USE_HD44780_LCD=1;_XTAL_FREQ=20000000;BAUD_RATE=38400;USE_TIMER0=1;MCHP_XC8=1;NDEBUG=1",
                    0);
 property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key", "disable-optimizations", "value", "false", 0);
@@ -110,8 +96,7 @@ property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key",
                    "extra-include-directories",
                    "value",
-                   "../../../src;../../../lib;../"
-                   "../..",
+                   "../../../src;../../../lib;../../..",
                    0);
 property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key", "favor-optimization-for", "value", "-speed,+space", 0);
@@ -167,30 +152,26 @@ xmlnode* hitechlink = xml_child_element("HI-TECH-LINK", conf) property =
     xml_child_element("property", hitechlink) property->attributes =
         xml_attributes("key", "additional-options-checksum", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "code-offset",
+                                                                                           "additional-options-code-offset",
                                                                                            "value",
                                                                                            "",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "command-line",
+                                                                                           "additional-options-command-line",
                                                                                            "value",
                                                                                            "",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "additional-options-errata", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "extend-address",
+                                                                                           "additional-options-extend-address",
                                                                                            "value",
                                                                                            "false",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "additional-options-trace-type", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "use-response-files",
+                                                                                           "additional-options-use-response-files",
                                                                                            "value",
                                                                                            "false",
                                                                                            0);
@@ -265,8 +246,7 @@ property = xml_child_element("property", hitechlink) property->attributes =
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "opt-xc8-linker-serial", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "program-the-device-with-"
-                                                                                           "default-config-words",
+                                                                                           "program-the-device-with-default-config-words",
                                                                                            "value",
                                                                                            "true",
                                                                                            0);
@@ -279,8 +259,7 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "Freeze Peripherals", "value", "true", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "SecureSegment."
-                   "SegmentProgramming",
+                   "SecureSegment.SegmentProgramming",
                    "value",
                    "FullChipProgramming",
                    0);
@@ -288,13 +267,11 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key",
                    "ToolFirmwareFilePath",
                    "value",
-                   "Press to browse for a "
-                   "specific firmware version",
+                   "Press to browse for a specific firmware version",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "ToolFirmwareOption."
-                   "UseLatestFirmware",
+                   "ToolFirmwareOption.UseLatestFirmware",
                    "value",
                    "true",
                    0);
@@ -322,11 +299,9 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "memories.instruction.ram", "value", "true", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "memories.instruction.ram."
-                   "ranges",
+                   "memories.instruction.ram.ranges",
                    "value",
-                   "${memories.instruction.ram."
-                   "ranges}",
+                   "${memories.instruction.ram.ranges}",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "memories.programmemory", "value", "true", 0);
@@ -337,8 +312,7 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "programmertogo.imagename", "value", "", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes = xml_attributes("key",
-                                                                                                     "programoptions."
-                                                                                                     "donoteraseauxmem",
+                                                                                                     "programoptions.donoteraseauxmem",
                                                                                                      "value",
                                                                                                      "false",
                                                                                                      0);
@@ -348,39 +322,33 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "programoptions.pgmspeed", "value", "2", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preservedataflash",
+                   "programoptions.preservedataflash",
                    "value",
                    "false",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preservedataflash.ranges",
+                   "programoptions.preservedataflash.ranges",
                    "value",
-                   "${programoptions."
-                   "preservedataflash.ranges}",
+                   "${programoptions.preservedataflash.ranges}",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "programoptions.preserveeeprom", "value", "false", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions.preserveeeprom."
-                   "ranges",
+                   "programoptions.preserveeeprom.ranges",
                    "value",
                    "0-ff",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preserveprogram.ranges",
+                   "programoptions.preserveprogram.ranges",
                    "value",
                    "",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preserveprogramrange",
+                   "programoptions.preserveprogramrange",
                    "value",
                    "false",
                    0);
@@ -392,22 +360,19 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "programoptions.programuserotp", "value", "false", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "testmodeentrymethod",
+                   "programoptions.testmodeentrymethod",
                    "value",
                    "VDDFirst",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "usehighvoltageonmclr",
+                   "programoptions.usehighvoltageonmclr",
                    "value",
                    "false",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "uselvpprogramming",
+                   "programoptions.uselvpprogramming",
                    "value",
                    "false",
                    0);
@@ -454,25 +419,21 @@ packs = xml_child_element("packs", conf) pack = xml_child_element("pack", packs)
 compile_type = xml_child_element("compileType", conf) linker_tool = xml_child_element("linkerTool", compile_type)
     linker_lib_items = xml_child_element("linkerLibItems", linker_tool) archiver_tool =
         xml_child_element("archiverTool", compile_type) loading =
-            xml_child_element("loading", compile_type) xml_child_element("useAlternateLo"
-                                                                         "adableFile",
+            xml_child_element("loading", compile_type) xml_child_element("useAlternateLoadableFile",
                                                                          loading)
                 ->children = xml_textnode("false");
 xml_child_element("parseOnProdLoad", loading)->children = xml_textnode("false");
 alternate_loadable_file = xml_child_element("alternateLoadableFile", loading) subordinates =
     xml_child_element("subordinates", compile_type) make_customization_type =
-        xml_child_element("makeCustomizationType", conf) xml_child_element("makeCustomizationP"
-                                                                           "reStepEnabled",
+        xml_child_element("makeCustomizationType", conf) xml_child_element("makeCustomizationPreStepEnabled",
                                                                            make_customization_type)
             ->children = xml_textnode("false");
 make_customization_pre_step = xml_child_element("makeCustomizationPreStep", make_customization_type)
-                                  xml_child_element("makeCustomizationPostStepE"
-                                                    "nabled",
+                                  xml_child_element("makeCustomizationPostStepEnabled",
                                                     make_customization_type)
                                       ->children = xml_textnode("false");
 make_customization_post_step = xml_child_element("makeCustomizationPostStep", make_customization_type)
-                                   xml_child_element("makeCustomizationPutChecks"
-                                                     "umInUserID",
+                                   xml_child_element("makeCustomizationPutChecksumInUserID",
                                                      make_customization_type)
                                        ->children = xml_textnode("false");
 xml_child_element("makeCustomizationEnableLongLines", make_customization_type)->children = xml_textnode("false");
@@ -490,12 +451,7 @@ property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key",
                    "define-macros",
                    "value",
-                   "__XC=1;__18f2550=1;USE_TIMER1="
-                   "1;USE_TIMER2=1;USE_SER=1;USE_"
-                   "HD44780_LCD=1;XTAL_"
-                   "FREQ=16000000;BAUD_"
-                   "RATE=38400;USE_TIMER0=1;MCHP_"
-                   "XC8=1;DEBUG=1",
+                   "__XC=1;__18f2550=1;USE_TIMER1=1;USE_TIMER2=1;USE_SER=1;USE_HD44780_LCD=1;XTAL_FREQ=16000000;BAUD_RATE=38400;USE_TIMER0=1;MCHP_XC8=1;DEBUG=1",
                    0);
 property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key", "disable-optimizations", "value", "true", 0);
@@ -503,8 +459,7 @@ property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key",
                    "extra-include-directories",
                    "value",
-                   "../../../src;../../../lib;../"
-                   "../..",
+                   "../../../src;../../../lib;../../..",
                    0);
 property = xml_child_element("property", hitechcomp) property->attributes =
     xml_attributes("key", "favor-optimization-for", "value", "-speed,+space", 0);
@@ -559,30 +514,26 @@ hitechlink = xml_child_element("HI-TECH-LINK", conf) property =
     xml_child_element("property", hitechlink) property->attributes =
         xml_attributes("key", "additional-options-checksum", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "code-offset",
+                                                                                           "additional-options-code-offset",
                                                                                            "value",
                                                                                            "",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "command-line",
+                                                                                           "additional-options-command-line",
                                                                                            "value",
                                                                                            "",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "additional-options-errata", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "extend-address",
+                                                                                           "additional-options-extend-address",
                                                                                            "value",
                                                                                            "false",
                                                                                            0);
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "additional-options-trace-type", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "additional-options-"
-                                                                                           "use-response-files",
+                                                                                           "additional-options-use-response-files",
                                                                                            "value",
                                                                                            "false",
                                                                                            0);
@@ -657,8 +608,7 @@ property = xml_child_element("property", hitechlink) property->attributes =
 property = xml_child_element("property", hitechlink) property->attributes =
     xml_attributes("key", "opt-xc8-linker-serial", "value", "", 0);
 property = xml_child_element("property", hitechlink) property->attributes = xml_attributes("key",
-                                                                                           "program-the-device-with-"
-                                                                                           "default-config-words",
+                                                                                           "program-the-device-with-default-config-words",
                                                                                            "value",
                                                                                            "true",
                                                                                            0);
@@ -671,8 +621,7 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "Freeze Peripherals", "value", "true", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "SecureSegment."
-                   "SegmentProgramming",
+                   "SecureSegment.SegmentProgramming",
                    "value",
                    "FullChipProgramming",
                    0);
@@ -680,13 +629,11 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key",
                    "ToolFirmwareFilePath",
                    "value",
-                   "Press to browse for a "
-                   "specific firmware version",
+                   "Press to browse for a specific firmware version",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "ToolFirmwareOption."
-                   "UseLatestFirmware",
+                   "ToolFirmwareOption.UseLatestFirmware",
                    "value",
                    "true",
                    0);
@@ -714,11 +661,9 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "memories.instruction.ram", "value", "true", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "memories.instruction.ram."
-                   "ranges",
+                   "memories.instruction.ram.ranges",
                    "value",
-                   "${memories.instruction.ram."
-                   "ranges}",
+                   "${memories.instruction.ram.ranges}",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "memories.programmemory", "value", "true", 0);
@@ -729,8 +674,7 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "programmertogo.imagename", "value", "", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes = xml_attributes("key",
-                                                                                                     "programoptions."
-                                                                                                     "donoteraseauxmem",
+                                                                                                     "programoptions.donoteraseauxmem",
                                                                                                      "value",
                                                                                                      "false",
                                                                                                      0);
@@ -740,39 +684,33 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "programoptions.pgmspeed", "value", "2", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preservedataflash",
+                   "programoptions.preservedataflash",
                    "value",
                    "false",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preservedataflash.ranges",
+                   "programoptions.preservedataflash.ranges",
                    "value",
-                   "${programoptions."
-                   "preservedataflash.ranges}",
+                   "${programoptions.preservedataflash.ranges}",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key", "programoptions.preserveeeprom", "value", "false", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions.preserveeeprom."
-                   "ranges",
+                   "programoptions.preserveeeprom.ranges",
                    "value",
                    "0-ff",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preserveprogram.ranges",
+                   "programoptions.preserveprogram.ranges",
                    "value",
                    "",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "preserveprogramrange",
+                   "programoptions.preserveprogramrange",
                    "value",
                    "false",
                    0);
@@ -784,22 +722,19 @@ property = xml_child_element("property", pickit3platform_tool) property->attribu
     xml_attributes("key", "programoptions.programuserotp", "value", "false", 0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "testmodeentrymethod",
+                   "programoptions.testmodeentrymethod",
                    "value",
                    "VDDFirst",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "usehighvoltageonmclr",
+                   "programoptions.usehighvoltageonmclr",
                    "value",
                    "false",
                    0);
 property = xml_child_element("property", pickit3platform_tool) property->attributes =
     xml_attributes("key",
-                   "programoptions."
-                   "uselvpprogramming",
+                   "programoptions.uselvpprogramming",
                    "value",
                    "false",
                    0);

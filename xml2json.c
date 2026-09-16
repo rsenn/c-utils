@@ -248,31 +248,21 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -s, --single-quote      Use ' "
-                       "as quote\n"
-                       "  -d, --double-quote      Use "
-                       "\" as quote\n"
-                       "  -o, --one-line          "
-                       "One-line\n"
-                       "  -c, --compact           "
-                       "Compact\n"
-                       "  -l, --indent NUM        "
-                       "Indent level\n"
-                       "  -n, --numbers           Show "
-                       "numbers unquoted\n"
+                       "  -h, --help              Show this help\n"
+                       "  -s, --single-quote      Use ' as quote\n"
+                       "  -d, --double-quote      Use \" as quote\n"
+                       "  -o, --one-line          One-line\n"
+                       "  -c, --compact           Compact\n"
+                       "  -l, --indent NUM        Indent level\n"
+                       "  -n, --numbers           Show numbers unquoted\n"
                        "\n"
-                       "  -T, --tag NAME          Name "
-                       "of property with tag name [",
+                       "  -T, --tag NAME          Name of property with tag name [",
                        tag_property,
                        "]\n"
-                       "  -C, --children NAME     Name "
-                       "of property with children [",
+                       "  -C, --children NAME     Name of property with children [",
                        children_property,
                        "]\n"
-                       "  -N, --class NAME        Name "
-                       "of property with classes [",
+                       "  -N, --class NAME        Name of property with classes [",
                        class_property,
                        "]\n"
                        "\n",

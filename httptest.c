@@ -83,10 +83,8 @@ usage(char* av0) {
                        "\n"
                        "Options:\n"
                        "\n"
-                       "  -h, --help              Show "
-                       "this help\n"
-                       "  -o, --output FILE       "
-                       "Output file\n"
+                       "  -h, --help              Show this help\n"
+                       "  -o, --output FILE       Output file\n"
                        "\n",
                        NULL);
   buffer_flush(buffer_1);

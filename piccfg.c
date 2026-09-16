@@ -355,8 +355,7 @@ cfg_infer_chip(const char* x, size_t n) {
 
         if(c1 == '2' || c1 == '6' || c1 == '8') {
           len = scan_charsetnskip(setting,
-                                  "0123456789aAbBcCeEfFgGhH"
-                                  "iIjJkKlLmMnNpPrRtTvV",
+                                  "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV",
                                   len);
 
           if(len > 3) {
@@ -630,8 +629,7 @@ usage(char* argv0) {
                        "Options\n"
                        "  -h, --help                show this help\n"
                        "  -o, --oneline             output oneliner\n"
-                       "  -D, --no-default          don't output settings with default "
-                       "value\n"
+                       "  -D, --no-default          don't output settings with default value\n"
                        "  -d, --default             output settings with default value\n"
                        "  -C, --no-comments         don't output description comments\n"
                        "  -n, --name                output register name\n"

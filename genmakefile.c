@@ -651,8 +651,7 @@ set_compiler_type(const char* compiler) {
     // var_push("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
     stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) "
-                   "-c -Fo\"$@\" $<");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     set_command(&commands.lib, "$(LIB) -out:$@", "$^");
     // stralloc_copys(&commands.lib, "$(LIB) /OUT:$@ <<\n\t\t$^\n<<");
 
@@ -677,11 +676,9 @@ set_compiler_type(const char* compiler) {
     }
 
     var_push("LDFLAGS",
-             "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)"
-             "ucrt\\$(MACHINE)\"");
+             "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)ucrt\\$(MACHINE)\"");
     var_push("LDFLAGS",
-             "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$"
-             "(MACHINE)\"");
+             "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(VCTOOLSINSTALLDIR)lib\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib$(X64)\"");
     var_push("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\lib$(AMD64)\"");
@@ -693,8 +690,7 @@ set_compiler_type(const char* compiler) {
 
     if(str_start(compiler, "icl"))
       var_push("LDFLAGS",
-               "-manifest:embed -manifestuac:\"level='asInvoker' "
-               "uiAccess='false'\"");
+               "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
 
     if(cfg.mach.arch == ARM) {
       var_push("LDFLAGS", "-machine:ARM");
@@ -771,13 +767,11 @@ set_compiler_type(const char* compiler) {
     // $(EXTRA_LIBS)");
 
     set_command(&commands.link,
-                "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) "
-                "$(EXTRA_LDFLAGS) -o $@",
+                "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
                 "$^ $(LIBS)");
 
     set_command(&commands.link_module,
-                "$(CC) -shared $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) "
-                "$(EXTRA_LDFLAGS) -o $@",
+                "$(CC) -shared $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
                 "$^ $(LIBS)");
 
     /* cygming (mingw/msys/cygwin cross toolchain, selected via
@@ -848,8 +842,7 @@ set_compiler_type(const char* compiler) {
         var_push("CFLAGS", "-r");
 
       stralloc_copys(&commands.compile,
-                     "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) "
-                     "-c -o$@ $<");
+                     "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
       set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
 
@@ -890,11 +883,9 @@ set_compiler_type(const char* compiler) {
     }
 
     stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
-                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.link,
-                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) "
-                   "$(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     /*
      * Tiny CC compiler
      */
@@ -940,8 +931,7 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "climp");
     // stralloc_copys(&commands.compile, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
     stralloc_copys(&commands.compile,
-                   "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) "
-                   "$(DEFS) -o$@ $<");
+                   "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
     set_command(&commands.lib, "$(LIB) /! $@", "$^");
     set_command(&commands.link, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
   } else if(str_start(compiler, "8cc")) {
@@ -1016,8 +1006,7 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
     stralloc_copys(&commands.link,
-                   "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) "
-                   "$(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     pathsep_args = '\\';
     quote_args = "\"";
   } else if(str_start(compiler, "gp")) {
@@ -1072,8 +1061,7 @@ set_compiler_type(const char* compiler) {
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
-                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) "
-                   "$(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     if(cmd_libs_explicit) {
       buffer_putm_internal(buffer_2,
@@ -1153,8 +1141,7 @@ set_compiler_type(const char* compiler) {
     set_command(&commands.lib, "$(LIB) r $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
-                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "htc")) {
     var_unset("CXX");
     var_set("LIB", "libr");
@@ -1211,11 +1198,9 @@ set_compiler_type(const char* compiler) {
     // var_push("CPPFLAGS", "-D__$(CHIP)=1");
     set_command(&commands.lib, "$(LIB) $@", "$^");
     stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) "
-                   "--pass1 -c $< -o$@");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
-                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8-cc")) {
     /* modern (v2.00+), LLVM-based XC8 driver -- gcc-like CLI, entirely
      * different from the legacy (v1.x, HI-TECH-derived) "xc8"/"picc"
@@ -1266,8 +1251,7 @@ set_compiler_type(const char* compiler) {
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o "
-                   "$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
     // no_libs = 1;
     var_unset("CXX");
@@ -1308,8 +1292,7 @@ set_compiler_type(const char* compiler) {
     // var_push("LDFLAGS", "--output=-mcof,+elf:multilocs");
     var_push("LDFLAGS", "--summary=default");
     var_push("LDFLAGS",
-             "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-"
-             "resetbits,+download,+clib");
+             "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
     // var_push("LDFLAGS", "--output=-default,elf,+mcof");
     // var_push("LDFLAGS", "--output=-mcof,+elf");
     var_push("LDFLAGS", "--stack=compiled");
@@ -1319,16 +1302,11 @@ set_compiler_type(const char* compiler) {
 
     stralloc_copys(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
     stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) "
-                   "$(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
     stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ "
-                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.lib,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) "
-                   "--OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist "
-                   "--output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf "
-                   "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else {
     return 0;
   }
@@ -1478,11 +1456,10 @@ usage(char* argv0) {
                        "     mplabx      MPLAB X project (NetBeans)\n"
                        "     cmake       KitWare CMake\n"
                        "\n"
-                       "  Specify build type:\n\n"
-                       "    --debug            with debugging information, no "
-                       "optimization\n"
-                       "    --relwithdebinfo   with debugging information, optimize for "
-                       "speed\n"
+                       "  Specify build type:\n"
+                       "\n"
+                       "    --debug            with debugging information, no optimization\n"
+                       "    --relwithdebinfo   with debugging information, optimize for speed\n"
                        "    --release          optimize for speed\n"
                        "    --minsizerel       optimize for size\n"
                        "\n",
