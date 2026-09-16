@@ -345,6 +345,64 @@
   symptom -- none found, all absolute-source paths now correctly
   `../`-prefixed with no dropped separator.
 
+- genmakefile-shell-mode-var-ref-wrongly-lowercased (not fixed): running
+  `tests/genmakefile/testsuite.sh --all` (full matrix) surfaced this.
+  `output_var()` (`src/genmakefile/output.c:105`) unconditionally calls
+  `transform_subst_sa(&u, &v, "$", "", 1)` (to_lower=1) to lower a
+  variable's own `$(NAME)`-referencing value for BOTH `TOOL_NINJA` and
+  `TOOL_SHELL` -- but shell-mode variable *names* themselves are never
+  lowercased (that's gated `if(tool == TOOL_NINJA) stralloc_lower(&v);`
+  a few lines above, `output.c:68`, shell keeps them uppercase, e.g.
+  `CHIP="..."`/`MACH="..."`). So a `CFLAGS` template containing a nested
+  reference, e.g. `sdcc`'s `"-m$(MACH) -p$(CHIP)"`
+  (`genmakefile.c:1131`) or `xc8`'s `"--chip=$(CHIP)"`
+  (`genmakefile.c:1191`/`1289`), gets lowered to `-m$mach -p$chip` /
+  `--chip=$chip` in the emitted shell script, referencing shell
+  variables that were never defined (only the uppercase `MACH`/`CHIP`
+  were) -- they expand to empty, and the actual compiler invocation
+  loses the flag's value entirely. Contrast with `rule_command_subst()`
+  (`src/genmakefile/rule.c:311`, used for a rule's own recipe, e.g.
+  `$(CC) $(CFLAGS) ...`), which correctly preserves case for
+  `TOOL_SHELL` (`stralloc_catb(out, &in->s[i], vlen)`, no lowering) --
+  only `output_var()`'s nested-reference lowering has the bug. Confirmed
+  via `sdcc-*-shell-all-same` (`sdcc ... -m -p ... `: `error 131: cannot
+  generate code for target ''`) and `xc8-v*-shell-all-same` (`xc8
+  ... --chip= ...`: `(924) missing argument to "--chip" option`) test
+  failures -- both toolchains build fine under `make`/`gmake`/`ninja`
+  (which don't go through this shell-specific lowering), only `-m shell`
+  is affected. Likely fix: make the `to_lower` argument at
+  `output.c:105` conditional on `tool == TOOL_NINJA`, matching
+  `rule_command_subst()`'s existing shell-preserves-case behavior.
+
+- genmakefile-shell-mode-archive-mkdir-ordering (not fixed): also found
+  via the full testsuite run. In `-m shell` output, the *first* archive
+  (`--create-libs`) rule whose output directory hasn't been created yet
+  runs its `ar`/`gcc-ar`/... command before the `mkdir -p` for that
+  directory, e.g. (`gcc-shell-build-out-same`):
+  ```
+  + gcc-ar rcs _out/w/extra.a ../bo/bar.o
+  /usr/bin/ar: _out/w/extra.a: No such file or directory
+  + mkdir -p _out/w
+  + gcc ... -c -o ../bo/foo.o ../../lib/foo.c
+  + gcc-ar rcs _out/w/lib.a ../bo/foo.o
+  ```
+  The *second* archive rule into the same directory succeeds (the
+  `mkdir -p _out/w` ran in between), and everything downstream that
+  links against the never-created first archive then fails too (`ld:
+  cannot find _out/w/extra.a`). Not yet root-caused precisely --
+  `output_script()` (`src/genmakefile/output.c:546`) recursively emits
+  a rule's prerequisites (including, presumably, a `commands.mkdir`
+  rule for the output directory) before the rule's own recipe, so the
+  mkdir rule for a given directory is either missing as a prerequisite
+  of the *first* rule that writes into it, or its `serial`-based
+  visited-marking causes it to be skipped/deferred past that point.
+  Needs tracing through `rule_get`/prereq wiring for archive rules
+  specifically (`generate_lib_rules`/`generate_srcdir_lib_rule`,
+  `src/genmakefile/generate.c`) to pin down. Only affects `-m shell`;
+  `make`/`gmake`/`ninja` all pass the equivalent testsuite cases (they
+  each have their own directory-creation mechanism independent of rule
+  ordering).
+
 - genmakefile-exits-without-freeing (not fixed, low priority): the
   same AddressSanitizer run above reports ~344MB across ~93k
   allocations leaked at exit against the 4.3MB log (mostly `set_add`/
