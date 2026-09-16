@@ -22,6 +22,10 @@ scan_lineskip_escaped(const char* s, size_t limit) {
   for(t = s; t < u; ++t) {
     if(*t == '\\') {
       ++t;
+
+      if(t >= u)
+        break;
+
       continue;
     }
 

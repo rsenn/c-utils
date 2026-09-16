@@ -17,7 +17,7 @@ scan_nonwhitenskip_escaped(const char* s, size_t limit) {
   const char* u = t + limit;
 
   while(t < u) {
-    if(*t == '\\' && isspace(t[1]))
+    if(*t == '\\' && t + 1 < u && isspace(t[1]))
       break;
 
     if(isspace(*t))
