@@ -17,6 +17,8 @@ path_quote_spaces_b(stralloc* sa, const char* x, size_t n) {
       has_spaces = 1;
       break;
     }
+
+    i += len ? len : 1;
   }
 
   stralloc_zero(sa);

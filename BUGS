@@ -287,6 +287,64 @@
   output, and a full AddressSanitizer pass (leak detection aside --
   see below) is clean.
 
+- genmakefile-path-collapse-strlist-at-u8len-chain (fixed, for the record):
+  a follow-up investigation into a missing-leading-slash bug in generated
+  Makefile paths (`-f exec.log1 -O withdirs -d withdirs/build`, ASan build)
+  found a chain of three further real bugs downstream of each other:
+
+  1. `path_collapse()` (`lib/path/path_collapse.c`) cancelled a "real"
+     path component against a following `..` without checking whether the
+     component being eliminated was itself `.`/`..` -- so a leading run
+     of N `..` components (e.g. `"../../foo"`) got collapsed pairwise
+     instead of surviving intact, wrongly eating path segments that must
+     stay put for `../`-relative output to be correct.
+
+  2. `strlist_at(sl, i)` (`lib/strlist/strlist_at.c`) mishandled the
+     "one past the last item" boundary query (used by e.g.
+     `strlist_range()`'s exclusive upper bound): it compared the
+     separator count `l` directly against `i` (`if(l == i) return ...`)
+     instead of `l + 1 == i` (separator count is `item_count - 1`, not
+     `item_count`), so querying one past the end returned NULL/garbage
+     instead of the one-past-the-end pointer. This fed a `dirs.out.sa`
+     stralloc whose `.len` field claimed 4096 bytes when only ~113 were
+     real, into...
+
+  3. Six `lib/path/*.c` functions (`path_skip_component`, `path_getsep`,
+     `path_len`, `path_len_s`, `path_skips` (first loop), `path_trim_b`)
+     looping `for(i = ...; i += len)` with `len = u8_len(&s[i], 1)` and no
+     guard against `u8_len()` returning 0 -- which it does on any byte
+     that isn't a valid UTF-8 lead byte, e.g. the ASan-poisoned `0xBE`
+     garbage past bug 2's phantom `.len`. `i` never advanced, looping
+     forever and driving RSS up without bound. Caught live via gdb (FIFO-
+     stdin-attach technique, since gdb needs to be the direct parent for
+     `ptrace_scope=1` to allow the attach) on the hung process, which
+     showed `path_skip_component()` spinning with `len=0` at a fixed `i`.
+     Fixed all six with `if((len = u8_len(...)) == 0) len = 1;` (treat an
+     invalid lead byte as one raw byte and keep advancing).
+
+  A related but more severe bug was found and fixed in the same audit:
+  `path_quote_spaces_b()`/`path_quote_spaces()` (`lib/path/path_quote_spaces_b.c`,
+  `path_quote_spaces.c`) never incremented their loop index at all --
+  `i`/`len` were computed but `i` was never advanced by `len`, so the
+  loop spun forever on the first character of *any* non-space-starting
+  input of length > 0, valid UTF-8 or not. Fixed by adding `i += len ?
+  len : 1;` at the end of each loop body.
+
+  `path_skip_separator.c`, `path_skip.c`, and `path_is_separator.c` were
+  audited too and found not to need a fix: the first two only ever break
+  out or return via a condition that's already false-safe when `len==0`
+  (an invalid lead byte, always >= 0x80, can never equal a literal
+  separator byte, always < 0x80), and the third has no loop at all.
+
+  Verified: ASan build clean (no crash/hang, `halt_on_error=1`) across
+  10/10 repeated runs of the original repro (`exec.log1 -O . -d build`)
+  and one full pass of the real 6066-line `exec.log`; release build
+  clean and stable across 20/20 repeated runs of the repro and 5/5 runs
+  of the full log (~1.7-1.8s each, identical output); generated Makefile
+  paths spot-checked for the originally-reported missing-leading-slash
+  symptom -- none found, all absolute-source paths now correctly
+  `../`-prefixed with no dropped separator.
+
 - genmakefile-exits-without-freeing (not fixed, low priority): the
   same AddressSanitizer run above reports ~344MB across ~93k
   allocations leaked at exit against the 4.3MB log (mostly `set_add`/

@@ -8,8 +8,14 @@ path_trim_b(const char* path, size_t size) {
 
   for(size_t i = 0; i < size;) {
     size_t len = u8_len(&path[i], 1);
+    int is_sep;
 
-    int is_sep = len == 1 && str_chr(PATHSEP_S_MIXED, path[i]) < 2;
+    /* u8_len() returns 0 on an invalid UTF-8 lead byte -- treat it
+     * as one raw byte instead of looping forever without advancing. */
+    if(len == 0)
+      len = 1;
+
+    is_sep = len == 1 && str_chr(PATHSEP_S_MIXED, path[i]) < 2;
 
     if(is_sep && !prev) {
       j = i;

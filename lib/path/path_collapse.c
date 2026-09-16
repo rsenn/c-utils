@@ -19,7 +19,12 @@ path_collapse(char* path, size_t n) {
       while(x[l] == sep)
         ++l;
 
-      if(l + 2 <= n && x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep)) {
+      /* only a *real* component (not "." or "..") can be cancelled
+       * against a following ".." -- "../.." must stay "../..", not
+       * collapse to "" (and a leading run of N ".." components must
+       * survive intact, not get eliminated pairwise down to N%2). */
+      if(l + 2 <= n && x[l] == '.' && x[l + 1] == '.' && (l + 2 >= n || x[l + 2] == sep) &&
+         !(j - i == 2 && x[i] == '.' && x[i + 1] == '.') && !(j - i == 1 && x[i] == '.')) {
         l += 3;
 
         if(l > n)
