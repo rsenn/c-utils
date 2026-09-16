@@ -1512,10 +1512,10 @@ resolve_toolchain(const char* argv0) {
     }
   }
 
-  if(str_equal(tools.make, "gmake"))
+  if(tools.make && str_equal(tools.make, "gmake"))
     make_capabs |= MAKE_RULE_PATTERN;
 
-  if(str_equal(tools.make, "make"))
+  if(tools.make && str_equal(tools.make, "make"))
     make_capabs |= MAKE_RULE_IMPLICIT;
 
   if(tools.toolchain)

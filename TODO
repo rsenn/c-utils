@@ -73,6 +73,4 @@ TODO
   pair at all so `input_detect_prefix_pattern()` never confirms a
   pattern) and a look at whether `input_word_is_command()`'s
   `is_command_b()` calls (one per token, on every line) are a
-  performance concern on large `--infile`s. Note: testing currently
-  requires passing `-t`/`-m` explicitly to work around the unrelated
-  `genmakefile-resolve-toolchain-null-make-crash` bug below.
+  performance concern on large `--infile`s.
