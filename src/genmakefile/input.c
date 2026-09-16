@@ -132,10 +132,14 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
     stralloc_free(&tmp);
   } else {
-    path_append(dirs.obj.sa.s, dirs.obj.sa.len, out);
-    path_append(y, len, out);
-    stralloc_nul(out);
-    path_relative_to(out->s, dirs.out.sa.s, out);
+    stralloc tmp;
+
+    stralloc_init(&tmp);
+    path_append(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
+    path_append(y, len, &tmp);
+    stralloc_nul(&tmp);
+    path_relative_to(tmp.s, dirs.out.sa.s, out);
+    stralloc_free(&tmp);
     path_prepends(".", out);
   }
 
@@ -307,13 +311,15 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         }
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-D")) {
-        y = x + ((x[2] == '\0') ? 3 : 2);
+        y = (x[2] == '\0') ? *++p : x + 2;
         push_define(y);
       } else if(len >= 2 && byte_equal(x, 2, "-I")) {
-        size_t i = (x[2] == '\0') ? 3 : 2;
-        size_t n = len - i;
+        bool bare = x[2] == '\0';
+        size_t n;
 
-        y = x + i;
+        y = bare ? *++p : x + 2;
+        n = bare ? str_len(y) : len - 2;
+
         input_process_path(y, &path);
         strlist_push(&args, "-I");
         stralloc_cats(&args.sa, path.s);
@@ -328,7 +334,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         stralloc_zero(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-L")) {
-        y = x + ((x[2] == '\0') ? 3 : 2);
+        y = (x[2] == '\0') ? *++p : x + 2;
 
         input_process_path(y, &path);
 
@@ -343,13 +349,13 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
         stralloc_zero(&path);
         continue;
       } else if(len >= 2 && byte_equal(x, 2, "-l")) {
-        y = x + ((x[2] == '\0') ? 3 : 2);
+        y = (x[2] == '\0') ? *++p : x + 2;
         strlist_push(&libs, x);
       } else if(len >= 3 && byte_equal(x, 3, "-MF")) {
-        size_t i = len > 3 ? 3 : 4;
+        bool bare = len <= 3;
 
-        y = x + i;
-        len -= i;
+        y = bare ? *++p : x + 3;
+        len = bare ? str_len(y) : len - 3;
       } else if(len >= 2 && byte_equal(x, 2, "-c")) {
         compile = true;
       } else if(len >= 7 && byte_equal(x, 7, "--chip=")) {
@@ -451,8 +457,10 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   }
 
   if(out.len == 0 && compile) {
-    stralloc_copys(&out, path_basename2(files.sa.s, byte_chr(files.sa.s, files.sa.len, files.sep)));
+    size_t flen = byte_chr(files.sa.s, files.sa.len, files.sep);
+    size_t bpos = path_basepos2(files.sa.s, flen);
 
+    stralloc_copyb(&out, files.sa.s + bpos, flen - bpos);
     stralloc_replaces(&out, exts.src, exts.obj);
     stralloc_nul(&out);
   }

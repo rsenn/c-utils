@@ -2107,6 +2107,7 @@ finalize_build_metadata(void) {
 
     if(!stralloc_endc(&builddir, PATHSEP_C))
       stralloc_catc(&builddir, PATHSEP_C);
+    stralloc_nul(&builddir);
     var_set(builddir_varname, builddir.s);
     stralloc_free(&builddir);
     stralloc_free(&workabs);

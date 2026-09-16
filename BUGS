@@ -244,46 +244,57 @@
   confirmed down to <0.1% (residual is truncation artifacts, not this tool)
   against live fetches after the fix.)
 
-- genmakefile-dual-root-source-path-explosion: feeding `genmakefile
-  -f infile` a large real-world `--infile` (an `exec-intercept.c` log
-  of an actual CMake build, 6066 lines/4.3MB) is severely and
-  non-deterministically slow -- most runs finish in <1s, but roughly
-  1 in 8 takes 20-60+ seconds, genuinely CPU-bound the whole time (not
-  waiting/scheduling: `user` time tracks `real` time almost exactly).
-  Confirmed independent of `src/genmakefile/input.c`'s prefix-detection
-  feature (reproduces identically on a manually-decoration-stripped
-  copy of the same log).
+- genmakefile-vars-map-insert-undersized (fixed, for the record):
+  `var_list()` (`src/genmakefile/var.c:92`) inserted a `var_t var;`
+  local (`{ strlist value; uint32 serial; }`) into the `vars` map via
+  `MAP_INSERT2(vars, name, ..., &var, sizeof(strlist))` -- sizing the
+  copy by `sizeof(strlist)` instead of `sizeof(var_t)`, silently
+  dropping the trailing `serial` field from what actually got
+  allocated/copied by the hashmap. Any later read of `var->serial`
+  (e.g. `output_var()`, `src/genmakefile/output.c:60`) was an
+  out-of-bounds heap read. Caught by AddressSanitizer
+  (`heap-buffer-overflow ... READ of size 4 ... 0 bytes after 33-byte
+  region`, in `output_var` via `var_set`/`set_compiler_type`/
+  `resolve_toolchain`). Fixed by inserting `sizeof(var_t)` instead.
 
-  Caught live with gdb (SIGINT + `bt` on the hung process): the time is
-  spent in `discover_sources()` (`genmakefile.c:2080`) ->
-  `strarray_sort()` -> glibc `qsort_r`/`msort_with_tmp` ->
-  `sources_sort_callback()` (`src/genmakefile/sources.c:138`) ->
-  `path_basename()` -> `str_len()`, sorting several thousand entries
-  whose strings are absurdly long chains of `../../../../...` (debug
-  output showed dozens of near-duplicate `rule_map` entries differing
-  only in how many `../` segments they carry).
+  This was one of six real memory-safety bugs (see git history for the
+  fixes, all found via AddressSanitizer against a real 6066-line/4.3MB
+  `exec-intercept.c` build log fed through `genmakefile -f`) that
+  together were the actual cause of a since-superseded bug report in
+  this file (`genmakefile-dual-root-source-path-explosion`) that
+  guessed the wrong root cause: apparent non-deterministic 0.7s-vs-60s
+  runtime on identical input, believed at the time to be a `qsort`
+  comparator blowup from un-canonicalized dual-mount source paths. The
+  real cause was `path_collapse()` (`lib/path/path_collapse.c`)
+  underflowing a `size_t` index (`x[--i]` with no `i > 0` guard, and a
+  separate `n = i + (n - l)` underflow when a collapsed `..` sat at the
+  very end of the string) and reading/writing adjacent heap memory --
+  ASLR-dependent heap layout is exactly why the timing was
+  non-deterministic on identical input. That, plus a heap-use-after-
+  free in `input_process_path_b()` (`src/genmakefile/input.c`, the
+  relative-path branch passed `out->s` as `path_relative_to()`'s
+  source while `out` was also its destination, so the source pointer
+  went stale mid-call when the destination reallocated), plus three
+  `x + 3`-past-a-2-byte-token overreads in `-D`/`-I`/`-L`/`-MF`
+  argument parsing (should have advanced to the next argv token via
+  `*++p`, matching the already-correct `-o` handling a few lines
+  above), plus a `stralloc_copys()` call on a non-NUL-terminated
+  `path_basename2()` slice into a `strlist`'s packed buffer, plus this
+  `var_t`/`sizeof(strlist)` bug -- fed each other via corrupted,
+  wildly-long strings landing in `sources_set`, which is what actually
+  blew up the sort. Verified fixed: 20/20 repeated runs against the
+  real log now complete in ~1.7-2.0s with identical (order aside)
+  output, and a full AddressSanitizer pass (leak detection aside --
+  see below) is clean.
 
-  Root cause (source-level, not yet fixed): `input_process_path_b()`'s
-  absolute-path branch (`src/genmakefile/input.c`, ~line 124-133) calls
-  `path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len,
-  out)` to turn an absolute source path from the log into one relative
-  to `dirs.out`. This particular test log's build happened to reach the
-  same physical files through two different absolute-path roots to the
-  same repo (a bind-mount/symlink situation -- confirmed 5637 lines
-  reference `/mnt/data/Projects/c-utils/...` and 3294 reference
-  `/home/roman/Projects/c-utils/...` for what is on disk the same
-  tree). `dirs.out` is anchored under only one of those roots, so every
-  source path using the *other* root computes a long, ugly
-  `../`-climbing relative path instead of recognizing it as the same
-  file -- multiplying the effective source/rule count several-fold and
-  inflating average key length, which is what makes the qsort
-  comparator (already O(path length) per call) dominate. Needs either
-  canonicalizing/realpath()-resolving both the source path and
-  `dirs.out` before computing the relative path (so bind-mounts/
-  symlinked roots collapse to the same key), or detecting and merging
-  rule_map entries that resolve to the same underlying file. The
-  run-to-run non-determinism (same input, wildly different timing) is
-  not yet explained -- worth checking whether `rule_map`'s hash
-  iteration order (and therefore which of a set of equivalent long
-  paths ends up "the" entry, or how many distinct one accumulate before
-  something dedupes) is address/ASLR-sensitive.
+- genmakefile-exits-without-freeing (not fixed, low priority): the
+  same AddressSanitizer run above reports ~344MB across ~93k
+  allocations leaked at exit against the 4.3MB log (mostly `set_add`/
+  `rule_get`-owned structures, `lib/set/set_init.c` and
+  `src/genmakefile/rule.c:36`). All bounded/proportional to input size
+  (not unbounded growth), and the process exits shortly after, so the
+  OS reclaims it regardless -- unlike the bugs above, this is ordinary
+  "didn't bother free()ing before a short-lived CLI tool exits"
+  hygiene, not a correctness or stability issue. Not worth chasing
+  unless `genmakefile` is ever used as a long-lived/embedded library
+  rather than a one-shot CLI.
