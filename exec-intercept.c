@@ -131,6 +131,41 @@ map_replace_or_append(stralloc* map, const char* entry, size_t entry_len, size_t
   stralloc_catb(map, entry, entry_len);
 }
 
+/* Resolve `logfile` (a -o FILE argument) against the launcher's own
+ * cwd and set EXEC_INTERCEPT_LOG to the result -- a relative path
+ * would otherwise be reopened relative to whatever directory each
+ * exec'd process (or one of its own children) happens to be in by the
+ * time it first triggers the .so's lazy init(), not this process's
+ * cwd. A leading "+" (append mode -- redundant now that the .so
+ * always appends, but still accepted) is kept in front of the
+ * resolved path rather than being treated as part of it. */
+static void
+set_logfile(const char* logfile) {
+  const char* p = logfile;
+  int plus = *p == '+';
+  stralloc abs, out;
+
+  if(plus)
+    p++;
+
+  stralloc_init(&abs);
+  path_absolute(p, &abs);
+  stralloc_nul(&abs);
+
+  stralloc_init(&out);
+
+  if(plus)
+    stralloc_cats(&out, "+");
+
+  stralloc_cats(&out, abs.s);
+  stralloc_nul(&out);
+
+  env_set("EXEC_INTERCEPT_LOG", out.s);
+
+  stralloc_free(&abs);
+  stralloc_free(&out);
+}
+
 /* Locate exec-intercept.so relative to this launcher's own resolved
  * binary path, without assuming it has been installed yet -- tries the
  * installed layout (.../bin/../lib/exec-intercept.so) first, then the
@@ -272,7 +307,7 @@ main(int argc, char* argv[]) {
   env_set("LD_PRELOAD", so_path);
 
   if(logfile)
-    env_set("EXEC_INTERCEPT_LOG", logfile);
+    set_logfile(logfile);
 
   if(have_map) {
     stralloc_nul(&map);
