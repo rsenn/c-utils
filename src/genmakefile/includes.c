@@ -89,8 +89,8 @@ includes_cppflags(void) {
      * already made it absolute by the time this runs). Source-file
      * prerequisites (sources.c/generate.c's add_source()) and the
      * BUILDDIR variable are anchored the same way via sources_dir --
-     * anchoring these -I paths on dirs.build instead used to produce a
-     * mismatched depth whenever dirs.build sits deeper than dirs.out. */
+     * anchoring these -I paths on dirs.obj instead used to produce a
+     * mismatched depth whenever dirs.obj sits deeper than dirs.out. */
     stralloc_zero(&absdir);
     path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir, str_len(dir), &absdir);
     stralloc_nul(&absdir);

@@ -10,6 +10,8 @@ void path_prefix_sa(const stralloc*, stralloc* sa, char psm);
 char* path_extension(const char*, stralloc* out, const char* ext);
 char* path_output2(const char*, stralloc* out, const char* ext, char psa);
 char* path_output(const char*, stralloc* out, const char* ext, char psa);
+char* path_output2_bin(const char*, stralloc* out, const char* ext, char psa);
+char* path_output_bin(const char*, stralloc* out, const char* ext, char psa);
 char* path_wildcard(stralloc*, const char* wildchar);
 char* path_clean_s(const char*);
 char* path_clean_b(const char*, size_t* len);

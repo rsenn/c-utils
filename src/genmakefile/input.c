@@ -46,10 +46,10 @@ builddir_enter(const char* x, size_t len) {
   stralloc tmp;
 
   stralloc_init(&tmp);
-  strarray_emplace_sa(&dirstack, &dirs.build.sa);
-  stralloc_copyb(&dirs.build.sa, x, len);
+  strarray_emplace_sa(&dirstack, &dirs.obj.sa);
+  stralloc_copyb(&dirs.obj.sa, x, len);
 
-  path_relative_b(dirs.build.sa.s, dirs.build.sa.len, &tmp);
+  path_relative_b(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
   set_addsa(&build_directories, &tmp);
 
 #ifdef DEBUG_OUTPUT_
@@ -82,10 +82,10 @@ builddir_leave(const char* x, size_t len) {
 #endif
 
   if(strarray_size(&dirstack)) {
-    stralloc_free(&dirs.build.sa);
+    stralloc_free(&dirs.obj.sa);
 
-    dirs.build.sa.s = strarray_pop(&dirstack);
-    dirs.build.sa.len = dirs.build.sa.s ? str_len(dirs.build.sa.s) : 0;
+    dirs.obj.sa.s = strarray_pop(&dirstack);
+    dirs.obj.sa.len = dirs.obj.sa.s ? str_len(dirs.obj.sa.s) : 0;
   }
 }
 
@@ -132,7 +132,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
     stralloc_free(&tmp);
   } else {
-    path_append(dirs.build.sa.s, dirs.build.sa.len, out);
+    path_append(dirs.obj.sa.s, dirs.obj.sa.len, out);
     path_append(y, len, out);
     stralloc_nul(out);
     path_relative_to(out->s, dirs.out.sa.s, out);
@@ -193,7 +193,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   stralloc_init(&dir);
   stralloc_init(&path);
   stralloc_init(&rel);
-  path_relative_to_b(dirs.out.sa.s, dirs.out.sa.len, dirs.build.sa.s, dirs.build.sa.len, &rel);
+  path_relative_to_b(dirs.out.sa.s, dirs.out.sa.len, dirs.obj.sa.s, dirs.obj.sa.len, &rel);
 
   strlist_init(&args, ' ');
   strlist_init(&files, ' ');
@@ -508,7 +508,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   buffer_puts(debug_buf, "'\treldir = ");
   buffer_putsa(debug_buf, &rel);
   buffer_puts(debug_buf, "\n\tbuilddir = ");
-  buffer_putsa(debug_buf, &dirs.build.sa);
+  buffer_putsa(debug_buf, &dirs.obj.sa);
   buffer_puts(debug_buf, "\n\toutdir = ");
   buffer_putsa(debug_buf, &dirs.out.sa);
   buffer_puts(debug_buf, "\n\tcmd = ");
@@ -815,18 +815,18 @@ input_process_line(const char* x, size_t n, const char* file, size_t line) {
       stralloc_init(&fullpath);
       path_getcwd(&cwd);
       stralloc_nul(&cwd);
-      strlist_nul(&dirs.build);
+      strlist_nul(&dirs.obj);
 
-      same_dir = stralloc_equal(&cwd, &dirs.build.sa);
+      same_dir = stralloc_equal(&cwd, &dirs.obj.sa);
 
       if(!same_dir) {
         errno = 0;
 
-        if(chdir(dirs.build.sa.s) == -1)
-          errmsg_warnsys("chdir(): ", dirs.build.sa.s, 0);
+        if(chdir(dirs.obj.sa.s) == -1)
+          errmsg_warnsys("chdir(): ", dirs.obj.sa.s, 0);
       }
 
-      stralloc_copy(&fullpath, &dirs.build.sa);
+      stralloc_copy(&fullpath, &dirs.obj.sa);
       stralloc_catc(&fullpath, PATHSEP_C);
       stralloc_catb(&fullpath, x, i);
       stralloc_nul(&fullpath);

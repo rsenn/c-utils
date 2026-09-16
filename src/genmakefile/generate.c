@@ -737,7 +737,12 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
 
   stralloc_zero(&bin);
 
-  if(!cmd_libs) {
+  {
+    /* the program's linked binary is anchored under dirs.bin (dirs.obj
+     * by default, unless -k/--bindir was given), never under dirs.obj
+     * itself -- keep this in sync with generate_link_rules()'s
+     * output_name rename and generate_module_rules()'s module output,
+     * which are also linker outputs. */
     stralloc outname;
 
     stralloc_init(&outname);
@@ -747,10 +752,8 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
       outname.len -= 2;
 
     stralloc_nul(&outname);
-    path_output(outname.s, &bin, exts.bin, psa);
+    path_output_bin(outname.s, &bin, exts.bin, psa);
     stralloc_free(&outname);
-  } else {
-    path_extension(obj.s, &bin, exts.bin);
   }
 
   all = rule_get("all");
@@ -995,7 +998,7 @@ generate_module_rules(char psa, char psm) {
       outname.len -= str_len(exts.src);
 
     stralloc_nul(&outname);
-    path_output(outname.s, &mod, exts.slib, psa);
+    path_output_bin(outname.s, &mod, exts.slib, psa);
 
     add_path_b(&all->prereq, mod.s, mod.len);
 

@@ -1412,9 +1412,11 @@ usage(char* argv0) {
                        //"  -R, --objdir   DIR        object directory\n"
                        "  -O, --outdir   DIR        output directory\n"
                        "  -d, --builddir DIR        build directory\n"
-                       "  -a, --arch                set architecture\n"
+                       "  -k, --bindir   DIR        binary directory (defaults to --builddir)\n"
+                       "\n"
+                       "  -a, --arch   MACHINE      set architecture\n"
                        "  -s, --system OS           set operating system\n"
-                       "  -c, --cross TARGET        set cross compiler\n"
+                       "  -c, --cross  TARGET       set cross compiler\n"
                        "\n"
                        "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
                        "  -I, --include-path DIR    add an include directory\n"
@@ -1551,7 +1553,7 @@ resolve_toolchain(const char* argv0) {
     {
       strlist tmp;
       strlist_init(&tmp, '\0');
-      stralloc_copy(&tmp.sa, &dirs.build.sa);
+      stralloc_copy(&tmp.sa, &dirs.obj.sa);
 
       if(outfile)
         strlist_push(&tmp, outfile);
@@ -1613,12 +1615,16 @@ resolve_toolchain(const char* argv0) {
 }
 
 /**
- * @brief      Resolve dirs.work/out/build/this to their final values and
- *             make dirs.out/dirs.build absolute, canonical and collapsed.
+ * @brief      Resolve dirs.work/out/obj/bin/this to their final values and
+ *             make dirs.out/dirs.obj/dirs.bin absolute, canonical and
+ *             collapsed.
  *
  *             `-w`/`--workdir` (dirs.work) is honored if the user gave it
  *             explicitly; otherwise it falls back to outfile's dirname or
  *             the literal "build".
+ *
+ *             `-k`/`--bindir` (dirs.bin) is honored if the user gave it
+ *             explicitly; otherwise it defaults to dirs.obj.
  */
 static void
 resolve_directories(void) {
@@ -1637,9 +1643,9 @@ resolve_directories(void) {
   if(dirs.out.sa.len == 0)
     path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
 
-  if(dirs.build.sa.len == 0) {
+  if(dirs.obj.sa.len == 0) {
     if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
-      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
+      stralloc_copy(&dirs.obj.sa, &dirs.work.sa);
 
     } else if(tools.toolchain && !strlist_contains(&dirs.this, "build")) {
       stralloc target;
@@ -1653,20 +1659,20 @@ resolve_directories(void) {
       }
 
       stralloc_nul(&target);
-      stralloc_copy(&dirs.build.sa, &dirs.work.sa);
+      stralloc_copy(&dirs.obj.sa, &dirs.work.sa);
 
       if(cross_compile && *cross_compile) {
-        strlist_push(&dirs.build, cross_compile);
+        strlist_push(&dirs.obj, cross_compile);
       } else {
-        strlist_push_sa(&dirs.build, &target);
-        stralloc_catc(&dirs.build.sa, '-');
-        stralloc_cats(&dirs.build.sa, build_types[cfg.build_type]);
+        strlist_push_sa(&dirs.obj, &target);
+        stralloc_catc(&dirs.obj.sa, '-');
+        stralloc_cats(&dirs.obj.sa, build_types[cfg.build_type]);
       }
 
       stralloc_free(&target);
     }
 
-    stralloc_replacec(&dirs.build.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
+    stralloc_replacec(&dirs.obj.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
   }
 
   if(dirs.work.sa.len == 0)
@@ -1676,13 +1682,21 @@ resolve_directories(void) {
   path_canonical_sa(&dirs.out.sa);
   path_collapse_sa(&dirs.out.sa);
 
-  path_absolute_sa(&dirs.build.sa);
-  path_canonical_sa(&dirs.build.sa);
-  path_collapse_sa(&dirs.build.sa);
+  path_absolute_sa(&dirs.obj.sa);
+  path_canonical_sa(&dirs.obj.sa);
+  path_collapse_sa(&dirs.obj.sa);
+
+  if(dirs.bin.sa.len == 0)
+    stralloc_copy(&dirs.bin.sa, &dirs.obj.sa);
+
+  path_absolute_sa(&dirs.bin.sa);
+  path_canonical_sa(&dirs.bin.sa);
+  path_collapse_sa(&dirs.bin.sa);
 
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
-  strlist_nul(&dirs.build);
+  strlist_nul(&dirs.obj);
+  strlist_nul(&dirs.bin);
   strlist_nul(&dirs.work);
 }
 
@@ -1728,7 +1742,7 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
     stralloc_zero(&tmp);
   }
 
-  path_relative_to(dirs.build.sa.s, dirs.out.sa.s, &tmp);
+  path_relative_to(dirs.obj.sa.s, dirs.out.sa.s, &tmp);
 
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
@@ -1738,7 +1752,7 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
   if(stralloc_diffs(&dirs.work.sa, "."))
     mkdir_components(&dirs.work, 0755);
 
-  mkdir_components(&dirs.build, 0755);
+  mkdir_components(&dirs.obj, 0755);
 
   stralloc_free(&tmp);
 }
@@ -2075,7 +2089,7 @@ finalize_build_metadata(void) {
   if(str_start(tools.make, "g")) {
     stralloc builddir, workabs;
 
-    /* dirs.build.sa was made absolute above (path_absolute_sa), but
+    /* dirs.obj.sa was made absolute above (path_absolute_sa), but
      * dirs.work.sa never is -- path_relative_to() needs both sides
      * absolute to produce a sane result, so resolve a throwaway
      * absolute copy of dirs.work.sa here (same trick path_output2()
@@ -2084,7 +2098,7 @@ finalize_build_metadata(void) {
     path_absolute(dirs.work.sa.s, &workabs);
 
     stralloc_init(&builddir);
-    path_relative_to_sa(&dirs.build.sa, &workabs, &builddir);
+    path_relative_to_sa(&dirs.obj.sa, &workabs, &builddir);
     stralloc_nul(&builddir);
 
     if(!stralloc_endc(&builddir, PATHSEP_C))
@@ -2278,8 +2292,8 @@ dump_state(void) {
   buffer_putsa(debug_buf, &dirs.work.sa);
   buffer_puts(debug_buf, "\" dirs.out=\"");
   buffer_putsa(debug_buf, &dirs.out.sa);
-  buffer_puts(debug_buf, "\" dirs.build=\"");
-  buffer_putsa(debug_buf, &dirs.build.sa);
+  buffer_puts(debug_buf, "\" dirs.obj=\"");
+  buffer_putsa(debug_buf, &dirs.obj.sa);
   buffer_puts(debug_buf, "\" dirs.this=\"");
   buffer_putsa(debug_buf, &dirs.this.sa);
   buffer_putc(debug_buf, '"');
@@ -2353,7 +2367,7 @@ write_makefile_output(buffer* out, strlist* cmdline) {
     stralloc tmp;
 
     stralloc_init(&tmp);
-    path_relative_to_sa(&dirs.build.sa, &dirs.out.sa, &tmp);
+    path_relative_to_sa(&dirs.obj.sa, &dirs.out.sa, &tmp);
 
     while(stralloc_endb(&tmp, &pathsep_args, 1))
       tmp.len--;
@@ -2456,6 +2470,7 @@ main(int argc, char* argv[]) {
       {"objdir", 1, 0, 'R'},
       {"outdir", 1, 0, 'O'},
       {"builddir", 1, 0, 'd'},
+      {"bindir", 1, 0, 'k'},
       {"workdir", 1, 0, 'w'},
       {"compiler-type", 1, 0, 't'},
       {"make-type", 1, 0, 'm'},
@@ -2536,7 +2551,8 @@ main(int argc, char* argv[]) {
 
   strlist_init(&dirs.this, pathsep_make);
   strlist_init(&dirs.out, pathsep_make);
-  strlist_init(&dirs.build, pathsep_make);
+  strlist_init(&dirs.obj, pathsep_make);
+  strlist_init(&dirs.bin, pathsep_make);
   strlist_init(&dirs.work, pathsep_make);
 
   exts.src = ".c";
@@ -2544,7 +2560,7 @@ main(int argc, char* argv[]) {
 
   for(;;) {
     const char* arg;
-    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:", opts, &index);
+    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:", opts, &index);
 
     if(c == -1)
       break;
@@ -2604,7 +2620,12 @@ main(int argc, char* argv[]) {
 
       case 'd': {
         //  dir = arg;
-        stralloc_copys(&dirs.build.sa, arg);
+        stralloc_copys(&dirs.obj.sa, arg);
+        break;
+      }
+
+      case 'k': {
+        stralloc_copys(&dirs.bin.sa, arg);
         break;
       }
 

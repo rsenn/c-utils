@@ -63,10 +63,11 @@
 #define rule_foreach(it, r) MAP_FOREACH_VALUE(rules, it, r)
 
 typedef struct {
-  strlist work;
-  strlist build;
-  strlist out;
-  strlist this;
+  strlist work;  /* -w/--workdir/outfile dir/"build"; relative; written verbatim into the Makefile (VPATH, rule/target-name prefixes) -- never used to compute anything */
+  strlist obj;   /* object output dir; absolute+canonical; anchors BUILDDIR/object paths */
+  strlist bin;   /* -k/--bindir; linker output dir; absolute+canonical; defaults to dirs.obj */
+  strlist out;   /* -O/--outdir, else dirs.this+dirs.work; absolute+canonical; assumed cwd `make` is invoked from, used only to compute the relative paths *written into* the Makefile -- never itself written, and independent of where the Makefile file is actually saved (-o, resolved against the real cwd) */
+  strlist this;  /* invocation dir or --infile's dirname; absolute; anchors CLI-relative paths */
 } dirs_t;
 
 typedef struct {

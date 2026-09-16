@@ -82,21 +82,23 @@ path_extension(const char* in, stralloc* out, const char* ext) {
 }
 
 /**
- * @brief      Returns an output path
+ * @brief      Returns an output path anchored under an arbitrary directory
+ *             (dirs.obj, dirs.bin, ...) instead of dirs.work
  *
  * @param[in]  in    Input path
  * @param      out   Output path
  * @param[in]  ext   Extension
- * @param[in]  psa    Path separator for arguments
+ * @param[in]  psa   Path separator for arguments
+ * @param[in]  dir   Directory to anchor the output path under
  *
  * @return     Path string
  */
-char*
-path_output2(const char* in, stralloc* out, const char* ext, char psa) {
+static char*
+path_output2_dir(const char* in, stralloc* out, const char* ext, char psa, const stralloc* dir) {
   stralloc abs;
   stralloc_init(&abs);
   path_absolute(dirs.work.sa.s, &abs);
-  path_relative_to_sa(&dirs.build.sa, &abs, out);
+  path_relative_to_sa(dir, &abs, out);
   stralloc_free(&abs);
 
   if(stralloc_equals(out, "."))
@@ -108,7 +110,22 @@ path_output2(const char* in, stralloc* out, const char* ext, char psa) {
 }
 
 /**
- * @brief      Returns an output path
+ * @brief      Returns an output path anchored under dirs.obj
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ * @param[in]  psa    Path separator for arguments
+ *
+ * @return     Path string
+ */
+char*
+path_output2(const char* in, stralloc* out, const char* ext, char psa) {
+  return path_output2_dir(in, out, ext, psa, &dirs.obj.sa);
+}
+
+/**
+ * @brief      Returns an output path anchored under dirs.obj
  *
  * @param[in]  in    Input path
  * @param      out   Output path
@@ -120,6 +137,38 @@ path_output2(const char* in, stralloc* out, const char* ext, char psa) {
 char*
 path_output(const char* in, stralloc* out, const char* ext, char psa) {
   return path_output2(str_basename(in), out, ext, psa);
+}
+
+/**
+ * @brief      Returns a linker output path anchored under dirs.bin
+ *             (dirs.obj by default, unless -k/--bindir was given)
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ * @param[in]  psa    Path separator for arguments
+ *
+ * @return     Path string
+ */
+char*
+path_output2_bin(const char* in, stralloc* out, const char* ext, char psa) {
+  return path_output2_dir(in, out, ext, psa, &dirs.bin.sa);
+}
+
+/**
+ * @brief      Returns a linker output path anchored under dirs.bin
+ *             (dirs.obj by default, unless -k/--bindir was given)
+ *
+ * @param[in]  in    Input path
+ * @param      out   Output path
+ * @param[in]  ext   Extension
+ * @param[in]  psa    Path separator for arguments
+ *
+ * @return     Path string
+ */
+char*
+path_output_bin(const char* in, stralloc* out, const char* ext, char psa) {
+  return path_output2_bin(str_basename(in), out, ext, psa);
 }
 
 /**

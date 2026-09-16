@@ -404,11 +404,16 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
   if(rule_name) {
     stralloc path;
+    /* a "link" rule's own output is the linked binary, which lives
+     * under dirs.bin (dirs.obj by default, unless -k/--bindir was
+     * given) -- everything else ("cc"/"lib" outputs, and a link rule's
+     * own prereqs below) still lives under dirs.obj. */
+    const char* out_dir = str_equal(rule_name, "link") ? dirs.bin.sa.s : dirs.obj.sa.s;
 
     stralloc_init(&path);
     set_at_sa(&rule->output, 0, &path);
 
-    stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
+    stralloc_replaces(&path, out_dir, "$objdir");
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
@@ -446,7 +451,7 @@ output_ninja_target(buffer* b, target* rule, char psa) {
     stralloc_nul(&path);
 
     stralloc_replacec(&path, psa == '/' ? '\\' : '/', psa == '/' ? '/' : '\\');
-    stralloc_replaces(&path, dirs.build.sa.s, "$objdir");
+    stralloc_replaces(&path, dirs.obj.sa.s, "$objdir");
 
     buffer_putsa(b, &path);
     buffer_putnlflush(b);
