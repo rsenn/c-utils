@@ -30,7 +30,8 @@ path_collapse(char* path, size_t n) {
         if(l > n)
           l = n;
 
-      move:
+      move: {
+        int at_end;
 
         if(l < n)
           memmove(&x[i], &x[l], n - l);
@@ -38,13 +39,28 @@ path_collapse(char* path, size_t n) {
         n = i + (n - l);
         x[n] = '\0';
 
+        /* i == n here means nothing follows the just-removed segment --
+         * the whole tail of the string was cancelled away. Backing i up
+         * past the separator that used to lead into that segment is
+         * then not just repositioning the rescan cursor, it's also
+         * uncovering a now-trailing separator that must be dropped from
+         * the reported length too (e.g. ".../test/dir/.." collapsing
+         * to ".../test", not ".../test/"). */
+        at_end = (i == n);
+
         while(i > 0 && x[i - 1] == sep)
           --i;
+
+        if(at_end) {
+          n = i;
+          x[n] = '\0';
+        }
 
         while(i > 0 && x[i] != sep)
           i--;
 
         continue;
+      }
       }
 
       if(l + 1 <= n && x[l] == '.') {

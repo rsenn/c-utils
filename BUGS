@@ -47,22 +47,6 @@
   there's no separator). Confirmed via `tests/test_path.c`'s
   `test_path_basename`.
 
-- path-skips-resets-position: `path_skips()` in `lib/path/path_skips.c`
-  is supposed to skip one path component (a run of non-separator chars)
-  plus its trailing separator run, cumulatively -- e.g. repeated calls
-  over `"//blah/la/lumpur"` should land at offsets 2, 7, 10. Instead it
-  always returns 0 unless the string starts with a separator, and even
-  then only ever returns the length of a single leading separator run.
-  Root cause: the function has two back-to-back for-loops -- the first
-  correctly advances `i` past the non-separator "name" part, but the
-  second loop starts with `for(i = 0; ...)`, resetting `i` back to 0 and
-  discarding everything the first loop found, so only the second loop's
-  separator-skipping ever has any effect. There's a correct, simpler
-  commented-out implementation directly below it in the same file (skip
-  non-separators, then skip separators, return total distance) that
-  matches the behavior `tests/test_path.c`'s `test_path_skips` expects --
-  the active version looks like a botched UTF-8-aware rewrite of it.
-
 - fmt-escapecharhtml-undeclared: `fmt_escapecharhtml()` is defined (as a
   GNU `__attribute__((alias))` to `fmt_escapecharxml` in
   `lib/fmt/fmt_escapecharxml.c`, or directly in
@@ -152,16 +136,23 @@
   branch is skipped (`dir_size` returns -1) rather than asserting an
   actual size on this platform.
 
-- dir-path-missing-directory-prefix: `dir_path()` (`lib/dir/dir_path.c`)
-  is supposed to build the full path of the current directory entry into
-  `sa`, but on the `USE_READDIR` (POSIX) branch the only line that would
-  populate the directory portion is commented out (`// stralloc_copys(sa,
-  dh->__d_dirname);`). As written, `dir_path()` on Linux/POSIX appends
-  just the entry's basename (via `dir_NAME(d)`) to whatever `sa` already
-  contained -- the directory the entry lives in never gets written, so
-  `sa` ends up holding only the filename instead of `dir/file`. Found
-  while writing `tests/test_dir.c`; the test asserts the current
-  (basename-only) result rather than the intended full path.
+- dir-path-missing-directory-prefix (fixed, for the record): `dir_path()`
+  (`lib/dir/dir_path.c`) is supposed to build the full path of the
+  current directory entry into `sa`, but on the `USE_READDIR` (POSIX)
+  branch the only line that would populate the directory portion was
+  commented out (`// stralloc_copys(sa, dh->__d_dirname);` --
+  `__d_dirname` is a glibc-private `DIR` field anyway, not something to
+  rely on). As written, `dir_path()` on Linux/POSIX appended just the
+  entry's basename (via `dir_NAME(d)`), so `sa` ended up holding only
+  the filename instead of `dir/file`. Fixed by copying from
+  `dir_INTERNAL(d)->dir_path` instead -- the path `dir_open()` was
+  given, already stashed there via `str_dup(p)` for exactly this
+  purpose (see `dir_open.c`, and `dir_time.c`'s identical read of the
+  same field) -- plus a `/` separator before the entry name, since
+  (unlike the Windows branch, whose stored path always ends in `\*`)
+  the POSIX path has no guaranteed trailing separator. `tests/test_dir.c`'s
+  `test_dir_path` (previously asserting the broken basename-only
+  result) now asserts the full `dir/file` path.
 
 - taia-fmtfrac-unimplemented: `taia_fmtfrac()` is declared in
   `lib/taia.h` but has no implementation anywhere in the tree -- no
@@ -429,45 +420,80 @@
   machine" issues look like); `make`/`gmake`/`ninja`/`batch` output
   unaffected (already using the ordered iterator).
 
-- genmakefile-sdcc-xc8cc-link-recipe-heap-overflow (not fixed): found
-  by running the fixes above's verification through
-  `tests/genmakefile/testsuite.sh --all` under AddressSanitizer (not
-  previously done -- the earlier ASan verification passes in this file
-  only covered `exec.log`/`exec.log1`, not this test matrix). `-t sdcc`
-  and `-t xc8-cc` (any build tool, e.g. plain `-m make`) crash
-  `genmakefile` itself with a heap-buffer-overflow, before any output
-  is written:
-  ```
-  READ of size 1 ... in byte_copy lib/byte/byte_copy.c:12
-    in stralloc_ready lib/stralloc/stralloc_ready.c:24
-    in stralloc_readyplus lib/stralloc/stralloc_readyplus.c:13
-    in stralloc_nul lib/stralloc/stralloc_nul.c:5
-    in generate_program_rule src/genmakefile/generate.c:821
-    in generate_link_rules src/genmakefile/generate.c:923
-    in generate_all_rules genmakefile.c:2180
-  0x... is located 0 bytes after 103-byte region ...
-  allocated by ... in stralloc_copyb ... in set_command genmakefile.c:621
-    in set_compiler_type genmakefile.c:1595(via resolve_toolchain)
-  ```
-  `generate.c:821` is `stralloc_weak(&rule->recipe, &commands.link);
-  stralloc_nul(&rule->recipe);`. The 103-byte allocation is
-  `commands.link`'s *generic default* (`set_compiler_type()`,
-  genmakefile.c:621-623, before any per-compiler branch runs); both
-  sdcc (genmakefile.c:1063) and xc8-cc (~1253) later overwrite
-  `commands.link` with a *shorter* string via `stralloc_copys()`, which
-  reuses the same buffer in place rather than reallocating -- but
-  `stralloc_nul()` still ends up trying to grow past the original
-  103-byte capacity, reading 1 byte past it. Reproduces 100% (not
-  order/hash-seed dependent, unlike the two bugs above) with a minimal
-  3-file tree via `genmakefile -t sdcc -m make ... --create-bins
-  --create-libs -a pic18 -p 18f25k50 --debug` (sdcc doesn't support
-  `--create-libs` and warns "ignoring", but still proceeds down this
-  path). Does not reproduce with `-t gcc`. Needs tracing through
-  `stralloc_copys()`/`stralloc_ready()`'s capacity (`.a`) bookkeeping
-  after an in-place shrink to find why a later `stralloc_nul()` thinks
-  it needs to grow. Not investigated further -- out of scope for the
-  shell-mode fixes above, and this crash is in `genmakefile` itself
-  rather than in either output the shell fixes touched.
+- stralloc-ready-weak-alias-overread (fixed, for the record): the real
+  root cause of what was first reported as
+  `genmakefile-sdcc-xc8cc-link-recipe-heap-overflow`. `stralloc_ready()`
+  (`lib/stralloc/stralloc_ready.c`) handles the "not owned, but not
+  NULL either" case (`sa->a == 0 && sa->s != NULL` -- genmakefile's own
+  `stralloc_weak()` puts a stralloc in exactly this state to alias
+  another one's buffer without copying) by mallocing a new, bigger
+  buffer and calling `byte_copy(tmp, len, sa->s)` -- but `len` there is
+  the *newly requested target size*, not how much of `sa->s` is
+  actually valid/readable. Growing a weak-aliased stralloc (e.g. via
+  `stralloc_nul()`'s `+1`) therefore read past the end of the buffer it
+  was only borrowing. Reproduced via `genmakefile -t sdcc -m make
+  --create-bins --create-libs -a pic18 -p 18f25k50 --debug` (also
+  `-t xc8-cc`), which crashed with a heap-buffer-overflow in
+  `generate_program_rule()` (`src/genmakefile/generate.c:821`,
+  `stralloc_weak(&rule->recipe, &commands.link);
+  stralloc_nul(&rule->recipe);`) before any output was written --
+  100% reproducible, not order/hash-seed dependent. Fixed by copying
+  `sa->len` bytes (the borrowed buffer's actual valid length) instead
+  of `len` (the target capacity); the general `lib/stralloc` module was
+  the actual bug, not anything genmakefile-specific. Verified: both
+  `-t sdcc`/`-t xc8-cc` repros now exit 0 clean under ASan;
+  `tests/genmakefile/testsuite.sh --all` passes 200/200
+  non-environment-dependent cases under both the release and the ASan
+  build (previously the ASan build hadn't been run against this test
+  matrix at all -- only `exec.log`/`exec.log1` had been ASan-verified).
+
+- path-skips-resets-position (fixed, for the record): `path_skips()`
+  (`lib/path/path_skips.c`) is supposed to skip one path component (a
+  run of non-separator chars) plus its trailing separator run,
+  cumulatively -- e.g. repeated calls over `"//blah/la/lumpur"` should
+  land at offsets 2, 7, 10. It always returned 0 unless the string
+  started with a separator, and even then only ever returned the
+  length of a single leading separator run. Root cause: the function
+  had two back-to-back for-loops -- the first correctly advanced `i`
+  past the non-separator "name" part, but the second loop started with
+  `for(i = 0; ...)`, resetting `i` back to 0 and discarding everything
+  the first loop found. Fixed by having the second loop continue from
+  where the first left off instead of resetting. `tests/test_path.c`'s
+  `test_path_skips` now passes.
+
+- path-collapse-trailing-separator-not-trimmed (fixed, for the record):
+  found while re-verifying `path_collapse()`'s earlier
+  pairwise-`..`-cancellation fix (see
+  `genmakefile-path-collapse-strlist-at-u8len-chain` above) against
+  `tests/test_path.c`'s `test_path_collapse`, which was still failing.
+  Collapsing a trailing `component/..` pair at the very end of a path
+  (e.g. `"/this/is/a/test/dir/.."` -> `"/this/is/a/test"`) left a stray
+  trailing separator (`"/this/is/a/test/"`, one byte too long): the
+  `move:` block backs its rescan cursor `i` up past the separator that
+  used to lead into the removed segment (needed so a *following*
+  component, if any, gets correctly rescanned including its own
+  leading separator), but never applied that same backed-up position to
+  `n` (the reported length) for the case where nothing follows --
+  i.e. the backed-over separator is now a genuinely trailing one that
+  should have been dropped, not just skipped past for rescanning.
+  Fixed by detecting that case (`i == n` right after the segment
+  removal, before backing `i` up) and shrinking `n` to match.
+
+- strlist-push-tokens-overreads-last-token (fixed, for the record):
+  found via a global-buffer-overflow while running the full test suite
+  under AddressSanitizer for the first time this session (previously
+  only `tests/genmakefile/testsuite.sh` and targeted repros had been
+  ASan-verified, not `tests/test_*.c` as a whole). `strlist_push_tokens()`
+  (`lib/strlist/strlist_push_tokens.c`) advances its scan position by
+  `n + len` every iteration, where `n = str_find(&s[p], delim)` and
+  `len = str_len(delim)` -- but `str_find()` returns the *remaining
+  length* (not found) for the last token, since real input normally
+  doesn't end with a trailing delimiter. Advancing past that sentinel
+  by `+ len` anyway moved `p` beyond the string's NUL terminator, and
+  the loop condition (`s[p]`) then read out of bounds -- reliably, for
+  any normal (non-trailing-delimiter) input, not an edge case. Fixed by
+  stopping the loop once the just-pushed token reached the string's end
+  (`s[p + n] == '\0'`) instead of continuing to advance past it.
 
 - genmakefile-exits-without-freeing (not fixed, low priority): the
   same AddressSanitizer run above reports ~344MB across ~93k

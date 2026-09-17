@@ -123,15 +123,14 @@ TEST(test_dir_time) {
 /*
  * void dir_path(struct dir_s* d, stralloc* sa);
  *
- * On the POSIX (opendir/readdir) backend, dir_path() only ever appends
- * the entry's basename -- the directory-prefixing line is commented out
- * in the implementation, so `sa` never gets the directory portion. See
- * BUGS (dir-path-missing-directory-prefix).
+ * Builds the full path (directory + entry name) of the current
+ * directory entry into `sa`.
  */
 TEST(test_dir_path) {
   struct dir_s d;
   char path[] = "/tmp/c-utils-test-dir-path-XXXXXX";
   char file[64];
+  char expect[64];
   char* name;
   int fd;
   stralloc sa;
@@ -143,6 +142,9 @@ TEST(test_dir_path) {
   str_copy(file, path);
   str_cat(file, "/f");
 
+  str_copy(expect, path);
+  str_cat(expect, "/f");
+
   fd = open(file, O_CREAT | O_WRONLY, 0644);
   ASSERT_NE(-1, fd);
   close(fd);
@@ -152,7 +154,7 @@ TEST(test_dir_path) {
   while((name = dir_read(&d))) {
     if(!str_diff(name, "f")) {
       dir_path(&d, &sa);
-      ASSERT_EQ(0, stralloc_diffs(&sa, "f"));
+      ASSERT_EQ(0, stralloc_diffs(&sa, expect));
     }
   }
 
