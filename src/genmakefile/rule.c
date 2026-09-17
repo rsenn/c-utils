@@ -386,7 +386,6 @@ rule_command(target* rule,
   size_t len;
   const char* pfx = 0;
   char *s, from = psa == '/' ? '\\' : '/';
-  set_iterator_t it;
   strlist prereq;
 
   strlist_init(&prereq, ' ');
@@ -395,12 +394,22 @@ rule_command(target* rule,
     // pfx = "-+";
   }
 
-  set_foreach(&rule->prereq, it, s, len) {
-    if(pfx) {
-      strlist_push(&prereq, pfx);
-      stralloc_catb(&prereq.sa, s, len);
-    } else {
-      strlist_pushb_unique(&prereq, s, len);
+  {
+    bucket_t* bit;
+
+    /* ordered, matching output_make_rule()/output_ninja_target()'s use
+     * of set_foreach_ordered() for the same rule->prereq set -- for
+     * make/ninja, $^'s order comes from that deterministic listing; a
+     * plain (hash-order, effectively arbitrary) set_foreach() here
+     * would let a link rule's $^ place an archive before an object
+     * file that references it, breaking single-pass linkers. */
+    set_foreach_ordered(&rule->prereq, bit, s, len) {
+      if(pfx) {
+        strlist_push(&prereq, pfx);
+        stralloc_catb(&prereq.sa, s, len);
+      } else {
+        strlist_pushb_unique(&prereq, s, len);
+      }
     }
   }
 

@@ -102,7 +102,11 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
 
         if(tool == TOOL_NINJA || tool == TOOL_SHELL) {
           stralloc_zero(&v);
-          transform_subst_sa(&u, &v, "$", "", 1);
+          /* shell variable names are never lowercased (unlike ninja's,
+           * see stralloc_lower(&v) above) -- lowering a nested $(NAME)
+           * reference here would point at a shell variable that was
+           * never defined. */
+          transform_subst_sa(&u, &v, "$", "", tool == TOOL_NINJA);
         } else if(tool == TOOL_BATCH) {
           stralloc_zero(&v);
           transform_subst_sa(&u, &v, "%", "%", 1);
@@ -561,6 +565,30 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
     --serial;
     rule = rule_get("all");
     --serial;
+
+    /* emit every directory-creation rule up front, before anything
+     * that might write into it. generate_auxiliary_rules() (genmakefile.c)
+     * only ever adds a directory's mkdir rule as a *sibling*
+     * prerequisite of "all", not as a real dependency edge of the
+     * rule(s) that actually write into that directory (a real edge
+     * would corrupt rule_command()'s use of rule->prereq as the
+     * recipe's own input-file list, e.g. an archive rule's "$^").
+     * make/ninja resolve this via their own dependency-graph
+     * scheduling regardless of "all"'s prereq order; output_script()
+     * has no such thing -- its only ordering signal between two
+     * siblings under "all" is set_foreach()'s unspecified iteration
+     * order, so without this the first rule to write into a given
+     * directory can run before that directory's mkdir. */
+    {
+      MAP_PAIR_T t;
+
+      MAP_FOREACH(rule_map, t) {
+        target* dir_rule = MAP_ITER_VALUE(t);
+
+        if(dir_rule->recipe.s == commands.mkdir.s && dir_rule->serial != serial)
+          output_script(b, dir_rule, tool, quote, psa, sep);
+      }
+    }
   }
 
   if(rule->serial == serial)
