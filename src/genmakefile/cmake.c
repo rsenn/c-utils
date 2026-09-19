@@ -2,7 +2,17 @@
 #include "../../genmakefile.h"
 #include "../../debug.h"
 #include "cmake.h"
+#include "input.h"
 #include "is.h"
+#include "../../lib/charbuf.h"
+#include "../../lib/json.h"
+#include "../../lib/io.h"
+
+#if WINDOWS_NATIVE
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
 
 /**
  * @brief      Output a variable to CMakeLists.txt
@@ -444,4 +454,103 @@ output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* inc
   output_cmake_rules(b, *rule_map);
 
   set_free(&libraries);
+}
+
+/**
+ * @brief      Feed the compile commands of a single compile_commands.json
+ *             entry to the input module, scoped to that entry's directory.
+ *
+ * @param      entry  A JSON_OBJECT with "directory"/"command" properties
+ * @param      all    All target
+ * @param[in]  file   Path of the compile_commands.json file (for diagnostics)
+ */
+static void
+input_cmake_compile_command(jsonval entry, target* all, const char* file) {
+  jsonval dir = json_property_get_str(entry, "directory");
+  jsonval cmd = json_property_get_str(entry, "command");
+  const char* dirstr = json_string_cstr(&dir);
+  const char* cmdstr = json_string_cstr(&cmd);
+
+  (void)all;
+
+  if(cmdstr) {
+    size_t dirlen = dirstr ? str_len(dirstr) : 0;
+
+    if(dirstr)
+      builddir_enter(dirstr, dirlen);
+
+    input_process_line(cmdstr, str_len(cmdstr), file, 0);
+
+    if(dirstr)
+      builddir_leave(dirstr, dirlen);
+  }
+}
+
+/**
+ * @brief      Parse a compile_commands.json file and feed each entry's
+ *             command to the input module.
+ *
+ * @param[in]  file  Path to compile_commands.json
+ * @param      all   All target
+ */
+static void
+input_cmake_compile_commands(const char* file, target* all) {
+  int fd = open_read(file);
+
+  if(fd >= 0) {
+    charbuf infile;
+    jsonval* doc;
+
+    charbuf_init(&infile, (read_fn*)(void*)&read, fd, 2);
+    doc = json_read_tree(&infile);
+
+    if(doc && doc->type == JSON_ARRAY) {
+      jsonitem* item;
+
+      for(item = json_array_items(*doc); item; item = item->next)
+        input_cmake_compile_command(item->value, all, file);
+    }
+
+    if(doc)
+      json_free(doc);
+
+    charbuf_close(&infile);
+    io_close(fd);
+  } else {
+    errmsg_warnsys("error opening '", file, "'", 0);
+  }
+}
+
+/**
+ * @brief      Recursively scan a CMake build directory for `link.txt` and
+ *             `compile_commands.json` files (the same set `find <builddir>
+ *             -iname "link.txt" -or -name compile_commands.json` would
+ *             find) and feed them to the input module: link.txt files go to
+ *             input_process_file(), compile_commands.json entries go to
+ *             input_process_line() (scoped per-entry via
+ *             builddir_enter()/builddir_leave()).
+ *
+ * @param[in]  builddir  CMake build directory to scan recursively
+ * @param      all       All target
+ */
+void
+input_cmake_builddir(const char* builddir, target* all) {
+  rdir_t rdir;
+
+  if(rdir_open(&rdir, builddir) == 0) {
+    const char* s;
+
+    while((s = rdir_read(&rdir))) {
+      const char* base = path_basename(s);
+
+      if(case_equals(base, "link.txt"))
+        input_process_file(s, all);
+      else if(str_equal(base, "compile_commands.json"))
+        input_cmake_compile_commands(s, all);
+    }
+
+    rdir_close(&rdir);
+  } else {
+    errmsg_warnsys("error opening '", builddir, "'", 0);
+  }
 }

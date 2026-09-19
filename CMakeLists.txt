@@ -1063,7 +1063,7 @@ program(elfwrsec buffer alloc elf mmap)
 program(pemkwingui buffer alloc pe mmap)
 program(genmakefile set env sig set case errmsg strarray dlist slist rdir dir
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
-        fmt byte str array safemult alloc)
+        fmt byte str array safemult alloc json charbuf io)
 program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
         stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix

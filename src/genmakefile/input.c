@@ -41,7 +41,7 @@ strlist common_flags_list = {{0}, ' '};
  * @param[in]  x     Directory string
  * @param[in]  len   Directory length
  */
-static void
+void
 builddir_enter(const char* x, size_t len) {
   stralloc tmp;
 
@@ -70,7 +70,7 @@ builddir_enter(const char* x, size_t len) {
  * @param[in]  x     Directory string
  * @param[in]  len   Directory length
  */
-static void
+void
 builddir_leave(const char* x, size_t len) {
 #ifdef DEBUG_OUTPUT_
   buffer_puts(debug_buf, "Leaving [");

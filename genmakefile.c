@@ -55,7 +55,8 @@ commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
 bool inst_bins = false, inst_libs = false;
-const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL, *infile = NULL, *project_name = NULL;
+const char *libpfx = DEFAULT_LIBPFX, *newline = "\n", *outfile = NULL, *infile = NULL, *project_name = NULL,
+           *cmake_builddir = NULL;
 exts_t exts = {
     .obj = DEFAULT_OBJEXT,
     .lib = DEFAULT_LIBEXT,
@@ -1391,13 +1392,19 @@ usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        str_basename(argv0),
-                       " [sources...]\n"
+                       " [common-options] [--] [target1-options...] -- [target2-options...] ...\n"
+                       "\n"
+                       "  Multiple targets may be given in one invocation, each with its own\n"
+                       "  options and sources, separated by a literal \"--\"; every target's rules\n"
+                       "  are generated into the same output file.\n"
                        "\n"
                        "Options\n"
                        "  -h, --help                show this help\n"
                        "\n"
                        "  -o, --output FILE         write to file\n"
-                       "  -f, --input-file FILE     read from input file\n"
+                       "  -f, --input-file FILE     read from build-log file\n"
+                       "  -M, --cmake-builddir DIR  read a CMake build directory recursively for\n"
+                       "                            link.txt/compile_commands.json\n"
                        "\n"
                        "  -T, --objext EXT          object file extension\n"
                        "  -B, --exeext EXT          binary file extension\n"
@@ -2024,7 +2031,7 @@ consume_positional_args(int argc, char** argv, strarray* args) {
 
   /* No arguments given */
 
-  if(strarray_size(args) == 0 && !infile) {
+  if(strarray_size(args) == 0 && !infile && !cmake_builddir) {
     buffer_putsflush(buffer_2, "ERROR: No arguments given\n\n");
     usage(argv[0]);
     return 1;
@@ -2439,133 +2446,58 @@ write_makefile_output(buffer* out, strlist* cmdline) {
 }
 
 /**
- * @brief      main
+ * @brief      Find the next literal "--" token, which delimits one
+ *             target's options/arguments from the next in the
+ *             `genmakefile [common-options] [--] [target1-opts] --
+ *             [target2-opts] ...` multi-target CLI syntax.
  *
- * @param      argc  The count of arguments
- * @param      argv  The arguments array
+ * @param[in]  argc  Argument count
+ * @param      argv  Argument vector
+ * @param[in]  from  Index to start searching at
  *
- * @return     0 on success
+ * @return     Index of the "--" token, or `argc` if none was found
  */
-int
-main(int argc, char* argv[]) {
-  strarray libs, libdirs, includes, args, sources;
-  strlist cmdline;
-  int c, ret = 0, index = 0;
-  const char *s, *objdir = NULL;
-  buffer filebuf, *out = buffer_1;
-  target *all = 0, *compile_target = 0;
-  struct unix_longopt opts[] = {
-      {"help", 0, NULL, 'h'},
-      {"objext", 1, NULL, 'T'},
-      {"exeext", 1, NULL, 'B'},
-      {"libext", 1, NULL, 'X'},
-      {"create-libs", 0, &cmd_libs, 1},
-      {"create-objs", 0, &cmd_objs, 1},
-      {"create-bins", 0, &cmd_bins, 1},
-      {"create-module", 0, &cmd_module, 1},
-      //{"create-bins", 0, 0, 'b'},
-      {"no-create-libs", 0, &cmd_libs, 0},
-      {"no-create-objs", 0, &cmd_objs, 0},
-      {"no-create-bins", 0, &cmd_bins, 0},
-      {"no-create-module", 0, &cmd_module, 0},
-      {"name", 0, 0, 'n'},
-      {"install", 0, 0, 'i'},
-      {"include-path", 0, 0, 'I'},
-      {"library-path", 0, 0, 'L'},
-      {"objdir", 1, 0, 'R'},
-      {"outdir", 1, 0, 'O'},
-      {"builddir", 1, 0, 'd'},
-      {"bindir", 1, 0, 'k'},
-      {"workdir", 1, 0, 'w'},
-      {"compiler-type", 1, 0, 't'},
-      {"make-type", 1, 0, 'm'},
-      {"arch", 1, 0, 'a'},
-      {"system", 1, 0, 's'},
-      {"release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
-      {"Release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
-      {"relwithdebinfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
-      {"RelWithDebInfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
-      {"minsizerel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
-      {"MinSizeRel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
-      {"debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
-      {"Debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
-      {"define", 1, NULL, 'D'},
-      {"build-as-lib", 0, 0, 'S'},
-      {"input-file", 0, 0, 'f'},
-      {"cross", 0, 0, 'c'},
-      {"chip", 1, 0, 'p'},
-      {"preprocessor", 1, 0, 'P'},
-      {"lang-c", 0, &cfg.lang, LANG_C},
-      {"width", 0, &output_width, 'W'},
-      {"cxx", 0, &cfg.lang, LANG_CXX},
-      {"c++", 0, &cfg.lang, LANG_CXX},
-      {0, 0, 0, 0},
-  };
+static int
+find_target_separator(int argc, char* argv[], int from) {
+  int i;
 
-  strarray_init(&sources);
-  strarray_init(&args);
-  strarray_init(&libs);
-  strarray_init(&libdirs);
-  strarray_init(&includes);
+  for(i = from; i < argc; i++) {
+    if(str_equal(argv[i], "--"))
+      return i;
+  }
 
-#if !WINDOWS_NATIVE
-  sig_ignore(SIGTRAP);
-#endif
-  errmsg_iam(argv[0]);
-  uint32_seed(NULL, 0);
+  return argc;
+}
 
-#ifdef _MSC_VER
-  unix_optbuf = buffer_1;
-#endif
-
-  byte_zero(&cfg, sizeof(cfg));
-  byte_zero(&dirs, sizeof(dirs));
-  byte_zero(&rule_map, sizeof(rule_map));
-  byte_zero(&vars, sizeof(vars));
-  byte_zero(&bins, sizeof(bins));
-  byte_zero(&tools, sizeof(tools));
-  set_init(&link_libraries, 0);
-  set_init(&build_directories, 0);
-
-  MAP_NEW(sourcedir_map);
-  MAP_NEW(targetdirs);
-  MAP_NEW(rule_map);
-  MAP_NEW(vars);
-
-#if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
-  cfg.sys.os = OS_WIN;
-  cfg.sys.type = NTOS;
-#elif defined(__linux__) || defined(__unix__)
-  cfg.sys.os = OS_LINUX;
-  cfg.sys.type = UNIX;
-#elif defined(__APPLE__)
-  cfg.sys.os = OS_MAC;
-  cfg.sys.type = UNIX;
-#endif
-
-  pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
-  pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
-
-  if((s = env_get("PATH")) == 0)
-    s = "/usr/local/bin:/usr/bin:/bin";
-
-  path_split(s, &system_path, PATHSEP_C);
-  strlist_init(&vpath, ' ');
-  strlist_init(&cmdline, ' ');
-  strlist_fromv(&cmdline, (const char**)argv, argc);
-
-  strlist_init(&dirs.this, pathsep_make);
-  strlist_init(&dirs.out, pathsep_make);
-  strlist_init(&dirs.obj, pathsep_make);
-  strlist_init(&dirs.bin, pathsep_make);
-  strlist_init(&dirs.work, pathsep_make);
-
-  exts.src = ".c";
-  exts.inc = ".h";
+/**
+ * @brief      Parse one target's options (a `getopt_long()` loop over
+ *             `argv[unix_optind..argc)`, which must not include a "--"
+ *             separator -- callers scope `argc` to `find_target_separator()`
+ *             so permutation of positional args never crosses a target
+ *             boundary). Shared by the initial common+target1 parse and
+ *             every subsequent `--`-delimited target segment in main().
+ *
+ * @param[in]  argc      Argument count, scoped to end just before the next
+ *                        "--" (or the true argc if there is none)
+ * @param      argv      Argument vector
+ * @param      opts      Long-option table
+ * @param      libs      Receives -l arguments
+ * @param      libdirs   Receives -L arguments
+ * @param      includes  Receives -I arguments
+ *
+ * @return     0 on success, 1 if `-h/--help` was given (usage() already
+ *             printed, main() should return success), -1 on an option
+ *             error (already printed, main() should return failure)
+ */
+static int
+parse_target_options(
+    int argc, char* argv[], struct unix_longopt* opts, strarray* libs, strarray* libdirs, strarray* includes) {
+  int c, index = 0;
+  const char* arg;
+  const char* objdir = NULL;
 
   for(;;) {
-    const char* arg;
-    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:", opts, &index);
+    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:", opts, &index);
 
     if(c == -1)
       break;
@@ -2578,8 +2510,7 @@ main(int argc, char* argv[]) {
     switch(c) {
       case 'h': {
         usage(argv[0]);
-        ret = 0;
-        goto quit;
+        return 1;
       }
 
       case 'C': {
@@ -2695,8 +2626,13 @@ main(int argc, char* argv[]) {
         break;
       }
 
+      case 'M': {
+        cmake_builddir = arg;
+        break;
+      }
+
       case 'l': {
-        strarray_push(&libs, arg);
+        strarray_push(libs, arg);
         break;
       }
 
@@ -2712,12 +2648,12 @@ main(int argc, char* argv[]) {
       }
 
       case 'I': {
-        strarray_push(&includes, arg);
+        strarray_push(includes, arg);
         break;
       }
 
       case 'L': {
-        strarray_push(&libdirs, arg);
+        strarray_push(libdirs, arg);
         break;
       }
 
@@ -2725,7 +2661,7 @@ main(int argc, char* argv[]) {
       case 'x': {
         if(buffer_appendfile(&debug_buffer, arg)) {
           errmsg_warnsys("Failed opening ", arg, " for output", 0);
-          return 127;
+          return -1;
         }
 
         break;
@@ -2736,9 +2672,145 @@ main(int argc, char* argv[]) {
         buffer_putc(buffer_2, c);
         buffer_putsflush(buffer_2, "'\n");
         // usage(argv[0]);
-        ret = 1;
-        goto quit;
+        return -1;
     }
+  }
+
+  return 0;
+}
+
+/**
+ * @brief      main
+ *
+ * @param      argc  The count of arguments
+ * @param      argv  The arguments array
+ *
+ * @return     0 on success
+ */
+int
+main(int argc, char* argv[]) {
+  strarray libs, libdirs, includes, args, sources;
+  strlist cmdline;
+  int ret = 0, seg_argc;
+  const char* s;
+  buffer filebuf, *out = buffer_1;
+  target *all = 0, *compile_target = 0;
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"objext", 1, NULL, 'T'},
+      {"exeext", 1, NULL, 'B'},
+      {"libext", 1, NULL, 'X'},
+      {"create-libs", 0, &cmd_libs, 1},
+      {"create-objs", 0, &cmd_objs, 1},
+      {"create-bins", 0, &cmd_bins, 1},
+      {"create-module", 0, &cmd_module, 1},
+      //{"create-bins", 0, 0, 'b'},
+      {"no-create-libs", 0, &cmd_libs, 0},
+      {"no-create-objs", 0, &cmd_objs, 0},
+      {"no-create-bins", 0, &cmd_bins, 0},
+      {"no-create-module", 0, &cmd_module, 0},
+      {"name", 0, 0, 'n'},
+      {"install", 0, 0, 'i'},
+      {"include-path", 0, 0, 'I'},
+      {"library-path", 0, 0, 'L'},
+      {"objdir", 1, 0, 'R'},
+      {"outdir", 1, 0, 'O'},
+      {"builddir", 1, 0, 'd'},
+      {"bindir", 1, 0, 'k'},
+      {"workdir", 1, 0, 'w'},
+      {"compiler-type", 1, 0, 't'},
+      {"make-type", 1, 0, 'm'},
+      {"arch", 1, 0, 'a'},
+      {"system", 1, 0, 's'},
+      {"release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
+      {"Release", 0, &cfg.build_type, BUILD_TYPE_RELEASE},
+      {"relwithdebinfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
+      {"RelWithDebInfo", 0, &cfg.build_type, BUILD_TYPE_RELWITHDEBINFO},
+      {"minsizerel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
+      {"MinSizeRel", 0, &cfg.build_type, BUILD_TYPE_MINSIZEREL},
+      {"debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
+      {"Debug", 0, &cfg.build_type, BUILD_TYPE_DEBUG},
+      {"define", 1, NULL, 'D'},
+      {"build-as-lib", 0, 0, 'S'},
+      {"input-file", 0, 0, 'f'},
+      {"cmake-builddir", 1, 0, 'M'},
+      {"cross", 0, 0, 'c'},
+      {"chip", 1, 0, 'p'},
+      {"preprocessor", 1, 0, 'P'},
+      {"lang-c", 0, &cfg.lang, LANG_C},
+      {"width", 0, &output_width, 'W'},
+      {"cxx", 0, &cfg.lang, LANG_CXX},
+      {"c++", 0, &cfg.lang, LANG_CXX},
+      {0, 0, 0, 0},
+  };
+
+  strarray_init(&sources);
+  strarray_init(&args);
+  strarray_init(&libs);
+  strarray_init(&libdirs);
+  strarray_init(&includes);
+
+#if !WINDOWS_NATIVE
+  sig_ignore(SIGTRAP);
+#endif
+  errmsg_iam(argv[0]);
+  uint32_seed(NULL, 0);
+
+#ifdef _MSC_VER
+  unix_optbuf = buffer_1;
+#endif
+
+  byte_zero(&cfg, sizeof(cfg));
+  byte_zero(&dirs, sizeof(dirs));
+  byte_zero(&rule_map, sizeof(rule_map));
+  byte_zero(&vars, sizeof(vars));
+  byte_zero(&bins, sizeof(bins));
+  byte_zero(&tools, sizeof(tools));
+  set_init(&link_libraries, 0);
+  set_init(&build_directories, 0);
+
+  MAP_NEW(sourcedir_map);
+  MAP_NEW(targetdirs);
+  MAP_NEW(rule_map);
+  MAP_NEW(vars);
+
+#if defined(_WIN32) || defined(_WIN64) || WINDOWS_NATIVE
+  cfg.sys.os = OS_WIN;
+  cfg.sys.type = NTOS;
+#elif defined(__linux__) || defined(__unix__)
+  cfg.sys.os = OS_LINUX;
+  cfg.sys.type = UNIX;
+#elif defined(__APPLE__)
+  cfg.sys.os = OS_MAC;
+  cfg.sys.type = UNIX;
+#endif
+
+  pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
+  pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
+
+  if((s = env_get("PATH")) == 0)
+    s = "/usr/local/bin:/usr/bin:/bin";
+
+  path_split(s, &system_path, PATHSEP_C);
+  strlist_init(&vpath, ' ');
+  strlist_init(&cmdline, ' ');
+  strlist_fromv(&cmdline, (const char**)argv, argc);
+
+  strlist_init(&dirs.this, pathsep_make);
+  strlist_init(&dirs.out, pathsep_make);
+  strlist_init(&dirs.obj, pathsep_make);
+  strlist_init(&dirs.bin, pathsep_make);
+  strlist_init(&dirs.work, pathsep_make);
+
+  exts.src = ".c";
+  exts.inc = ".h";
+
+  seg_argc = find_target_separator(argc, argv, 1);
+
+  switch(parse_target_options(seg_argc, argv, opts, &libs, &libdirs, &includes)) {
+    case 1: ret = 0; goto quit;
+    case -1: ret = 1; goto quit;
+    default: break;
   }
 
   cmd_libs_explicit = cmd_libs;
@@ -2774,11 +2846,14 @@ main(int argc, char* argv[]) {
   if(infile)
     ingest_input_file(all, compile_target);
 
+  if(cmake_builddir)
+    input_cmake_builddir(cmake_builddir, all);
+
   compute_common_flags();
 
   consolidate_compile_target(compile_target);
 
-  if((ret = consume_positional_args(argc, argv, &args)))
+  if((ret = consume_positional_args(seg_argc, argv, &args)))
     goto quit;
 
   if((ret = discover_sources(&args, &sources)))
@@ -2786,8 +2861,62 @@ main(int argc, char* argv[]) {
 
   finalize_build_metadata();
 
-  if(!infile)
+  if(!infile && !cmake_builddir)
     generate_all_rules(&sources, all);
+
+  /* additional "--"-delimited targets: genmakefile [common-options] [--]
+   * [target1-opts] -- [target2-opts] ... -- [targetN-opts] */
+  while(!infile && !cmake_builddir && seg_argc < argc) {
+    unix_optind = seg_argc + 1;
+    seg_argc = find_target_separator(argc, argv, unix_optind);
+
+    strarray_free(&libs);
+    strarray_free(&libdirs);
+    strarray_free(&includes);
+    strarray_free(&args);
+    strarray_free(&sources);
+    strarray_init(&libs);
+    strarray_init(&libdirs);
+    strarray_init(&includes);
+    strarray_init(&args);
+    strarray_init(&sources);
+
+    cmd_objs = cmd_libs = cmd_bins = cmd_module = 0;
+
+    switch(parse_target_options(seg_argc, argv, opts, &libs, &libdirs, &includes)) {
+      case 1: ret = 0; goto quit;
+      case -1: ret = 1; goto quit;
+      default: break;
+    }
+
+    cmd_libs_explicit = cmd_libs;
+
+    if(!cmd_bins && !cmd_libs && !cmd_objs && !cmd_module) {
+      cmd_bins = 1;
+      cmd_objs = 1;
+      cmd_libs = 1;
+    }
+
+    if(inst_bins)
+      cmd_bins = 1;
+
+    if(!cmd_libs)
+      inst_libs = 0;
+
+    setup_search_paths(&libdirs, &libs, &includes);
+
+    set_clear(&sources_set);
+    MAP_DESTROY(sourcedir_map);
+    MAP_NEW(sourcedir_map);
+
+    if((ret = consume_positional_args(seg_argc, argv, &args)))
+      goto quit;
+
+    if((ret = discover_sources(&args, &sources)))
+      goto fail;
+
+    generate_all_rules(&sources, all);
+  }
 
   generate_auxiliary_rules(all);
 
