@@ -11,7 +11,7 @@ target* generate_mkdir_rule(stralloc* dir);
 target* generate_srcdir_compile_rules(
     sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm, array* objs_out);
 target* generate_simple_compile_rules(
-    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa);
+    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa, array* objs_out);
 target* generate_srcdir_lib_rule(
     sourcedir* srcdir, const char* name, bool shell, bool batch, bool batchmode, char psa, char psm);
 void generate_srcdir_rule(sourcedir* sdir, bool batchmode, char psm);

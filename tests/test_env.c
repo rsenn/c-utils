@@ -7,19 +7,22 @@
 /*
  * int env_unset(const char* name);
  *
- * Must run before anything that triggers env_init() (env_set/env_put*):
- * env_unset() shells out to plain unsetenv(), which knows nothing about
- * the en/ea bookkeeping env_init() sets up once the custom env_put family
- * has taken over `environ`. Racing the two desyncs that bookkeeping and
- * leaves later env_add() calls writing a non-terminated `environ` array
- * (crashes any straight `for(e = environ; *e; e++)` scan). See BUGS
- * (env-unset-desyncs-env-init-bookkeeping). setenv() is used here instead
- * of env_set() to set up the variable without tripping env_init() early.
+ * env_unset() now routes through the same en/ea-bookkept
+ * env_unset_internal() (lib/env/env_put.c) that env_put()/env_set() use,
+ * instead of shelling out to plain unsetenv() behind env_init()'s back
+ * (see BUGS: env-unset-desyncs-env-init-bookkeeping, now fixed). The
+ * env_set() call after env_unset() below exercises exactly the sequence
+ * that used to desync the bookkeeping and corrupt `environ`'s NUL
+ * terminator -- it must still find a correctly terminated array to grow.
  */
 TEST(test_env_unset) {
-  setenv("CUTILS_TEST_UNSET", "x", 1);
+  ASSERT_NE(0, env_init());
+  ASSERT_NE(0, env_set("CUTILS_TEST_UNSET", "x"));
   ASSERT_NE(0, env_unset("CUTILS_TEST_UNSET"));
   ASSERT_EQ(NULL, env_get("CUTILS_TEST_UNSET"));
+
+  ASSERT_NE(0, env_set("CUTILS_TEST_AFTER_UNSET", "y"));
+  ASSERT_EQ(0, str_diff(env_get("CUTILS_TEST_AFTER_UNSET"), "y"));
 }
 
 /*

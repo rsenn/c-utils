@@ -30,6 +30,7 @@ int env_putb(const char*, size_t);
 int env_put(const char* s);
 int env_set(const char* name, const char* value);
 int env_unset(const char* name);
+size_t env_unset_internal(const char* s);
 
 #ifdef STRALLOC_H
 int env_addmodif(stralloc* sa, const char* s, const char* t);

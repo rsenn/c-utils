@@ -142,8 +142,11 @@ env_unsetlen(const char* s, size_t len) {
   }
 }
 
-static size_t
-_env_unset(const char* s) {
+/* the module's own environ-aware unset -- unlike plain unsetenv(3),
+ * this keeps env_add()'s en/ea bookkeeping in sync (see env_unset.c,
+ * which calls this once env_init() has taken over environ). */
+size_t
+env_unset_internal(const char* s) {
   if(!env_isinit) {
     if(!env_init())
       return 0;

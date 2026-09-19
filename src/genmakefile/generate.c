@@ -411,13 +411,20 @@ generate_srcdir_compile_rules(
  * @param      toext    The toext
  * @param      cmd      Command
  * @param      psa      Path separator for arguments
+ * @param      objs_out Every generated per-file compile rule, appended
+ *                      (mirrors generate_srcdir_compile_rules()'s
+ *                      objs_out, which generate_srcdir_lib_rule() needs
+ *                      to give every compiled file its own recipe in
+ *                      shell/batch-mode output instead of just the last
+ *                      one processed)
  *
  * @return     Rule
  */
 target*
 generate_simple_compile_rules(
-    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa) {
+    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa, array* objs_out) {
   sourcefile* src;
+  target* rule = 0;
   stralloc ppsrc, obj;
 
   stralloc_init(&ppsrc);
@@ -429,7 +436,6 @@ generate_simple_compile_rules(
 #endif
 
   slist_foreach(srcdir->sources, src) {
-    target* rule;
     const char *base, *srcname = src->name;
 
     if(srcname == 0)
@@ -461,6 +467,9 @@ generate_simple_compile_rules(
       if(rule->recipe.s == NULL) {
         stralloc_weak(&rule->recipe, cmd);
         array_catb(&srcdir->rule_map, &rule, sizeof(target*));
+
+        if(objs_out)
+          array_catb(objs_out, &rule, sizeof(target*));
       }
     }
   }
@@ -468,7 +477,7 @@ generate_simple_compile_rules(
   stralloc_free(&obj);
   stralloc_free(&ppsrc);
 
-  return 0;
+  return rule;
 }
 
 /**
@@ -506,10 +515,7 @@ generate_srcdir_lib_rule(
     buffer_flush(buffer_2);
     dep = generate_srcdir_compile_rules(srcdir, name, shell, batch, batchmode, psa, psm, &objs);
   } else {
-    dep = generate_simple_compile_rules(srcdir, name, exts.src, exts.obj, &commands.compile, psa);
-
-    if(dep)
-      array_catb(&objs, &dep, sizeof(target*));
+    dep = generate_simple_compile_rules(srcdir, name, exts.src, exts.obj, &commands.compile, psa, &objs);
   }
 
   if((rule = rule_get_sa(&sa))) {

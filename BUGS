@@ -35,18 +35,6 @@
   would fail to link. Found while writing `tests/test_buffer.c`; left
   that test as an empty stub.
 
-- path-basename-empty-for-no-separator: `path_basename("path")` (no
-  separator anywhere in the input) returns `""` instead of `"path"`.
-  Root cause in `lib/path/path_basepos2.c`: it computes `n =
-  u8b_rchrs(x, len, PATHSEP_S_MIXED, ...)`, and `u8b_rchrs()` returns
-  `len` specifically to mean "no separator found" (same convention as
-  `byte_rchr`). `path_basepos2()`'s very first check, `if(n == len)
-  return n;`, treats that "not found" sentinel as if it were a valid
-  position, returning an index one past the end of the string (the
-  terminating NUL) instead of 0 (the whole string is the basename when
-  there's no separator). Confirmed via `tests/test_path.c`'s
-  `test_path_basename`.
-
 - fmt-escapecharhtml-undeclared: `fmt_escapecharhtml()` is defined (as a
   GNU `__attribute__((alias))` to `fmt_escapecharxml` in
   `lib/fmt/fmt_escapecharxml.c`, or directly in
@@ -96,23 +84,31 @@
   writing `tests/test_mmap.c`; left that test as an empty stub rather
   than calling a function that doesn't exist.
 
-- env-unset-desyncs-env-init-bookkeeping: `env_unset()` (`lib/env/env_unset.c`)
-  is a thin wrapper around plain `unsetenv()`, but the rest of the `env`
-  module (`env_put`/`env_put2`/`env_putb` and friends, in
-  `lib/env/env_put.c`) manages `environ` itself once `env_init()` has run:
-  it tracks the array's used/allocated slot counts in file-static `en`
-  and `ea`, and `env_add()` relies on those counts staying accurate to
-  decide whether to grow the array before appending (`environ[en++] = s;
-  environ[en] = 0;`). Calling `env_unset()` after `env_init()` has already
-  taken over `environ` shrinks the array via `unsetenv()` without telling
-  `env_add()`, so `en` ends up one too high. The next `env_put*()` call
-  then writes past the array's real last element, silently dropping the
-  NUL terminator that every `for(e = environ; *e; e++)` scan (`env_get()`,
-  `env_get_b()`, etc.) depends on to stop -- causing an out-of-bounds read
-  and segfault soon after. Found while writing `tests/test_env.c`; worked
-  around by running the `env_unset()` test before any test that triggers
-  `env_init()`, and using plain `setenv()` (not `env_set()`) to seed the
-  variable it removes.
+- env-unset-desyncs-env-init-bookkeeping (fixed, for the record):
+  `env_unset()` (`lib/env/env_unset.c`) was a thin wrapper around plain
+  `unsetenv()`, but the rest of the `env` module (`env_put`/`env_put2`/
+  `env_putb` and friends, in `lib/env/env_put.c`) manages `environ`
+  itself once `env_init()` has run: it tracks the array's used/allocated
+  slot counts in file-static `en` and `ea`, and `env_add()` relies on
+  those counts staying accurate to decide whether to grow the array
+  before appending (`environ[en++] = s; environ[en] = 0;`). Calling
+  `env_unset()` after `env_init()` had already taken over `environ`
+  shrunk the array via `unsetenv()` without telling `env_add()`, so `en`
+  ended up one too high. The next `env_put*()` call then wrote past the
+  array's real last element, silently dropping the NUL terminator every
+  `for(e = environ; *e; e++)` scan (`env_get()`, `env_get_b()`, etc.)
+  depends on to stop -- causing an out-of-bounds read and segfault soon
+  after. The module already had its own correctly-bookkept unset
+  (`_env_unset()`/`env_unsetlen()` in `env_put.c`), it just wasn't
+  reachable from anywhere -- `env_unset()` never called it. Fixed by
+  exposing it as `env_unset_internal()` (declared in `env.h`, `static`
+  dropped) and having `env_unset()` call it instead of `unsetenv()` on
+  the POSIX branch (the Windows branch, `SetEnvironmentVariable`, was
+  already correct -- `env_init()` is a no-op there, it never shadows
+  `environ`). `tests/test_env.c`'s `test_env_unset` now exercises the
+  actual desync sequence (`env_init()`, `env_set()`, `env_unset()`,
+  then another `env_set()` that must still find a correctly terminated
+  array) instead of working around it.
 
 - str-triml-inverted-condition: `str_triml()` (`lib/str/str_triml.c`)
   breaks out of its skip loop with `if(byte_chr(charset, charsetlen, *s)
@@ -198,15 +194,31 @@
   (`"$(LINK) ..."`) immediately after. The first assignment is a dead
   store. Not fixed.
 
-- genmakefile-srcdir-lib-rule-dead-dep-check: `generate_srcdir_lib_rule()`'s
-  non-gmake/PIC branch (`src/genmakefile/generate.c`, ~line 501) does
+- genmakefile-srcdir-lib-rule-dead-dep-check (fixed, for the record):
+  `generate_srcdir_lib_rule()`'s non-gmake/PIC branch (i.e. every plain
+  `make`/`nmake`/`bmake`/`shell`/`batch` build, or *any* build tool for
+  PIC/embedded toolchains -- `cfg.mach.arch == PIC` forces this branch
+  unconditionally, so `sdcc`/`xc8`/`xc8-cc` always went through it) did
   `dep = generate_simple_compile_rules(...); if(dep) array_catb(&objs,
   &dep, sizeof(target*));` but `generate_simple_compile_rules()`'s only
-  `return` statement is `return 0;` (generate.c:463) -- `dep` is always
-  NULL here, so the `if(dep)` never fires and this path always falls
-  through to the plain `else` branch below it in the caller instead of
-  getting the same objs/rule->objs multi-file-recipe treatment the
-  gmake/non-PIC path (`generate_srcdir_compile_rules()`) gets. Not fixed.
+  `return` statement was `return 0;` -- `dep` was always NULL, so the
+  `if(dep)` never fired, and every call fell through to the plain
+  `else` branch below it in the caller instead of getting the same
+  `objs`/`rule->objs` multi-file-recipe treatment the gmake/non-PIC path
+  (`generate_srcdir_compile_rules()`) already gets, via that function's
+  own `objs_out` output-array parameter. Fixed by giving
+  `generate_simple_compile_rules()` the identical `array* objs_out`
+  parameter (both call sites updated: the one in `generate.c` now
+  passes `&objs` directly instead of manually pushing the always-NULL
+  `dep`; the other, in `genmakefile.c`'s non-`--create-libs` path,
+  passes `NULL` since it doesn't need the array) -- each per-file
+  compile rule is now appended to it as it's created, and the function
+  returns the last one processed (truthy whenever any file was
+  compiled) instead of an unconditional `0`, matching
+  `generate_srcdir_compile_rules()`'s contract exactly. Verified no
+  regressions: `tests/genmakefile/testsuite.sh --all` still passes
+  200/200 non-environment-dependent cases under both the release and
+  ASan builds.
 
 - mediathek-list-header-row-trailing-garbage: the header record's last field
   (`"neu"`) consistently gets a few bytes of binary garbage appended after it,

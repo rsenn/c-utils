@@ -2170,7 +2170,7 @@ generate_all_rules(strarray* sources, target* all) {
   } else {
     MAP_FOREACH(sourcedir_map, t) {
       sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
-      generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args);
+      generate_simple_compile_rules(srcdir, MAP_ITER_KEY(t), exts.src, exts.obj, &commands.compile, pathsep_args, NULL);
     }
   }
 
