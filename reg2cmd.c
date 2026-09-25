@@ -52,6 +52,7 @@ static char
 char_tolower(char ch) {
   if(ch >= 'A' && ch <= 'Z')
     ch += 0x20;
+  
   return ch;
 }
 
@@ -64,6 +65,7 @@ find_char(char ch, char* buffer, unsigned int n) {
     if(buffer[i] == ch)
       ret++;
   }
+
   return ret;
 }
 
@@ -74,9 +76,9 @@ collapse_unicode(char* buffer, size_t n) {
   while(buffer[i] == '\0')
     i++;
 
-  for(; i < n; o++, i += 2) {
+  for(; i < n; o++, i += 2) 
     buffer[o] = buffer[i];
-  }
+
   buffer[o] = '\0';
   return o;
 }
@@ -190,6 +192,7 @@ reg2cmd() {
           break;
       }
     }
+
     stralloc_catb(&line, &buffer[pos], len - pos);
 
     if(line.len >= 1) {
@@ -257,9 +260,9 @@ reg2cmd() {
         if(!inquote && line.s[keyend] == '=') {
           valuestart = keyend + 1;
 
-          if(keystart > 0) {
+          if(keystart > 0) 
             keyend--;
-          }
+          
           break;
         }
 
@@ -359,7 +362,6 @@ reg2cmd() {
       if(rt != REGISTRY_DELETE) {
         buffer_puts(buffer_1, "/t ");
         buffer_puts(buffer_1, type);
-
         buffer_puts(buffer_1, " /d ");
 
         switch(rt) {
@@ -385,6 +387,7 @@ reg2cmd() {
             } else {
               buffer_put(buffer_1, &line.s[valuestart], valueend - valuestart);
             }
+
             buffer_putc(buffer_1, '"');
             break;
           }
@@ -403,6 +406,7 @@ reg2cmd() {
               if(scan_fromhex(line.s[pos]) != -1)
                 buffer_putc(buffer_1, char_tolower(line.s[pos]));
             }
+            
             buffer_putc(buffer_1, '"');
             break;
           }

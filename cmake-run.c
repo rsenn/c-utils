@@ -71,7 +71,9 @@ debug_sl(const char* name, const strlist* l) {
   size_t pos, n;
   const char* x;
   stralloc tmp;
+
   stralloc_init(&tmp);
+  
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
@@ -81,6 +83,7 @@ debug_sl(const char* name, const strlist* l) {
     else
       stralloc_catb(&tmp, x, n);
   }
+
   // debug_sa(name, &tmp);
   stralloc_free(&tmp);
 }
@@ -167,6 +170,7 @@ base_file(const char* suffix) {
     real.len -= str_len(EXEEXT);
     ext = EXEEXT;
   }
+
   stralloc_cats(&real, suffix);
   stralloc_nul(&real);
   return real.s;
@@ -182,6 +186,7 @@ ssize_t
 read_env(const char* x, size_t n) {
   char* line;
   size_t len, skip, num_read = 0;
+
   byte_foreach_skip(x, n, line, skip) {
     skip = scan_lineskip(line, n - (line - x));
     len = scan_line(line, skip);
@@ -217,6 +222,7 @@ path_lookup(const char* cmd, stralloc* out) {
     if(path_exists(out->s))
       return 1;
   }
+
   return 0;
 }
 
@@ -256,6 +262,7 @@ get_prog_name(stralloc* prog) {
   } else {
     stralloc_copys(prog, errmsg_argv0);
   }
+
   stralloc_nul(prog);
   return prog->s;
 }
@@ -288,6 +295,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
     prog.len -= str_len(EXEEXT);
+  
   stralloc_nul(&prog);
 
 #ifdef DEBUG

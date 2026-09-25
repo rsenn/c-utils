@@ -314,6 +314,7 @@ next:
       buffer_puts(buffer_1, ".");
       buffer_putulong(buffer_1, percent % 100);
     }
+    
     buffer_putnlflush(buffer_1);
   }
   return 0;

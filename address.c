@@ -20,6 +20,7 @@ address_init(address_t* addr, char ip[16], bool ip6, uint32 scope_id) {
     byte_copy(addr->ip, 4, ip);
     byte_zero(&addr->ip[4], 12);
   }
+
   addr->ip6 = ip6;
   addr->scope_id = ip6 ? scope_id : ~0;
   return 1;
@@ -36,6 +37,7 @@ address_scan(const char* x, address_t* addr) {
   } else {
     addr->ip6 = false;
   }
+  
   return i;
 }
 
@@ -47,6 +49,7 @@ address_fmt(char* x, const address_t* addr) {
     n = fmt_ip6if(x, addr->ip, addr->scope_id);
   else
     n = fmt_ip4(x, addr->ip);
+
   return n;
 }
 
@@ -72,6 +75,7 @@ address_lookup(stralloc* name, address_t* addr, bool no_ip6) {
   } else {
     addr->ip6 = true;
   }
+  
   byte_copy(addr->ip, MIN(addr->ip6 ? 16 : 4, ips.len), ips.s);
   stralloc_free(&ips);
   return 1;

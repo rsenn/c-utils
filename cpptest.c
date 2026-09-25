@@ -6,12 +6,16 @@
 #include "lib/errmsg.h"
 #include "lib/str.h"
 #include "lib/path.h"
+
 #undef MAP_USE_HASHMAP
 #define MAP_USE_HMAP 1
+
 #include "lib/map.h"
+
 static bool opt_dump = false;
 static MAP_T include_map;
 static strarray includer_list;
+
 static int
 usage(char* a0) {
   buffer_putm_internal(buffer_2,
@@ -141,6 +145,7 @@ main(int argc, char** argv) {
       MAP_ITER_T item = MAP_INSERT2(include_map, included_by, len, &stra, sizeof(strarray));
       arr = MAP_ITER_VALUE(item);
     }
+
     strarray_push_unique(arr, *str);
   }
 
@@ -180,10 +185,12 @@ main(int argc, char** argv) {
       if(show_deps > 1)
         if(path_is_absolute(*inc))
           continue;
+
       size_t n = path_is_dotslash(*inc);
       buffer_putc(buffer_1, ' ');
       buffer_puts(buffer_1, *inc + n);
     }
+
     buffer_putnlflush(buffer_1);
     return 0;
   }
@@ -191,14 +198,17 @@ main(int argc, char** argv) {
   if(opt_dump)
     for(cpp_token* t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
+  
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
   if(dump_defines)
     for(cpp_macro* m = *ptr; m; m = m->next) {
       cpp_print_macro(buffer_2, m);
       buffer_flush(buffer_2);
+  
       if(&m->next == pp->macro_ptr)
         break;
     }
+
   return !tok2;
 }

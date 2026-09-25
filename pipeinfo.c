@@ -67,6 +67,7 @@ usage(char* av0) {
 pipe_t*
 get_pipe(int64 id) {
   pipe_t* p;
+
   array_foreach(&pipes, sizeof(pipe_t), p) {
     if(p->id == id)
       return p;
@@ -121,6 +122,7 @@ type(uint32 bits) {
 void
 print_stat(const char* property, const struct stat* st) {
   const char* t = type(st->st_mode);
+
   buffer_putm_internal(buffer_1, property, ": ", NULL);
   t ? buffer_puts(buffer_1, t) : buffer_put8long(buffer_1, st->st_mode & S_IFMT);
 
@@ -147,6 +149,7 @@ print_stat(const char* property, const struct stat* st) {
     buffer_putm_internal(buffer_1, ", size ", NULL);
     buffer_putulonglong(buffer_1, st->st_size);
   }
+
 #if !WINDOWS_NATIVE
   if(st->st_blocks) {
     buffer_putm_internal(buffer_1, ", blocks ", NULL);
@@ -158,6 +161,7 @@ print_stat(const char* property, const struct stat* st) {
     buffer_putxlonglong(buffer_1, st->st_blksize);
   }
 #endif
+
   buffer_puts(buffer_1, " ]");
   buffer_putnlflush(buffer_1);
 }
@@ -168,6 +172,7 @@ print_stralloc_nonl(const char* property, const stralloc* sa) {
   buffer_putsa(buffer_1, sa);
   buffer_puts(buffer_1, "'");
 }
+
 void
 print_stralloc(const char* property, const stralloc* sa) {
   print_stralloc_nonl(property, sa);
@@ -213,12 +218,14 @@ proc_fd_path(int32 pid, fd_type fd, stralloc* out) {
   stralloc_nul(out);
   return out->s;
 }
+
 const char*
 proc_fdinfo_path(int32 pid, fd_type fd, stralloc* out) {
   proc_subdir_path(pid, "fdinfo", out);
 
   if(fd >= 0)
     stralloc_catulong(out, fd);
+
   stralloc_nul(out);
   return out->s;
 }
@@ -238,11 +245,10 @@ read_proc() {
   procfd_t* pfd;
   size_t len, i;
   int32 prev;
-  const char *fdPath, targetPath;
+  const char *fdPath, targetPath, *fdStr, *s;
   char* x;
   struct stat lst, st;
-  const char *fdStr, *s;
-
+ 
   stralloc target, real, current;
   stralloc_init(&procfd);
   stralloc_init(&real);
@@ -267,6 +273,7 @@ read_proc() {
       while((fdStr = dir_read(&fddir))) {
         if(!isdigit(fdStr[0]))
           continue;
+
         scan_uint(fdStr, &fd);
 
         byte_zero(&lst, sizeof(lst));
@@ -287,6 +294,7 @@ read_proc() {
 
         if(stralloc_start(&real, &current))
           stralloc_remove(&real, 0, current.len);
+ 
         n = -1;
 
         if((tmpfd = open_read(real.s)) != -1) {
@@ -306,6 +314,7 @@ read_proc() {
             n = seek_cur(tmpfd);
             seek_end(tmpfd);
           }
+
           close(tmpfd);
           stralloc_free(&filename);
         }
@@ -350,8 +359,7 @@ compare_pipes(const pipe_t* a, const pipe_t* b) {
 void
 procfd_dump(const procfd_t* pfd) {
   print_number_nonl("fd", pfd->fd);
-  // print_stralloc_nonl(" path",
-  // &pfd->path);
+  // print_stralloc_nonl(" path", &pfd->path);
   print_string_nonl(" type", type(pfd->st.st_mode));
   print_number_nonl_base(" mode", pfd->st.st_mode, 8);
   print_number_nonl(" size", pfd->st.st_size);
@@ -368,11 +376,11 @@ procfd_dump(const procfd_t* pfd) {
     if(pfd->st.st_mtime != pfd->st.st_ctime)
       print_number_nonl(" ctime", pfd->st.st_ctime);
   }
+
   buffer_puts(buffer_1, " info='");
   buffer_putfmt(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
   buffer_puts(buffer_1, "'");
-  //      print_stralloc(" info",
-  //      &pfd->info);
+  //print_stralloc(" info", &pfd->info);
 }
 
 int
@@ -419,6 +427,7 @@ main(int argc, char* argv[]) {
     i = 0;
     array_foreach(&pipes, sizeof(pipe_t), p) {
       const procfd_t* pfd;
+    
       print_number("i", i);
       print_number_nonl("pipe#", p->id);
 
@@ -431,6 +440,7 @@ main(int argc, char* argv[]) {
           print_number_nonl("  pid", pfd->pid);
           buffer_putc(buffer_1, '\n');
         }
+
         buffer_puts(buffer_1, "\t\t");
 
         procfd_dump(pfd);

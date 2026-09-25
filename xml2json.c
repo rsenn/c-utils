@@ -105,12 +105,15 @@ xmllist_to_jsonarray(xmlnode* list) {
     if(n->type == XML_TEXT) {
       if(!n->name[0] || str_is(n->name, isspace))
         continue;
+    
       v = json_string(n->name);
     } else {
       if(n->name[0] == '/')
         continue;
+    
       v = xml_to_json_obj(n);
     }
+
     json_array_push(&arr, v);
   }
   return arr;
@@ -124,6 +127,7 @@ xml_style_json(char* x, size_t n) {
   strlist_init(&style, ';');
   style.sa.s = x;
   style.sa.len = n;
+
   strlist_foreach(&style, x, n) {
     size_t np = byte_chr(x, n, ':');
     size_t nv = np == n ? 0 : n - (np + 1);
@@ -146,6 +150,7 @@ xml_style_json(char* x, size_t n) {
       json_property_set(&r, name, val);
     }
   }
+
   strlist_free(&style);
   return r;
 }
@@ -157,6 +162,7 @@ static int
 hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
   if(db && db->list_tuple) {
     TUPLE* t;
+
     hmap_foreach(db, t) {
       const char* prop = t->key;
       jsonval v = json_undefined();
@@ -173,14 +179,17 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
 
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
+        
         ptr = t->vals.val_chars;
         charbuf_froms(&b, ptr, 2);
 
         if(!numbers || !json_parse_number(&v, &b))
           v = json_stringn(t->vals.val_chars, len);
       }
+
       json_property_set(obj, json_string(prop), v);
     }
+
     return 1;
   }
   return 0;
@@ -210,11 +219,13 @@ xml_to_json_obj(xmlnode* node) {
 
     if(node->children)
       json_property_set(&obj, json_string(children_property), xmllist_to_jsonarray(node->children));
+
     return obj;
   }
 
   if(node->type == XML_TEXT) {
   }
+
   return json_undefined();
 }
 
@@ -225,6 +236,7 @@ static jsonval
 xml_to_json(xmlnode* node) {
   if(node->type == XML_DOCUMENT || node->attributes == NULL)
     return xmllist_to_jsonarray(node->children);
+ 
   return xml_to_json_obj(node);
 }
 
@@ -236,6 +248,7 @@ xml_depth(xmlnode* node) {
     node = node->parent;
     ++i;
   }
+
   return i;
 }
 
@@ -274,10 +287,12 @@ int
 testwalk(xmlnode* node, xmlnode* root) {
   if(node->name && node->name[0] != '/' && node->type == XML_ELEMENT) {
     int depth = xml_depth(node);
+   
     buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", NULL);
     buffer_putlong(buffer_2, depth);
     buffer_putnlflush(buffer_2);
   }
+
   return 0;
 }
 
@@ -346,6 +361,7 @@ main(int argc, char* argv[]) {
 
       json_print(root, buffer_1, pretty_printer);
     }
+
     /*
      * Cleanup function for the XML
      * library.

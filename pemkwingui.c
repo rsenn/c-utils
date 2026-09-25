@@ -65,12 +65,8 @@ process32(void* base) {
 
 int
 pewrsec(const char* file) {
-  int ret;
-  pe_file_t* header;
-
-  header = base = mmap_shared(file, &size);
-
-  ret = PE_TYPE(base) == PE_MAGIC_PE64 ? process64(base) : process32(base);
+  pe_file_t* header = base = mmap_shared(file, &size);
+  int ret = PE_TYPE(base) == PE_MAGIC_PE64 ? process64(base) : process32(base);
 
   mmap_unmap(base, size);
 

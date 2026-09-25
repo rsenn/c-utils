@@ -57,6 +57,7 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
 
   if(shdr == NULL)
     return;
+
   ln = coff_line_numbers(coff, shdr);
   strtab = coff_get_strtab(coff, NULL);
   i = 0;
@@ -88,6 +89,7 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
       buffer_puts(b, "fname: ");
       buffer_puts(b, coff_symbol_name(coff, sym));
     }
+
     buffer_putnlflush(b);
   }
 
@@ -225,6 +227,7 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putspace(b);
           buffer_putxlong0(b, (unsigned long)fn->func.tag_index, 6);
         }
+
         buffer_putnlflush(b);
       }
 
@@ -297,6 +300,7 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         }
       }
+      
       e = range_plus(&symtab, e, numaux);
       i += numaux;
 

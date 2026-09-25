@@ -32,6 +32,7 @@ ftplib_write_escaped(buffer* out, const char* s) {
     if(-1 == buffer_put(out, s++, 1))
       return -1;
   }
+
   return 0;
 }
 
@@ -42,6 +43,7 @@ ftplib_write_cmd_s(buffer* out, const char* s1) {
 
   if(-1 == buffer_puts(out, "\r\n"))
     return -1;
+  
   return buffer_flush(out);
 }
 
@@ -55,6 +57,7 @@ ftplib_write_cmd_ss(buffer* out, const char* s1, const char* s2) {
 
   if(-1 == buffer_puts(out, "\r\n"))
     return -1;
+
   return buffer_flush(out);
 }
 
@@ -84,18 +87,19 @@ ftplib_read_oneline(buffer* io, stralloc* ret) {
 
   if(l < 2 || p[l - 1] != '\n')
     return 0;
+
   l--;
 
   if(p[l - 1] == '\r')
     l--;
+
   p[l] = 0;
   ret->len = l + 1;
 
   return 1;
 }
 
-/* should probably handle escapes more
- * clever. */
+/* should probably handle escapes more clever. */
 int
 ftplib_read(buffer* in, stralloc* ret) {
   int multiline = 0;
@@ -116,13 +120,13 @@ ftplib_read(buffer* in, stralloc* ret) {
     if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == ' '))
       break;
 
-    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == '-')) {
+    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == '-')) 
       multiline = 1;
-    }
 
     if(!multiline)
       break;
   }
+
   return 1;
 }
 
@@ -157,6 +161,7 @@ ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ip
 
   if(x.len < 15)
     return -2;
+
   p = x.s;
   q = p + 4;
 
@@ -191,12 +196,14 @@ ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ip
       }
     }
   }
+
   /* cannot overflow the input buffer:
    * even 3,4 is longer than 12 */
   i = str_len(q);
 
   if(0 == ip4_scan(q, ip))
     return -2;
+  
   q[i++] = ':';
   i += fmt_ulong(q + i, p1 * 256 + p2);
   q[i] = 0;
@@ -208,6 +215,7 @@ ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ip
 
   if(i >= allowed_ips->len)
     return -3;
+  
   /* don't allow redirects to ports <
    * 1024, except of 20 */
 

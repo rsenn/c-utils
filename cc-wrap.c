@@ -143,6 +143,7 @@ get_prog_name(void) {
   } else {
     stralloc_copys(&prog, errmsg_argv0);
   }
+
   stralloc_nul(&prog);
   return prog.s;
 }
@@ -177,8 +178,7 @@ main(int argc, char* argv[], char* envp[]) {
   strlist args;
   char** av;
   int ret;
-  const char* pathstr;
-  const char* logfile = getenv("LOGFILE");
+  const char* pathstr,* logfile = getenv("LOGFILE");
 
   errmsg_iam(argv[0]);
 
@@ -221,6 +221,7 @@ main(int argc, char* argv[], char* envp[]) {
 
     if((x = (char*)mmap_read(base.s, &n)))
       read_env(x, n);
+
     mmap_unmap(x, n);
   }
 
@@ -240,7 +241,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   if(!path_exists(realcmd.s)) {
     errmsg_warnsys("doesn't exist: ", realcmd.s, " ('", sa.s, "''): ", 0);
-    //    return 127;
+    // return 127;
   }
 
   if(logfile)

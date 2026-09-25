@@ -48,15 +48,16 @@ count_depth() {
 
     c = 0;
 
-    for(i = 0; i < len; i++) {
+    for(i = 0; i < len; i++) 
       if(buffer[i] == '/')
         c++;
-    }
+    
     buffer_putulong(buffer_1, (unsigned long)c);
     buffer_put(buffer_1, " ", 1);
     buffer_put(buffer_1, buffer, len);
     buffer_put(buffer_1, "\n", 1);
   }
+
   buffer_flush(buffer_1);
   return 0;
 }
@@ -73,5 +74,6 @@ main(int argc, char* argv[]) {
     { break; }
     argi++;
   }
+  
   return count_depth();
 }

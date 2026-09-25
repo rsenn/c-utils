@@ -77,8 +77,6 @@ strlist_from_path(strlist* sl, const char* p) {
     ++dp;
 
   stralloc_copys(&sl->sa, p);
-  /*strlist_zero(sl);
-  strlist_froms(sl, p, *dp);*/
 }
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
@@ -356,8 +354,7 @@ mingw_prefix(stralloc* sa) {
  * `wine`. */
 static int
 wine_mounts_read(MAP_T map) {
-  const char* wineprefix;
-  const char* home;
+  const char* wineprefix,* home;
   stralloc prefix, full, target, key;
   dir_t d;
   char* name;
@@ -612,10 +609,8 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   stralloc tmp;
-  int c;
-  int digit_optind = 0;
+  int c, digit_optind = 0,index = 0;
   const char* rel_to = NULL;
-  int index = 0;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"relative-to", 1, NULL, 'r'},

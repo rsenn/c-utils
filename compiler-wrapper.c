@@ -80,6 +80,7 @@ dump_str(const char* name, const char* s) {
   buffer_puts(buffer_2, "\"\n");
   buffer_flush(buffer_2);
 }
+
 #define DUMP_STRALLOC(n) dump_stralloc(#n, &n)
 #define DUMP_STR(s) dump_str(#s, s)
 
@@ -197,11 +198,9 @@ process_option(const char* optstr, const char* nextopt, int* i) {
 void
 strlist_each(strlist* sl, void (*slptr)(const char*)) {
   int i, n = strlist_count(sl);
-  ;
 
-  for(n = strlist_count(sl), i = 0; i < n; ++i) {
+  for(n = strlist_count(sl), i = 0; i < n; ++i) 
     slptr(strlist_at(sl, i));
-  }
 }
 
 int
@@ -267,6 +266,7 @@ read_arguments() {
 
       if(strchr(argv0, '/'))
         stralloc_copys(&compiler, argv0);
+
       argv0 = str_dup(str_basename(argv0));
     } else if(!str_diffn("-o", s, 2)) {
       stralloc output;
@@ -278,6 +278,7 @@ read_arguments() {
       } else {
         stralloc_copys(&output, &s[2]);
       }
+
       stralloc_0(&output);
       stralloc_copys(&output_file, str_basename(output.s));
 
@@ -420,17 +421,15 @@ execute_cmd() {
   stralloc_0(&chip);
   strlist_cat(&cmd, &longopts);
 
-  n = strlist_count(&includedirs);
+ n = strlist_count(&includedirs);
 
-  for(i = 0; i < n; ++i) {
+  for(i = 0; i < n; ++i) 
     strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), NULL);
-  }
 
   n = strlist_count(&defines);
 
-  for(i = 0; i < n; ++i) {
+  for(i = 0; i < n; ++i)
     strlist_pushm_internal(&cmd, "-D", strlist_at(&defines, i), NULL);
-  }
 
   if(type == PICC || type == PICC18 || type == XC8) {
     char nbuf[FMT_ULONG];
@@ -508,14 +507,17 @@ execute_cmd() {
         strlist_push(&cmd, "--pre");
         break;
       }
+      
       case COMPILE: {
         strlist_push(&cmd, "-S");
         break;
       }
+      
       case COMPILE_AND_ASSEMBLE: {
         strlist_push(&cmd, "--pass1");
         break;
       }
+
       default: {
         break;
       }
@@ -529,6 +531,7 @@ execute_cmd() {
         stralloc_copy(&outf, &output_dir);
         stralloc_cats(&outf, "/");
       }
+
       stralloc_cat(&outf, &output_file);
       stralloc_0(&outf);
       strlist_pushm_internal(&cmd, "-O", outf.s, NULL);
@@ -556,26 +559,27 @@ execute_cmd() {
         strlist_push(&cmd, "-E");
         break;
       }
+      
       case COMPILE: {
         strlist_push(&cmd, "-S");
         break;
       }
+
       case COMPILE_AND_ASSEMBLE: {
         strlist_push(&cmd, "-c");
         break;
       }
+      
       default: {
         break;
       }
     }
 
-    if(debug) {
+    if(debug) 
       strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", NULL);
-    }
 
-    if(output_dir.len > 0) {
+    if(output_dir.len > 0) 
       stralloc_copy(&outp, &output_dir);
-    }
 
     if(output_file.len > 0) {
       if(outp.len > 0)
@@ -617,6 +621,7 @@ void
 print_strlist(buffer* b, const strlist* sl, const char* separator, const char* quot) {
   ssize_t n = strlist_count(sl);
   int i, need_quote;
+
   buffer_puts(b, " (#");
   buffer_putlong(b, n);
   buffer_puts(b, "):");
@@ -658,6 +663,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
         buffer_puts(b, quot);
     }
   }
+  
   buffer_puts(b, "\n");
   buffer_flush(b);
 }
@@ -687,9 +693,9 @@ main(int argc, char* argv[]) {
 
   strlist_init(&args, '\0');
 
-  for(i = 1; i < argc; ++i) {
+  for(i = 1; i < argc; ++i) 
     strlist_push(&args, argv[i]);
-  }
+
   DUMP_LIST(err_buf, args, "\n\t", "'");
   read_arguments();
   execute_cmd();

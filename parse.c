@@ -104,6 +104,7 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
 
   if(*x != '[')
     return 0;
+
   x += 1;
   n -= 1;
 
@@ -113,13 +114,14 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
 
     if(byte_diff(x, 2, ", "))
       break;
+  
     x += 2;
     n -= 2;
   }
 
-  if(x[0] == ']') {
+  if(x[0] == ']') 
     x += 1, n -= 1;
-  }
+  
   stralloc_free(&arg);
   return x - start;
 }
@@ -127,6 +129,7 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
 void
 print_args(buffer* b, const strlist* sl) {
   stralloc sa;
+  
   stralloc_init(&sa);
   strlist_joins(sl, &sa, "' '");
   buffer_puts(b, "'");
@@ -139,12 +142,14 @@ parse_line(const char* x, ssize_t n) {
   ssize_t i;
   strlist args;
   stralloc str;
+
   strlist_init(&args, '\0');
   stralloc_init(&str);
   i = byte_chr(x, n, '(');
 
   if(x[i] == '\0')
     return 0;
+
   i += 1;
   x += i;
   n -= i;
@@ -153,10 +158,6 @@ parse_line(const char* x, ssize_t n) {
     return 0;
 
   for(;;) {
-    /*  buffer_puts(buffer_2, "char: ");
-      buffer_putc(buffer_2, x[0]);
-      buffer_putnlflush(buffer_2);*/
-
     if(x[0] == '[')
       i = parse_strlist(x, n, &args);
     else if(x[0] == '"')
@@ -166,6 +167,7 @@ parse_line(const char* x, ssize_t n) {
 
     if(i <= 0)
       break;
+
     x += i;
     n -= i;
 
@@ -254,14 +256,11 @@ main(int argc, char* argv[]) {
     if(sa.len > 0)
       parse_line(sa.s, sa.len);
 
-    /*    buffer_putulong(buffer_1,
-       sa.len); buffer_puts(buffer_1, ":
-       "); buffer_put(buffer_1, sa.s,
-       sa.len);
-
-        buffer_puts(buffer_1, "\n");
-        buffer_flush(buffer_1);
-    */
+    /*buffer_putulong(buffer_1, sa.len);
+    buffer_puts(buffer_1, ": ");
+    buffer_put(buffer_1, sa.s, sa.len);
+    buffer_puts(buffer_1, "\n");
+    buffer_flush(buffer_1);*/
   }
 
 #ifdef DEBUG_OUTPUT_
@@ -273,5 +272,6 @@ main(int argc, char* argv[]) {
   buffer_puts(buffer_2, ext);
   buffer_putnlflush(buffer_2);
 #endif
+
   return 0;
 }

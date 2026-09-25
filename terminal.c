@@ -52,9 +52,8 @@ terminal_device_reset() {
   put_char(ESC);
   put_char('c');
     buffer_flush(&terminal_out_buffer);
+}*/
 
-}
-*/
 int
 terminal_init(void) {
 #if WINDOWS
@@ -128,8 +127,10 @@ terminal_numbers_sequence(buffer* b, int numbers[], size_t len, char c) {
   for(i = 0; i < len; i++) {
     if(i > 0)
       buffer_putc(b, ';');
+  
     buffer_putulong(b, numbers[i]);
   }
+
   buffer_putc(b, c);
 }
 
@@ -138,6 +139,7 @@ terminal_escape_number_char(buffer* b, int n, char c) {
   terminal_number_sequence(&terminal_out_buffer, n, c);
   buffer_flush(&terminal_out_buffer);
 }
+
 void
 terminal_escape_char(buffer* b, char c) {
   buffer_putc(b, ESC);
@@ -155,11 +157,13 @@ terminal_command_sequence(buffer* b, const char* seq) {
   terminal_escape_sequence(&terminal_out_buffer, seq);
   buffer_flush(&terminal_out_buffer);
 }
+
 void
 terminal_command_number_char(int n, char c) {
   terminal_escape_number_char(&terminal_out_buffer, n, c);
   buffer_flush(&terminal_out_buffer);
 }
+
 void
 terminal_command_char(char c) {
   terminal_escape_char(&terminal_out_buffer, c);
@@ -220,8 +224,8 @@ terminal_cursor_position(int row, int column) {
   int coord[2] = {row, column};
   terminal_numbers_sequence(&terminal_out_buffer, coord, 2, 'H');
   buffer_flush(&terminal_out_buffer);
-}
-*/
+}*/
+
 void
 terminal_cursor_position(int* x, int* y) {
 #if WINDOWS

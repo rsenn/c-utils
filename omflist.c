@@ -26,8 +26,8 @@ omf_dump(buffer* b, omf_record* r) {
 
 void
 dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
-  size_t n = y - x;
-  size_t i;
+  size_t i,n = y - x;
+  
   stralloc linesa;
   stralloc_init(&linesa);
 
@@ -42,10 +42,12 @@ dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
         buffer_putc(b, '|');
         stralloc_zero(&linesa);
       }
+
       buffer_putc(b, '\n');
       buffer_putxlong0(b, i + offset, 8);
       buffer_putspace(b);
     }
+
     buffer_putspace(b);
     buffer_putxlong0(b, (unsigned long)(unsigned char)x[i], 2);
     stralloc_catc(&linesa, isprint(x[i]) ? x[i] : ' ');

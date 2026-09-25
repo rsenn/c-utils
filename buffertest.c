@@ -15,6 +15,7 @@ buffer_copy(buffer* out, buffer* in) {
 
     n += r;
   }
+
   buffer_flush(out);
   return n;
 }
@@ -59,12 +60,9 @@ main(int argc, char* argv[]) {
   buffer_close(&compress);
 #endif
 
-  // buffer_deflate(&compress, &output,
-  // 3);
+  // buffer_deflate(&compress, &output, 3);
 
   buffer_copy(buffer_1, &decompress);
-  //
-
   buffer_truncfile(&gzout, "output.gz");
 
 #if HAVE_ZLIB

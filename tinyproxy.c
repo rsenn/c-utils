@@ -196,7 +196,8 @@ dns_query(stralloc* h) {
 
     return res;
   }
-  stralloc_free(&dns);
+
+  stralolc_free(&dns);
   return NULL;
 }
 
@@ -205,9 +206,11 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
   char* x;
   size_t i = 0;
   char buf[128];
+
   range_foreach(&result->data, x) {
     if(i++ > 0)
       buffer_puts(b, ", ");
+  
     buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
 
     if(i == num_responses)
@@ -265,6 +268,7 @@ dns_lookup(stralloc* h) {
     buffer_putlong(buffer_2, diff.sec.x);
     buffer_puts(buffer_2, "s");
   }
+
   buffer_puts(buffer_2, " to [");
   buffer_putulong(buffer_2, range_size(&result->data));
   buffer_puts(buffer_2, "] ");
@@ -283,6 +287,7 @@ parse_addr(const char* opt, char ip[16]) {
 
   if((n = scan_ip4(opt, ip)))
     return AF_INET;
+
   return -1;
 }
 
@@ -314,6 +319,7 @@ byte_numlines(char* x, size_t p, size_t* end_ptr) {
 
   if(end_ptr && n > 0)
     *end_ptr = y;
+
   return n;
 }
 
@@ -381,6 +387,7 @@ dump_fds(array* arr) {
     array_catb(arr, &c->client.sock, sizeof(fd_type));
     array_catb(arr, &c->proxy.sock, sizeof(fd_type));
   }
+
   return array_length(arr, sizeof(fd_type));
 }
 
@@ -396,8 +403,8 @@ iarray_dump(iarray* ia) {
 iarray_get(ia, i));
     buffer_putnlflush(buffer_2);
   }
-}
-*/
+}*/
+
 void
 dump_io() {
   array fds;
@@ -408,7 +415,6 @@ dump_io() {
 
   for(i = 0; i < num_fds; i++) {
     fd_type fd = *(fd_type*)array_get(&fds, sizeof(fd_type), i);
-
     io_entry* e = io_getentry(fd);
 
     buffer_puts(buffer_2, "FD #");
@@ -424,6 +430,7 @@ dump_io() {
 
     if(e->wantwrite)
       buffer_puts(buffer_2, " write");
+
     buffer_puts(buffer_2, " can:");
 
     if(e->canread)
@@ -431,6 +438,7 @@ dump_io() {
 
     if(e->canwrite)
       buffer_puts(buffer_2, " write");
+
     buffer_putnlflush(buffer_2);
   }
 }
@@ -455,10 +463,12 @@ connection_new(fd_type sock, char addr[16], uint16 port) {
 void
 connection_delete(connection_t* c) {
   connection_t** ptr;
+
   slink_foreach(&connections, ptr) {
     if(*ptr == c)
       break;
   }
+  
   *ptr = (connection_t*)c->link.next;
   alloc_free(c);
 }
@@ -473,6 +483,7 @@ connection_find(fd_type client, fd_type proxy) {
     if(c->client.sock == client || c->proxy.sock == proxy)
       return c;
   }
+
   return NULL;
 }
 
@@ -498,10 +509,12 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     else if((ret = socket_local4(sb->sock, sb->addr, &sb->port)) == 0)
       sb->af = AF_INET;
   }
+
   stralloc_catb(&filename, buf, sockbuf_fmt_addr(&c->client, buf, '-'));
 
   if(prefix && *prefix)
     stralloc_catm_internal(&filename, "-", prefix, NULL);
+  
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -510,6 +523,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
     if(x[i] == ':' || x[i] < ' ')
       x[i] = '+';
   }
+
   strlist_pushb(&output_files, filename.s, filename.len);
 
   return open_trunc(stralloc_cstr(&filename));
@@ -524,6 +538,7 @@ socket_find(fd_type sock) {
 
   if((c = connection_find(-1, sock)))
     return &c->proxy;
+
   return NULL;
 }
 
@@ -536,6 +551,7 @@ socket_other(fd_type sock) {
 
   if((c = connection_find(-1, sock)))
     return &c->client;
+
   return NULL;
 }
 
@@ -552,12 +568,14 @@ socket_send(fd_type fd, void* x, size_t n, void* ptr) {
         connection_t* c = connection_find(fd, fd);
         sb->dump = connection_open_log(c, c->client.sock == fd ? "recv" : "send", ".txt");
       }
+
       write(sb->dump, x, n);
     }
   }
 
   if(r == -1 && errno == EWOULDBLOCK)
     r = 0;
+
   return r;
 } /*
 
@@ -597,6 +615,7 @@ socket_connect(socketbuf_t* sb) {
 
   if((sock = af == AF_INET6 ? socket_tcp6() : socket_tcp4()) < 0)
     return CLIENT_SOCKET_ERROR;
+
   io_fd(sock);
   io_nonblock(sock);
 
@@ -607,6 +626,7 @@ socket_connect(socketbuf_t* sb) {
 
   if(ret < 0 && errno != EINPROGRESS)
     return CLIENT_CONNECT_ERROR;
+
   io_wantwrite(sock);
   return sock;
 }
@@ -618,6 +638,7 @@ socket_accept(fd_type sock, char addr[16], uint16 port) {
 
   if((c->proxy.sock = socket_connect(&remote)) < 0)
     goto cleanup;
+
   byte_copy(c->proxy.addr, remote.af == AF_INET6 ? 16 : 4, remote.addr);
   c->proxy.port = remote.port;
   c->proxy.af = remote.af;
@@ -665,6 +686,7 @@ sockbuf_fmt_addr(socketbuf_t* sb, char* dest, char sep) {
       n = fmt_ip4(dest,
                   &sb->addr[12]); // fmt_hexb(dest, &sb->addr[12], 4);
   }
+
   dest[n++] = sep ? sep : ':';
   n += fmt_ulong(&dest[n], sb->port);
   dest[n] = '\0';
@@ -736,6 +758,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
 
     if(!line_buffer)
       end = n;
+
 #ifdef DEBUG_OUTPUT
     buffer_puts(&log, send ? "Sent " : "Received ");
 
@@ -763,6 +786,7 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
         }
       }
     }
+
     pos = byte_rchr(log.x, log.p, '\n');
 
     if(pos == log.p)
@@ -815,6 +839,7 @@ sockbuf_forward_data(socketbuf_t* source, socketbuf_t* destination) {
     if(n == -1 && errno == EAGAIN)
       return written;
   }
+
   return n <= 0 ? n : (ssize_t)written;
 }
 
@@ -877,6 +902,7 @@ search_path(const char* path, const char* what, stralloc* out) {
 
     pos++;
   }
+
   stralloc_free(&stra);
   return ret;
 }
@@ -909,6 +935,7 @@ server_finalize() {
 
   if(b)
     stralloc_catm_internal(&filename, b, "-", NULL);
+
   // stralloc_catb(&filename, buf,
   // strftime(buf, sizeof(buf),
   // "%Y%m%d-%H%M%S-", &lt));
@@ -927,6 +954,7 @@ server_finalize() {
 
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
+
     //    t = st.st_ctime;
     buffer_init_free(&w, (buffer_op_proto*)(void*)&write, wr, alloc(1024), 1024);
     buffer_puts(&w, "\n-- File '");
@@ -944,6 +972,7 @@ server_finalize() {
     buffer_putnlflush(buffer_2);
 #endif
   }
+
   stralloc_copys(&filename, fileBase);
   // stralloc_catb(&filename, buf,
   // strftime(buf, sizeof(buf),
@@ -952,6 +981,7 @@ server_finalize() {
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
     unlink(s);
+  
   stralloc_init(&cmd);
   s = NULL;
 
@@ -959,6 +989,7 @@ server_finalize() {
     if((s = search_path(stralloc_cstr(&syspath.sa), programs[i], &cmd)))
       break;
   }
+
   server_tar_files(s, &filename, &output_files);
   stralloc_free(&filename);
   strlist_foreach_s(&output_files, s) { unlink(s); }
@@ -992,6 +1023,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
       out = open_trunc(archive->s);
     strarray_unshiftm(&argv, "-c", 0);
   }
+
   strarray_unshift(&argv, cmd);
   buffer_puts(buffer_1, "Exec: ");
 
@@ -1004,9 +1036,8 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     errmsg_warnsys("process_create", 0);
     exit(1);
   }
-  /*
 
-    if((child_pid = vfork()) == 0) {
+  /*if((child_pid = vfork()) == 0) {
       char* const env[] =
     {"PATH=/bin:/usr/bin", 0}; close(2);
       dup2(1, 2);
@@ -1020,6 +1051,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     }
     close(out);
   */
+  
   pid = wait_pid(child_pid, &status);
 
   if(pid != -1) {
@@ -1032,10 +1064,12 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     buffer_putnlflush(buffer_2);
   }
 }
+
 void
 server_exit(int code) {
   if(dump)
     server_finalize();
+
   buffer_putnlflush(buffer_2);
   exit(code);
 }
@@ -1047,6 +1081,7 @@ server_sigint(int sig) {
   buffer_close(&log);
   server_exit(1);
 }
+
 void
 server_sigterm(int sig) {
   buffer_puts(&log, "SIGTERM received");
@@ -1072,11 +1107,11 @@ server_spawn() {
       exit(1);
     }
 
-    /*    if(vfork() > 0) {
-          execvp(program_argv[0], program_argv);
-          errmsg_warnsys("Error in execvp: ", 0);
-          exit(1);
-        }*/
+    /*if(vfork() > 0) {
+      execvp(program_argv[0], program_argv);
+      errmsg_warnsys("Error in execvp: ", 0);
+      exit(1);
+    }*/
     strlist_free(&args);
   }
 }

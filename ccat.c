@@ -24,6 +24,7 @@ buffer_copy(buffer* out, buffer* in) {
 
     n += r;
   }
+
   buffer_flush(out);
   return n;
 }
@@ -56,6 +57,7 @@ compression_from_filename(const char* fn) {
 
   if(*ext)
     return compression_from_ext(++ext);
+
   return C_UNKNOWN;
 }
 
@@ -87,9 +89,7 @@ usage(char* argv0) {
 }
 int
 main(int argc, char* argv[]) {
-  int opt, index = 0;
-  int level = 10;
-  int decompress = -1;
+  int opt, index = 0,level = 10, decompress = -1;
   bool force = false;
   const char *in_filename = "-", *out_filename = "-";
   compression_type type = C_UNKNOWN, in_type = C_UNKNOWN, out_type = C_UNKNOWN;
@@ -148,6 +148,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
       return 1;
     }
+
     input = &infile;
 
     if(in_type == C_UNKNOWN) {
@@ -175,6 +176,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
       return 1;
     }
+
     output = &outfile;
 
     if(out_type == C_UNKNOWN)
@@ -228,6 +230,7 @@ main(int argc, char* argv[]) {
       buffer_copy(&cbuf, input);
       buffer_flush(&cbuf);
     }
+    
     buffer_close(&cbuf);
     buffer_flush(output);
   }

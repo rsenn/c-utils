@@ -129,6 +129,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
       return 1;
     }
+
     input = &infile;
 
     if(in_type == C_UNKNOWN) {
@@ -147,6 +148,7 @@ main(int argc, char* argv[]) {
       buffer_putnlflush(buffer_2);
       return 1;
     }
+
     output = &outfile;
 
     if(out_type == C_UNKNOWN)
@@ -168,6 +170,7 @@ main(int argc, char* argv[]) {
         else
           buffer_gzip(&cbuf, out_filename, level);
       }
+      
       break;
 #if 0
     case C_BZ2:

@@ -86,6 +86,7 @@ debug_sl(const char* name, const strlist* l) {
   const char* x;
   stralloc tmp;
   stralloc_init(&tmp);
+
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
@@ -95,6 +96,7 @@ debug_sl(const char* name, const strlist* l) {
     else
       stralloc_catb(&tmp, x, n);
   }
+
   // debug_sa(name, &tmp);
   stralloc_free(&tmp);
 }
@@ -152,6 +154,7 @@ pathlist_lookup(const char* bin, stralloc* out) {
       }
     }
   }
+
   stralloc_free(&name);
   return NULL;
 }
@@ -165,6 +168,7 @@ base_file(const char* suffix) {
     real.len -= str_len(EXEEXT);
     ext = EXEEXT;
   }
+
   stralloc_cats(&real, suffix);
   stralloc_nul(&real);
   return real.s;
@@ -174,6 +178,7 @@ ssize_t
 read_env(const char* x, size_t n) {
   char* line;
   size_t len, skip, num_read = 0;
+
   byte_foreach_skip(x, n, line, skip) {
     skip = scan_lineskip(line, n - (line - x));
     len = scan_line(line, skip);
@@ -203,6 +208,7 @@ path_lookup(const char* cmd, stralloc* out) {
     if(path_exists(out->s))
       return 1;
   }
+  
   return 0;
 }
 
@@ -237,6 +243,7 @@ get_prog_name(stralloc* prog) {
   } else {
     stralloc_copys(prog, errmsg_argv0);
   }
+
   stralloc_nul(prog);
   return prog->s;
 }
@@ -259,6 +266,7 @@ write_log(const strlist* argv, const char* file) {
 
     return 1;
   }
+
   return 0;
 }
 
@@ -339,6 +347,7 @@ main(int argc, char* argv[]) {
 
     if((x = (char*)mmap_read(real.s, &n)))
       read_env(x, n);
+
     mmap_unmap(x, n);
   }
 
@@ -378,6 +387,7 @@ main(int argc, char* argv[]) {
 
           if(it == end)
             break;
+
           n = scan_nonwhitenskip(it, end - it);
           it = byte_trim(it, &n, "\"'", 2);
 
@@ -389,8 +399,7 @@ main(int argc, char* argv[]) {
 
         strarray_splice(&v, i, 1, array_length(&a, sizeof(char*)), array_start(&a));
 
-        // debug_strarray("new args",
-        // &v);
+        // debug_strarray("new args", &v);
 
         --i;
         continue;
@@ -420,10 +429,9 @@ main(int argc, char* argv[]) {
           stralloc_prepends(&arg, "+-");
       }
 
-      if(tlib) {
+      if(tlib) 
         if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
           continue;
-      }
 
       strlist_push_sa(is_obj ? &objs : &opts, &arg);
     }
@@ -437,14 +445,13 @@ main(int argc, char* argv[]) {
   // strlist_joins(&dirs, &sa, " , ");
   strarray_joins(&v, &sa, "'\n'");
   stralloc_nul(&sa);
-  //
 
   if(!stralloc_endb(&realcmd, EXEEXT, str_len(EXEEXT)))
     stralloc_cats(&realcmd, EXEEXT);
 
   if(!path_exists(realcmd.s)) {
     errmsg_warnsys("doesn't exist: ", realcmd.s, " \"", sa.s, "\" : ", 0);
-    //    return 127;
+    //return 127;
   }
 
 #if DEBUG

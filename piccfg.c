@@ -142,6 +142,7 @@ cfg_data_at(uint32 addr) {
     buffer_putlonglong(buffer_2, result);
   else
     buffer_putxlonglong(buffer_2, result);
+  
   buffer_putnlflush(buffer_2);
 #endif
 

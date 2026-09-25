@@ -24,6 +24,7 @@ int
 response_addbytes(response* resp, const char* buf, size_t len) {
   if(len > 65535 - resp->pos)
     return 0;
+
   stralloc_catb((stralloc*)resp, buf, len);
   return 1;
 }
@@ -44,20 +45,22 @@ response_addname(response* resp, const char* d) {
       }
 
     if(dlen <= 128)
-
       if(name.num < NAMES) {
         byte_copy(name.str[name.num], dlen, d);
         name.ptr[name.num] = resp->pos;
         ++name.num;
       }
+
     i = (unsigned char)*d;
     ++i;
 
     if(!response_addbytes(resp, d, i))
       return 0;
+
     d += i;
     dlen -= i;
   }
+
   return response_addbytes(resp, d, 1);
 }
 
@@ -77,6 +80,7 @@ response_query(response* resp, const char* q, const char qtype[2], const char qc
 
   if(!response_addbytes(resp, qclass, 2))
     return 0;
+
   resp->tctarget = resp->pos;
   return 1;
 }
@@ -100,6 +104,7 @@ response_rstart(response* resp, const char* d, const char type[2], uint32 ttl) {
 
   if(!response_addbytes(resp, "\0\0", 2))
     return 0;
+
   resp->dpos = resp->pos;
   return 1;
 }
@@ -125,6 +130,7 @@ response_getdata(response* resp, size_t* size_ptr) {
 
   x = &resp->buf[resp->dpos];
   *size_ptr = resp->pos - resp->dpos;
+
   return x;
 }
 
@@ -140,6 +146,7 @@ response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
 
   if(!response_addname(resp, d))
     return 0;
+
   response_rfinish(resp, RESPONSE_ANSWER);
   return 1;
 }
@@ -147,6 +154,7 @@ response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
 void
 response_nxdomain(response* resp) {
   char* response = resp->buf;
+  
   assert(resp->pos > 3);
 
   response[3] |= 3;
@@ -156,7 +164,9 @@ response_nxdomain(response* resp) {
 void
 response_servfail(response* resp) {
   char* response = resp->buf;
+  
   assert(resp->pos > 3);
+  
   response[3] |= 2;
 }
 
@@ -164,12 +174,14 @@ void
 response_id(response* resp, const char id[2]) {
   if(resp->pos < 2)
     stralloc_ready((stralloc*)resp, 2);
+
   byte_copy(resp->buf, 2, id);
 }
 
 void
 response_tc(response* resp) {
   assert(resp->pos > 2);
+  
   resp->buf[2] |= 2;
   resp->pos = resp->tctarget;
 }
@@ -177,6 +189,7 @@ response_tc(response* resp) {
 void
 response_dump(response const* resp) {
   size_t i;
+  
   buffer_puts(buffer_2, "len = ");
   buffer_putulong(buffer_2, resp->len);
 

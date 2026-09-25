@@ -65,6 +65,7 @@ pe_search_sections(uint8* base, const char* x, size_t len) {
       }
     }
   }
+
   return ret;
 }
 
@@ -109,6 +110,7 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
 
   for(i = 0; i < n; ++i) {
     const char* name = pe_datadir_name(i);
+
     buffer_putspad(b, name ? name : "", 12);
     buffer_putspace(b);
     buffer_putxlong0(b, pe_rva2offset(base, uint32_get(&data_dirs[i].virtual_address)), sizeof(data_dirs[i].virtual_address) * 2);
@@ -121,6 +123,7 @@ pe_print_data_directories(buffer* b, uint8* base, pe_data_directory* data_dirs, 
 void
 pe_print_export_directory(buffer* b, uint8* base, pe_export_directory* export_dir) {
   const char* name = pe_rva2ptr(base, uint32_get(&export_dir->name));
+
   buffer_puts(b, "characteristics: ");
   buffer_putxlong0(b, export_dir->characteristics, sizeof(export_dir->characteristics) * 2);
   buffer_puts(b, "\ntime_date_stamp: ");
@@ -205,8 +208,7 @@ pe_dump_imports(uint8* base) {
   pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
   pe_import_descriptor* imports = pe_rva2ptr(base, uint32_get(&import_dir->virtual_address));
 
-  // n = import_dir->size /
-  // sizeof(pe_import_descriptor) - 1;
+  // n = import_dir->size / sizeof(pe_import_descriptor) - 1;
 
   if(list_imports) {
     buffer_puts(buffer_1, "IMPORTS\n");
@@ -250,9 +252,8 @@ pe_dump_imports(uint8* base) {
         }
       }
 
-      if(list_imports) {
+      if(list_imports) 
         buffer_puts(buffer_1, "  ");
-      }
 
       buffer_putspad(buffer_1, sym ? sym : "", 64);
 
@@ -299,9 +300,8 @@ parse_offset(const char* arg, uint64* dest) {
 
 int
 parse_search(const char* arg, stralloc* dest) {
-  int ret = 0;
   uint64 n;
-  ret = scan_xlonglong(str_start(arg, "0x") ? arg + 2 : arg, &n);
+int  ret = scan_xlonglong(str_start(arg, "0x") ? arg + 2 : arg, &n);
 
   if(ret > 0) {
     ret = (ret + 1) / 2;
@@ -312,6 +312,7 @@ parse_search(const char* arg, stralloc* dest) {
     stralloc_copys(dest, arg);
     ret = dest->len;
   }
+
   return ret;
 }
 
@@ -322,6 +323,7 @@ put_search(buffer* b, const stralloc* search) {
   for(i = 0; i < search->len; i++) {
     if(i > 0)
       buffer_putspace(b);
+
     buffer_putxlong0(b, search->s[i], 2);
   }
 }
@@ -329,6 +331,7 @@ put_search(buffer* b, const stralloc* search) {
 void
 usage(char* av0) {
   const char* me = str_basename(av0);
+
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        me,
@@ -416,9 +419,6 @@ main(int argc, char** argv) {
     }
   }
 
-  /*if(!(list_deps | list_exports | list_imports | list_sections))
-    list_imports = list_exports = 1;*/
-
   for(; argv[unix_optind]; ++unix_optind) {
     base = (uint8*)mmap_read(argv[unix_optind], &filesize);
 
@@ -460,13 +460,6 @@ main(int argc, char** argv) {
         }
         continue;
       }
-
-      // if(!(nt_headers->coff_header.characteristics
-      // & PE_FILE_DLL)) {
-      // buffer_putsflush(buffer_2, "not
-      // DLL\n"); return -1;
-      // }
-      //
 
       if(print_opt_header)
         pe_dump_opthdr(buffer_1, base);
@@ -521,6 +514,7 @@ pe_dump_sections(uint8* base) {
     buffer_putspad(buffer_1, "vsize", sizeof(sections[i].physical_address) * 2);
     buffer_putnspace(buffer_1, 3);
   }
+
   buffer_putspad(buffer_1, "rva", sizeof(sections[i].virtual_address) * 2);
   buffer_putnspace(buffer_1, 3);
 
@@ -533,12 +527,14 @@ pe_dump_sections(uint8* base) {
     buffer_putspad(buffer_1, "rawsize", sizeof(sections[i].size_of_raw_data) * 2);
     buffer_putnspace(buffer_1, 3);
   }
+
   buffer_putspad(buffer_1, "pointer", sizeof(sections[i].pointer_to_raw_data) * 2);
 
   if(print_range) {
     buffer_putnspace(buffer_1, 3);
     buffer_putspad(buffer_1, "raw end", sizeof(sections[i].size_of_raw_data) * 2);
   }
+
   buffer_putnlflush(buffer_1);
 
   for(i = 0; i < n; i++) {
@@ -548,6 +544,7 @@ pe_dump_sections(uint8* base) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].physical_address), sizeof(sections[i].physical_address) * 2);
     }
+
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].virtual_address), sizeof(sections[i].virtual_address) * 2);
 
@@ -560,6 +557,7 @@ pe_dump_sections(uint8* base) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
+
     buffer_puts(buffer_1, " 0x");
     buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data), sizeof(sections[i].pointer_to_raw_data) * 2);
 
@@ -567,6 +565,7 @@ pe_dump_sections(uint8* base) {
       buffer_puts(buffer_1, " 0x");
       buffer_putxlong0(buffer_1, uint32_get(&sections[i].pointer_to_raw_data) + uint32_get(&sections[i].size_of_raw_data), sizeof(sections[i].size_of_raw_data) * 2);
     }
+    
     buffer_putnlflush(buffer_1);
   }
 }

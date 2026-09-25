@@ -61,6 +61,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
       u->proto = str_dup("http");
     s = 0;
   }
+
   e = s + byte_chrs(&x[s], len - s, "/", 1);
 
   if(!(s == 0 && e == 0) /*&& !(e == len)*/) {
@@ -79,6 +80,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
       u->username = str_ndup(&x[s], e3 - s);
       s = e2 + 1;
     }
+
     e2 = s + uri_scan_host(&x[s], len - s);
 
     if(e2 > s) {
@@ -88,6 +90,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
         if((e3 = scan_ushort(&x[e2 + 1], &u->port)) > 0)
           e2 += 1 + e3;
       }
+
       s = e2;
     }
   } else {
@@ -100,9 +103,8 @@ uri_scan(uri_t* u, const char* x, size_t len) {
 
   } else if(s < len) {
     e2 = s + byte_chrs(&x[s], len - s, "#\r\n\t\"'\0", 7);
-    /*   if(e2 < len && x[e2] != '#') {
-
-       }*/
+    /*if(e2 < len && x[e2] != '#') {
+    }*/
     alloc_clear(&u->location);
 
     if(e2 > s) {
@@ -139,6 +141,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
     else if(str_equal(u->proto, "http"))
       u->port = 80;
   }
+
   return e;
 }
 
@@ -177,6 +180,7 @@ uri_fmt(char* x, const uri_t* u) {
 
   if(u->anchor)
     r += fmt_str(x ? &x[r] : 0, u->anchor);
+
   return r;
 }
 
@@ -199,6 +203,7 @@ uri_free(uri_t* uri) {
 
   if(uri->anchor)
     free((char*)uri->anchor);
+
   uri->port = 0;
 }
 
@@ -216,6 +221,7 @@ uri_dump(buffer* b, const uri_t* u) {
     buffer_puts(b, ", password = ");
     buffer_putstr(b, u->password);
   }
+  
   buffer_puts(b, ", host = ");
   buffer_putstr(b, u->host);
 
@@ -223,6 +229,7 @@ uri_dump(buffer* b, const uri_t* u) {
     buffer_puts(b, ", port = ");
     buffer_putulong(b, u->port);
   }
+
   buffer_puts(b, ", location = ");
   buffer_putstr(b, u->location);
 
@@ -262,5 +269,6 @@ uri_find(const char* x, size_t len) {
     while(i > 0 && (isalnum(x[i - 1]) || x[i - 1] == '+'))
       i--;
   }
+  
   return i;
 }

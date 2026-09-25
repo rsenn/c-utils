@@ -83,6 +83,7 @@ static inline void
 set4(uint32 pos, uint32 u) {
   if(pos > size - 4)
     cache_impossible();
+
   uint32_pack(x + pos, u);
   top = pos + 4;
 }
@@ -99,6 +100,7 @@ get4(uint32 pos) {
 
   if(pos > size - 4)
     cache_impossible();
+
   uint32_unpack(x + pos, &result);
   return result;
 }
@@ -113,6 +115,7 @@ hash(const char* key, unsigned int keylen) {
     ++key;
     --keylen;
   }
+
   result <<= 2;
   result &= hsize - 4;
   return result;
@@ -152,6 +155,7 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
         return x + pos + 20 + keylen;
       }
     }
+
     nextpos = prevpos ^ get4(pos);
     prevpos = pos;
     pos = nextpos;
@@ -182,6 +186,7 @@ cache_get(const char* key, unsigned int keylen, unsigned int* datalen, uint32* t
 
     if(d > 604800)
       d = 604800;
+
     *ttl = d;
     return data;
   }
@@ -217,6 +222,7 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
     if(oldest == unused) {
       if(writer <= hsize)
         return;
+
       unused = writer;
       oldest = hsize;
       writer = hsize;
@@ -246,6 +252,7 @@ cache_set(const char* key, unsigned int keylen, const char* data, unsigned int d
 
   if(pos)
     set4(pos, get4(pos) ^ keyhash ^ writer);
+
   set4(writer, pos ^ keyhash);
   set4(writer + 4, keylen);
   set4(writer + 8, datalen);
@@ -296,8 +303,8 @@ cache_init(size_t cachesize) {
 
   if(cachesize < 100)
     cachesize = 100;
-  size = cachesize;
 
+  size = cachesize;
   hsize = 4;
 
   while(hsize <= (size >> 5))

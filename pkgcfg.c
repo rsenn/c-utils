@@ -59,6 +59,7 @@ typedef enum {
   MATCH = 0x10000,
   VARIABLE = 0x20000
 } id;
+
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
 
 typedef enum { LIBS_ONLY_L = 64, LIBS_ONLY_LIBPATH = 128, LIBS_ONLY_OTHER = 256 } libs_mode_t;
@@ -177,6 +178,7 @@ get_field_name(int flags) {
 
   if(flags & VARIABLE)
     return variable;
+
   return field_names[get_field_index(flags)];
 }
 
@@ -184,10 +186,10 @@ static int
 get_op_index(const stralloc* op) {
   int i;
 
-  for(i = 0; op_strings[i]; i++) {
+  for(i = 0; op_strings[i]; i++) 
     if(stralloc_equals(op, op_strings[i]))
       return i;
-  }
+
   return -1;
 }
 
@@ -217,6 +219,7 @@ search_path(const char* path, const char* what, stralloc* out) {
 
     pos++;
   }
+
   stralloc_free(&stra);
   return ret;
 }
@@ -233,29 +236,28 @@ extract_paths(const stralloc* sa, strlist* paths) {
 
     if((s += n) == e)
       break;
+
     n = scan_nonwhitenskip(s, e - s);
 
-    if(*s == PATHSEP_C) {
+    if(*s == PATHSEP_C) 
       strlist_pushb(paths, s, n);
-    }
+    
     s += n;
   }
 }
 
 const char*
 exec_program(const char* compiler, const char* arg, stralloc* out) {
-  int pid;
-  int ws = 0;
+  int pid, ws = 0;
 #if 0 // def POSIX_SPAWN
   posix_spawn_file_actions_t actions;
   posix_spawnattr_t attr;
 #endif
-  int p[2];
-  int stdio[3];
-  char* argv[3];
-  char* envp[1];
+  int p[2], stdio[3];
+  char* argv[3],* envp[1];
   const char* bin;
   stralloc dir;
+
   argv[0] = (char*)compiler;
   argv[1] = (char*)arg;
   argv[2] = NULL;
@@ -307,16 +309,16 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
 
 const char*
 host_arch(const char* compiler, stralloc* out) {
-  const char* s;
   int tcc = str_contains(compiler, "tcc");
-
-  s = exec_program(compiler, tcc ? "-vv" : "-dumpmachine", out);
+   const char* s = exec_program(compiler, tcc ? "-vv" : "-dumpmachine", out);
 
   if(tcc) {
     const char* p;
     strlist paths;
+
     strlist_init(&paths, '\0');
     extract_paths(out, &paths);
+
     strlist_foreach_s(&paths, p) {
       if(path_exists(p)) {
         size_t pos = str_find(p, PATHSEP_S "lib" PATHSEP_S);
@@ -341,6 +343,7 @@ host_arch(const char* compiler, stralloc* out) {
       }
     }
   }
+
 end:
   return s;
 }
@@ -367,6 +370,7 @@ pkg_get(pkg* pf, const char* key) {
     buffer_putnlflush(buffer_2);
   }
 #endif
+
   v = MAP_GET(map, (char*)key, str_len(key) + 1);
   return v;
 }
@@ -403,7 +407,8 @@ wordexp_sa(const char* s, stralloc* sa, MAP_T vars) {
       v = MAP_GET(vars, var.s, var.len + 1);
 
       stralloc_cats(sa, v);
-      //      wordexp_sa(v, sa, vars);
+      //wordexp_sa(v, sa, vars);
+      
       n += 1;
     }
   }
@@ -424,14 +429,17 @@ int
 pkg_expand(pkg* pf, const char* key, stralloc* out) {
   stralloc k, v;
   const char* s;
+
   stralloc_init(&k);
   stralloc_init(&v);
   stralloc_copys(&k, key);
   stralloc_nul(&k);
+  
   k.s[0] = toupper(k.s[0]);
 
   if((s = pkg_get(pf, key)) == NULL)
     return 0;
+  
   stralloc_copys(&v, s);
 
   for(;;) {
@@ -442,9 +450,11 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
 
     if(stralloc_finds(out, "${") == out->len)
       break;
+
     stralloc_copy(&v, out);
     stralloc_zero(out);
   }
+
   return 1;
 }
 
@@ -497,8 +507,10 @@ pkg_format_version(uint64 v, stralloc* sa) {
 
     if(sa->len)
       stralloc_catb(sa, ".", 1);
+  
     stralloc_catlong(sa, num);
   }
+
   return sa->len;
 }
 
@@ -529,6 +541,7 @@ pkg_read(buffer* b, pkg* p) {
 
     if((ret = buffer_get_new_token_sa(b, &name, ":=\r\n", 4)) == -1)
       goto fail;
+
     stralloc_chomp(&name);
 
     if(name.len > 0 && name.s[0] == '#')
@@ -540,9 +553,8 @@ pkg_read(buffer* b, pkg* p) {
     if(ret == 0 || name.s[0] == '\0')
       break;
 
-    if(name.len > 1) {
+    if(name.len > 1) 
       sep = name.s[--name.len];
-    }
 
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t'))
       buffer_skipc(b);
@@ -604,6 +616,7 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 
   if(value_len && ((char*)value)[value_len - 1] == '\0')
     --value_len;
+
   stralloc_catb(&v, value, value_len);
 
   /* wordexp_sa(value, &v); */
@@ -664,6 +677,7 @@ typedef struct {
 static int
 visit_dump(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   dump_t* ptr = user_data;
+
   buffer_put(ptr->b, ptr->m, str_len(ptr->m) - 3);
   buffer_puts(ptr->b, " ");
   buffer_put(ptr->b, key, key_len - 1);
@@ -671,6 +685,7 @@ visit_dump(const void* key, size_t key_len, const void* value, size_t value_len,
   buffer_put(ptr->b, value, value_len - 1);
   buffer_puts(ptr->b, isupper(((char*)key)[0]) ? "\n" : "\"\n");
   buffer_flush(ptr->b);
+  
   return 1;
 }
 
@@ -760,6 +775,7 @@ pkg_list(id code) {
             i = 0;
           else
             i++;
+
           n = path.len - i - 3;
 
           if(code == LIST_FILE)
@@ -781,14 +797,17 @@ pkg_list(id code) {
               stralloc_cats(&line, desc);
             }
           }
+
           stralloc_catc(&line, '\n');
           stralloc_nul(&line);
           n = byte_chr(line.s, line.len, ' ');
 
           if(line.s[n])
             n++;
+
           i = 0;
           found = 0;
+
           slist_foreach(pkgs, item) {
             char* s = *(char**)slist_data(item);
 
@@ -796,6 +815,7 @@ pkg_list(id code) {
               found = 1;
               break;
             }
+
             i++;
           }
 
@@ -807,6 +827,7 @@ pkg_list(id code) {
               slist_pushs(&pkgs, line.s);
             }
           }
+
           stralloc_free(&line);
         }
 
@@ -819,6 +840,7 @@ pkg_list(id code) {
 
   while(pkgs) {
     char* x = *(char**)slist_data(pkgs);
+
     buffer_putsflush(buffer_1, x);
     slist_removes(&pkgs);
   }
@@ -840,6 +862,7 @@ pkg_open(const char* pkgname, pkg* pf) {
   int ret = 0;
 
   stralloc_init(&pf->name);
+
   strlist_foreach(&cmd.path, s, n) {
     stralloc_copyb(&pf->name, s, n);
     stralloc_catm_internal(&pf->name, "/", pkgname, ".pc", NULL);
@@ -858,6 +881,7 @@ pkg_open(const char* pkgname, pkg* pf) {
     ret = pkg_read(&pc, pf);
   } else
     stralloc_free(&pf->name);
+
   return ret;
 }
 
@@ -865,6 +889,7 @@ int
 pkg_parse_cond(cond* c, const char* x, size_t n) {
   int op = -1;
   size_t i = scan_nonwhitenskip(x, n);
+
   stralloc_init(&c->op_str);
   stralloc_init(&c->version_str);
   stralloc_copyb(&c->op_str, x, i);
@@ -905,6 +930,7 @@ pkg_dump_cond(const cond* c) {
   buffer_puts(buffer_2, "'");
   buffer_puts(buffer_2, ", version_val = ");
   buffer_putxlonglong0(buffer_2, c->version_val, 16);
+  
   {
     stralloc ver;
     stralloc_init(&ver);
@@ -941,6 +967,7 @@ pkg_conf(strarray* modules, id code, int mode) {
   size_t len;
   strlist output, require;
   stralloc name, cond, value;
+
   stralloc_init(&name);
   stralloc_init(&cond);
   stralloc_init(&value);
@@ -970,6 +997,7 @@ pkg_conf(strarray* modules, id code, int mode) {
 
       if(pos < name.len)
         pos += scan_whitenskip(&name.s[pos], name.len - pos);
+
       pkg_parse_cond(&condition, &name.s[pos], name.len - pos);
 
       do_cond = 1;
@@ -1008,6 +1036,7 @@ pkg_conf(strarray* modules, id code, int mode) {
     pkg_expand(&pf, "Requires", &value);
     strlist_zero(&require);
     strlist_fromb(&require, value.s, value.len, " ,\r\n\t");
+
     strlist_foreach(&require, x, len) {
 #ifdef DEBUG_OUTPUT_
       buffer_puts(buffer_2, "Require: ");
@@ -1022,6 +1051,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       if(code & PRINT_PATH) {
         if(value.len)
           stralloc_catc(&value, '\n');
+
         stralloc_cat(&value, &pf.name);
       }
 
@@ -1035,6 +1065,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       } else {
         fn = get_field_name(code);
       }
+
       pkg_set(&pf);
 
       if(fn) {
@@ -1053,10 +1084,12 @@ pkg_conf(strarray* modules, id code, int mode) {
       if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
+        
         strlist_init(&sl, '\0');
         stralloc_nul(&value);
         strlist_froms(&sl, value.s, ' ');
         stralloc_zero(&value);
+
         strlist_foreach_s(&sl, s) {
           if((code == PRINT_LIBS) && libs_mode) {
             if((libs_mode == LIBS_ONLY_L) && !str_start(s, "-l"))
@@ -1078,6 +1111,7 @@ pkg_conf(strarray* modules, id code, int mode) {
 
           if(value.len > 0)
             stralloc_catc(&value, ' ');
+
           stralloc_cats(&value, s);
         }
       }
@@ -1092,10 +1126,10 @@ pkg_conf(strarray* modules, id code, int mode) {
         strlist_pushb_unique(&output, x, i);
       }
 
-      if(value.len) {
+      if(value.len) 
         pkg_output(value.s, value.len);
-      }
     }
+
     stralloc_zero(&name);
     stralloc_zero(&cond);
     stralloc_zero(&value);
@@ -1111,6 +1145,7 @@ pkg_conf(strarray* modules, id code, int mode) {
   } else {
     ret = 1;
   }
+
   stralloc_free(&name);
   stralloc_free(&cond);
   stralloc_free(&value);
@@ -1121,6 +1156,7 @@ pkg_conf(strarray* modules, id code, int mode) {
 #endif
   strlist_free(&output);
   strlist_free(&require);
+
   return ret;
 }
 
@@ -1137,6 +1173,7 @@ add_path(const stralloc* dir) {
 
     return 1;
   }
+
   return 0;
 }
 
@@ -1144,6 +1181,7 @@ static int
 add_paths(const stralloc* prefix) {
   size_t pos;
   int n = 0;
+
   stralloc dir;
   stralloc_init(&dir);
   stralloc_copy(&dir, prefix);
@@ -1185,22 +1223,21 @@ pkgcfg_init(const char* self) {
   const char* x;
   stralloc dir;
   stralloc_init(&dir);
-  // path_readlink("/proc/self/exe",
-  // &cmd.self);
+  // path_readlink("/proc/self/exe", &cmd.self);
   stralloc_init(&cmd.self);
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
 
-  if(!self[str_chr(self, '/')]) {
+  if(!self[str_chr(self, '/')]) 
     if((x = search_path(env_get("PATH"), self, &dir)))
       self = x;
-  }
 
   if(!self[str_chr(self, '/')]) {
     path_readlink("/proc/self/exe", &dir);
     stralloc_nul(&dir);
     self = dir.s;
   }
+
   stralloc_copys(&cmd.self, path_basename(self));
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "self: ");
@@ -1217,6 +1254,7 @@ pkgcfg_init(const char* self) {
   } else {
     stralloc_copys(&cmd.prefix, default_prefix);
   }
+
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "cmd.prefix: ");
   buffer_putsa(buffer_2, &cmd.prefix);
@@ -1258,9 +1296,9 @@ pkgcfg_init(const char* self) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(path_exists(dir.s) && sysroot == 0) {
+  if(path_exists(dir.s) && sysroot == 0) 
     sysroot = str_dup(dir.s);
-  }
+  
 #ifdef DEBUG_OUTPUT_
   if(sysroot) {
     buffer_puts(buffer_2, "sysroot: ");
@@ -1289,9 +1327,9 @@ pkgcfg_setpath(const char* path) {
     strlist_froms(&cmd.path, path, ':');
   } else {
     const char* local = PATHSEP_S "local";
-    /*   if(sysroot)
-          stralloc_copys(&dir, sysroot);
-        else */
+    /*if(sysroot)
+      stralloc_copys(&dir, sysroot);
+    else */
     stralloc_copy(&dir, &cmd.prefix);
     stralloc_nul(&dir);
     add_paths(&dir);
@@ -1632,5 +1670,6 @@ getopt_end:
     buffer_putsa(buffer_1, &output.sa);
     buffer_putnlflush(buffer_1);
   }
+
   return 0;
 }

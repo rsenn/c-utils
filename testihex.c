@@ -36,6 +36,7 @@ putdata(buffer* out, const uint8* x, size_t n) {
   for(i = 0; i < n; i++) {
     if(i)
       buffer_putspace(out);
+
     buffer_putxlong0(out, x[i], 2);
   }
 }
@@ -52,6 +53,7 @@ mem_top(ihex_file* h, uint32 mask) {
   ptr p;
   uint32 top = 0;
   ihex_addr a = {0};
+
   list_for_each(p.el, &h->records) {
     if(p.r->type == 4)
       uint16_unpack_big(p.r->data, &a.hi16);
@@ -64,6 +66,7 @@ mem_top(ihex_file* h, uint32 mask) {
     if(top < a.off32 + p.r->length)
       top = a.off32 + p.r->length;
   }
+
   return top;
 }
 
@@ -72,6 +75,7 @@ mem_bottom(ihex_file* h) {
   ptr p;
   uint32 bottom = 0xffffffff;
   ihex_addr a = {0};
+
   list_for_each(p.el, &h->records) {
     if(p.r->type == 4)
       uint16_unpack_big(p.r->data, &a.hi16);
@@ -84,6 +88,7 @@ mem_bottom(ihex_file* h) {
     if(bottom > a.off32)
       bottom = a.off32;
   }
+  
   return bottom;
 }
 
@@ -113,6 +118,7 @@ hex_load(ihex_file* hex, const char* filename) {
     mmap_unmap(x, sz);
     ret = 0;
   }
+
   return ret;
 }
 
@@ -120,6 +126,7 @@ int
 hex_copy(ihex_file* h, uint8_t* m) {
   ptr p;
   ihex_addr a = {0}, prev = {0};
+
   list_for_each(p.el, &h->records) {
     ihex_record_address(p.r, &a);
 
@@ -130,6 +137,7 @@ hex_copy(ihex_file* h, uint8_t* m) {
       if((a.off32 & (~mask)) == 0)
         byte_copy(&m[a.off32], p.r->length, p.r->data);
     }
+  
     prev = a;
     prev.off32 += p.r->length;
   }
@@ -141,6 +149,7 @@ hex_save(ihex_file* ihf, const char* filename) {
   ihex_addr a = {0};
   uint32 prev = 0;
   buffer output;
+
   buffer_truncfile(&output, filename);
 
   list_for_each(p.el, &ihf->records) {
@@ -165,6 +174,7 @@ hex_print(ihex_file* ihf, buffer* out) {
   ihex_addr a = {0};
   uint32 prev = 0;
   int i = 0;
+
   list_for_each(p.el, &ihf->records) {
     int type = ihex_record_address(p.r, &a);
 
@@ -178,6 +188,7 @@ hex_print(ihex_file* ihf, buffer* out) {
       buffer_puts(out, "]");
       buffer_putnlflush(out);
     }
+
     buffer_puts(buffer_2, i >= 100 ? "#" : i >= 10 ? " #" : "  #");
     buffer_putulong(buffer_2, i++);
     buffer_putc(buffer_2, ' ');
@@ -205,6 +216,7 @@ hex_print(ihex_file* ihf, buffer* out) {
       putdata(out, p.r->data, p.r->length);
       buffer_putnlflush(out);*/
     }
+
     prev = a.off32 + p.r->length;
   }
 }
@@ -295,6 +307,7 @@ main(int argc, char* argv[]) {
       errmsg_warnsys("hex_load: ", 0);
       return 1;
     }
+    
     bottom = mem_bottom(&hex_input);
     top = mem_top(&hex_input, mask);
     buffer_putm_internal(buffer_2, "Input Hex File '", input_file, "':\n", NULL);

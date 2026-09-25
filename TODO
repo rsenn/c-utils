@@ -67,3 +67,17 @@ TODO
   whether `input_word_is_command()`'s `is_command_b()` calls (one per
   token, on every line) are a performance concern on large
   `--infile`s.
+
+- genmakefile-multitarget-o-must-be-in-first-segment: with the new
+  `genmakefile [common-options] [--] [target1-opts] -- [target2-opts]
+  ...` multi-target CLI syntax (`genmakefile.c`, `parse_target_options()`
+  called once per `--`-delimited segment from `main()`), `-o/--output`
+  only takes effect when given in the first segment (common-options or
+  target1). `main()` calls `open_output_file()` once, right after the
+  first segment's `parse_target_options()` and before the loop that
+  parses any later segments -- so an `-o` placed in target2's (or a
+  later) segment sets the `outfile` global too late to matter and the
+  Makefile silently goes to stdout instead. Worth either documenting
+  this explicitly in `--help` (currently only documents `-o` under
+  "Options" without noting the placement restriction) or moving the
+  `open_output_file()` call to after all segments have been parsed.
