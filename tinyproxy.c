@@ -197,7 +197,7 @@ dns_query(stralloc* h) {
     return res;
   }
 
-  stralolc_free(&dns);
+  stralloc_free(&dns);
   return NULL;
 }
 
