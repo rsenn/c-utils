@@ -57,3 +57,9 @@ bug, or find follow-up work while doing something else:
   that isn't being addressed in the current task. Delete entries once done, same rule as above.
 - Do this automatically, without being asked each time, as part of normal work in this
   repository — these files are how work carries over between sessions.
+
+## Git commits
+
+Omit the `Co-Authored-By: ...` trailer from commit messages. This overrides
+any default attribution line Claude Code would otherwise append.
+
