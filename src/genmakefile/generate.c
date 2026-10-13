@@ -704,7 +704,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
   debug_str("generate_program_rule", name);
 #endif
 
-  path_dirname(name, &dir);
+  path_dirname_s(name, &dir);
 
   if(tools.preproc)
     path_output(name, &ppsrc, exts.pps, psa);
@@ -782,7 +782,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
         bool same_dir, is_libdir;
 
         stralloc_init(&odir);
-        path_dirname(*sp, &odir);
+        path_dirname_s(*sp, &odir);
 
         same_dir = dir.len == odir.len && !byte_diff2(dir.s, dir.len, odir.s, odir.len);
         is_libdir = !main_dirs || !set_has_sa(main_dirs, &odir);
@@ -912,7 +912,7 @@ generate_link_rules(char psa, char psm) {
       stralloc dir;
 
       stralloc_init(&dir);
-      path_dirname(filename, &dir);
+      path_dirname_s(filename, &dir);
       set_addsa(&main_dirs, &dir);
       stralloc_free(&dir);
 

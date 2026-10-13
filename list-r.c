@@ -1146,7 +1146,7 @@ list_dir_internal(stralloc* dir, int type, long depth) {
 
     if(!S_ISDIR(st.st_mode)) {
       const char* base = path_basename(dir->s);
-      //    path_dirname(dir->s, dir);
+      //    path_dirname_s(dir->s, dir);
       dtype = stat_type(dir->s, st.st_mode);
       list_file(dir, base, dtype, 0, root_dev, &d);
       return 0;

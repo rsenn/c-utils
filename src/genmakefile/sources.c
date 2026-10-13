@@ -363,7 +363,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   stralloc_init(&relative);
   strlist_init(&directories, '\0');
 
-  path_dirname(file->name, &basedir);
+  path_dirname_s(file->name, &basedir);
   path_absolute_sa(&basedir);
   stralloc_nul(&basedir);
 

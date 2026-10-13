@@ -458,7 +458,7 @@ again:
 
   if(in_place) {
     stralloc_zero(&tmp);
-    path_dirname(in_path, &tmp);
+    path_dirname_s(in_path, &tmp);
     stralloc_catc(&tmp, '/');
 
     stralloc_cats(&tmp, "quote.XXXXXX");

@@ -232,7 +232,7 @@ get_prog_name(stralloc* prog) {
   }
 #endif
 
-  if(!path_is_absolute(errmsg_argv0)) {
+  if(!path_is_absolute_s(errmsg_argv0)) {
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
 
@@ -421,7 +421,7 @@ main(int argc, char* argv[]) {
       if(is_obj) {
         stralloc dir;
         stralloc_init(&dir);
-        path_dirname(arg.s, &dir);
+        path_dirname_s(arg.s, &dir);
         strlist_push_unique_sa(&dirs, &dir);
         stralloc_free(&dir);
 

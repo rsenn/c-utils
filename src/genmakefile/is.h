@@ -188,7 +188,7 @@ is_command_b(const char* filename, size_t len) {
   stralloc path;
   strlist system_path;
 
-  if(path_is_absolute(filename))
+  if(path_is_absolute_s(filename))
     return path_exists(filename);
 
   stralloc_init(&path);

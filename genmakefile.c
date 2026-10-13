@@ -1646,7 +1646,7 @@ resolve_directories(void) {
 
   if(dirs.work.sa.len == 0) {
     if(outfile)
-      path_dirname(outfile, &dirs.work.sa);
+      path_dirname_s(outfile, &dirs.work.sa);
     else
       stralloc_copys(&dirs.work.sa, "build");
   }
@@ -1738,7 +1738,7 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
 
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
-  path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
+  path_relative_to_s(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
   stralloc_nul(&sources_dir);
 
   if(dirs.out.sa.len) {
@@ -1746,14 +1746,14 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
     stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     path_absolute_sa(&dirs.out.sa);
     stralloc_zero(&tmp);
-    path_relative_to(dirs.this.sa.s, dirs.out.sa.s, &tmp);
+    path_relative_to_s(dirs.this.sa.s, dirs.out.sa.s, &tmp);
     stralloc_copy(&sources_dir, &tmp);
     stralloc_nul(&sources_dir);
 
     stralloc_zero(&tmp);
   }
 
-  path_relative_to(dirs.obj.sa.s, dirs.out.sa.s, &tmp);
+  path_relative_to_s(dirs.obj.sa.s, dirs.out.sa.s, &tmp);
 
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
@@ -2101,7 +2101,7 @@ finalize_build_metadata(void) {
     stralloc builddir, workabs;
 
     /* dirs.obj.sa was made absolute above (path_absolute_sa), but
-     * dirs.work.sa never is -- path_relative_to() needs both sides
+     * dirs.work.sa never is -- path_relative_to_s() needs both sides
      * absolute to produce a sane result, so resolve a throwaway
      * absolute copy of dirs.work.sa here (same trick path_output2()
      * uses for the same reason). */
@@ -2228,7 +2228,7 @@ generate_auxiliary_rules(target* all) {
       /* some rule names are "target: mask" pattern-rule keys (see
        * generate_srcdir_rule()/generate_srcdir_compile_rules()), not a
        * plain path -- only the part before ": " is an actual target.
-       * path_dirname_b() can't be handed that bound directly: its
+       * path_dirname() can't be handed that bound directly: its
        * "no separator" check reads path[size], which for a bound
        * short of the real NUL isn't '\0' -- so cut a properly
        * NUL-terminated copy first. */
@@ -2239,7 +2239,7 @@ generate_auxiliary_rules(target* all) {
       stralloc_nul(&name);
 
       stralloc_init(&dir);
-      path_dirname(name.s, &dir);
+      path_dirname_s(name.s, &dir);
       stralloc_nul(&dir);
       stralloc_free(&name);
 

@@ -409,11 +409,11 @@ output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* inc
     stralloc sa;
 
     stralloc_init(&sa);
-    // path_dirname_b(s, n, &sa);
+    // path_dirname(s, n, &sa);
 
 #ifdef DEBUG_OUTPUT
     buffer_puts(debug_buf, "libdir: ");
-    buffer_put(debug_buf, s, path_dirlen_b(s, n));
+    buffer_put(debug_buf, s, path_dirlen(s, n));
     buffer_putnlflush(debug_buf);
 #endif
 #ifdef DEBUG_OUTPUT

@@ -274,7 +274,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     return NULL;
 #endif
 
-  if(path_is_absolute(compiler)) {
+  if(path_is_absolute_s(compiler)) {
     bin = compiler;
   } else if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
     errmsg_warnsys(bin, " not found: ", 0);
@@ -1249,7 +1249,7 @@ pkgcfg_init(const char* self) {
 #endif
 
   if(str_contains(self, "/bin/")) {
-    path_dirname(self, &cmd.prefix);
+    path_dirname_s(self, &cmd.prefix);
     stralloc_trunc(&cmd.prefix, stralloc_finds(&cmd.prefix, "/bin"));
   } else {
     stralloc_copys(&cmd.prefix, default_prefix);

@@ -183,7 +183,7 @@ main(int argc, char** argv) {
     buffer_puts(buffer_1, fn);
     strarray_foreach(&pp->inc_array, inc) {
       if(show_deps > 1)
-        if(path_is_absolute(*inc))
+        if(path_is_absolute_s(*inc))
           continue;
 
       size_t n = path_is_dotslash(*inc);

@@ -143,7 +143,7 @@ start:
       /* if we have ".." we have to truncate the resulting path */
 
       if(path[1] == '.' && (path_issep(path[2]) || path[2] == '\0')) {
-        sa->len = path_right(sa->s, sa->len);
+        sa->len = path_dirlen(sa->s, sa->len);
         path += 2;
         continue;
       }
@@ -186,7 +186,7 @@ start:
       /* if the symlink is absolute we clear the stralloc,
          set the path to buf and repeat the whole procedure */
 
-      if(path_is_absolute(buf)) {
+      if(path_rootlen_s(buf)) {
         str_copyn(&buf[n], path, PATH_MAX - n);
         stralloc_zero(sa);
         stralloc_catc(sa, sep);
@@ -197,7 +197,7 @@ start:
       } else {
         int rret;
 
-        sa->len = path_right(sa->s, sa->len);
+        sa->len = path_dirlen(sa->s, sa->len);
         buf[n] = '\0';
 
         rret = path_canonicalize(buf, sa, symbolic);

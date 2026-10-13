@@ -46,16 +46,11 @@ typedef enum path_format {
                                   */
 #define PATH_FNM_PERIOD (1 << 2) /* Leading .' is matched only explicitly.  */
 
-#if WINDOWS_NATIVE
-#define PATHSEP_S_MIXED "\\/"
-#define path_issep(c) ((c) == '/' || (c) == '\\')
-#elif WINDOWS
-#define PATHSEP_S_MIXED "\\/"
-#define path_issep(c) ((c) == '/' || (c) == '\\')
-#else
-#define PATHSEP_S_MIXED "/"
-#define path_issep(c) ((c) == '/')
-#endif
+#define path_is_absolute(p, len) (path_rootlen((p), (len)) & 1)
+#define path_is_absolute_s(p) (path_rootlen_s((p)) & 1)
+#define path_is_absolute_sa(sa) path_is_absolute((sa)->s, (sa)->len)
+
+#define path_relative_to_sa(p, to, out) path_relative_to((p)->s, (p)->len, (to)->s, (to)->len, (out))
 
 int path_access(const char*, int rights);
 int path_absolute(const char* path, stralloc* sa);
@@ -69,10 +64,10 @@ int path_canonicalize(const char* path, stralloc* sa, int symbolic);
 int path_canonical_sa(stralloc* sa);
 size_t path_collapse(char*, size_t);
 size_t path_collapse_sa(stralloc*);
-size_t path_dirlen_b(const char*, size_t);
-size_t path_dirlen(const char*);
-char* path_dirname_b(const char*, size_t, stralloc* dir);
-char* path_dirname(const char*, stralloc*);
+size_t path_dirlen(const char*, size_t);
+size_t path_dirlen_s(const char*);
+char* path_dirname(const char*, size_t, stralloc* dir);
+char* path_dirname_s(const char*, stralloc*);
 char* path_dirname_sa(stralloc* dir);
 int path_exists(const char* p);
 int path_find(const char* path, const char* name, stralloc* out);
@@ -81,9 +76,8 @@ void path_getcwd(stralloc* sa);
 char* path_getcwd_s(void);
 char* path_gethome(int uid);
 int path_getsep(const char* path);
-int path_is_absolute(const char* p);
-int path_is_absolute_b(const char*, size_t);
-int path_is_absolute_sa(const stralloc*);
+int path_rootlen(const char*, size_t);
+int path_rootlen_s(const char* p);
 int path_is_directory(const char* p);
 int path_is_separator(const char*);
 size_t path_len(const char* s, size_t n);
@@ -92,23 +86,21 @@ size_t path_num(const char* p, size_t len, int n);
 size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
 int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
-int path_relative_b(const char*, size_t, stralloc*);
-int path_relative(const char*, stralloc*);
-int path_relative_to_b(const char*, size_t, const char*, size_t n2, stralloc* out);
-int path_relative_to(const char*, const char*, stralloc*);
-int path_relative_to_sa(const stralloc* path, const stralloc* relative_to, stralloc* out);
+int path_relative(const char*, size_t, stralloc*);
+int path_relative_s(const char*, stralloc*);
+int path_relative_to(const char*, size_t, const char*, size_t n2, stralloc* out);
+int path_relative_to_s(const char*, const char*, stralloc*);
 
 size_t path_normalize(char* path);
 size_t path_normalize2(char* path, size_t nb);
 
-size_t path_right(const char* s, size_t n);
 size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
 size_t path_skip_separator(const char* p, size_t n);
 size_t path_skip_component(const char* p, size_t n);
 
 SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
-int path_relative_to_b(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
+int path_relative_to(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
 void path_concat(const char* a, const char* b, stralloc* out);
 void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
@@ -124,7 +116,7 @@ char* path_join(const char*, const char*);
 int path_split(const char*, strlist*, int);
 #endif
 
-size_t path_trim_b(const char*, size_t);
+size_t path_trim(const char*, size_t);
 
 static inline size_t
 path_is_dotslash(char* s) {
@@ -143,7 +135,7 @@ static inline size_t
 path_component1(const char* p) {
   const char* s = p;
 
-  while(*s && !path_issep(*s))
+  while(*s && !path_is_separator(s))
     ++s;
 
   return s - p;
@@ -153,7 +145,7 @@ static inline size_t
 path_component2(const char* p, size_t len) {
   const char *start = p, *end = p + len;
 
-  while(p < end && !path_issep(*p))
+  while(p < end && !path_is_separator(p))
     ++p;
 
   return p - start;
@@ -168,7 +160,7 @@ path_component3(const char* p, size_t len, size_t pos) {
 
   p += pos;
 
-  while(p < end && !path_issep(*p))
+  while(p < end && !path_is_separator(p))
     ++p;
 
   return p - start;
@@ -178,7 +170,7 @@ static inline size_t
 path_separator1(const char* p) {
   const char* s = p;
 
-  while(*s && path_issep(*s))
+  while(*s && path_is_separator(s))
     ++s;
 
   return s - p;
@@ -188,7 +180,7 @@ static inline size_t
 path_separator2(const char* p, size_t len) {
   const char *start = p, *end = p + len;
 
-  while(p < end && path_issep(*p))
+  while(p < end && path_is_separator(p))
     ++p;
 
   return p - start;
@@ -211,9 +203,9 @@ path_skip3(const char* s, size_t* len, size_t n) {
 static inline size_t
 path_skip1(const char* s) {
   const char* p = s;
-  while(*p && !path_issep(*p))
+  while(*p && !path_is_separator(p))
     ++p;
-  while(*p && path_issep(*p))
+  while(*p && path_is_separator(p))
     ++p;
   return p - s;
 }

@@ -304,20 +304,20 @@ msys_root(stralloc* sa) {
 
 #if defined(__MSYS__) || defined(__CYGWIN__)
   if(cygwin_conv_path(CCP_POSIX_TO_WIN_A, "/", buf, sizeof(buf)) == 0) {
-    path_dirname(buf, sa);
+    path_dirname_s(buf, sa);
     ret = 1;
   }
 #endif
 
   if(!ret && (s = getenv("MSYS_PREFIX"))) {
-    path_dirname(s, sa);
+    path_dirname_s(s, sa);
     ret = 1;
   }
 
 #if defined(__MSYS__) || defined(__CYGWIN__)
   if(!ret && (s = getenv("MSYSTEM_PREFIX"))) {
     cygwin_conv_to_win32_path(s, buf);
-    path_dirname(buf, sa);
+    path_dirname_s(buf, sa);
     ret = 1;
   }
 #endif
@@ -338,7 +338,7 @@ mingw_prefix(stralloc* sa) {
   stralloc_zero(sa);
 
   if((s = getenv("MINGW_PREFIX"))) {
-    path_relative_to(s, root.s, sa);
+    path_relative_to_s(s, root.s, sa);
     stralloc_inserts(sa, "/", 0);
     return 1;
   }
@@ -408,7 +408,7 @@ wine_mounts_read(MAP_T map) {
 
     stralloc_nul(&target);
 
-    if(!path_is_absolute(target.s)) {
+    if(!path_is_absolute_sa(&target)) {
       stralloc resolved;
 
       stralloc_init(&resolved);
@@ -494,7 +494,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_nul(sa);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
-  if(path_is_absolute(sa->s)) {
+  if(path_is_absolute_sa(sa)) {
     stralloc tmp;
     stralloc_init(&tmp);
     pathconv(sa->s, &tmp);
@@ -549,7 +549,7 @@ pathtool(const char* arg, stralloc* sa) {
   if(relative_to.sa.s) {
     stralloc_nul(&path.sa);
 
-    if(!path_is_absolute(path.sa.s)) {
+    if(!path_is_absolute_sa(&path.sa)) {
       path_absolute_sa(&path.sa);
       path_collapse_sa(&path.sa);
     }
@@ -562,7 +562,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    path_relative_to_b(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
+    path_relative_to(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
 
   } else {
 #ifdef DEBUG_OUTPUT_
@@ -724,7 +724,7 @@ main(int argc, char* argv[]) {
     stralloc_copys(&relative_to.sa, rel_to);
     stralloc_nul(&relative_to.sa);
 
-    if(!path_is_absolute(relative_to.sa.s)) {
+    if(!path_is_absolute_sa(&relative_to.sa)) {
       path_absolute_sa(&relative_to.sa);
       path_collapse_sa(&relative_to.sa);
     }

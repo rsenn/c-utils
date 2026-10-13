@@ -39,16 +39,16 @@ TEST(test_path_canonicalize) {
 }
 
 /*
- * char* path_dirname(char*, stralloc* dir);
+ * char* path_dirname_s(char*, stralloc* dir);
  */
 TEST(test_path_dirname) {
   stralloc sa;
   stralloc_init(&sa);
 
-  ASSERT_EQ(0, str_diff("/test", path_dirname("/test/path", &sa)));
-  ASSERT_EQ(0, str_diff("test", path_dirname("test/path", &sa)));
-  ASSERT_EQ(0, str_diff(".", path_dirname("path", &sa)));
-  ASSERT_EQ(0, !str_diff("test", path_dirname("/path/test", &sa)));
+  ASSERT_EQ(0, str_diff("/test", path_dirname_s("/test/path", &sa)));
+  ASSERT_EQ(0, str_diff("test", path_dirname_s("test/path", &sa)));
+  ASSERT_EQ(0, str_diff(".", path_dirname_s("path", &sa)));
+  ASSERT_EQ(0, !str_diff("test", path_dirname_s("/path/test", &sa)));
 }
 
 /*
@@ -88,7 +88,7 @@ TEST(test_path_len) {}
 TEST(test_path_readlink) {}
 
 /*
- * size_t path_right(const char* s, size_t n);
+ * size_t path_dirlen(const char* s, size_t n);
  */
 
 TEST(test_path_right) {}
@@ -130,7 +130,7 @@ TEST(test_path_num_sa) {}
 TEST(test_path_exists) {}
 
 /*
- * int path_relative_to(const char*, const char* to, stralloc* rel);
+ * int path_relative_to_s(const char*, const char* to, stralloc* rel);
  */
 
 TEST(test_path_relative) {}

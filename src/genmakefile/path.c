@@ -302,7 +302,7 @@ path_normalize_sa(const char* dir, stralloc* out) {
   if(str_start(dir, "./"))
     dir += 2;
 
-  if(!path_is_absolute(dir)) {
+  if(!path_is_absolute_s(dir)) {
     stralloc_copy(&tmp, &dirs.this.sa);
     path_absolute_sa(&tmp);
 
@@ -317,7 +317,7 @@ path_normalize_sa(const char* dir, stralloc* out) {
     stralloc_init(&outdir);
     stralloc_copy(&outdir, &dirs.out.sa);
     path_absolute_sa(&outdir);
-    path_relative_to_b(tmp.s, tmp.len, outdir.s, outdir.len, out);
+    path_relative_to(tmp.s, tmp.len, outdir.s, outdir.len, out);
     stralloc_free(&outdir);
   } else*/
   stralloc_copy(out, &tmp);

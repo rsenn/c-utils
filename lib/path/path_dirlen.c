@@ -1,11 +1,23 @@
 #include "../path_internal.h"
 #include "../utf8.h"
-#include "../str.h"
 
 size_t
-path_dirlen(const char* path) {
-  const char ps[] = PATHSEP_S_MIXED;
-  const size_t pslen = sizeof(ps) - 1;
+path_dirlen(const char* s, size_t n) {
+  const char* p;
 
-  return u8b_rchrs(path, str_len(path), ps, pslen);
+  if(n == 0)
+    return 0;
+
+  p = s + n - 1;
+
+  while(p >= s && path_issep(*p))
+    --p;
+
+  while(p >= s && !path_issep(*p))
+    --p;
+
+  if(p < s)
+    return 0;
+
+  return p - s;
 }

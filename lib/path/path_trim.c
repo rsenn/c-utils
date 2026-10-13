@@ -2,7 +2,7 @@
 #include "../utf8.h"
 
 size_t
-path_trim_b(const char* path, size_t size) {
+path_trim(const char* path, size_t size) {
   size_t j = 0;
   int prev = 0;
 

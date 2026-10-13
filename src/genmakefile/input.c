@@ -49,7 +49,7 @@ builddir_enter(const char* x, size_t len) {
   strarray_emplace_sa(&dirstack, &dirs.obj.sa);
   stralloc_copyb(&dirs.obj.sa, x, len);
 
-  path_relative_b(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
+  path_relative(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
   set_addsa(&build_directories, &tmp);
 
 #ifdef DEBUG_OUTPUT_
@@ -121,7 +121,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     len -= n;
   }
 
-  if(path_is_absolute_b(y, len)) {
+  if(path_is_absolute(y, len)) {
     stralloc tmp;
 
     stralloc_init(&tmp);
@@ -129,7 +129,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     stralloc_nul(&tmp);
     path_collapse_sa(&tmp);
 
-    path_relative_to_b(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+    path_relative_to(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
     stralloc_free(&tmp);
   } else {
     stralloc tmp;
@@ -138,7 +138,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     path_append(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
     path_append(y, len, &tmp);
     stralloc_nul(&tmp);
-    path_relative_to(tmp.s, dirs.out.sa.s, out);
+    path_relative_to_s(tmp.s, dirs.out.sa.s, out);
     stralloc_free(&tmp);
     path_prepends(".", out);
   }
@@ -197,7 +197,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   stralloc_init(&dir);
   stralloc_init(&path);
   stralloc_init(&rel);
-  path_relative_to_b(dirs.out.sa.s, dirs.out.sa.len, dirs.obj.sa.s, dirs.obj.sa.len, &rel);
+  path_relative_to(dirs.out.sa.s, dirs.out.sa.len, dirs.obj.sa.s, dirs.obj.sa.len, &rel);
 
   strlist_init(&args, ' ');
   strlist_init(&files, ' ');
@@ -385,7 +385,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
           strlist_push_sa(&files, &path);
           strlist_push_sa(&args, &path);
 
-          if(path_is_absolute_b(path.s, path.len))
+          if(path_is_absolute(path.s, path.len))
             path_relative_to_sa(&path, &dirs.out.sa, &tmp);
           else
             stralloc_copy(&tmp, &path);
@@ -596,7 +596,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
     stralloc_nul(&out);
     stralloc_zero(&dir);
-    path_dirname(out.s, &dir);
+    path_dirname_s(out.s, &dir);
 
     if(!(count_ptr = MAP_GET(targetdirs, dir.s, dir.len + 1))) {
       uint32 count = 0;
@@ -953,7 +953,7 @@ input_process_rules(target* all) {
     }
 
     if(link)
-      path_dirname(rule->name, &outdir.sa);
+      path_dirname_s(rule->name, &outdir.sa);
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(debug_buf,
@@ -995,7 +995,7 @@ input_process_rules(target* all) {
 #endif
 
   if(!var_isset(sourcedir_varname)) {
-    path_relative_b(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
+    path_relative(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
     var_set_b(sourcedir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }
@@ -1611,7 +1611,7 @@ input_process_file(const char* infile, target* all) {
   stralloc prefix_pattern;
   bool have_prefix_pattern;
 
-  path_dirname(infile, &dirs.this.sa);
+  path_dirname_s(infile, &dirs.this.sa);
   strlist_nul(&dirs.this);
 
   if((x = mmap_read(infile, &n))) {

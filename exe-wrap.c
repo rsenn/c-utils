@@ -192,7 +192,7 @@ search_path(stralloc* sa, const char* p) {
   stralloc_init(sa);
   stralloc_ready(sa, PATH_MAX);
 
-  if(!path_is_absolute(p)) {
+  if(!path_is_absolute_s(p)) {
     strarray path, pathext;
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
@@ -327,7 +327,7 @@ main(int argc, char* argv[], char* envp[]) {
       stralloc_copys(&realcmd, exec);
       stralloc_nul(&realcmd);
 
-      if(!path_is_absolute(realcmd.s)) {
+      if(!path_is_absolute_sa(&realcmd)) {
         stralloc tmp;
         stralloc_init(&tmp);
         path_concat_sa(&progdir, &realcmd, &tmp);

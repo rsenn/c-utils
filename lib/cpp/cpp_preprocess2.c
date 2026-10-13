@@ -62,7 +62,7 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       if(filename[0] != '/' && is_dquote) {
         stralloc dir;
         stralloc_init(&dir);
-        path_dirname(start->file->name, &dir);
+        path_dirname_s(start->file->name, &dir);
         stralloc_nul(&dir);
 
         char* path = path_join(dir.s, filename);

@@ -191,7 +191,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   buffer_putnlflush(debug_buf);
 #endif
 
-  path_dirname(source, &dir);
+  path_dirname_s(source, &dir);
   stralloc_nul(&dir);
   dlen = dir.len;
   source = path_clean_s(source);

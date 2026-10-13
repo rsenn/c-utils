@@ -132,7 +132,7 @@ get_prog_name(void) {
   if((name = process_executable()))
     return name;
 
-  if(!path_is_absolute(errmsg_argv0)) {
+  if(!path_is_absolute_s(errmsg_argv0)) {
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
 
