@@ -79,7 +79,7 @@ static void
 usage(const char* argv0) {
   buffer_putm_internal_flush(buffer_2,
                               "Usage: ",
-                              path_basename(argv0),
+                              path_basename_s(argv0),
                               " [-o FILE] [from[=to] ...] -- <program> [args...]\n",
                               "  -o FILE  set EXEC_INTERCEPT_LOG=FILE before exec'ing <program>\n",
                               "  from=to  add a remap to EXEC_INTERCEPT_MAP (replacing any existing\n",
@@ -149,7 +149,7 @@ set_logfile(const char* logfile) {
     p++;
 
   stralloc_init(&abs);
-  path_absolute(p, &abs);
+  path_abs_sa(&abs, p, str_len(p));
   stralloc_nul(&abs);
 
   stralloc_init(&out);

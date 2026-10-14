@@ -69,7 +69,7 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
         stralloc_free(&dir);
 
         if(path_exists(path)) {
-          path[path_collapse(path, str_len(path))] = '\0';
+          path_canon(path, str_len(path) + 2, path, str_len(path));
 
           tok = include_file(pp, tok, path, start->next->next);
           continue;

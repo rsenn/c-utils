@@ -21,7 +21,7 @@ usage(char* a0) {
   buffer_putm_internal(buffer_2,
                        "example preprocessor\n"
                        "usage: ",
-                       path_basename(a0),
+                       path_basename_s(a0),
                        " [-dPLx] [-I includedir...] [-D define] [-o output] file\n"
                        "if no filename or '-' is passed, stdin is used.\n",
                        NULL);

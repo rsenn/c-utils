@@ -229,7 +229,7 @@ void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
-                       path_basename(argv0),
+                       path_basename_s(argv0),
                        " <hex-files...>\n"
                        "\n"
                        "Options\n"

@@ -127,23 +127,22 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     stralloc_init(&tmp);
     stralloc_copyb(&tmp, y, len);
     stralloc_nul(&tmp);
-    path_collapse_sa(&tmp);
+    path_canon_sa(&tmp);
 
-    path_relative_to(tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len, out);
+    path_rel_sa(out, tmp.s, tmp.len, dirs.out.sa.s, dirs.out.sa.len);
     stralloc_free(&tmp);
   } else {
     stralloc tmp;
 
     stralloc_init(&tmp);
-    path_append(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
-    path_append(y, len, &tmp);
+    path_cat_sa(&tmp, dirs.obj.sa.s, dirs.obj.sa.len, y, len);
     stralloc_nul(&tmp);
-    path_relative_to_s(tmp.s, dirs.out.sa.s, out);
+    path_rel_sa(out, tmp.s, str_len(tmp.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
     stralloc_free(&tmp);
-    path_prepends(".", out);
+    path_cat_sa(out, ".", 1, out->s, out->len);
   }
 
-  path_collapse_sa(out);
+  path_canon_sa(out);
   stralloc_nul(out);
 
 #ifdef DEBUG_OUTPUT_
@@ -197,7 +196,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
   stralloc_init(&dir);
   stralloc_init(&path);
   stralloc_init(&rel);
-  path_relative_to(dirs.out.sa.s, dirs.out.sa.len, dirs.obj.sa.s, dirs.obj.sa.len, &rel);
+  path_rel_sa(&rel, dirs.out.sa.s, dirs.out.sa.len, dirs.obj.sa.s, dirs.obj.sa.len);
 
   strlist_init(&args, ' ');
   strlist_init(&files, ' ');
@@ -386,7 +385,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
           strlist_push_sa(&args, &path);
 
           if(path_is_absolute(path.s, path.len))
-            path_relative_to_sa(&path, &dirs.out.sa, &tmp);
+            path_rel_sa(&tmp, path.s, path.len, dirs.out.sa.s, dirs.out.sa.len);
           else
             stralloc_copy(&tmp, &path);
 
@@ -452,13 +451,13 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
   if(out.len) {
     strlist_removeb(&files, out.s, out.len);
-    path_canonical_sa(&out);
+    path_canon_sa(&out);
     strlist_removeb(&files, out.s, out.len);
   }
 
   if(out.len == 0 && compile) {
     size_t flen = byte_chr(files.sa.s, files.sa.len, files.sep);
-    size_t bpos = path_basepos2(files.sa.s, flen);
+    size_t bpos = path_basename(files.sa.s, flen, 0) - files.sa.s;
 
     stralloc_copyb(&out, files.sa.s + bpos, flen - bpos);
     stralloc_replaces(&out, exts.src, exts.obj);
@@ -492,7 +491,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_init(&tmp);
 
     if(path_is_absolute_sa(&out)) {
-      path_relative_to_sa(&out, &dirs.out.sa, &tmp);
+      path_rel_sa(&tmp, out.s, out.len, dirs.out.sa.s, dirs.out.sa.len);
       stralloc_copy(&out, &tmp);
       stralloc_nul(&out);
     }

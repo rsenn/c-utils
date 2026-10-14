@@ -231,7 +231,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
     stralloc_nul(&dir);
     stralloc_copy(&r, &dir);
 
-    path_canonical_sa(&r);
+    path_canon_sa(&r);
 
     if(path_exists(r.s) || includes_find_sa(s, n, &r)) {
 #ifdef DEBUG_OUTPUT_

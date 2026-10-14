@@ -518,3 +518,15 @@
   hygiene, not a correctness or stability issue. Not worth chasing
   unless `genmakefile` is ever used as a long-lived/embedded library
   rather than a one-shot CLI.
+
+- pathtool-canonicalize-above-root-prints-nothing (`pathtool.c`): `pathtool -f` of a
+  path that climbs above the current directory prints an empty line instead of the
+  resolved path.
+
+    cd /tmp && pathtool -f ../..    # prints "" ; expected "/"
+
+- lib-stralloc-readclose-append-duplicate (untracked `lib/stralloc/readclose_append.c`):
+  the file defines `readclose_append(int fd, ...)` while `lib/stralloc/readclose.c`
+  already defines `readclose_append(int64 fd, ...)` and `lib/open.h` declares the
+  `int64` form, so `cmake --build` stops in the `stralloc` target ("conflicting types")
+  and no program links. Remove the file or the other definition.

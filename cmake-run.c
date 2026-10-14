@@ -204,29 +204,6 @@ read_env(const char* x, size_t n) {
 }
 
 /**
- * @brief path_lookup
- * @param cmd
- * @param out
- * @return
- */
-int
-path_lookup(const char* cmd, stralloc* out) {
-  char* s;
-
-  strlist_foreach_s(&path, s) {
-    stralloc_copys(out, s);
-    stralloc_catc(out, PATHSEP_C);
-    stralloc_cats(out, cmd);
-    stralloc_nul(out);
-
-    if(path_exists(out->s))
-      return 1;
-  }
-
-  return 0;
-}
-
-/**
  * @brief get_prog_name
  * @param prog
  * @return
@@ -308,7 +285,7 @@ main(int argc, char* argv[], char* envp[]) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  stralloc_copys(&base, path_basename(prog.s));
+  stralloc_copys(&base, path_basename_s(prog.s));
 
 #if DEBUG
   buffer_puts(buffer_1, "cmd: '");

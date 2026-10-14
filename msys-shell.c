@@ -22,22 +22,6 @@ static stralloc cmd, execbin, root, fullcmd, specs;
 static const char* ext = "";
 static strlist path;
 
-int
-path_lookup(const char* cmd, stralloc* out) {
-  char* s;
-
-  strlist_foreach_s(&path, s) {
-    stralloc_copys(out, s);
-    stralloc_catc(out, PATHSEP_C);
-    stralloc_cats(out, cmd);
-    stralloc_nul(out);
-
-    if(path_exists(out->s))
-      return 1;
-  }
-  return 0;
-}
-
 void
 setup_env() {
   if(!env_get("MSYS2_PATH"))
@@ -148,7 +132,7 @@ main(int argc, char* argv[], char* envp[]) {
   stralloc_nul(&execbin);
 
   if(!stralloc_contains(&execbin, PATHSEP_S)) {
-    if(path_lookup(execbin.s, &fullcmd))
+    if(path_lookup(&fullcmd, pathstr, execbin.s))
       stralloc_copy(&execbin, &fullcmd);
   }
 
@@ -166,7 +150,7 @@ main(int argc, char* argv[], char* envp[]) {
   }
 
   strlist_unshift(&args, specs.s);
-  strlist_unshift(&args, path_basename(execbin.s));
+  strlist_unshift(&args, path_basename_s(execbin.s));
 
   stralloc_init(&sa);
   strlist_joins(&args, &sa, "' '");

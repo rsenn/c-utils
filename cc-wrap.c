@@ -106,22 +106,6 @@ read_env(const char* x, size_t n) {
   return len;
 }
 
-int
-path_lookup(const char* cmd, stralloc* out) {
-  char* s;
-
-  strlist_foreach_s(&path, s) {
-    stralloc_copys(out, s);
-    stralloc_catc(out, PATHSEP_C);
-    stralloc_cats(out, cmd);
-    stralloc_nul(out);
-
-    if(path_exists(out->s))
-      return 1;
-  }
-  return 0;
-}
-
 const char*
 get_prog_name(void) {
   ssize_t len;
@@ -202,7 +186,7 @@ main(int argc, char* argv[], char* envp[]) {
   stralloc_nul(&realcmd);
 
   if(!stralloc_contains(&realcmd, PATHSEP_S)) {
-    path_lookup(realcmd.s, &fullcmd);
+    path_lookup(&fullcmd, env_get("PATH"), realcmd.s);
   } else if(path_exists(realcmd.s)) {
     stralloc_copy(&fullcmd, &realcmd);
   }
@@ -229,7 +213,7 @@ main(int argc, char* argv[], char* envp[]) {
     strlist_push(&args, argv[i]);
   }
 
-  strlist_unshift(&args, path_basename(realcmd.s));
+  strlist_unshift(&args, path_basename_s(realcmd.s));
 
   stralloc_init(&sa);
   strlist_joins(&args, &sa, "' '");

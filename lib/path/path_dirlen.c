@@ -1,23 +1,21 @@
 #include "../path_internal.h"
-#include "../utf8.h"
 
+/* path_dirlen returns the length of the directory part of p[0..n), root-aware; 0 if there is none.
+ *
+ *   "/usr/lib/" -> 4 ("/usr")    "/usr" -> 1 ("/")    "a//b" -> 1 ("a")    "usr" -> 0
+ */
 size_t
-path_dirlen(const char* s, size_t n) {
-  const char* p;
+path_dirlen(const char* p, size_t n) {
+  size_t root = path_rootlen(p, n), e = n;
 
-  if(n == 0)
-    return 0;
+  while(e > root && path_issep(p[e - 1]))
+    --e;
 
-  p = s + n - 1;
+  while(e > root && !path_issep(p[e - 1]))
+    --e;
 
-  while(p >= s && path_issep(*p))
-    --p;
+  while(e > root && path_issep(p[e - 1]))
+    --e;
 
-  while(p >= s && !path_issep(*p))
-    --p;
-
-  if(p < s)
-    return 0;
-
-  return p - s;
+  return e;
 }

@@ -634,15 +634,15 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
   MAP_FOREACH(sourcedir_map, t) {
     target* rule;
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
-    const char* base = path_basename(MAP_ITER_KEY(t));
+    const char* base = path_basename_s(MAP_ITER_KEY(t));
     sourcefile* pfile;
     bool has_main = false;
 
     if(str_equal(base, ".")) {
       stralloc_zero(&abspath);
-      path_absolute(MAP_ITER_KEY(t), &abspath);
+      path_abs_sa(&abspath, MAP_ITER_KEY(t), str_len(MAP_ITER_KEY(t)));
       stralloc_nul(&abspath);
-      base = path_basename(MAP_ITER_KEY(t));
+      base = path_basename_s(MAP_ITER_KEY(t));
     }
 
 #ifdef DEBUG_OUTPUT_
@@ -752,7 +752,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
     stralloc outname;
 
     stralloc_init(&outname);
-    stralloc_cats(&outname, path_basename(name));
+    stralloc_cats(&outname, path_basename_s(name));
 
     if(stralloc_endb(&outname, exts.src, 2))
       outname.len -= 2;
@@ -799,7 +799,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
               const char* base;
 
               stralloc_nul(&odir);
-              base = path_basename(odir.s);
+              base = path_basename_s(odir.s);
 
               stralloc_init(&libname);
               path_prefix_s(&dirs.work.sa, base, &libname, psm);
@@ -998,7 +998,7 @@ generate_module_rules(char psa, char psm) {
       stralloc_weak(&compile->recipe, &commands.compile);
     }
 
-    stralloc_cats(&outname, path_basename(filename));
+    stralloc_cats(&outname, path_basename_s(filename));
 
     if(stralloc_endb(&outname, exts.src, str_len(exts.src)))
       outname.len -= str_len(exts.src);

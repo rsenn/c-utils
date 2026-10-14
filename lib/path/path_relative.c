@@ -7,7 +7,7 @@ path_relative(const char* path, size_t len, stralloc* out) {
 
   stralloc_init(&cwd);
   path_getcwd(&cwd);
-  ret = path_relative_to(path, len, cwd.s, cwd.len, out);
+  ret = path_rel_sa(out, path, len, cwd.s, cwd.len);
   stralloc_free(&cwd);
   return ret;
 }

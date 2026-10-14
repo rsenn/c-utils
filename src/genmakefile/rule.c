@@ -105,7 +105,7 @@ rule_find(const char* needle) {
     if(str_equal(name, needle))
       return MAP_ITER_VALUE(t);
 
-    /*if(str_equal(path_basename((char*)name), path_basename((char*)needle)))
+    /*if(str_equal(path_basename_s((char*)name), path_basename_s((char*)needle)))
       return MAP_ITER_VALUE(t);*/
   }
 

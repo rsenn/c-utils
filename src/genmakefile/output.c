@@ -427,7 +427,7 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
     stralloc_zero(&path);
 
-    path_relative_to_sa(&dirs.out.sa, &dirs.work.sa, &obj_dir);
+    path_rel_sa(&obj_dir, dirs.out.sa.s, dirs.out.sa.len, dirs.work.sa.s, dirs.work.sa.len);
 
     {
       const char* x;
@@ -437,7 +437,7 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
       stralloc_init(&tmp);
       stralloc_init(&outdir);
-      path_concat_sa(&dirs.this.sa, &dirs.out.sa, &outdir);
+      path_cat_sa(&outdir, dirs.this.sa.s, dirs.this.sa.len, dirs.out.sa.s, dirs.out.sa.len);
 
       set_foreach_ordered(&rule->prereq, it, x, n) {
         if(i)

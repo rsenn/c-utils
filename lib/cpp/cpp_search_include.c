@@ -11,7 +11,7 @@ cpp_search_include_next(cpp_ctx* pp, char* filename) {
     char* path = path_join(strarray_AT(&pp->inc_paths, pp->inc_next_idx), filename);
 
     if(path_exists(path)) {
-      path[path_collapse(path, str_len(path))] = '\0';
+      path_canon(path, str_len(path) + 2, path, str_len(path));
       return path;
     }
   }
@@ -37,7 +37,7 @@ cpp_search_include_paths(cpp_ctx* pp, char* filename) {
     if(!path_exists(path))
       continue;
 
-    path[path_collapse(path, str_len(path))] = '\0';
+    path_canon(path, str_len(path) + 2, path, str_len(path));
 
     hashmap_put(&pp->inc_cache, filename, path);
     pp->inc_next_idx = i + 1;

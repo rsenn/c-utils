@@ -12,21 +12,14 @@ static const char* const dot = ".";
 
 char*
 path_dirname(const char* path, size_t size, stralloc* dir) {
-  size_t i;
+  size_t i = path ? path_dirlen(path, size) : 0;
 
   stralloc_zero(dir);
-  i = path_dirlen(path, size);
 
-  if(path == NULL || path[i] == '\0') {
+  if(i == 0)
     stralloc_copys(dir, dot);
-  } else {
-    /* remove trailing slashes */
-
-    while(i > 0 && path_issep(path[i - 1]))
-      --i;
-
+  else
     stralloc_copyb(dir, path, i);
-  }
 
   stralloc_nul(dir);
   return dir->s;

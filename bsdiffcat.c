@@ -311,7 +311,7 @@ main(int argc, char* argv[]) {
   array_init(&records);
 
   if(argc <= 1 || buffer_mmapread(&patch, argv[1])) {
-    errmsg_infosys(path_basename(argv[1]), ": ", "open file", ": ", NULL);
+    errmsg_infosys(path_basename_s(argv[1]), ": ", "open file", ": ", NULL);
     return 1;
   }
 
@@ -334,7 +334,7 @@ main(int argc, char* argv[]) {
   }*/
 
   if(bsdiff_read(&patch) == -1) {
-    errmsg_infosys(path_basename(argv[0]), ": ", "read header", ": ", NULL);
+    errmsg_infosys(path_basename_s(argv[0]), ": ", "read header", ": ", NULL);
     exitcode = 2;
   }
 

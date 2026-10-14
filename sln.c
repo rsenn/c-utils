@@ -82,7 +82,7 @@ mklink(char* target, char* link) {
     buffer_putnlflush(buffer_2);
   }
 
-  return symlink(path_basename(target), link);
+  return symlink(path_basename_s(target), link);
 }
 
 int

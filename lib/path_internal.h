@@ -31,5 +31,7 @@
 #define path_isabs(p) (path_issep((p)[0]) || (path_isdrive(p) && path_issep((p)[2])))
 #define path_isrel(p) (!path_isabs(p))
 
-/* a bare name, no separator */
-#define path_isname(p) ((p)[u8s_chrs((p), PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1)] != '\0')
+
+/* run of separators / of non-separators at p */
+#define path_seplen(p, n) path_separator2((p), (n))
+#define path_comlen(p, n) path_component2((p), (n))

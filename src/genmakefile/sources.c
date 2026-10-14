@@ -135,7 +135,7 @@ sources_sort_callback(const char** a, const char** b) {
     return er;
 
   rdir = str_diffn(*a, *b, alen < blen ? blen : alen);
-  rfile = str_diff(path_basename(*a), path_basename(*b));
+  rfile = str_diff(path_basename_s(*a), path_basename_s(*b));
 
   if(rdir == 0)
     return rfile;
@@ -206,7 +206,7 @@ sources_find(const char* name, size_t len, size_t* cptr) {
     i = byte_findb(x, n, name, len);
 
     if(i == n)
-      i = byte_findb(x, n, path_basename(name), len);
+      i = byte_findb(x, n, path_basename_s(name), len);
 
     if(i < n) {
       if(!ret && is_source(x))
@@ -364,7 +364,7 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
   strlist_init(&directories, '\0');
 
   path_dirname_s(file->name, &basedir);
-  path_absolute_sa(&basedir);
+  path_abs_sa(&basedir, basedir.s, basedir.len);
   stralloc_nul(&basedir);
 
   strlist_init(&file->includes, '\0');
@@ -401,18 +401,16 @@ sources_addincludes(sourcefile* file, sourcedir* sdir, const strlist* includes, 
     size_t len = n;
     bool exists = false;
 
-    path_concatb(relative.s, relative.len, x, len, &path);
-    path_collapse_sa(&path);
-    path_concatb(dirs.this.sa.s, dirs.this.sa.len, path.s, path.len, &real);
+    path_cat_sa(&path, relative.s, relative.len, x, len);
+    path_canon_sa(&path);
+    path_cat_sa(&real, dirs.this.sa.s, dirs.this.sa.len, path.s, path.len);
 
-    path_canonical_sa(&real);
-    path_collapse_sa(&real);
+    path_canon_sa(&real);
 
     if(!(exists = path_exists(real.s))) {
       if((exists = includes_find_sa(x, n, &path))) {
         stralloc_copy(&real, &path);
-        path_canonical_sa(&real);
-        path_collapse_sa(&real);
+        path_canon_sa(&real);
       }
     }
 

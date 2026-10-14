@@ -189,7 +189,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
     stralloc_cats(&absdir, dir);
     stralloc_nul(&absdir);
 
-    path_relative_to_s(absdir.s, dirs.out.sa.s, &sa);
+    path_rel_sa(&sa, absdir.s, str_len(absdir.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
 
     stralloc_free(&absdir);
 
@@ -285,7 +285,7 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
           strlist_push_unique(is_inc ? &incdirs : &srcdirs, s);
         }
 
-        path_relative_to_s(sa.s, dirs.out.sa.s, &file);
+        path_rel_sa(&file, sa.s, str_len(sa.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
 
         // debug_sa("file", &file);
 

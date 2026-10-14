@@ -32,11 +32,13 @@ typedef enum path_format {
 #define PATHSEP_S "\\"
 #define PATHLISTSEP_C ';'
 #define PATHLISTSEP_S ";"
+#define PATHLISTSEP_CHARS ";"
 #else
 #define PATHSEP_C '/'
 #define PATHSEP_S "/"
 #define PATHLISTSEP_C ':'
 #define PATHLISTSEP_S ":"
+#define PATHLISTSEP_CHARS ":;"
 #endif
 
 #define PATH_FNM_NOMATCH 1
@@ -50,33 +52,29 @@ typedef enum path_format {
 #define path_is_absolute_s(p) (path_rootlen_s((p)) & 1)
 #define path_is_absolute_sa(sa) path_is_absolute((sa)->s, (sa)->len)
 
-#define path_relative_to_sa(p, to, out) path_relative_to((p)->s, (p)->len, (to)->s, (to)->len, (out))
-
 int path_access(const char*, int rights);
-int path_absolute(const char* path, stralloc* sa);
-char* path_absolute_s(const char* path);
-int path_absolute_sa(stralloc* sa);
-char* path_basename2(const char*, size_t);
-char* path_basename(const char*);
-size_t path_basepos2(const char*, size_t);
-int path_canonical(const char* path, stralloc* out);
+const char* path_basename(const char* p, size_t n, size_t* len);
+#define path_basename_s(s) path_basename((s), str_len(s), 0)
 int path_canonicalize(const char* path, stralloc* sa, int symbolic);
-int path_canonical_sa(stralloc* sa);
-size_t path_collapse(char*, size_t);
-size_t path_collapse_sa(stralloc*);
 size_t path_dirlen(const char*, size_t);
 size_t path_dirlen_s(const char*);
 char* path_dirname(const char*, size_t, stralloc* dir);
 char* path_dirname_s(const char*, stralloc*);
 char* path_dirname_sa(stralloc* dir);
 int path_exists(const char* p);
+size_t path_listlen(const char* l, size_t n);
+size_t path_listnext(const char* l, size_t n, size_t pos);
+size_t path_search(char* out, size_t cap, const char* l, size_t ln, const char* name, size_t nl, int (*ok)(const char*, void*), void* arg);
+int path_lookup(stralloc* out, const char* list, const char* cmd);
+#define PATH_LIST_FOREACH(l, n, elem, elen) \
+  for(size_t pl_pos_ = 0; pl_pos_ != (size_t)-1 && ((elem) = (l) + pl_pos_, (elen) = path_listlen((elem), (n)-pl_pos_), 1); pl_pos_ = path_listnext((l), (n), pl_pos_))
 int path_find(const char* path, const char* name, stralloc* out);
 int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
 void path_getcwd(stralloc* sa);
 char* path_getcwd_s(void);
 char* path_gethome(int uid);
 int path_getsep(const char* path);
-int path_rootlen(const char*, size_t);
+size_t path_rootlen(const char*, size_t);
 int path_rootlen_s(const char* p);
 int path_is_directory(const char* p);
 int path_is_separator(const char*);
@@ -88,29 +86,28 @@ int path_readlink(const char* path, stralloc* sa);
 int path_realpath(const char* path, stralloc* sa, int symbolic, stralloc* cwd);
 int path_relative(const char*, size_t, stralloc*);
 int path_relative_s(const char*, stralloc*);
-int path_relative_to(const char*, size_t, const char*, size_t n2, stralloc* out);
-int path_relative_to_s(const char*, const char*, stralloc*);
 
-size_t path_normalize(char* path);
-size_t path_normalize2(char* path, size_t nb);
 
 size_t path_skip(const char* s, size_t n);
 size_t path_skips(const char* s);
 size_t path_skip_separator(const char* p, size_t n);
 size_t path_skip_component(const char* p, size_t n);
 
-SizePair path_common_prefix(const char* s1, size_t n1, const char* s2, size_t n2);
-int path_relative_to(const char* s1, size_t n1, const char* s2, size_t n2, stralloc* out);
 
-void path_concat(const char* a, const char* b, stralloc* out);
-void path_concatb(const char* a, size_t alen, const char* b, size_t blen, stralloc* out);
-void path_concat_sa(const stralloc* a, const stralloc* b, stralloc* out);
 
-void path_append(const char* x, size_t len, stralloc* out);
-void path_appends(const char* s, stralloc* out);
-void path_prepend(const char*, size_t, stralloc*);
-void path_prepends(const char*, stralloc*);
 char* path_join(const char*, const char*);
+
+size_t path_cat(char* out, size_t cap, const char* a, size_t an, const char* b, size_t bn);
+int path_cat_sa(stralloc* out, const char* a, size_t an, const char* b, size_t bn);
+size_t path_canon(char* out, size_t cap, const char* p, size_t n);
+int path_canon_sa(stralloc* sa);
+size_t path_abs(char* out, size_t cap, const char* p, size_t n, const char* cwd, size_t cwdn);
+int path_abs_sa(stralloc* out, const char* p, size_t n);
+size_t path_rel(char* out, size_t cap, const char* p, size_t pn, const char* base, size_t bn);
+int path_rel_sa(stralloc* out, const char* p, size_t pn, const char* base, size_t bn);
+size_t path_common(const char* a, size_t an, const char* b, size_t bn, size_t* blen);
+size_t path_extoff(const char* p, size_t n);
+#define path_isname(p, n) (path_component2((p), (n)) == (n))
 
 #ifdef STRLIST_H
 int path_split(const char*, strlist*, int);

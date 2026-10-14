@@ -72,7 +72,7 @@ path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
  */
 char*
 path_extension(const char* in, stralloc* out, const char* ext) {
-  size_t extpos = str_rchr(in, '.');
+  size_t extpos = path_extoff(in, str_len(in));
 
   stralloc_catb(out, in, extpos);
   stralloc_cats(out, ext);
@@ -97,8 +97,8 @@ static char*
 path_output2_dir(const char* in, stralloc* out, const char* ext, char psa, const stralloc* dir) {
   stralloc abs;
   stralloc_init(&abs);
-  path_absolute(dirs.work.sa.s, &abs);
-  path_relative_to_sa(dir, &abs, out);
+  path_abs_sa(&abs, dirs.work.sa.s, str_len(dirs.work.sa.s));
+  path_rel_sa(out, dir->s, dir->len, abs.s, abs.len);
   stralloc_free(&abs);
 
   if(stralloc_equals(out, "."))
@@ -304,20 +304,21 @@ path_normalize_sa(const char* dir, stralloc* out) {
 
   if(!path_is_absolute_s(dir)) {
     stralloc_copy(&tmp, &dirs.this.sa);
-    path_absolute_sa(&tmp);
+    path_abs_sa(&tmp, tmp.s, tmp.len);
 
-    path_appends(dir, &tmp);
-    path_canonical_sa(&tmp);
+    path_cat_sa(&tmp, tmp.s, tmp.len, dir, str_len(dir));
+    path_canon_sa(&tmp);
   } else {
-    path_canonical(dir, &tmp);
+    stralloc_copys(&tmp, dir);
+    path_canon_sa(&tmp);
   }
 
   /*if(dirs.out.sa.s) {
     stralloc outdir;
     stralloc_init(&outdir);
     stralloc_copy(&outdir, &dirs.out.sa);
-    path_absolute_sa(&outdir);
-    path_relative_to(tmp.s, tmp.len, outdir.s, outdir.len, out);
+    path_abs_sa(&outdir, outdir.s, outdir.len);
+    path_rel_sa(out, tmp.s, tmp.len, outdir.s, outdir.len);
     stralloc_free(&outdir);
   } else*/
   stralloc_copy(out, &tmp);

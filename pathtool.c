@@ -338,7 +338,7 @@ mingw_prefix(stralloc* sa) {
   stralloc_zero(sa);
 
   if((s = getenv("MINGW_PREFIX"))) {
-    path_relative_to_s(s, root.s, sa);
+    path_rel_sa(sa, s, str_len(s), root.s, str_len(root.s));
     stralloc_inserts(sa, "/", 0);
     return 1;
   }
@@ -391,7 +391,7 @@ wine_mounts_read(MAP_T map) {
       continue;
 
     stralloc_zero(&full);
-    path_concatb(prefix.s, prefix.len, name, len, &full);
+    path_cat_sa(&full, prefix.s, prefix.len, name, len);
     stralloc_nul(&full);
 
     /* read the raw link target with a single readlink() rather than
@@ -412,14 +412,14 @@ wine_mounts_read(MAP_T map) {
       stralloc resolved;
 
       stralloc_init(&resolved);
-      path_concatb(prefix.s, prefix.len, target.s, target.len, &resolved);
+      path_cat_sa(&resolved, prefix.s, prefix.len, target.s, target.len);
       stralloc_nul(&resolved);
       stralloc_copy(&target, &resolved);
       stralloc_nul(&target);
       stralloc_free(&resolved);
     }
 
-    path_collapse_sa(&target);
+    path_canon_sa(&target);
 
     stralloc_zero(&key);
     stralloc_catc(&key, toupper(name[0]));
@@ -550,8 +550,8 @@ pathtool(const char* arg, stralloc* sa) {
     stralloc_nul(&path.sa);
 
     if(!path_is_absolute_sa(&path.sa)) {
-      path_absolute_sa(&path.sa);
-      path_collapse_sa(&path.sa);
+      path_abs_sa(&path.sa, path.sa.s, path.sa.len);
+      path_canon_sa(&path.sa);
     }
 
     stralloc_nul(&relative_to.sa);
@@ -562,7 +562,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
 
-    path_relative_to(path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len, sa);
+    path_rel_sa(sa, path.sa.s, path.sa.len, relative_to.sa.s, relative_to.sa.len);
 
   } else {
 #ifdef DEBUG_OUTPUT_
@@ -725,8 +725,8 @@ main(int argc, char* argv[]) {
     stralloc_nul(&relative_to.sa);
 
     if(!path_is_absolute_sa(&relative_to.sa)) {
-      path_absolute_sa(&relative_to.sa);
-      path_collapse_sa(&relative_to.sa);
+      path_abs_sa(&relative_to.sa, relative_to.sa.s, relative_to.sa.len);
+      path_canon_sa(&relative_to.sa);
     }
 
     /*char tmpsep = separator[0];

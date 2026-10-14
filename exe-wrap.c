@@ -92,7 +92,7 @@ pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, 
   strarray_foreach(path, dir_p) {
     size_t len;
     bool exist;
-    path_concat(*dir_p, bin, &name);
+    path_cat_sa(&name, *dir_p, str_len(*dir_p), bin, str_len(bin));
     len = name.len;
 
     if((exist = path_exists(name.s)))
@@ -330,7 +330,7 @@ main(int argc, char* argv[], char* envp[]) {
       if(!path_is_absolute_sa(&realcmd)) {
         stralloc tmp;
         stralloc_init(&tmp);
-        path_concat_sa(&progdir, &realcmd, &tmp);
+        path_cat_sa(&tmp, progdir.s, progdir.len, realcmd.s, realcmd.len);
 
         if(str_len(PATHSEP_S_MIXED) > 1)
           stralloc_replacec(&tmp, PATHSEP_S_MIXED[1], PATHSEP_S_MIXED[0]);
@@ -356,7 +356,7 @@ main(int argc, char* argv[], char* envp[]) {
       if((argv0 = ini_get(ini, "name"))) {
         strarray_unshift(&args, argv0);
       } else {
-        strarray_unshift(&args, path_basename(fullcmd.s));
+        strarray_unshift(&args, path_basename_s(fullcmd.s));
       }
     }
 

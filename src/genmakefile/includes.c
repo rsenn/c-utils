@@ -92,11 +92,11 @@ includes_cppflags(void) {
      * anchoring these -I paths on dirs.obj instead used to produce a
      * mismatched depth whenever dirs.obj sits deeper than dirs.out. */
     stralloc_zero(&absdir);
-    path_concatb(dirs.this.sa.s, dirs.this.sa.len, dir, str_len(dir), &absdir);
+    path_cat_sa(&absdir, dirs.this.sa.s, dirs.this.sa.len, dir, str_len(dir));
     stralloc_nul(&absdir);
 
     stralloc_zero(&arg);
-    path_relative_to_s(absdir.s, dirs.out.sa.s, &arg);
+    path_rel_sa(&arg, absdir.s, str_len(absdir.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
     stralloc_nul(&arg);
 
 #ifdef DEBUG_OUTPUT
@@ -158,7 +158,7 @@ includes_add_b(const char* dir, size_t len) {
    * can rebuild the same absolute path from it the same way regardless
    * of when/where this entry was added. */
   path_normalize_sa_b(dir, len, &abs);
-  path_relative_to_sa(&abs, &dirs.this.sa, &d);
+  path_rel_sa(&d, abs.s, abs.len, dirs.this.sa.s, dirs.this.sa.len);
   stralloc_free(&abs);
 
   if(strlist_push_unique_sa(&include_dirs, &d)) {
@@ -202,15 +202,15 @@ includes_to_libs(const set_t* includes, strlist* libs) {
   set_foreach(includes, it, s, n) {
     target* rule;
     stralloc_zero(&sa);
-    path_append(s, n, &sa);
+    stralloc_copyb(&sa, s, n);
 
     if(!(n > str_len(libpfx) && byte_equal(s, str_len(libpfx), libpfx)) && byte_chr(s, n, PATHSEP_C) == n)
-      path_concatb(libpfx, str_len(libpfx), sa.s, sa.len, &sa);
+      path_cat_sa(&sa, libpfx, str_len(libpfx), sa.s, sa.len);
 
-    path_concatb(dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len, &sa);
+    path_cat_sa(&sa, dirs.this.sa.s, dirs.this.sa.len, sa.s, sa.len);
 
     stralloc_zero(&lib);
-    stralloc_copys(&lib, path_basename(sa.s));
+    stralloc_copys(&lib, path_basename_s(sa.s));
 
     if(stralloc_endb(&lib, exts.inc, 2))
       lib.len -= 2;

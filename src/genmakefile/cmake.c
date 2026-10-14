@@ -541,7 +541,7 @@ input_cmake_builddir(const char* builddir, target* all) {
     const char* s;
 
     while((s = rdir_read(&rdir))) {
-      const char* base = path_basename(s);
+      const char* base = path_basename_s(s);
 
       if(case_equals(base, "link.txt"))
         input_process_file(s, all);

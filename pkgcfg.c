@@ -1238,7 +1238,7 @@ pkgcfg_init(const char* self) {
     self = dir.s;
   }
 
-  stralloc_copys(&cmd.self, path_basename(self));
+  stralloc_copys(&cmd.self, path_basename_s(self));
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "self: ");
   buffer_puts(buffer_2, self);
@@ -1365,7 +1365,7 @@ error_exit(int exitCode) {
 
 void
 usage(char* progname) {
-  buffer_putm_internal(buffer_1, "Usage: ", path_basename(progname), " [OPTIONS] [PACKAGES...]\n", NULL);
+  buffer_putm_internal(buffer_1, "Usage: ", path_basename_s(progname), " [OPTIONS] [PACKAGES...]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
@@ -1446,7 +1446,7 @@ main(int argc, char* argv[], char* envp[]) {
       {0, 0, 0, 0},
   };
 
-  errmsg_iam(path_basename(argv[0]));
+  errmsg_iam(path_basename_s(argv[0]));
   strlist_init(&output, ' ');
   strlist_init(&args, '\0');
   strlist_fromv(&args, (const char**)argv, argc);
@@ -1601,7 +1601,7 @@ getopt_end:
   }
 
   if(verbose) {
-    buffer_putm_internal(buffer_2, path_basename(argv[0]), ": ", NULL);
+    buffer_putm_internal(buffer_2, path_basename_s(argv[0]), ": ", NULL);
     buffer_puts(buffer_2, "PKG_CONFIG_PATH is\n  ");
     strlist_dump(buffer_2, &cmd.path);
     buffer_putnlflush(buffer_2);

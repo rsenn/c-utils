@@ -1652,7 +1652,7 @@ resolve_directories(void) {
   }
 
   if(dirs.out.sa.len == 0)
-    path_concat_sa(&dirs.this.sa, &dirs.work.sa, &dirs.out.sa);
+    path_cat_sa(&dirs.out.sa, dirs.this.sa.s, dirs.this.sa.len, dirs.work.sa.s, dirs.work.sa.len);
 
   if(dirs.obj.sa.len == 0) {
     if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
@@ -1689,20 +1689,17 @@ resolve_directories(void) {
   if(dirs.work.sa.len == 0)
     stralloc_copys(&dirs.work.sa, ".");
 
-  path_absolute_sa(&dirs.out.sa);
-  path_canonical_sa(&dirs.out.sa);
-  path_collapse_sa(&dirs.out.sa);
+  path_abs_sa(&dirs.out.sa, dirs.out.sa.s, dirs.out.sa.len);
+  path_canon_sa(&dirs.out.sa);
 
-  path_absolute_sa(&dirs.obj.sa);
-  path_canonical_sa(&dirs.obj.sa);
-  path_collapse_sa(&dirs.obj.sa);
+  path_abs_sa(&dirs.obj.sa, dirs.obj.sa.s, dirs.obj.sa.len);
+  path_canon_sa(&dirs.obj.sa);
 
   if(dirs.bin.sa.len == 0)
     stralloc_copy(&dirs.bin.sa, &dirs.obj.sa);
 
-  path_absolute_sa(&dirs.bin.sa);
-  path_canonical_sa(&dirs.bin.sa);
-  path_collapse_sa(&dirs.bin.sa);
+  path_abs_sa(&dirs.bin.sa, dirs.bin.sa.s, dirs.bin.sa.len);
+  path_canon_sa(&dirs.bin.sa);
 
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
@@ -1738,22 +1735,22 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
 
   strlist_nul(&dirs.this);
   strlist_nul(&dirs.out);
-  path_relative_to_s(dirs.this.sa.s, dirs.out.sa.s, &sources_dir);
+  path_rel_sa(&sources_dir, dirs.this.sa.s, str_len(dirs.this.sa.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
   stralloc_nul(&sources_dir);
 
   if(dirs.out.sa.len) {
     stralloc_replacec(&dirs.this.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
     stralloc_replacec(&dirs.out.sa, PATHSEP_C == '/' ? '\\' : '/', PATHSEP_C);
-    path_absolute_sa(&dirs.out.sa);
+    path_abs_sa(&dirs.out.sa, dirs.out.sa.s, dirs.out.sa.len);
     stralloc_zero(&tmp);
-    path_relative_to_s(dirs.this.sa.s, dirs.out.sa.s, &tmp);
+    path_rel_sa(&tmp, dirs.this.sa.s, str_len(dirs.this.sa.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
     stralloc_copy(&sources_dir, &tmp);
     stralloc_nul(&sources_dir);
 
     stralloc_zero(&tmp);
   }
 
-  path_relative_to_s(dirs.obj.sa.s, dirs.out.sa.s, &tmp);
+  path_rel_sa(&tmp, dirs.obj.sa.s, str_len(dirs.obj.sa.s), dirs.out.sa.s, str_len(dirs.out.sa.s));
 
   strlist_nul(&dirs.work);
   stralloc_replacec(&dirs.work.sa, pathsep_make == '/' ? '\\' : '/', pathsep_make);
@@ -2026,8 +2023,7 @@ consume_positional_args(int argc, char** argv, strarray* args) {
     stralloc_free(&arg);
   }
 
-  path_canonical_sa(&dirs.out.sa);
-  path_collapse_sa(&dirs.out.sa);
+  path_canon_sa(&dirs.out.sa);
 
   /* No arguments given */
 
@@ -2106,10 +2102,10 @@ finalize_build_metadata(void) {
      * absolute copy of dirs.work.sa here (same trick path_output2()
      * uses for the same reason). */
     stralloc_init(&workabs);
-    path_absolute(dirs.work.sa.s, &workabs);
+    path_abs_sa(&workabs, dirs.work.sa.s, str_len(dirs.work.sa.s));
 
     stralloc_init(&builddir);
-    path_relative_to_sa(&dirs.obj.sa, &workabs, &builddir);
+    path_rel_sa(&builddir, dirs.obj.sa.s, dirs.obj.sa.len, workabs.s, workabs.len);
     stralloc_nul(&builddir);
 
     if(!stralloc_endc(&builddir, PATHSEP_C))
@@ -2129,9 +2125,9 @@ finalize_build_metadata(void) {
     stralloc abspath;
 
     stralloc_init(&abspath);
-    path_absolute(dirs.this.sa.s, &abspath);
+    path_abs_sa(&abspath, dirs.this.sa.s, str_len(dirs.this.sa.s));
     stralloc_nul(&abspath);
-    project_name = str_dup(path_basename(abspath.s));
+    project_name = str_dup(path_basename_s(abspath.s));
     stralloc_free(&abspath);
   }
 }
@@ -2379,7 +2375,7 @@ write_makefile_output(buffer* out, strlist* cmdline) {
     stralloc tmp;
 
     stralloc_init(&tmp);
-    path_relative_to_sa(&dirs.obj.sa, &dirs.out.sa, &tmp);
+    path_rel_sa(&tmp, dirs.obj.sa.s, dirs.obj.sa.len, dirs.out.sa.s, dirs.out.sa.len);
 
     while(stralloc_endb(&tmp, &pathsep_args, 1))
       tmp.len--;

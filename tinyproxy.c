@@ -931,7 +931,7 @@ server_finalize() {
   b = fileBase;
 
   if(b == NULL)
-    b = path_basename(errmsg_argv0);
+    b = path_basename_s(errmsg_argv0);
 
   if(b)
     stralloc_catm_internal(&filename, b, "-", NULL);
@@ -1003,7 +1003,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
   int32 pid, child_pid;
   int status;
   fd_type out = STDOUT_FILENO;
-  base = path_basename(cmd);
+  base = path_basename_s(cmd);
 
   strarray_from_argv(strlist_count(files), (const char* const*)strlist_to_argv(files), &argv);
 
@@ -1365,7 +1365,7 @@ main(int argc, char* argv[]) {
                                 {"basename", 0, NULL, 'n'},
                                 {0}};
 
-  fileBase = path_basename(argv[0]);
+  fileBase = path_basename_s(argv[0]);
   errmsg_iam(argv[0]);
 
 #ifdef SIGCHLD

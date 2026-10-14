@@ -81,3 +81,11 @@ TODO
   this explicitly in `--help` (currently only documents `-o` under
   "Options" without noting the placement restriction) or moving the
   `open_output_file()` call to after all segments have been parsed.
+
+- path-lib-follow-up: the view-based `lib/path/` functions (`path_rootlen`, `path_basename`,
+  `path_dirlen`, `path_cat`, `path_canon`, `path_abs`, `path_rel`, `path_common`, `path_extoff`)
+  and their `stralloc` glue (`path_cat_sa`, `path_canon_sa`, `path_abs_sa`, `path_rel_sa`) have no
+  man pages yet (the `.3` pages of the removed `path_concat*`, `path_collapse*`, `path_canonical*`,
+  `path_normalize`, `path_absolute*`, `path_relative_to*` functions were deleted). The list
+  iterator (`path_listlen` + `PATH_LIST_FOREACH`) is not prototyped here: no c-utils client.
+  Plan and status: `../shish/doc/path-lib.md` section 5.9.
