@@ -89,6 +89,10 @@ size_t scan_charsetnskip(const char* in, const char* charset, size_t limit) __pu
  * charset (ASCIIZ string) for all 0 <= i <= n */
 size_t scan_noncharsetnskip(const char* in, const char* charset, size_t limit) __pure__;
 
+/* count the trailing chars of in[0..limit) that are / are not in charset (ASCIIZ string) */
+size_t scan_charsetnrskip(const char* in, const char* charset, size_t limit) __pure__;
+size_t scan_noncharsetnrskip(const char* in, const char* charset, size_t limit) __pure__;
+
 /* try to parse ASCII GMT date; does not understand time zones. */
 /* example dates:
  *   "Sun, 06 Nov 1994 08:49:37 GMT"
