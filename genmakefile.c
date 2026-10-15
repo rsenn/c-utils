@@ -44,7 +44,6 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 static const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "",
                                                                           *quote_args = "";
 static bool batchmode, cygming;
-static strlist system_path;
 static build_tool_t build_tool = 0;
 
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
@@ -2784,10 +2783,6 @@ main(int argc, char* argv[]) {
   pathsep_args = WINDOWS_NATIVE ? '\\' : '/';
   pathsep_make = cfg.sys.type == NTOS ? '\\' : '/';
 
-  if((s = env_get("PATH")) == 0)
-    s = "/usr/local/bin:/usr/bin:/bin";
-
-  path_split(s, &system_path, PATHSEP_C);
   strlist_init(&vpath, ' ');
   strlist_init(&cmdline, ' ');
   strlist_fromv(&cmdline, (const char**)argv, argc);

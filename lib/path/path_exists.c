@@ -1,4 +1,4 @@
-#include "../path_internal.h"
+#include "internal.h"
 #include "../utf8.h"
 #include "../windoze.h"
 

@@ -25,7 +25,7 @@
 #include "../lib/buffer.h"
 #include "../lib/taia.h"
 #include "../lib/windoze.h"
-#include "../lib/path_internal.h"
+#include "../lib/path.h"
 
 #include <math.h>
 #include <stdio.h>

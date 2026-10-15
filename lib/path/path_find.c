@@ -1,4 +1,4 @@
-#include "../path_internal.h"
+#include "internal.h"
 #include "../dir.h"
 #include "../utf8.h"
 

@@ -1,4 +1,4 @@
-#include "../path_internal.h"
+#include "internal.h"
 
 /* path_canon_sa canonicalizes sa in place, see path_canon().
  * returns 1 on success, 0 on out of memory. */

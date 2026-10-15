@@ -1,4 +1,4 @@
-#include "../path_internal.h"
+#include "internal.h"
 #include "../windoze.h"
 
 #include <sys/stat.h>

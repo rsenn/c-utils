@@ -1,67 +1,45 @@
-#include "../path_internal.h"
+#include "../byte.h"
+#include "../stralloc.h"
+#include "internal.h"
 #include "../windoze.h"
-#include "../utf8.h"
+
 #if WINDOWS_NATIVE
 #include <direct.h>
 #else
 #include <unistd.h>
 #endif
 
+#include <errno.h>
 #include <limits.h>
 
-/* get current working directory into a stralloc */
-void
+/* get current working directory into a stralloc, NUL-terminated;
+ * returns 1, or 0 with sa->len == 0 on failure
+ * ----------------------------------------------------------------------- */
+int
 path_getcwd(stralloc* sa) {
-#if WINDOWS_NATIVE
-  const size_t len = PATH_MAX;
-  wchar_t w[len + 1];
+  size_t n = PATH_MAX, i;
 
-  stralloc_zero(sa);
-  stralloc_ready(sa, PATH_MAX * 4);
+  sa->len = 0;
 
-  if(_wgetcwd(w, len)) {
-    sa->len = wcs_to_u8s(sa->s, w, sa->a);
+  for(;;) {
+    if(!stralloc_ready(sa, n))
+      return 0;
+
+    if(getcwd(sa->s, sa->a))
+      break;
+
+    if(errno != ERANGE)
+      return 0;
+
+    n = sa->a * 2;
   }
-#else
-  char *p, sep;
 
-  stralloc_zero(sa);
-
-  /* reserve some space */
-  stralloc_ready(sa, PATH_MAX);
-
-  /* repeat until we have reserved enough space */
-  p = getcwd(sa->s, sa->a);
   sa->len = str_len(sa->s);
 
-  if((sep = path_getsep(sa->s)) && sep != PATHSEP_C)
-    stralloc_replacec(sa, sep, PATHSEP_C);
+  /* one separator style: every separator becomes PATHSEP_C */
+  for(i = 0; i < sa->len; ++i)
+    if(SEP(sa->s[i]))
+      sa->s[i] = PATHSEP_C;
 
-  stralloc_nul(sa);
-#endif
-}
-
-/* non-reentrant */
-char*
-path_getcwd_s(void) {
-#if WINDOWS_NATIVE
-  const size_t len = PATH_MAX;
-  wchar_t w[len + 1];
-  static char buf[PATH_MAX * 4 + 1];
-
-  if(_wgetcwd(w, len)) {
-    size_t n = wcs_to_u8s(buf, w, sizeof(buf));
-
-    if(n < sizeof(buf))
-      buf[n] = '\0';
-
-    return buf;
-  }
-
-  return NULL;
-#else
-  static char pathbuf[PATH_MAX];
-
-  return getcwd(pathbuf, sizeof(pathbuf));
-#endif
+  return 1;
 }

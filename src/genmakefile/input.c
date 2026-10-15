@@ -35,6 +35,19 @@ strlist common_flags_list = {{0}, ' '};
     } \
   } while(0)
 
+/* out = p[0..n) relative to the current directory */
+static int
+path_relative_cwd(const char* p, size_t n, stralloc* out) {
+  stralloc cwd;
+  int ret;
+
+  stralloc_init(&cwd);
+  path_getcwd(&cwd);
+  ret = path_rel_sa(out, p, n, cwd.s, cwd.len);
+  stralloc_free(&cwd);
+  return ret;
+}
+
 /**
  * @brief      Enter build directory
  *
@@ -49,7 +62,7 @@ builddir_enter(const char* x, size_t len) {
   strarray_emplace_sa(&dirstack, &dirs.obj.sa);
   stralloc_copyb(&dirs.obj.sa, x, len);
 
-  path_relative(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
+  path_relative_cwd(dirs.obj.sa.s, dirs.obj.sa.len, &tmp);
   set_addsa(&build_directories, &tmp);
 
 #ifdef DEBUG_OUTPUT_
@@ -108,7 +121,9 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
   stralloc_init(out);
 
   if(byte_starts(y, len, "CMakeFiles")) {
-    size_t n = path_skip(y, len);
+    size_t n = path_next(y, len, 0);
+
+    n += scan_charsetnskip(y + n, "/\\", len - n);
     y += n;
     len -= n;
   }
@@ -121,7 +136,7 @@ input_process_path_b(const char* y, size_t len, stralloc* out) {
     len -= n;
   }
 
-  if(path_is_absolute(y, len)) {
+  if(path_isabs(y, len)) {
     stralloc tmp;
 
     stralloc_init(&tmp);
@@ -384,7 +399,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
           strlist_push_sa(&files, &path);
           strlist_push_sa(&args, &path);
 
-          if(path_is_absolute(path.s, path.len))
+          if(path_isabs(path.s, path.len))
             path_rel_sa(&tmp, path.s, path.len, dirs.out.sa.s, dirs.out.sa.len);
           else
             stralloc_copy(&tmp, &path);
@@ -490,7 +505,7 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
 
     stralloc_init(&tmp);
 
-    if(path_is_absolute_sa(&out)) {
+    if(path_isabs(out.s, out.len)) {
       path_rel_sa(&tmp, out.s, out.len, dirs.out.sa.s, dirs.out.sa.len);
       stralloc_copy(&out, &tmp);
       stralloc_nul(&out);
@@ -994,7 +1009,7 @@ input_process_rules(target* all) {
 #endif
 
   if(!var_isset(sourcedir_varname)) {
-    path_relative(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
+    path_relative_cwd(dirs.out.sa.s, dirs.out.sa.len, &dirs.out.sa);
 
     var_set_b(sourcedir_varname, dirs.out.sa.s, dirs.out.sa.len);
   }

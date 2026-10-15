@@ -2,12 +2,14 @@
 #include "lib/buffer.h"
 #include "lib/dir.h"
 #include "lib/errmsg.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/stralloc.h"
 #include "lib/strlist.h"
 #include "lib/windoze.h"
 #include "lib/str.h"
 #include "lib/byte.h"
+
+#define is_sep(c) (byte_chr(PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1, (c)) < sizeof(PATHSEP_S_MIXED) - 1)
 #include "lib/array.h"
 #include "lib/bool.h"
 #include "debug.h"
@@ -216,7 +218,7 @@ mounts_match(MAP_T map, const char* path, size_t pathlen, size_t* matchlen, int 
     cols[1] = VAL(t);
 
     matched = search->n >= ret.n && search->n <= pathlen && !path_diffb(path, search->n, search->s) &&
-              (search->n == pathlen || (search->n < pathlen && path_issep(path[search->n])));
+              (search->n == pathlen || (search->n < pathlen && is_sep(path[search->n])));
 
 #ifdef DEBUG_OUTPUT_
     buffer_putulong(buffer_2, matched);
@@ -265,7 +267,7 @@ mounts_replace(MAP_T map, stralloc* sa, int col, bool first) {
     debug_str("found mount", mount);
 #endif
 
-    while(mountlen && path_issep(mount[mountlen - 1]))
+    while(mountlen && is_sep(mount[mountlen - 1]))
       --mountlen;
 
     stralloc_replace(sa, 0, len, mount, mountlen);
@@ -408,7 +410,7 @@ wine_mounts_read(MAP_T map) {
 
     stralloc_nul(&target);
 
-    if(!path_is_absolute_sa(&target)) {
+    if(!path_isabs(target.s, target.len)) {
       stralloc resolved;
 
       stralloc_init(&resolved);
@@ -441,6 +443,26 @@ wine_mounts_read(MAP_T map) {
 }
 #endif
 
+/* sa = arg with every symlink followed; a relative arg stays relative */
+static void
+pathtool_canonical(const char* arg, stralloc* sa) {
+  size_t n = str_len(arg);
+
+  if(path_isabs(arg, n)) {
+    path_resolve(arg, n, sa, 0, 0, 0);
+  } else {
+    stralloc abs, cwd;
+
+    stralloc_init(&abs);
+    stralloc_init(&cwd);
+    path_getcwd(&cwd);
+    path_resolve(arg, n, &abs, 0, cwd.s, cwd.len);
+    path_rel_sa(sa, abs.s, abs.len, cwd.s, cwd.len);
+    stralloc_free(&abs);
+    stralloc_free(&cwd);
+  }
+}
+
 int
 pathtool(const char* arg, stralloc* sa) {
   strlist path;
@@ -468,7 +490,7 @@ pathtool(const char* arg, stralloc* sa) {
 #endif
 
   if(absolute) {
-    path_realpath(arg, sa, !dereference, NULL);
+    path_resolve(arg, str_len(arg), sa, 0, 0, 0);
     stralloc_nul(sa);
 
 #ifdef DEBUG_OUTPUT_
@@ -477,10 +499,7 @@ pathtool(const char* arg, stralloc* sa) {
     buffer_putnlflush(buffer_2);
 #endif
   } else if(canonical || dereference) {
-    path_canonicalize(arg, sa, !dereference);
-#ifdef DEBUG_OUTPUT_
-    buffer_putsflush(buffer_2, "path_canonicalize");
-#endif
+    pathtool_canonical(arg, sa);
   } else {
     stralloc_copys(sa, arg);
   }
@@ -494,7 +513,7 @@ pathtool(const char* arg, stralloc* sa) {
   stralloc_nul(sa);
 
 #if defined(__CYGWIN__) || defined(__MSYS__)
-  if(path_is_absolute_sa(sa)) {
+  if(path_isabs(sa->s, sa->len)) {
     stralloc tmp;
     stralloc_init(&tmp);
     pathconv(sa->s, &tmp);
@@ -549,7 +568,7 @@ pathtool(const char* arg, stralloc* sa) {
   if(relative_to.sa.s) {
     stralloc_nul(&path.sa);
 
-    if(!path_is_absolute_sa(&path.sa)) {
+    if(!path_isabs(path.sa.s, path.sa.len)) {
       path_abs_sa(&path.sa, path.sa.s, path.sa.len);
       path_canon_sa(&path.sa);
     }
@@ -724,7 +743,7 @@ main(int argc, char* argv[]) {
     stralloc_copys(&relative_to.sa, rel_to);
     stralloc_nul(&relative_to.sa);
 
-    if(!path_is_absolute_sa(&relative_to.sa)) {
+    if(!path_isabs(relative_to.sa.s, relative_to.sa.len)) {
       path_abs_sa(&relative_to.sa, relative_to.sa.s, relative_to.sa.len);
       path_canon_sa(&relative_to.sa);
     }

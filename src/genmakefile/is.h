@@ -2,7 +2,7 @@
 #define GENMAKEFILE_IS_H
 
 #include "../../lib/strlist.h"
-#include "../../lib/path_internal.h"
+#include "../../lib/path.h"
 #include "../../lib/env.h"
 #include <ctype.h>
 
@@ -181,38 +181,24 @@ is_lib(const char* s) {
   return is_s(s, &is_lib_b);
 }
 
+static int
+is_command_exists(const char* path, void* arg) {
+  (void)arg;
+  return path_exists(path);
+}
+
 static inline int
 is_command_b(const char* filename, size_t len) {
-  size_t n;
+  char path[PATH_MAX];
   const char* x;
-  stralloc path;
-  strlist system_path;
 
-  if(path_is_absolute_s(filename))
+  if(path_isabs(filename, len))
     return path_exists(filename);
-
-  stralloc_init(&path);
-  strlist_init(&system_path, ':');
 
   if((x = env_get("PATH")) == 0)
     x = "/usr/local/bin:/usr/bin:/bin";
 
-  path_split(x, &system_path, PATHLISTSEP_C);
-
-  strlist_foreach(&system_path, x, n) {
-    stralloc_copyb(&path, x, n);
-    stralloc_catc(&path, PATHSEP_C);
-    stralloc_catb(&path, filename, len);
-    stralloc_nul(&path);
-
-    if(path_exists(path.s)) {
-      stralloc_free(&path);
-      return 1;
-    }
-  }
-
-  stralloc_free(&path);
-  return 0;
+  return path_search(path, sizeof(path), x, str_len(x), filename, len, is_command_exists, 0) > 0;
 }
 
 static inline int

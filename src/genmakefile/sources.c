@@ -165,7 +165,7 @@ sources_get(const char* basedir) {
       size_t len = str_len(s);
 
       if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) &&
-         path_is_separator(&s[dirs.this.sa.len]))
+         (s[dirs.this.sa.len] == PATHSEP_C || s[dirs.this.sa.len] == '/'))
         s += dirs.this.sa.len + 1;
 
       if(sources_add(s)) {

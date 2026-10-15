@@ -150,7 +150,7 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(bmap PRIVATE str)
   target_link_libraries(mmap PRIVATE seek open scan ${LIBPSAPI})
   target_link_libraries(open PRIVATE str uint32)
-  target_link_libraries(path PRIVATE unix dir strlist)
+  target_link_libraries(path PRIVATE unix dir strlist scan byte str stralloc)
   # PUBLIC: path's *.c call PathFileExistsW/PathIsRelativeW/PathIsDirectoryW
   # directly, so every executable linking path needs shlwapi too, not just
   # path.a itself -- PRIVATE only affects path's own (moot, for a static

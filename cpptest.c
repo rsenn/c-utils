@@ -6,6 +6,7 @@
 #include "lib/errmsg.h"
 #include "lib/str.h"
 #include "lib/path.h"
+#include "lib/scan.h"
 
 #undef MAP_USE_HASHMAP
 #define MAP_USE_HMAP 1
@@ -183,10 +184,15 @@ main(int argc, char** argv) {
     buffer_puts(buffer_1, fn);
     strarray_foreach(&pp->inc_array, inc) {
       if(show_deps > 1)
-        if(path_is_absolute_s(*inc))
+        if(path_isabs(*inc, str_len(*inc)))
           continue;
 
-      size_t n = path_is_dotslash(*inc);
+      size_t l = str_len(*inc), n = 0;
+
+      /* "./x" -> skip the "./" */
+      if(path_next(*inc, l, 0) == 1 && (*inc)[0] == '.')
+        n = 1 + scan_charsetnskip(*inc + 1, PATHSEP_S_MIXED, l - 1);
+
       buffer_putc(buffer_1, ' ');
       buffer_puts(buffer_1, *inc + n);
     }

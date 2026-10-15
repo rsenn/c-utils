@@ -1,82 +1,71 @@
-#include "../path_internal.h"
+#include "../byte.h"
+#include "../mmap.h"
+#include "../scan.h"
+#include "internal.h"
 #include "../windoze.h"
 
 #if WINDOWS_NATIVE
-#include <shlobj.h> // need to include definitions of constants
-#else
-#include "../buffer.h"
-#include "../scan.h"
+#include <shlobj.h>
 #endif
 
-/* get home directory into a char buf not smaller than PATH_MAX + 1 chars
- */
+/* home directory of uid from /etc/passwd ("name:passwd:uid:gid:gecos:home:shell"),
+ * in a static buffer; NULL if there is no such user or no file.
+ * Lines without a trailing newline or with "\r\n" are fine; entries
+ * whose home does not fit in PATH_MAX are skipped.
+ * ----------------------------------------------------------------------- */
 char*
 path_gethome(int uid) {
-#if WINDOWS_NATIVE
-  static char home[PATH_MAX * 4 + 1];
-  wchar_t path[MAX_PATH];
-
-  if(SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_PROFILE, NULL, 0, path))) {
-    size_t n = wcs_to_u8s(home, path, sizeof(home));
-
-    if(n < sizeof(home))
-      home[n] = '\0';
-
-    return home;
-  }
-
-#else
-  buffer b;
-  long id;
-  size_t n;
   static char home[PATH_MAX + 1];
 
-  /* try to read /etc/passwd */
+#if WINDOWS_NATIVE
+  PWSTR wpath = NULL;
 
-  if(buffer_mmapread(&b, "/etc/passwd"))
+  /* retrieve user profile directory via the Windows Known Folders API */
+  if(FAILED(SHGetKnownFolderPath(&FOLDERID_Profile, 0, NULL, &wpath)))
     return NULL;
 
-  for(;;) {
-    /* skip the next two colon-separators to get the uid */
+  /* convert the utf-16 windows path directly to utf-8 */
+  int len = WideCharToMultiByte(CP_UTF8, 0, wpath, -1, home, sizeof(home), NULL, NULL);
 
-    if(buffer_skip_until(&b, ":", 1) <= 0)
-      break;
+  /* free the memory allocated by SHGetKnownFolderPath */
+  CoTaskMemFree(wpath);
 
-    if(buffer_skip_until(&b, ":", 1) <= 0)
-      break;
+  if(len <= 0 || (size_t)len > sizeof(home))
+    return NULL;
 
-    /* get the uid or the home */
+  return home;
+#else
+  const char *map, *p, *end;
+  size_t size, len;
+  unsigned int i, id = 0;
 
-    if((n = buffer_get_until(&b, home, PATH_MAX + 1, ":", 1)) <= 0)
-      break;
+  if(!(map = mmap_read("/etc/passwd", &size)))
+    return NULL;
 
-    /* remove the trailing delimiter */
+  for(i = 0, p = map, end = map + size; p < end; p += len + 1, i++) {
+    if(p > map && *(p - 1) == '\n')
+      i = 0;
 
-    if(n && home[n - 1] == ':')
-      n--;
-    home[n] = '\0';
+    len = scan_noncharsetnskip(p, &(":\n"[i == 2]), end - p);
 
-    /* if we have an uid match the token is the home */
+    if(i == 5) {
+      size_t homelen = len > PATH_MAX ? PATH_MAX : len;
 
-    if(id == uid) {
-      buffer_close(&b);
+      byte_copy(home, homelen, p);
+      home[homelen] = '\0';
       return home;
     }
 
-    /* parse the uid */
+    if(i == 2) {
+      size_t tmplen;
 
-    if(!scan_ulong(home, (unsigned long*)&id))
-      id = -1;
-
-    /* on a mismatch -> get the next line */
-
-    if(id != uid)
-
-      if(buffer_skip_until(&b, "\n\r", 2) <= 0)
-        break;
+      if((tmplen = scan_uint(p, &id)) > 0 && p[tmplen] == ':')
+        if(id == uid)
+          len = tmplen;
+    }
   }
 
-  buffer_close(&b);
-#endif
+  mmap_unmap(map, size);
   return NULL;
+#endif
 }

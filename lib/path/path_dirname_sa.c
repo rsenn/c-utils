@@ -1,4 +1,4 @@
-#include "../path_internal.h"
+#include "internal.h"
 
 char*
 path_dirname_sa(stralloc* dir) {

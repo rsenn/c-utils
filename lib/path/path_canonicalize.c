@@ -1,223 +1,170 @@
 #ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 1
+#define _XOPEN_SOURCE 500
 #endif
-#define _XOPEN_SOURCE_EXTENDED 1
-#define _MISC_SOURCE 1
-#define _GNU_SOURCE 1
-#define _POSIX_SOURCE 1
-#ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 1
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE 1
 #endif
-
-#define _FILE_OFFSET_BITS 64
-
-#include <sys/stat.h>
 
 #include "../windoze.h"
-#include "../path_internal.h"
-#include "../readlink.h"
+#include "internal.h"
 
-#include "../buffer.h"
-#include "../byte.h"
-#include "../str.h"
-
-#if !WINDOWS_NATIVE
-#include <unistd.h>
-#define HAVE_LSTAT 1
-#endif
-
+#include <sys/stat.h>
 #include <errno.h>
-#include <fcntl.h>
 #include <limits.h>
 
-#ifndef HAVE_LSTAT
-#define lstat stat
+#ifndef ELOOP
+#define ELOOP 40
 #endif
 
-#ifndef _stat
-#define _stat stat
-#endif
-#ifdef __LCC__
-extern int stat(const char*, struct stat*);
-#endif
+/* links followed before giving up with ELOOP */
+#define MAXSYMLINKS 40
 
 #if WINDOWS_NATIVE
 int is_symlink(const char*);
+#endif
+
+/* is path a symbolic link? (one lstat per call) */
 static int
 is_link(const char* path) {
+#if WINDOWS_NATIVE
   if(is_symlink(path))
     return 1;
-
-#ifdef HAVE_LSTAT
-  {
-    struct stat st;
-
-    if(lstat(path, &st) != -1)
-      return S_ISLNK(st.st_mode);
-  }
-#endif
-
-  return 0;
-}
-#elif defined(HAVE_LSTAT)
-static int
-is_link(const char* path) {
+#else
   struct stat st;
 
-  if(lstat(path, &st) == -1)
-    return 0;
-
-  return S_ISLNK(st.st_mode);
-}
+  if(lstat(path, &st) != -1)
+    return S_ISLNK(st.st_mode);
 #endif
+  return 0;
+}
 
-// #define lstat lstat64
-#define issep(c) ((c) == '/' || (c) == '\\')
+static void
+pop(stralloc* sa, size_t root) {
+  size_t k = sa->len - RCOMLEN(sa->s + root, sa->len - root);
 
-/* canonicalizes a <path> and puts it into <sa>
+  if(k > root)
+    k -= RSEPLEN(sa->s + root, k - root);
+
+  sa->len = k;
+}
+
+/* canonicalizes <path> and replaces the content of <sa> (NUL-terminated) with it
  *
- * <path>, without trailing '\0', should not be longer than PATH_MAX or it
- * is truncated!
+ *   ".", ".." and repeated separators are resolved lexically; a trailing
+ *   separator is dropped; a relative result is never empty ("." instead);
+ *   ".." above the root of an absolute path is dropped.
  *
- * if symbolic is zero then it reads symlinks and puts the physical
- * path into the destination buffer
+ * <symbolic> != 0 keeps symlinks (cd -L); zero follows each one before the
+ * component after it is applied (cd -P, realpath -P). Components that do not
+ * exist are kept as they are.
  *
- * returns zero on error and 1 if the whole path has no symlink,
- * so the return value - 1 is the count of symlinks
+ * Returns 0 on error (errno set; ELOOP after MAXSYMLINKS links), otherwise
+ * 1 + the number of symlinks that were followed.
  *
- * the <path> should be absolute though it will work on relative paths,
- * but they should be relative to the current dir and path_canonicalize()
- * will again return a relative path.
- * because of that the behaviour of this function differs from usual path
- * canonicalizing functions like realpath() in libc, but there is a
- * path_realpath() function which provides similar behaviour and will
- * resolve relative paths to absolute ones.
- */
+ * <path> may be relative to the current directory and the result then is
+ * relative too; path_resolve() makes it absolute.
+ * ----------------------------------------------------------------------- */
 int
 path_canonicalize(const char* path, stralloc* sa, int symbolic) {
-  size_t l1, l2;
-  size_t n;
-  struct _stat st;
-  int ret = 1;
-  char buf[PATH_MAX + 1];
-  char sep;
-  int (*stat_fn)(const char*, struct _stat*) = (int (*)(const char*, struct _stat*))&stat;
-#ifdef HAVE_LSTAT
-#if !WINDOWS_NATIVE
-  if(symbolic)
-    stat_fn = lstat;
-#endif
+  stralloc rest, link, tmp;
+  size_t pos = 0, root = 0, n;
+  int ret = 0, links = 0;
 
-#endif
+  stralloc_init(&rest);
+  stralloc_init(&link);
+  stralloc_init(&tmp);
 
-  if(path_issep(*path)) {
-    stralloc_catc(sa, (sep = *path));
-    path++;
-  }
-#if WINDOWS
-  else if(*path && path[1] == ':') {
-    sep = path[1];
-  }
-#endif
-  else
-    sep = PATHSEP_C;
+  /* path may point into sa, so copy before sa is cleared */
+  if(!stralloc_copys(&rest, path))
+    goto fail;
 
-start:
-  /* loop once for every /path/component/
-     we canonicalize absolute paths, so we must always have a '/' here */
+  sa->len = 0;
 
-  while(*path) {
-    while(path_issep(*path))
-      sep = *path++;
+restart:
+  if((root = path_rootlen(rest.s, rest.len))) {
+    if(!stralloc_catb(sa, rest.s, root))
+      goto fail;
 
-    /* check for various relative directory parts beginning with '.' */
-
-    if(path[0] == '.') {
-      /* strip any "./" inside the path or a trailing "." */
-
-      if(path_issep(path[1]) || path[1] == '\0') {
-        path++;
-        continue;
-      }
-
-      /* if we have ".." we have to truncate the resulting path */
-
-      if(path[1] == '.' && (path_issep(path[2]) || path[2] == '\0')) {
-        sa->len = path_dirlen(sa->s, sa->len);
-        path += 2;
-        continue;
-      }
+#if !WINDOWS
+    /* "//tmp" -> "/tmp": only Windows has a UNC root */
+    if(root > 1) {
+      root = 1;
+      sa->len = 1;
     }
+#endif
+    sa->s[root - 1] = PATHSEP_C;
+    pos = root;
+  }
 
-    /* exit now if we're done */
+  while(pos < rest.len) {
+    const char* c;
 
-    if(*path == '\0')
+    if((pos += SEPLEN(rest.s + pos, rest.len - pos)) == rest.len)
       break;
 
-    /* begin a new path component */
+    c = rest.s + pos;
+    n = COMLEN(c, rest.len - pos);
+    pos += n;
 
-    if(sa->len && (sa->s[sa->len - 1] != '/' && sa->s[sa->len - 1] != '\\'))
-      stralloc_catc(sa, sep);
+    if(ISDOT(c, n))
+      continue;
 
-    /* look for the next path separator and then copy the component */
-    n = path_len_s(path);
-    stralloc_catb(sa, path, n);
+    if(ISDOTDOT(c, n)) {
+      size_t j = RCOMLEN(sa->s, sa->len);
+      size_t k = sa->len - j;
 
-    if(n == 2 && path[1] == ':')
-      stralloc_catc(sa, sep);
-    stralloc_nul(sa);
-    path += n;
+      /* relative with nothing to pop (or a ".." on top): keep the ".." */
+      if(sa->len > root && !(ISDOTDOT(sa->s + k, j)))
+        pop(sa, root);
+      else if(!root)
+        if((sa->len && !stralloc_catc(sa, PATHSEP_C)) || !stralloc_catb(sa, "..", 2))
+          goto fail;
 
-    /* now stat() the thing to verify it */
-    byte_zero(&st, sizeof(st));
-
-    /* is it a symbolic link? */
-
-    if(stat_fn(sa->s, &st) != -1 && is_link(sa->s)) {
-      ret++;
-
-      /* read the link, return if failed and then nul-terminate the buffer
-       */
-
-      if((ssize_t)(n = readlink(sa->s, buf, PATH_MAX)) == (ssize_t)-1)
-        return 0;
-      // buf[n] = '\0';
-
-      /* if the symlink is absolute we clear the stralloc,
-         set the path to buf and repeat the whole procedure */
-
-      if(path_rootlen_s(buf)) {
-        str_copyn(&buf[n], path, PATH_MAX - n);
-        stralloc_zero(sa);
-        stralloc_catc(sa, sep);
-        path = buf;
-        goto start;
-        /* if the symlink is relative we remove the symlink path component
-         * and recurse */
-      } else {
-        int rret;
-
-        sa->len = path_dirlen(sa->s, sa->len);
-        buf[n] = '\0';
-
-        rret = path_canonicalize(buf, sa, symbolic);
-
-        if(!rret)
-          return 0;
-      }
+      continue;
     }
-#if 0 // def S_ISDIR
-    /* it isn't a directory :( */
 
-    if(!S_ISDIR(st.st_mode)) {
-      errno = ENOTDIR;
-      return 0;
+    if((sa->len > root && !stralloc_catc(sa, PATHSEP_C)) || !stralloc_catb(sa, c, n) || !stralloc_nul(sa))
+      goto fail;
+
+    if(symbolic || !is_link(sa->s))
+      continue;
+
+    if(++links > MAXSYMLINKS) {
+      errno = ELOOP;
+      goto fail;
     }
-#endif
+
+    if(path_readlink(sa->s, &link) < 0)
+      goto fail;
+
+    /* the link's target, then what is still to do, becomes the new rest */
+    pop(sa, root);
+
+    if(!stralloc_copyb(&tmp, link.s, link.len) || !stralloc_catc(&tmp, PATHSEP_C) ||
+       !stralloc_catb(&tmp, rest.s + pos, rest.len - pos) || !stralloc_nul(&tmp))
+      goto fail;
+
+    stralloc_free(&rest);
+    rest = tmp;
+    stralloc_init(&tmp);
+    pos = 0;
+
+    /* absolute target: start over from its root */
+    if(ISABS(rest.s, rest.len)) {
+      sa->len = 0;
+      goto restart;
+    }
   }
 
-  if(sa->len == 0)
-    stralloc_catc(sa, sep);
+  if(sa->len == 0 && !stralloc_catc(sa, '.'))
+    goto fail;
 
+  if(stralloc_nul(sa))
+    ret = 1 + links;
+
+fail:
+  stralloc_free(&rest);
+  stralloc_free(&link);
+  stralloc_free(&tmp);
   return ret;
 }

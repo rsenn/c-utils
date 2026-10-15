@@ -5,11 +5,39 @@
 #include "../lib/stralloc.h"
 
 /*
- * int path_is_absolute(const char*);
+ * int path_isabs(const char* p, size_t n); int path_isrel(const char* p, size_t n);
  */
 TEST(test_path_is_absolute) {
-  ASSERT_EQ(0, !path_is_absolute_s("/test/path"));
-  ASSERT_EQ(1, !path_is_absolute_s("test/path"));
+  ASSERT_EQ(1, path_isabs("/test/path", 10));
+  ASSERT_EQ(0, path_isabs("test/path", 9));
+  ASSERT_EQ(1, path_isabs("//", 2));
+  ASSERT_EQ(1, path_isabs("//a//b//", 8));
+  ASSERT_EQ(0, path_isabs("", 0));
+  ASSERT_EQ(1, path_isrel("", 0));
+  ASSERT_EQ(0, path_isrel("/a", 2));
+  ASSERT_EQ(0, path_isabs("/a", 0));
+}
+
+/*
+ * size_t path_next(const char* p, size_t n, size_t pos);
+ * size_t path_parentlen(const char* p, size_t n);
+ */
+TEST(test_path_iterate) {
+  size_t k, steps = 0;
+
+  ASSERT_EQ(2, path_next("/a//b/", 6, 0));
+  ASSERT_EQ(5, path_next("/a//b/", 6, 2));
+  ASSERT_EQ(0, path_next("/a//b/", 6, 5));
+  ASSERT_EQ(0, path_next("/", 1, 0));
+
+  for(k = path_parentlen("/a/b/c", 6); k; k = path_parentlen("/a/b/c", k))
+    ++steps;
+
+  ASSERT_EQ(3, steps); /* "/a/b", "/a", "/" */
+  ASSERT_EQ(3, path_parentlen("a/b/c", 5));
+  ASSERT_EQ(1, path_parentlen("a//b/", 5));
+  ASSERT_EQ(0, path_parentlen("a", 1));
+  ASSERT_EQ(0, path_parentlen("/", 1));
 }
 
 /*
@@ -38,7 +66,7 @@ TEST(test_path_basename) {
  */
 TEST(test_path_rootlen) {
   ASSERT_EQ(1, path_rootlen("/x", 2));
-  ASSERT_EQ(1, path_rootlen("//x", 3));
+  ASSERT_EQ(2, path_rootlen("//x", 3));
   ASSERT_EQ(0, path_rootlen("x", 1));
   ASSERT_EQ(0, path_rootlen("", 0));
 }
@@ -133,20 +161,19 @@ TEST(test_path_dirlen) {
 }
 
 /*
- * int path_canonicalize(const char*, stralloc* sa, int symbolic);
+ * int path_resolve(const char* p, size_t n, stralloc* sa, int symbolic, const char* cwd, size_t cwdn);
  */
-TEST(test_path_canonicalize) {
+TEST(test_path_resolve) {
   stralloc sa;
   stralloc_init(&sa);
 
-  path_canonicalize("/test/path/test1/test2/../..", &sa, 0);
-
-  buffer_puts(buffer_1, "\n\"");
-  buffer_putsa(buffer_1, &sa);
-  buffer_puts(buffer_1, "\"");
-  buffer_putnlflush(buffer_1);
-
+  ASSERT_EQ(1, path_resolve("/test/path/test1/test2/../..", 28, &sa, 0, 0, 0));
   ASSERT_EQ(0, stralloc_diffs(&sa, "/test/path"));
+  ASSERT_EQ(1, path_resolve("x/../y", 6, &sa, 1, "/a", 2));
+  ASSERT_EQ(0, stralloc_diffs(&sa, "/a/y"));
+  ASSERT_EQ(1, path_resolve("//tmp///", 8, &sa, 1, 0, 0));
+  ASSERT_EQ(0, stralloc_diffs(&sa, "/tmp"));
+  stralloc_free(&sa);
 }
 
 /*
@@ -186,100 +213,16 @@ TEST(test_path_getcwd) {}
 TEST(test_path_gethome) {}
 
 /*
- * size_t path_len_s(const char* s);
- */
-
-TEST(test_path_len_s) {}
-
-/*
- * size_t path_len(const char* s, size_t n);
- */
-
-TEST(test_path_len) {}
-
-/*
  * int path_readlink(const char* path, stralloc* sa);
  */
 
 TEST(test_path_readlink) {}
 
 /*
- * size_t path_dirlen(const char* s, size_t n);
- */
-
-TEST(test_path_right) {}
-
-/*
- * size_t path_skips(const char* s);
- */
-
-TEST(test_path_skips) {
-  const char* p = "//blah/la/lumpur";
-  size_t i = 0;
-  ASSERT_EQ(2, (i += path_skips(&p[i])));
-  ASSERT_EQ(7, (i += path_skips(&p[i])));
-  ASSERT_EQ(10, (i += path_skips(&p[i])));
-}
-
-/*
- * size_t path_skip(const char* s, size_t n);
- */
-
-TEST(test_path_skip) {}
-
-/*
- * size_t path_num(const char* p, size_t len, int n);
- */
-
-TEST(test_path_num) {}
-
-/*
- * size_t path_num_sa(const char* p, size_t len, stralloc* sa, int n);
- */
-
-TEST(test_path_num_sa) {}
-
-/*
  * int path_exists(const char* p);
  */
 
 TEST(test_path_exists) {}
-
-/*
- * int path_relative_to_s(const char*, const char* to, stralloc* rel);
- */
-
-TEST(test_path_relative) {}
-
-/*
- * int path_split(const char* p, strlist* sl);
- */
-
-TEST(test_path_split) {}
-
-/*
- * int path_canonical_sa(stralloc*, stralloc* out);
- */
-
-TEST(test_path_canonical_sa) {}
-
-/*
- * int path_absolute_sa(stralloc*);
- */
-
-TEST(test_path_absolute_sa) {}
-
-/*
- * int path_collapse(const char*, stralloc* out);
- */
-
-TEST(test_path_collapse) {
-  char buf[64] = "/this/is/a/test/dir/..";
-  size_t n = path_canon(buf, sizeof buf, buf, str_len(buf));
-
-  ASSERT_EQ(str_len("/this/is/a/test"), n);
-  ASSERT_STR_EQUAL_N(buf, "/this/is/a/test", n);
-}
 
 /*
  * size_t path_rel(char* out, size_t cap, const char* p, size_t pn, const char* base, size_t bn);
@@ -356,25 +299,14 @@ TEST(test_path_extoff) {
   RUN(test_path_abs); \
   RUN(test_path_common); \
   RUN(test_path_extoff); \
-  RUN(test_path_canonicalize); \
+  RUN(test_path_resolve); \
+  RUN(test_path_iterate); \
   RUN(test_path_dirname); \
   RUN(test_path_fnmatch); \
   RUN(test_path_getcwd); \
   RUN(test_path_gethome); \
-  RUN(test_path_len_s); \
-  RUN(test_path_len); \
   RUN(test_path_readlink); \
-  RUN(test_path_right); \
-  RUN(test_path_skips); \
-  RUN(test_path_skip); \
-  RUN(test_path_num); \
-  RUN(test_path_num_sa); \
   RUN(test_path_exists); \
-  RUN(test_path_is_absolute); \
-  RUN(test_path_relative); \
-  RUN(test_path_split); \
-  RUN(test_path_canonical_sa); \
-  RUN(test_path_absolute_sa); \
-  RUN(test_path_collapse)
+  RUN(test_path_is_absolute); 
 
 TESTS(path) { RUN_PATH_TESTS(); }

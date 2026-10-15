@@ -274,7 +274,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
     return NULL;
 #endif
 
-  if(path_is_absolute_s(compiler)) {
+  if(path_isabs(compiler, str_len(compiler))) {
     bin = compiler;
   } else if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
     errmsg_warnsys(bin, " not found: ", 0);

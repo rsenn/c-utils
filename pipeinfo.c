@@ -289,7 +289,7 @@ read_proc() {
           path_readlink(fdPath, &target);
 #endif
         stralloc_zero(&real);
-        path_realpath(fdPath, &real, 0, &current);
+        path_resolve(fdPath, str_len(fdPath), &real, 0, current.s, current.len);
         stralloc_nul(&real);
 
         if(stralloc_start(&real, &current))

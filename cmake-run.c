@@ -228,7 +228,7 @@ get_prog_name(stralloc* prog) {
   }
 #endif
 
-  if(!path_is_absolute_s(errmsg_argv0)) {
+  if(!path_isabs(errmsg_argv0, str_len(errmsg_argv0))) {
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
 

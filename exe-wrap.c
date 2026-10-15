@@ -27,7 +27,7 @@
 #include "lib/buffer.h"
 #include "lib/strarray.h"
 #include "lib/path.h"
-#include "lib/path_internal.h"
+#include "lib/path.h"
 #include "lib/process.h"
 #include "lib/env.h"
 #include "lib/errmsg.h"
@@ -192,7 +192,7 @@ search_path(stralloc* sa, const char* p) {
   stralloc_init(sa);
   stralloc_ready(sa, PATH_MAX);
 
-  if(!path_is_absolute_s(p)) {
+  if(!path_isabs(p, str_len(p))) {
     strarray path, pathext;
     pathlist_get(&path, "PATH");
     pathlist_get(&pathext, "PATHEXT");
@@ -327,7 +327,7 @@ main(int argc, char* argv[], char* envp[]) {
       stralloc_copys(&realcmd, exec);
       stralloc_nul(&realcmd);
 
-      if(!path_is_absolute_sa(&realcmd)) {
+      if(!path_isabs(realcmd.s, realcmd.len)) {
         stralloc tmp;
         stralloc_init(&tmp);
         path_cat_sa(&tmp, progdir.s, progdir.len, realcmd.s, realcmd.len);
