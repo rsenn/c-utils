@@ -1,6 +1,7 @@
 #define _XOPEN_SOURCE 1
 #define __POSIX_VISIBLE 199209
 #define __MISC_VISIBLE 1
+#include "lib/path.h"
 #include "lib/buffer.h"
 #include "lib/byte.h"
 #include "lib/fmt.h"
@@ -1050,8 +1051,7 @@ main(int argc, char* argv[]) {
 
   errmsg_argv0 = argv[0];
 
-  if(errmsg_argv0[str_rchr(errmsg_argv0, '/')] != '\0')
-    errmsg_argv0 += str_rchr(errmsg_argv0, '/') + 1;
+  errmsg_argv0 = path_basename_s(errmsg_argv0);
 
   if(mediathek_file)
     ret = buffer_readfile(&in, mediathek_file);

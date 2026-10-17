@@ -17,36 +17,6 @@
 #include <unistd.h>
 #endif
 
-char*
-search_path(const char* path, const char* what, stralloc* out) {
-  const char* x;
-  char* ret = 0;
-  size_t pos;
-  stralloc stra;
-
-  stralloc_init(&stra);
-
-  for(x = path; *x; x += pos) {
-    pos = str_chr(x, ':');
-
-    stralloc_copyb(&stra, x, pos);
-    stralloc_catc(&stra, '/');
-    stralloc_cats(&stra, what);
-    stralloc_nul(&stra);
-
-    if(path_exists(stra.s)) {
-      stralloc_copy(out, &stra);
-      stralloc_nul(out);
-      ret = out->s;
-      break;
-    }
-
-    pos++;
-  }
-  stralloc_free(&stra);
-  return ret;
-}
-
 int
 get_account(const char* name, int* uid, int* gid) {
   size_t p = 0, n, i, len;
@@ -119,7 +89,8 @@ main(int argc, char* argv[] /*, char* envp[]*/) {
 
   if(cmd[str_chr(cmd, '/')] == '\0') {
     stralloc_init(&full_path);
-    cmd = search_path(getenv("PATH"), cmd, &full_path);
+    if(path_lookup(&full_path, getenv("PATH"), cmd))
+      cmd = full_path.s;
   }
 
   execve(cmd, args, environ);

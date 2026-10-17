@@ -1,3 +1,4 @@
+#include "lib/path.h"
 #include "lib/windoze.h"
 #include "lib/unix.h"
 #include "lib/buffer.h"
@@ -31,11 +32,7 @@ static buffer inbuf;
 
 static const char*
 mybasename(char* name) {
-  size_t n = str_rchr(name, '/');
-
-  if(name[n] != '\0')
-    return &name[n + 1];
-  return name;
+  return path_basename(name, str_len(name), 0);
 }
 
 static void

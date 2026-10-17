@@ -1,91 +1,211 @@
 TODO
 ====
 
-- sig-event-loop-integration: `lib/sig` has no self-pipe/`signalfd` support,
-  so a handler installed via `sig_catch`/`sig_action` has to do its work (or
-  hand off some other way) from signal-handler context; there's no built-in
-  way to turn a caught signal into something a `select`/`poll`/`epoll` loop
-  can wait on. Noted while making the module more generally reusable
-  (see `doc/sig.md`) -- this is usually the actual reason a server-oriented
-  program reaches for a signal library.
+- sig-event-loop-integration:
+  The sig module has no self-pipe or signalfd support. A handler installed
+  with sig_catch or sig_action has to do its work from signal handler
+  context or hand off some other way. There is no built-in way to turn a
+  caught signal into something that a select, poll or epoll loop can wait
+  on.
 
-- exec-intercept-system-signal-semantics: `exec-intercept.c`'s `system()`/
-  `popen()` overrides (used when the map redirects `sh`/`/bin/sh` to another
-  shell) reimplement the fork+exec+wait sequence directly instead of calling
-  the libc functions, so they skip the POSIX-mandated signal handling around
-  the child (`SIGINT`/`SIGQUIT` ignored and `SIGCHLD` blocked in the parent
-  for the duration of the call). Fine for the compatibility-testing use case
-  this tool targets, but a caller relying on that signal behavior around
-  `system()`/`popen()` would see a difference when the shell is redirected.
+  This was noticed while making the module more generally reusable, see
+  doc/sig.md. It is usually the actual reason a server oriented program
+  reaches for a signal library.
 
-- genmakefile-create-module-gcc-only: `--create-module` (loadable
-  `-shared`/`-fPIC` modules, e.g. QuickJS native modules) only sets
-  `commands.link_module` in the gcc/clang branch of `set_compiler_type()`
-  (`genmakefile.c`, alongside `commands.link`). Every other compiler
-  branch (msvc, borland, sdcc, xc8, ...) leaves it empty, so
-  `--create-module` with `-t msvc` etc. silently generates a module rule
-  with an empty recipe instead of failing loudly. Only gcc-family
-  toolchains make sense as loadable-module builders in practice, but the
-  silent-empty-recipe failure mode for the rest is worth a guard/warning
-  (mirroring the existing sdcc `--create-libs` warning) rather than a
-  quiet no-op Makefile rule.
+- exec-intercept-system-signal-semantics:
+  The system and popen overrides in exec-intercept.c are used when the map
+  redirects sh or /bin/sh to another shell. They reimplement the fork, exec
+  and wait sequence directly instead of calling the libc functions. That
+  skips the signal handling POSIX requires around the child: SIGINT and
+  SIGQUIT ignored and SIGCHLD blocked in the parent for the duration of
+  the call.
 
-- genmakefile-cross-compile-flag-disabled: the `if(cygming && 0) { ... }`
-  block in `set_compiler_type()`'s trailer (`genmakefile.c`, right after
-  the compiler-branch chain) that would set `CROSS_COMPILE` from
-  `tools.toolchain` (e.g. `x86_64-w64-mingw32-`) is permanently disabled
-  by the `&& 0`. In practice this doesn't block cross-compiling -- the
-  separate `-c/--cross PREFIX` flag (`cross_compile` global, applied a
-  few lines below via `if(*cross_compile) { var_set("CROSS_COMPILE",
-  cross_compile); ... }`) already does the same job when passed
-  explicitly -- but `-t mingw64` alone (without also passing `-c
-  x86_64-w64-mingw32-`) silently produces a plain, non-prefixed `CC =
-  gcc` instead of a real cross compiler. Worth either wiring up the
-  disabled block (auto-deriving the prefix from `tools.toolchain`) or
-  documenting in `--help` that `-c` is required alongside `-t
-  mingw64`/`msys`/`cygwin`.
+  This is fine for the compatibility testing the tool targets. A caller
+  that relies on that signal behavior around system or popen would see a
+  difference when the shell is redirected.
 
-- input-c-prefix-detection-more-coverage: `src/genmakefile/input.c`'s
-  decoration-prefix detection (`input_word_is_command()`,
-  `input_find_command_start()`, `input_build_prefix_pattern()`,
-  `input_match_prefix_pattern()`, `input_line_classify()`,
-  `input_detect_prefix_pattern()`, wired into `input_process_file()`)
-  lets a `--infile`'s lines carry an arbitrary decoration prefix (shell
-  trace markers, logging-shim banners, ...) in front of the real
-  command, detecting the decoration's shape from the file's own content
-  instead of hardcoding one. Committed after smoke-testing four
-  one-rule (`gcc -c ...` + `gcc -o ...`) `--infile` samples --
-  undecorated, a `[timestamp] pidNNNN:`-style prefix, a shell
-  `set -x`-style `+ ` prefix, and one deliberately ending in a lone
-  trailing `\` with no newline -- all producing identical generated
-  rules with no hang under a 2GB `ulimit -v`.
+- genmakefile-create-module-gcc-only:
+  The option --create-module builds loadable modules such as QuickJS native
+  modules. It only sets commands.link_module in the gcc and clang branch of
+  set_compiler_type in genmakefile.c, next to commands.link. Every other
+  compiler branch leaves it empty. Using --create-module with -t msvc
+  therefore generates a module rule with an empty recipe instead of
+  failing loudly.
 
-  Still worth covering: messier real-world decoration (multi-line/
-  wrapped log entries, decoration containing characters that look like
-  flags or paths, a file with no compile+link pair at all so
-  `input_detect_prefix_pattern()` never confirms a pattern) and
-  whether `input_word_is_command()`'s `is_command_b()` calls (one per
-  token, on every line) are a performance concern on large
-  `--infile`s.
+  Only gcc style toolchains make sense as module builders in practice. The
+  silent failure for the rest deserves a guard or warning, like the one
+  that already exists for sdcc with --create-libs, instead of a quiet
+  Makefile rule that does nothing.
 
-- genmakefile-multitarget-o-must-be-in-first-segment: with the new
-  `genmakefile [common-options] [--] [target1-opts] -- [target2-opts]
-  ...` multi-target CLI syntax (`genmakefile.c`, `parse_target_options()`
-  called once per `--`-delimited segment from `main()`), `-o/--output`
-  only takes effect when given in the first segment (common-options or
-  target1). `main()` calls `open_output_file()` once, right after the
-  first segment's `parse_target_options()` and before the loop that
-  parses any later segments -- so an `-o` placed in target2's (or a
-  later) segment sets the `outfile` global too late to matter and the
-  Makefile silently goes to stdout instead. Worth either documenting
-  this explicitly in `--help` (currently only documents `-o` under
-  "Options" without noting the placement restriction) or moving the
-  `open_output_file()` call to after all segments have been parsed.
+- genmakefile-cross-compile-flag-disabled:
+  The block "if(cygming && 0)" in the trailer of set_compiler_type
+  (genmakefile.c, right after the chain of compiler branches) would set
+  CROSS_COMPILE from tools.toolchain, for example x86_64-w64-mingw32-. It
+  is permanently disabled by the "&& 0".
 
-- path-lib-follow-up: the view-based `lib/path/` functions (`path_rootlen`, `path_basename`,
-  `path_dirlen`, `path_cat`, `path_canon`, `path_abs`, `path_rel`, `path_common`, `path_extoff`)
-  and their `stralloc` glue (`path_cat_sa`, `path_canon_sa`, `path_abs_sa`, `path_rel_sa`) have no
-  man pages yet (the `.3` pages of the removed `path_concat*`, `path_collapse*`, `path_canonical*`,
-  `path_normalize`, `path_absolute*`, `path_relative_to*` functions were deleted). The list
-  iterator (`path_listlen` + `PATH_LIST_FOREACH`) is not prototyped here: no c-utils client.
-  Plan and status: `../shish/doc/path-lib.md` section 5.9.
+  This does not block cross compiling, because the -c or --cross PREFIX
+  option does the same job when given explicitly. It does mean that -t
+  mingw64 alone silently produces a plain CC = gcc instead of a real cross
+  compiler.
+
+  Two ways out:
+    wire up the disabled block so the prefix comes from tools.toolchain
+    document in --help that -c is required with -t mingw64, msys or cygwin
+
+- input-c-prefix-detection-more-coverage:
+  The decoration prefix detection in src/genmakefile/input.c lets the
+  lines of an --infile carry an arbitrary prefix in front of the real
+  command, such as shell trace markers or logging shim banners. The shape
+  of the decoration is detected from the file itself instead of being
+  hardcoded. It was committed after smoke tests with four samples of one
+  rule each: undecorated, a timestamp and pid style prefix, a set -x style
+  "+ " prefix, and one that deliberately ends in a lone backslash without a
+  newline. All four produced identical rules and none hung under a 2GB
+  ulimit -v.
+
+  Still worth covering is messier real world decoration: log entries that
+  wrap over several lines, decoration containing characters that look like
+  flags or paths, and a file without any compile and link pair, where the
+  pattern is never confirmed. It is also open whether the is_command_b
+  call made for every token on every line is a performance problem on
+  large input files.
+
+  Functions involved:
+    input_word_is_command
+    input_find_command_start
+    input_build_prefix_pattern
+    input_match_prefix_pattern
+    input_line_classify
+    input_detect_prefix_pattern
+    input_process_file
+
+- genmakefile-multitarget-o-must-be-in-first-segment:
+  The multi target syntax is "genmakefile [common-options] [--]
+  [target1-opts] -- [target2-opts] ...". Each segment is parsed by
+  parse_target_options, called from main in genmakefile.c. The option -o
+  or --output only takes effect in the first segment, either the common
+  options or target1.
+
+  The reason is that main calls open_output_file once, right after the
+  first segment and before the loop over later segments. An -o in the
+  second or a later segment sets the outfile global too late and the
+  Makefile silently goes to stdout.
+
+  Either document the restriction in --help, which currently lists -o under
+  Options without mentioning it, or move the open_output_file call to after
+  all segments have been parsed.
+
+- path-lib-follow-up:
+  The view based functions in lib/path have no man pages yet. The old pages
+  of the removed families were deleted along with them. The list iterator
+  path_listlen with PATH_LIST_FOREACH has no client of its own in c-utils,
+  only path_search uses it.
+  Plan and status are in ../shish/doc/path-lib.md section 5.9.
+
+  Functions without man page:
+    path_rootlen
+    path_basename
+    path_dirlen
+    path_cat
+    path_canon
+    path_abs
+    path_rel
+    path_common
+    path_extoff
+    path_cat_sa
+    path_canon_sa
+    path_abs_sa
+    path_rel_sa
+
+  Removed families whose pages are gone:
+    path_concat
+    path_collapse
+    path_canonical
+    path_normalize
+    path_absolute
+    path_relative_to
+
+- path-lib-adopt-remaining:
+  A survey of 2026-10-17 found much hand rolled path handling that does not
+  use lib/path.h yet. The functions path_isname, path_isrel, path_parentlen,
+  path_common and path_rootlen also have no caller outside lib/path and the
+  tests, so adopting them in the places below would exercise them.
+
+  A parallel path family that should be replaced by the library:
+    src/genmakefile/path.c with path_prefix, path_extension, path_output,
+      path_wildcard, path_clean, path_normalize_sa, path_dirname_alloc,
+      add_path
+    about 40 callers in genmakefile.c and src/genmakefile
+    lib/str/str_basename.c, about 60 callers, replace by path_basename_s
+    lib/unix/fnmatch.c, fnmatch_b.c and glob.c, compare path_fnmatch
+    lib/unix/symlink.c, Windows drive and UNC tests, GetFullPathName
+
+  Last separator and basename searches, use path_basename or path_dirlen:
+    pkgcfg.c
+    ftpcopy.c
+    logserial.c
+    redir.c
+    reg2cmd.c, own copy mystr_basename
+    eagle-init-brd.c, own copy mystr_basename
+    exec-intercept.c
+    socket-intercept.c
+    compiler-wrapper.c
+    uri.c
+    examples/vd.c
+    examples/uudecode.c
+    src/genmakefile/cmake.c
+    src/genmakefile/mplab.c
+    src/genmakefile/is.h
+    src/genmakefile/sources.c
+
+  Extension searches, use path_extoff:
+    list-r.c
+    sln.c
+    nscache.c
+    jsonpp.c
+    cpptest.c
+    mediathek-parser.c
+    compiler-wrapper.c
+    examples/httpd.c
+    src/genmakefile/generate.c
+    src/genmakefile/is.h
+    src/genmakefile/sources.c
+    src/genmakefile/path.c
+
+  Joining with a literal slash or PATHSEP_C, use path_cat_sa:
+    pkgcfg.c
+    list-r.c
+    lsproc.c
+    pipeinfo.c
+    q.c
+    strip-comments.c
+    exe-wrap.c
+    compiler-wrapper.c
+    genmakefile.c
+    montty.c
+    src/genmakefile/sourcedir.c
+    src/genmakefile/mplab.c
+    src/genmakefile/includes.c
+    src/genmakefile/input.c
+    lib/dir/dir_open.c
+    lib/dir/dir_time.c
+    lib/dir/dir_path.c
+
+  Absolute path and drive letter tests, use path_isabs:
+    genmakefile.c line 251
+    ntldd.c
+    pathtool.c line 539
+    exe-wrap.c line 74
+    lib/cpp/cpp_search_include.c line 24
+    lib/unix/glob.c
+    ftpcopy.c and ftpls.c handle URL paths and may not belong here
+
+  Splitting of PATH style lists, use PATH_LIST_FOREACH:
+    msys-shell.c
+    ntldd.c, function add_path
+    tinyproxy.c
+    ar-wrap.c, cmake-run.c and cc-wrap.c, which pick the separator from
+      the first character of the list
+    src/genmakefile/is.h
+    pkgcfg.c line 299
+

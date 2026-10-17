@@ -68,7 +68,7 @@ debug_s(const char* name, const char* s) {
  */
 void
 debug_sl(const char* name, const strlist* l) {
-  size_t pos, n;
+  size_t n;
   const char* x;
   stralloc tmp;
 
@@ -78,10 +78,10 @@ debug_sl(const char* name, const strlist* l) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
 
-    if((pos = byte_rchr(x, n, '/')) < n || (pos = byte_rchr(x, n, '\\')) < n)
-      stralloc_catb(&tmp, x + pos + 1, n - pos - 1);
-    else
-      stralloc_catb(&tmp, x, n);
+    size_t bl;
+    const char* b = path_basename(x, n, &bl);
+
+    stralloc_catb(&tmp, b, bl);
   }
 
   // debug_sa(name, &tmp);

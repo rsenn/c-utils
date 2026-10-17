@@ -41,10 +41,22 @@ asks for it (it's slow, exercises real toolchains/build tools, and produces larg
 respectively. No title header, no numbering: every entry is a top-level `- ` bullet whose text
 starts with a `kebab-case-slug-title:` naming the bug/item, followed by a description. Wrapped
 continuation lines are indented two spaces to line up under the bullet; a blank-line-separated
-indented block inside an entry is a code/repro snippet. Use `` `backticks` `` for every file,
-function, and symbol name mentioned. Prefer `--` over an em dash. Match the style already in the
+indented block inside an entry is a code/repro snippet. In `BUGS`, use `` `backticks` `` for every file,
+function, and symbol name mentioned, and prefer `--` over an em dash. Match the style already in the
 files (and see `../shish/BUGS` for a reference example from a sibling project). Check them for
 planned work or known issues; add entries the same way when asked to note something down.
+
+`TODO` has its own, more readable layout:
+
+- Wrap every line at 78 columns.
+- Start an entry with its slug title, then a descriptive paragraph of several plain sentences that
+  says what the item is, why it matters and what was noticed. Do not cram everything into one dense
+  block; empty lines may separate further paragraphs inside the entry.
+- No backticks. Write file and function names bare. Use punctuation sparingly: short sentences,
+  few parentheses, semicolons and dashes.
+- Lists of files, functions or similar go one item per line, indented relative to the paragraph
+  text. Introduce a list with a short line ending in a colon.
+- Exactly one empty line after every entry (mandatory, same in `BUGS`).
 
 This repo keeps these as a running log, not a one-off report. Whenever you diagnose a bug, fix a
 bug, or find follow-up work while doing something else:

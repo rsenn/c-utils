@@ -138,8 +138,6 @@ ssize_t sockbuf_forward_data(socketbuf_t*, socketbuf_t* destination);
 fd_type server_socket(void);
 fd_type server_listen(uint16);
 
-char* search_path(const char*, const char* what, stralloc* out);
-
 void server_finalize(void);
 void server_tar_files(const char*, const stralloc* archive, strlist* files);
 void server_exit(int);
@@ -878,35 +876,6 @@ server_listen(uint16 port) {
   return sock;
 }
 
-char*
-search_path(const char* path, const char* what, stralloc* out) {
-  const char* x;
-  char* ret = 0;
-  size_t pos;
-  stralloc stra;
-
-  stralloc_init(&stra);
-
-  for(x = path; *x; x += pos) {
-    pos = str_chr(x, ':');
-
-    stralloc_copyb(&stra, x, pos);
-    stralloc_catc(&stra, '/');
-    stralloc_cats(&stra, what);
-
-    if(path_exists(stralloc_cstr(&stra))) {
-      stralloc_copy(out, &stra);
-      ret = stralloc_cstr(out);
-      break;
-    }
-
-    pos++;
-  }
-
-  stralloc_free(&stra);
-  return ret;
-}
-
 void
 server_finalize() {
   char buf[100];
@@ -986,8 +955,10 @@ server_finalize() {
   s = NULL;
 
   for(i = 0; programs[i]; i++) {
-    if((s = search_path(stralloc_cstr(&syspath.sa), programs[i], &cmd)))
+    if(path_lookup(&cmd, stralloc_cstr(&syspath.sa), programs[i])) {
+      s = cmd.s;
       break;
+    }
   }
 
   server_tar_files(s, &filename, &output_files);

@@ -1078,7 +1078,7 @@ program(list-r errmsg path strarray strlist stralloc buffer array unix dir
         array fmt open str uint64 ${LIBADVAPI32})
 # program(macho32list mmap uint32)
 if(USE_LZMA)
-  program(mediathek-list errmsg stralloc buffer alloc byte fmt http tls scan
+  program(mediathek-list errmsg path stralloc buffer alloc byte fmt http tls scan
           slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES}
           ${LIBCOMPAT} ${LIBDL} ${LIBPTHREAD})
 endif(USE_LZMA)

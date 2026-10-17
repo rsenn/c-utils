@@ -1,3 +1,4 @@
+#include "lib/path.h"
 #include "lib/unix.h"
 #include "lib/buffer.h"
 #include "lib/io.h"
@@ -75,10 +76,10 @@ compression_from_ext(const char* ext) {
 
 compression_type
 compression_from_filename(const char* fn) {
-  const char* ext = fn + str_rchr(fn, '.');
+  size_t n = str_len(fn), e = path_extoff(fn, n);
 
-  if(*ext)
-    return compression_from_ext(++ext);
+  if(e < n)
+    return compression_from_ext(fn + e + 1);
   return C_UNKNOWN;
 }
 

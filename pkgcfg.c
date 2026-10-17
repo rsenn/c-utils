@@ -193,37 +193,6 @@ get_op_index(const stralloc* op) {
   return -1;
 }
 
-static char*
-search_path(const char* path, const char* what, stralloc* out) {
-  const char* x;
-  char* ret = 0;
-  size_t pos;
-  stralloc stra;
-
-  stralloc_init(&stra);
-
-  for(x = path; *x; x += pos) {
-    pos = str_chr(x, ':');
-
-    stralloc_copyb(&stra, x, pos);
-    stralloc_catc(&stra, '/');
-    stralloc_cats(&stra, what);
-    stralloc_nul(&stra);
-
-    if(path_exists(stra.s)) {
-      stralloc_copy(out, &stra);
-      stralloc_nul(out);
-      ret = out->s;
-      break;
-    }
-
-    pos++;
-  }
-
-  stralloc_free(&stra);
-  return ret;
-}
-
 static void
 extract_paths(const stralloc* sa, strlist* paths) {
   const char *s, *e;
@@ -276,9 +245,11 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
 
   if(path_isabs(compiler, str_len(compiler))) {
     bin = compiler;
-  } else if((bin = search_path(env_get("PATH"), compiler, &dir)) == 0) {
-    errmsg_warnsys(bin, " not found: ", 0);
+  } else if(!path_lookup(&dir, env_get("PATH"), compiler)) {
+    errmsg_warnsys(compiler, " not found: ", 0);
     exit(127);
+  } else {
+    bin = dir.s;
   }
 
   stdio[0] = 0;
@@ -1229,8 +1200,8 @@ pkgcfg_init(const char* self) {
   stralloc_init(&cmd.prefix);
 
   if(!self[str_chr(self, '/')]) 
-    if((x = search_path(env_get("PATH"), self, &dir)))
-      self = x;
+    if(path_lookup(&dir, env_get("PATH"), self))
+      self = dir.s;
 
   if(!self[str_chr(self, '/')]) {
     path_readlink("/proc/self/exe", &dir);
