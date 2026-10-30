@@ -941,6 +941,7 @@ set(genmakefile_SOURCES
     src/genmakefile/mplab.c
     src/genmakefile/path.c
     src/genmakefile/compiler.c
+    src/genmakefile/project.c
     src/genmakefile/rule.c
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c
@@ -997,7 +998,7 @@ program(elf64list buffer elf mmap uint16 uint32 uint64)
 program(elflist strlist buffer alloc errmsg unix elf mmap str)
 program(elfwrsec buffer alloc elf mmap)
 program(pemkwingui buffer alloc pe mmap)
-program(genmakefile ini debug set env sig set case errmsg strarray dlist slist rdir dir
+program(genmakefile cpp ini debug set env sig set case errmsg strarray dlist slist rdir dir
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
         fmt byte str array safemult alloc json charbuf io)
 program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap

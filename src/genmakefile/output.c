@@ -1,6 +1,7 @@
 #include "genmakefile.h"
 #include "../../lib/debug.h"
 #include "output.h"
+#include "compiler.h"
 #include "ansi.h"
 
 int output_width = 40;
@@ -326,6 +327,10 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
       rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
 
     stralloc_remove_all(&cmd, "\0", 1);
+
+    /* the terminator of an inline file has to start its line */
+    if(make_end_inline && make_end_inline[0] == '\r' && str_start(tools.make, "borland"))
+      stralloc_replaces(&cmd, "\n\t|", "\n|");
 
     if(!stralloc_starts(&cmd, newline)) {
       stralloc_catc(&output, '\n');

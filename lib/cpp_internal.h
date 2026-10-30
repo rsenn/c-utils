@@ -360,6 +360,13 @@ struct cpp_ctx {
   char* base_file_name;
   int counter_val; /* __COUNTER__ */
 
+  /* dependency scan: a missing include is recorded in inc_missing and
+     skipped, #error is ignored, and the gcc macros of this host are not
+     defined (the caller defines those of the target) */
+  int scan_only;
+  strarray inc_missing;
+  strarray inc_system; /* scan_only: headers below these directories are not read */
+
   /* used by cpp_tokenize_file.c */
   cpp_file** in_files;
   int in_file_no;

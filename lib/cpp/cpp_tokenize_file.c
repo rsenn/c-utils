@@ -1,6 +1,7 @@
 #include "../cpp_internal.h"
 #include "../byte.h"
 #include "../alloc.h"
+#include "../str.h"
 
 cpp_token*
 cpp_tokenize_file(cpp_ctx* pp, char* path) {
@@ -17,6 +18,38 @@ cpp_tokenize_file(cpp_ctx* pp, char* path) {
     p += 3;*/
 
   cpp_canonicalize_newline(p);
+
+  /* dependency scan: the text of #error and #warning is prose, whose
+     apostrophes would not tokenize */
+  if(pp->scan_only) {
+    char* q = p;
+
+    while(*q) {
+      char* e = q;
+
+      while(*e == ' ' || *e == '\t')
+        ++e;
+
+      if(*e == '#') {
+        ++e;
+
+        while(*e == ' ' || *e == '\t')
+          ++e;
+
+        if(!str_diffn(e, "error", 5) || !str_diffn(e, "warning", 7)) {
+          for(e += *e == 'e' ? 5 : 7; *e && *e != '\n'; ++e)
+            *e = ' ';
+        }
+      }
+
+      while(*q && *q != '\n')
+        ++q;
+
+      if(*q)
+        ++q;
+    }
+  }
+
   cpp_remove_backslash_newline(p);
   cpp_convert_universal_chars(p);
 

@@ -6,4 +6,6 @@ void
 cpp_free(cpp_ctx* pp) {
   strarray_free(&pp->inc_array);
   strarray_free(&pp->inc_paths);
+  strarray_free(&pp->inc_missing);
+  strarray_free(&pp->inc_system);
 }

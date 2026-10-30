@@ -201,8 +201,17 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       continue;
     }
 
-    if(cpp_equal(tok, "error"))
+    if(cpp_equal(tok, "error")) {
+      if(pp->scan_only) {
+        do
+          tok = tok->next;
+        while(!tok->at_bol);
+
+        continue;
+      }
+
       cpp_error_tok(tok, "error");
+    }
 
     if(cpp_equal(tok, "warning")) {
       cpp_warn_tok(tok, "warning");
@@ -241,8 +250,31 @@ include_file(cpp_ctx* pp, cpp_token* tok, char* path, cpp_token* filename_tok) {
   if((guard_name = hashmap_get(&pp->inc_guards, path)) && hashmap_get(&pp->macros, guard_name))
     return tok;
 
-  if(!(tok2 = cpp_tokenize_file(pp, path)))
+  if(pp->scan_only) {
+    size_t i;
+
+    for(i = 0; i < strarray_size(&pp->inc_system); ++i) {
+      const char* dir = strarray_AT(&pp->inc_system, i);
+      size_t n = str_len(dir);
+
+      if(!str_diffn(path, dir, n) && path[n] == '/')
+        return tok;
+    }
+  }
+
+  if(pp->scan_only && !path_exists(path)) {
+    strarray_push(&pp->inc_missing, path);
+    return tok;
+  }
+
+  if(!(tok2 = cpp_tokenize_file(pp, path))) {
+    if(pp->scan_only) {
+      strarray_push(&pp->inc_missing, path);
+      return tok;
+    }
+
     cpp_error_tok(filename_tok, "%s: cannot open file: %s", path, strerror(errno));
+  }
 
   if(!(ptrdiff_t)hashmap_get(&pp->inc_list, path)) {
     char* name = str_dup(filename_tok->file->name);

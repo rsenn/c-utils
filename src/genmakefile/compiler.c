@@ -71,6 +71,22 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
     stralloc_replaces(sa, "$^", "$**");
 }
 
+/* what bcc32 5.5 defines on its own for -tWC -tWM, found by compiling probes */
+static const char* const bcc55_defs[] = {
+    "__BORLANDC__=0x0551", "__TURBOC__=0x0551", "_M_IX86=300",   "__WIN32__=1",
+    "_WIN32=1",            "_Windows=1",        "__CONSOLE__=1", "__FLAT__=1",
+    "__CDECL__=1",         "__TLS__=1",         "_CPPUNWIND=1",  "_INTEGRAL_MAX_BITS=64",
+    "_STDCALL_SUPPORTED=", "__MT__=1",          "_MT=1",         0,
+};
+
+const char* const*
+compiler_predefs(const char* compiler) {
+  if(compiler && str_start(compiler, "bcc") && str_contains(compiler, "55"))
+    return bcc55_defs;
+
+  return 0;
+}
+
 /**
  * @brief         Set the machine type
  *
@@ -429,6 +445,10 @@ set_compiler_type(const char* compiler) {
      * Borland C++ Builder
      */
   } else if(str_start(compiler, "bcc")) {
+    exts.obj = ".obj";
+    exts.bin = ".exe";
+    exts.lib = ".lib";
+    format_linklib_fn = &format_linklib_lib;
     // pathsep_args = '\\';
     // var_push("DEFS", "-DWIN32_LEAN_AND_MEAN");
 
@@ -488,8 +508,8 @@ set_compiler_type(const char* compiler) {
 
     var_set("LINK", "ilink32");
     var_set("LIB", "tlib");
-    push_lib("STDC_LIBS", "cw32");
-    push_lib("STDC_LIBS", "import32");
+    var_push("STDC_LIBS", "cw32mt.lib");
+    var_push("STDC_LIBS", "import32.lib");
     set_command(&commands.lib, "$(LIB) /p256 $@ /u", "$^");
     quote_args = "\"";
     pathsep_args = '\\';

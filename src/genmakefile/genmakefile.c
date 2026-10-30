@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <errno.h>
 #include "../../lib/uint32.h"
+#include "project.h"
 #include "compiler.h"
 #include "../../lib/byte.h"
 #include "../../lib/sig.h"
@@ -442,6 +443,7 @@ usage(char* argv0) {
                        "      --create-module       create rule_map for loadable module\n"
                        "  -S, --build-as-lib TARGET build target as library\n"
                        "\n"
+                       "      --lib-dir DIR         directory of the lib modules (default: lib)\n"
                        "  -i, --install             create installation rule_map\n"
                        "\n"
                        //"  -R, --objdir   DIR        object directory\n"
@@ -1374,7 +1376,7 @@ parse_target_options(
   const char* objdir = NULL;
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:", opts, &index);
+    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
 
     if(c == -1)
       break;
@@ -1519,7 +1521,13 @@ parse_target_options(
         break;
       }
 
+      case 'Y': {
+        project_libdir = arg;
+        break;
+      }
+
       case 'D': {
+        strarray_push(&project_defs, arg);
         push_define(arg);
         break;
       }
@@ -1616,6 +1624,7 @@ main(int argc, char* argv[]) {
       {"preprocessor", 1, 0, 'P'},
       {"lang-c", 0, &cfg.lang, LANG_C},
       {"width", 0, &output_width, 'W'},
+      {"lib-dir", 1, 0, 'Y'},
       {"cxx", 0, &cfg.lang, LANG_CXX},
       {"c++", 0, &cfg.lang, LANG_CXX},
       {0, 0, 0, 0},
@@ -1729,13 +1738,20 @@ main(int argc, char* argv[]) {
   if((ret = consume_positional_args(seg_argc, argv, &args)))
     goto quit;
 
-  if((ret = discover_sources(&args, &sources)))
-    goto fail;
+  /* a compiler whose macros are known is scanned with the preprocessor,
+     the others with the text scanner */
+  if(!infile && !cmake_builddir && strarray_size(&args) && compiler_predefs(tools.compiler)) {
+    finalize_build_metadata();
+    project_generate(&args, &includes, cmd_bins, cmd_libs);
+  } else {
+    if((ret = discover_sources(&args, &sources)))
+      goto fail;
 
-  finalize_build_metadata();
+    finalize_build_metadata();
 
-  if(!infile && !cmake_builddir)
-    generate_all_rules(&sources, all);
+    if(!infile && !cmake_builddir)
+      generate_all_rules(&sources, all);
+  }
 
   /* additional "--"-delimited targets: genmakefile [common-options] [--]
    * [target1-opts] -- [target2-opts] ... -- [targetN-opts] */

@@ -23,4 +23,8 @@ int set_compiler_type(const char* compiler);
 /* resolve tools.make and tools.compiler, apply both, set the build type */
 int resolve_toolchain(const char* argv0);
 
+/* Macros the compiler defines itself ("NAME=VALUE", NULL terminated), so a
+   source can be preprocessed for it. NULL when they are not known. */
+const char* const* compiler_predefs(const char* compiler);
+
 #endif /* defined(GENMAKEFILE_COMPILER_H) */

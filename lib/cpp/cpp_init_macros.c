@@ -97,7 +97,9 @@ cpp_init_macros(cpp_ctx* pp) {
   cpp_define(pp, "linux", "1");
   cpp_define(pp, "unix", "1");*/
 
-  define_gnu_macros(pp);
+  /* a dependency scan defines the macros of its own target instead */
+  if(!pp->scan_only)
+    define_gnu_macros(pp);
   // define_clang_macros(pp);
 
   cpp_add_builtin(pp, "__FILE__", file_macro);
