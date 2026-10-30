@@ -1,72 +1,100 @@
-#include "../buffer.h"
+#include "../http.h"
+#include "../alloc.h"
 #include "../byte.h"
-#include "../util.h"
-#include "../uint64.h"
 #include "../scan.h"
-#include <stdlib.h>
+#include "../http_internal.h"
 
-typedef struct {
-  size_t chunk_length;
-  size_t data_pos;
-  buffer* other;
-  char buf[1024];
-} chunked;
+#include <errno.h>
 
 static void
 buffer_chunked_close(buffer* b) {
   chunked* ctx = b->cookie;
-  buffer* other = ctx->other;
 
   b->deinit = 0;
-  buffer_close(b);
+  b->cookie = 0;
+  alloc_free(ctx);
 }
 
 static ssize_t
 buffer_chunked_op(fd_type fd, void* data, size_t n, buffer* b) {
   chunked* ctx = b->cookie;
-  ssize_t r;
+  buffer* in = ctx->other;
+  char line[96];
+  uint64 len;
+  size_t r;
 
-  if(ctx->chunk_length == 0) {
-    char numbuf[1024];
-    if((r = buffer_getline(ctx->other, numbuf, sizeof(numbuf))) < 0)
-      return r;
+  (void)fd;
 
-    numbuf[r] = '\0';
+  for(;;) {
+    if(ctx->state == CHUNKED_END)
+      return 0;
 
-    scan_xlonglong(numbuf, &ctx->chunk_length);
-    ctx->data_pos = 0;
-  } else {
-    if((r = buffer_feed(ctx->other)) < 0)
-      return r;
+    if(ctx->state == CHUNKED_SIZE) {
+      /* chunk size in hex, an extension after a semicolon is ignored */
+      if(chunked_line(in, line, sizeof(line)) < 0) {
+        errno = EPIPE;
+        return -1;
+      }
 
-    size_t remain = ctx->chunk_length - ctx->data_pos;
-    size_t len = buffer_LEN(ctx->other);
-    char* x = buffer_PEEK(ctx->other);
-    r = MIN(len, n);
-    r = MIN(r, remain);
+      if(!scan_xlonglong(line, &len)) {
+        errno = EINVAL;
+        return -1;
+      }
 
-    if(r > 0) {
-      byte_copy(data, len, x);
-      ctx->data_pos += r;
+      if(len == 0) {
+        /* last chunk, the trailer lines end with an empty line */
+        while(chunked_line(in, line, sizeof(line)) > 0) {
+        }
+        ctx->state = CHUNKED_END;
+        return 0;
+      }
+
+      ctx->remaining = len;
+      ctx->state = CHUNKED_DATA;
     }
+
+    if(buffer_feed(in) <= 0) {
+      errno = EPIPE;
+      return -1;
+    }
+
+    r = buffer_LEN(in);
+    if(r > n)
+      r = n;
+    if(r > ctx->remaining)
+      r = (size_t)ctx->remaining;
+
+    byte_copy(data, r, buffer_PEEK(in));
+    buffer_SKIP(in, r);
+    ctx->remaining -= r;
+
+    /* the data of a chunk is followed by an end of line */
+    if(ctx->remaining == 0) {
+      if(chunked_line(in, line, sizeof(line)) < 0) {
+        errno = EPIPE;
+        return -1;
+      }
+      ctx->state = CHUNKED_SIZE;
+    }
+    return (ssize_t)r;
   }
-  return r;
 }
 
+/* buffer_chunked makes b read the data of the chunked transfer encoding in
+ * other. At the last chunk b reads end of file, a cut off input is an error.
+ * Closing b frees it and leaves other open. */
 int
 buffer_chunked(buffer* b, buffer* other) {
-  int ret;
-  chunked* ctx = calloc(1, sizeof(chunked));
+  chunked* ctx = alloc_zero(sizeof(chunked));
 
   if(ctx == NULL)
     return 0;
 
   ctx->other = other;
 
-  buffer_init(b, 0, -1, ctx->buf, sizeof(ctx->buf));
+  buffer_init(b, buffer_chunked_op, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
   b->deinit = &buffer_chunked_close;
-  b->op = buffer_chunked_op;
 
   return 1;
 }

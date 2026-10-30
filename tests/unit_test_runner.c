@@ -51,6 +51,7 @@ TESTS(xml);
 TESTS(tokenizer);
 TESTS(json);
 TESTS(ihex);
+TESTS(http);
 
 START() {
   EXEC(stralloc);
@@ -96,4 +97,5 @@ START() {
   EXEC(tokenizer);
   EXEC(json);
   EXEC(ihex);
+  EXEC(http);
 }

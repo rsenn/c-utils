@@ -96,7 +96,11 @@ ssize_t http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_t
 void http_close(http* h);
 
 void http_dump(http*);
-int buffer_chunked(buffer*, buffer*);
+/* b reads the chunked transfer encoding of other and decodes it */
+int buffer_chunked(buffer* b, buffer* other);
+
+/* b writes what is put into it to other as chunks, closing b ends them */
+int buffer_chunked_encode(buffer* b, buffer* other);
 
 char* http_get_header(char* data, size_t n, const char* name, size_t* result_len);
 int http_get(http* h, const char* location);
