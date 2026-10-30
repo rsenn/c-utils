@@ -1117,6 +1117,8 @@ program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
   # program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD}) program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
+  program(ziptest buffer str unix path io iarray mmap open byte ${COMPRESSION_LIBRARIES})
+  program(tokenizertest errmsg tokenizer unix str scan buffer open)
   #program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}

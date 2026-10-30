@@ -34,37 +34,37 @@
 
 #define VERSION 1.3.5
 
-#include "lib/windoze.h"
-#include "lib/tai.h"
-#include "lib/stralloc.h"
-#include "lib/buffer.h"
-#include "lib/socket.h"
-#include "lib/socket_internal.h"
-#include "lib/ndelay.h"
-#include "lib/unix.h"
-#include "lib/errmsg.h"
-#include "lib/safemult.h"
-#include "lib/str.h"
-#include "lib/mmap.h"
-#include "lib/scan.h"
-#include "lib/byte.h"
-#include "lib/uint16.h"
-#include "lib/uint32.h"
-#include "lib/io.h"
-#include "lib/dns.h"
-#include "lib/ip4.h"
-#include "lib/ip6.h"
-#include "lib/fmt.h"
-#include "lib/alloc.h"
+#include "../../lib/windoze.h"
+#include "../../lib/tai.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/buffer.h"
+#include "../../lib/socket.h"
+#include "../../lib/socket_internal.h"
+#include "../../lib/ndelay.h"
+#include "../../lib/unix.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/safemult.h"
+#include "../../lib/str.h"
+#include "../../lib/mmap.h"
+#include "../../lib/scan.h"
+#include "../../lib/byte.h"
+#include "../../lib/uint16.h"
+#include "../../lib/uint32.h"
+#include "../../lib/io.h"
+#include "../../lib/dns.h"
+#include "../../lib/ip4.h"
+#include "../../lib/ip6.h"
+#include "../../lib/fmt.h"
+#include "../../lib/alloc.h"
 
 #include <stdlib.h>
-#include "lib/bool.h"
+#include "../../lib/bool.h"
 #include <errno.h>
 
 #define MAP_USE_HMAP 1
-#include "lib/map.h"
-#include "src/dnsutils/address.h"
-#include "src/ftp/ftplib.h"
+#include "../../lib/map.h"
+#include "../dnsutils/address.h"
+#include "../ftp/ftplib.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

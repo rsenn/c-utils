@@ -1,12 +1,12 @@
-#include "lib/unix.h"
-#include "lib/open.h"
-#include "lib/uint64.h"
-#include "lib/buffer.h"
-#include "lib/errmsg.h"
-#include "lib/str.h"
-#include "lib/byte.h"
-#include "lib/fmt.h"
-#include "lib/tokenizer.h"
+#include "../../lib/unix.h"
+#include "../../lib/open.h"
+#include "../../lib/uint64.h"
+#include "../../lib/buffer.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/str.h"
+#include "../../lib/byte.h"
+#include "../../lib/fmt.h"
+#include "../../lib/tokenizer.h"
 
 static tokenizer t;
 static buffer in;

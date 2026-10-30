@@ -1,16 +1,16 @@
-#include "lib/xml.h"
-#include "lib/buffer.h"
-#include "lib/byte.h"
-#include "lib/fmt.h"
-#include "lib/hmap.h"
-#include "lib/iterator.h"
-#include "lib/stralloc.h"
-#include "lib/strlist.h"
-#include "lib/str.h"
-#include "lib/mmap.h"
+#include "../../lib/xml.h"
+#include "../../lib/buffer.h"
+#include "../../lib/byte.h"
+#include "../../lib/fmt.h"
+#include "../../lib/hmap.h"
+#include "../../lib/iterator.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
+#include "../../lib/str.h"
+#include "../../lib/mmap.h"
 #define MAP_USE_HMAP 1
-#include "lib/map.h"
-#include "lib/scan.h"
+#include "../../lib/map.h"
+#include "../../lib/scan.h"
 
 #include <assert.h>
 #include <ctype.h>

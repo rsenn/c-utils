@@ -1,11 +1,11 @@
-#include "lib/xml.h"
-#include "lib/buffer.h"
-#include "lib/mmap.h"
-#include "lib/str.h"
-#include "lib/stralloc.h"
-#include "lib/strlist.h"
-#include "lib/fmt.h"
-#include "lib/errmsg.h"
+#include "../../lib/xml.h"
+#include "../../lib/buffer.h"
+#include "../../lib/mmap.h"
+#include "../../lib/str.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/strlist.h"
+#include "../../lib/fmt.h"
+#include "../../lib/errmsg.h"
 #include <ctype.h>
 
 static buffer infile;

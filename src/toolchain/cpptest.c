@@ -1,17 +1,17 @@
-#include "lib/cpp.h"
-#include "lib/cpp_internal.h"
-#include "lib/buffer.h"
-#include "lib/unix.h"
-#include "lib/open.h"
-#include "lib/errmsg.h"
-#include "lib/str.h"
-#include "lib/path.h"
-#include "lib/scan.h"
+#include "../../lib/cpp.h"
+#include "../../lib/cpp_internal.h"
+#include "../../lib/buffer.h"
+#include "../../lib/unix.h"
+#include "../../lib/open.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/str.h"
+#include "../../lib/path.h"
+#include "../../lib/scan.h"
 
 #undef MAP_USE_HASHMAP
 #define MAP_USE_HMAP 1
 
-#include "lib/map.h"
+#include "../../lib/map.h"
 
 static bool opt_dump = false;
 static MAP_T include_map;
