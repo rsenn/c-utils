@@ -57,28 +57,26 @@ has_ul_tail(const char* p) {
   return 0;
 }
 
+/* 0x or 0X, at least one hex digit, then nothing or a u/l suffix */
 static inline int
 is_hex_int_literal(const char* s) {
+  const char* p;
+
   if(s[0] == '-')
     s++;
 
-  if(s[0] == '0' && (s[1] == 'x' || s[1] == 'X')) {
-    const char* p = s + 2;
+  if(s[0] != '0' || (s[1] != 'x' && s[1] != 'X'))
+    return 0;
 
-    while(*p) {
-      if(str_has("0123456789abcdef", tolower(*p))) {
-        if(p == s + 2)
-          return 0;
-        return has_ul_tail(p);
-      }
+  p = s + 2;
 
-      p++;
-    }
+  if(!isxdigit((unsigned char)*p))
+    return 0;
 
-    return 1;
-  }
+  while(isxdigit((unsigned char)*p))
+    ++p;
 
-  return 0;
+  return !*p || has_ul_tail(p);
 }
 
 static inline int

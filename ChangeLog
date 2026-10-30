@@ -96,6 +96,9 @@
   no value. The cause was buffer_skip_pred (and so buffer_skipspace), which
   also swallowed the first byte that did not match; it now stops in front
   of it. xml_attributes no longer prints a dump of the attributes
+- fixed the tokenizer: hex literals such as 0x2a, 0XFF and 0x1UL are typed
+  TT_HEX_INT_LIT (they came out as TT_UNKNOWN with result 0). The header now
+  says that TT_EOF is an ordinary token that repeats at the end of input
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has

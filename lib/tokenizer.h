@@ -84,6 +84,9 @@ int64 tokenizer_ftello(tokenizer*);
 int tokenizer_getc(tokenizer*);
 int tokenizer_get_flags(tokenizer*);
 void tokenizer_init(tokenizer*, buffer* in, int flags);
+/* reads the next token, returns 0 for a malformed one (TT_UNKNOWN,
+ * TT_OVERFLOW). At the end of the input it returns 1 with a TT_EOF token,
+ * again on every further call, so loop until out->type == TT_EOF */
 int tokenizer_next(tokenizer*, token* out);
 int tokenizer_peek(tokenizer*);
 int tokenizer_peek_token(tokenizer*, token* tok);

@@ -560,10 +560,6 @@
 
 - montty-uses-stdio: `src/serial/montty.c` still uses `FILE*` and stdio instead of `buffer`.
 
-- tokenizer-hex-literal-ends-input: `tokenizer_next` returns 0 (error) at a hex literal such as
-  `0x2a` after an identifier, the decimal literal `42` is typed correctly. Past the end of
-  the input it keeps returning `TT_EOF` tokens with a positive result instead of 0.
-
 - json-compact-printer-does-not-quote-strings: `json_tosa` with `json_compact_printer` writes the
   string `"x"` in an array as `x`, so the output is not valid JSON; the object form
   `{ "a": 1, ... }` also gets spaces despite the name.
