@@ -1,54 +1,27 @@
-if(BUILD_ZLIB)
-  message(STATUS "Building zlib from 3rdparty/zlib")
-  set(ZLIB_VERSION "1.2.11")
-  set(ZLIB_DISABLE_TESTS TRUE)
-  set(ZLIB_STATIC TRUE)
-  set(ZLIB_NO_INSTALL TRUE)
+# build_zlib(PIC)
+#
+# Clones zlib into third_party/zlib and builds it as a static library into
+# ${THIRD_PARTY_PREFIX}. Sets ZLIB_INCLUDE_DIR, ZLIB_LIBRARY_DIR and
+# ZLIB_LIBRARY (full path).
+include(${CMAKE_CURRENT_LIST_DIR}/ThirdParty.cmake)
 
-  if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib/adler32.c")
-    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/zlib-${ZLIB_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
-      file(DOWNLOAD "https://zlib.net/zlib-${ZLIB_VERSION}.tar.gz"
-           "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz"
-           SHOW_PROGRESS)
-    endif()
+set(ZLIB_GIT_URL "https://github.com/madler/zlib.git" CACHE STRING "zlib repository cloned into third_party/zlib")
+set(ZLIB_GIT_TAG "v1.3.1" CACHE STRING "zlib tag to clone")
 
-    exec_program(
-      "${TAR}" ARGS
-      -C "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" -xzf
-      "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}.tar.gz")
+macro(build_zlib PIC)
+  third_party_fetch(zlib ZLIB_SOURCE_DIR GIT "${ZLIB_GIT_URL}" TAG "${ZLIB_GIT_TAG}")
 
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}")
-      file(RENAME "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}"
-           "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib")
-    endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib-${ZLIB_VERSION}")
+  set(_name z)
+  if(CMAKE_SYSTEM_NAME STREQUAL "WASI")
+    set(_name zlibstatic)
+  endif(CMAKE_SYSTEM_NAME STREQUAL "WASI")
 
-  endif()
-  include("${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/zlib.cmake")
-  set(ZLIB_SOURCES
-      3rdparty/zlib/adler32.c
-      3rdparty/zlib/compress.c
-      3rdparty/zlib/crc32.c
-      3rdparty/zlib/deflate.c
-      3rdparty/zlib/infback.c
-      3rdparty/zlib/inffast.c
-      3rdparty/zlib/inflate.c
-      3rdparty/zlib/inftrees.c
-      3rdparty/zlib/trees.c
-      3rdparty/zlib/uncompr.c
-      3rdparty/zlib/zutil.c)
-  add_library(z ${ZLIB_SOURCES})
-  set_target_properties(
-    z PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/zlib"
-                 LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/zlib")
-  link_directories(BEFORE "${CMAKE_CURRENT_BINARY_DIR}/zlib")
+  set(ZLIB_LIBRARY_DIR "${THIRD_PARTY_PREFIX}/lib")
+  set(ZLIB_INCLUDE_DIR "${THIRD_PARTY_PREFIX}/include")
+  set(ZLIB_LIBRARY "${ZLIB_LIBRARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${_name}${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
-  #set(ZLIB_LIBRARY_DEBUG z CACHE FILEPATH "")
-  #set(ZLIB_LIBRARY_RELEASE z CACHE FILEPATH "")
-  set(ZLIB_LIBRARY z CACHE STRING "" FORCE)
-  set(ZLIB_LIBRARIES z CACHE STRING "" FORCE)
-  set(ZLIB_LIBRARY_DIR "${CMAKE_BINARY_DIR}/zlib" CACHE PATH "zlib library dir"
-                                                        FORCE)
-  set(ZLIB_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/zlib"
-      CACHE PATH "zlib include dir" FORCE)
-endif(BUILD_ZLIB)
+  third_party_build(zlib "${ZLIB_SOURCE_DIR}" "${THIRD_PARTY_PREFIX}" ${PIC} "${ZLIB_LIBRARY}"
+                    CMAKE_ARGS -DZLIB_BUILD_EXAMPLES=OFF)
+  set(ZLIB_LIBRARIES "${ZLIB_LIBRARY}")
+  set(ZLIB_FOUND TRUE)
+endmacro(build_zlib)

@@ -49,9 +49,9 @@ for SOURCE in $SOURCES; do
   SOURCE="${SOURCE#./}"
   SOURCE_DIR=$(dirname "${SOURCE}")
 case "$SOURCE_DIR" in
-  3rdparty/*) 
-  SOURCE_ROOT=${SOURCE_DIR#3rdparty/}
-  SOURCE_ROOT=3rdparty/${SOURCE_ROOT%%/*}
+  third_party/*) 
+  SOURCE_ROOT=${SOURCE_DIR#third_party/}
+  SOURCE_ROOT=third_party/${SOURCE_ROOT%%/*}
   ;;
   *)
 SOURCE_ROOT=.

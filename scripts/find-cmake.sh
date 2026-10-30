@@ -47,7 +47,7 @@ find_cmake() (
 		case $1 in
 		-f | --fmt) DO_FMT=true && shift ;;
 		-x | --debug) DEBUG=true && shift ;;
-		-3 | --3rdparty) NO_3RDPARTY=false && shift ;;
+		-3 | --third_party) NO_3RDPARTY=false && shift ;;
 		-t | --time) BY_TIME=true && shift ;;
 		-r | --reverse) REVERSE=r && shift ;;
 		-s | --sort) SORT=true && shift ;;
@@ -73,7 +73,7 @@ find_cmake() (
 		CMD='exec_cmd cmake-format ${CMAKE_FORMAT_CONFIG:+-c} ${CMAKE_FORMAT_CONFIG:+"$CMAKE_FORMAT_CONFIG"} -i "$FILE" || return $?'
 	fi
 	if [ "$NO_3RDPARTY" = true ]; then
-		append NOT "*3rdparty/*"
+		append NOT "*third_party/*"
 	fi
 	if [ "$NO_HEADERS" = true ]; then
 		append NOT "*.h.*"

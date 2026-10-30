@@ -15,7 +15,7 @@ main() {
   int64 fd;
   io_batch* b;
   int64 r;
-  assert(io_readfile(&fd, "GNUmakefile"));
+  assert(io_readfile(&fd, "CMakeLists.txt"));
   assert(b = iob_new(10));
   assert(iob_addbuf(b, "Huhu", 4));
   assert(iob_addbuf(b, " fnord\n", 7));

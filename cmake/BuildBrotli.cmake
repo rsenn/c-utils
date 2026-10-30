@@ -1,46 +1,25 @@
-if(USE_BROTLI AND NOT BROTLI_FOUND)
-  set(BUILD_BROTLI ON)
-endif(USE_BROTLI AND NOT BROTLI_FOUND)
+# build_brotli(PIC)
+#
+# Clones brotli into third_party/brotli and builds it as static libraries
+# into ${THIRD_PARTY_PREFIX}. Sets BROTLI_INCLUDE_DIR, BROTLI_LIBRARY_DIR and
+# BROTLI_LIBRARIES (full paths of enc, dec, common).
+include(${CMAKE_CURRENT_LIST_DIR}/ThirdParty.cmake)
 
-if(BUILD_BROTLI)
-  message(STATUS "Building brotli from 3rdparty/brotli")
-  set(BROTLI_VERSION "1.0.9")
-  set(BROTLI_DISABLE_TESTS TRUE)
-  set(BROTLI_STATIC TRUE)
-  set(BROTLI_NO_INSTALL TRUE)
+set(BROTLI_GIT_URL "https://github.com/google/brotli.git" CACHE STRING "brotli repository cloned into third_party/brotli")
+set(BROTLI_GIT_TAG "v1.2.1" CACHE STRING "brotli tag to clone")
 
-  if(NOT EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
-    if(NOT EXISTS
-       "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
-      file(REMOVE_RECURSE "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
-      file(
-        DOWNLOAD
-        "https://github.com/google/brotli/archive/v${BROTLI_VERSION}.tar.gz"
-        "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz"
-        SHOW_PROGRESS)
-    endif()
+macro(build_brotli PIC)
+  third_party_fetch(brotli BROTLI_SOURCE_DIR GIT "${BROTLI_GIT_URL}" TAG "${BROTLI_GIT_TAG}")
 
-    exec_program(
-      "${TAR}" ARGS
-      -C "${CMAKE_SOURCE_DIR}/3rdparty" -xzf
-      "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}.tar.gz")
-    if(EXISTS "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}")
-      file(RENAME "${CMAKE_SOURCE_DIR}/3rdparty/brotli-${BROTLI_VERSION}"
-           "${CMAKE_SOURCE_DIR}/3rdparty/brotli")
-    endif()
+  set(BROTLI_LIBRARY_DIR "${THIRD_PARTY_PREFIX}/lib")
+  set(BROTLI_INCLUDE_DIR "${THIRD_PARTY_PREFIX}/include")
+  set(BROTLI_LIBRARIES)
+  foreach(_brotli_lib brotlienc brotlidec brotlicommon)
+    list(APPEND BROTLI_LIBRARIES "${BROTLI_LIBRARY_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${_brotli_lib}${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endforeach(_brotli_lib)
 
-    file(COPY "${CMAKE_SOURCE_DIR}/3rdparty/brotli.cmake"
-         DESTINATION "${CMAKE_SOURCE_DIR}/3rdparty/brotli/CMakeLists.txt")
-
-  endif()
-
-  set(BROTLI_STATIC TRUE)
-  set(BROTLI_NO_INSTALL TRUE)
-
-  set(BROTLI_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/brotli/cSs/include"
-      CACHE PATH "brotli include directory")
-
-  set(LIBM_LIBRARY "${LIBMATH}")
-
-  add_subdirectory(3rdparty/brotli)
-endif(BUILD_BROTLI)
+  list(GET BROTLI_LIBRARIES 0 _first)
+  third_party_build(brotli "${BROTLI_SOURCE_DIR}" "${THIRD_PARTY_PREFIX}" ${PIC} "${_first}"
+                    CMAKE_ARGS -DBROTLI_DISABLE_TESTS=ON -DBROTLI_BUILD_TOOLS=OFF)
+  set(BROTLI_FOUND TRUE)
+endmacro(build_brotli)
