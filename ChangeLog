@@ -1,5 +1,13 @@
 2026-10-30:
 
+- genmakefile: added -v/--verbose, which tells what is being done (the
+  compiler and make type, the output file, the scan, the rule creation);
+  given twice it also names every source the scan starts with. Headers
+  reached while scanning are not listed
+- genmakefile: the state dump of a DEBUG_OUTPUT build is now off unless
+  -G/--dump is given; once it prints the settings, twice it also prints
+  every rule. The debug build no longer writes every rule while outputting
+  (about 29000 lines less for the tools of src/)
 - genmakefile: moved the compiler and target setup (set_machine, set_chip,
   set_system, set_make_type, set_compiler_type, resolve_toolchain) out of
   genmakefile.c into compiler.c and compiler.h
@@ -52,3 +60,28 @@
   buffer_inflate corrupt data above 32768 bytes (see BUGS)
 - lib/http: buffer_chunked decodes the chunked transfer encoding (it did
   not work before), the new buffer_chunked_encode writes it. tests/test_http.c
+- chttpcat: the new installed HTTP and HTTPS client, requests every URL on
+  the command line and writes the bodies to standard output. Data on standard
+  input is sent as a chunked POST, -i shows the headers, -H adds a header,
+  -X sets the method, -L follows redirects. It replaces httptest
+- ctlscat and chttpcat share address_connect (src/dnsutils)
+- cftpcat: the new installed FTP client, ftp://host/dir/ lists a directory,
+  ftp://host/file downloads it, and HOST COMMAND runs ls, nlst, cat, cd, pwd,
+  size or quote (several separated by semicolons) on the server, like lftp -e.
+  It uses EPSV and falls back to PASV, -u -p log in, -P sets the port, -v
+  shows the dialogue. It replaces ftptest
+- cmake: Functions.cmake gets check_includes, check_include_def, var2define
+  and clean_name from the qjs projects, and check_function_def now also
+  defines HAVE_<FUNCTION>=1 for the compiler
+- cpre: cpptest is now the installed C preprocessor cpre (-D -I -P -L, dump
+  defines, dependencies)
+- fixed fmt_double: it rounded -2.25 down to -2.24999, read an uninitialised
+  value and printed nothing for large numbers. It now gives the shortest
+  form up to prec digits, 1e20 for large and 1.5e-7 for small values, NaN
+  and Inf
+- fixed fmt_escapecharjson (printable characters came out as \u0041),
+  fmt_escapecharnonprintable (wrong length for \n and octal escapes) and
+  fmt_escapecharquotedprintable (lower case hex digits, now =AB)
+- fixed io_closeonexec, it set the flag on the wrong fcntl command and the
+  descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
+  report what the caller asked for, not the state the kernel still has
