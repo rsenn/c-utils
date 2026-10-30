@@ -244,6 +244,39 @@ TEST(test_io_file_open_variants) {
   unlink(path);
 }
 
+/*
+ * int io_passfd(fd_type sock, fd_type fd);
+ * int64 io_receivefd(fd_type sock);
+ */
+TEST(test_io_passfd_receivefd) {
+  fd_type sv[2], p[2];
+  int64 fd;
+  char buf[8];
+
+  ASSERT_NE(0, io_socketpair(sv));
+  ASSERT_NE(0, io_pipe(p));
+
+  /* the received descriptor is a new one for the same pipe */
+  ASSERT_EQ(0, io_passfd(sv[0], p[1]));
+  fd = io_receivefd(sv[1]);
+  ASSERT_GT(fd, 2);
+  ASSERT_NE(p[1], fd);
+
+  ASSERT_EQ(3, write((int)fd, "abc", 3));
+  ASSERT_EQ(3, read(p[0], buf, sizeof(buf)));
+  ASSERT_EQ(0, memcmp(buf, "abc", 3));
+
+  /* a plain byte without a descriptor is a protocol error */
+  ASSERT_EQ(1, write(sv[0], "x", 1));
+  ASSERT_EQ(-1, io_receivefd(sv[1]));
+
+  close((int)fd);
+  io_close(p[0]);
+  io_close(p[1]);
+  io_close(sv[0]);
+  io_close(sv[1]);
+}
+
 #define RUN_IO_TESTS() \
   RUN(test_io_pipe_tryread_trywrite); \
   RUN(test_io_socketpair); \
@@ -252,6 +285,7 @@ TEST(test_io_file_open_variants) {
   RUN(test_io_wantwrite_flow); \
   RUN(test_io_nonblock_block); \
   RUN(test_io_closeonexec); \
+  RUN(test_io_passfd_receivefd); \
   RUN(test_io_cookie); \
   RUN(test_io_timeout); \
   RUN(test_io_eagain); \

@@ -76,6 +76,28 @@ TEST(test_fmt_8long) {
 }
 
 /*
+ * size_t fmt_8longlong(char* dest, unsigned long long src);
+ */
+TEST(test_fmt_8longlong) {
+  char buf[32];
+
+  buf[fmt_8longlong(buf, 8)] = 0;
+  ASSERT_STR_EQUAL("10", buf);
+
+  buf[fmt_8longlong(buf, 0)] = 0;
+  ASSERT_STR_EQUAL("0", buf);
+
+  /* more than 32 bits */
+  buf[fmt_8longlong(buf, 0x123456789abcdefULL)] = 0;
+  ASSERT_STR_EQUAL("4432126361152746757", buf);
+
+  buf[fmt_8longlong(buf, 0xffffffffffffffffULL)] = 0;
+  ASSERT_STR_EQUAL("1777777777777777777777", buf);
+
+  ASSERT_EQ(22, fmt_8longlong(NULL, 0xffffffffffffffffULL));
+}
+
+/*
  * size_t fmt_ulong0(char*, unsigned long src, size_t padto);
  */
 TEST(test_fmt_ulong0) {
@@ -527,6 +549,7 @@ TEST(test_fmt_escapecharquotedprintable) {
   RUN(test_fmt_xlong); \
   RUN(test_fmt_xlongu); \
   RUN(test_fmt_8long); \
+  RUN(test_fmt_8longlong); \
   RUN(test_fmt_ulong0); \
   RUN(test_fmt_double); \
   RUN(test_fmt_plusminus); \

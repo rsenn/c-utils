@@ -107,6 +107,9 @@
   \n, \r, \t, \b and \f in a string into the character
 - lib: cpp_convert_int and http_read use the int64 and uint32 types of the
   library, no more int64_t and uint32_t
+- lib: io_receivefd is back (io_passfd could send a descriptor but io.h
+  declared a receiver that did not exist) and fmt_8longlong, the octal
+  formatter for 64-bit values on systems where long has 32 bits
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has

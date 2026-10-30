@@ -1,0 +1,19 @@
+.TH io_receivefd 3
+.SH NAME
+io_receivefd \- receive a file descriptor over a Unix Domain socket
+.SH SYNTAX
+.B #include <io.h>
+
+int64 \fBio_receivefd\fP(fd_type \fIsock\fR);
+.SH DESCRIPTION
+io_receivefd receives a file descriptor that the peer sent with
+io_passfd(3) over the Unix Domain socket \fIsock\fR.  The descriptor is a
+new one in this process, referring to the same open file as the peer's.
+
+io_receivefd blocks until the peer has sent one, unless \fIsock\fR is
+non-blocking.
+.SH "RETURN VALUE"
+io_receivefd returns the new descriptor, or -1 on error (setting errno
+accordingly).  If a byte arrives without a descriptor, errno is EPROTO.
+.SH "SEE ALSO"
+io_passfd(3)
