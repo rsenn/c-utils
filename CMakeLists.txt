@@ -1048,8 +1048,6 @@ set(tcping_SOURCES src/dnsutils/address.c)
 program(tcping textcode hmap unix dns case io array socket ndelay errmsg taia
         tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
         ${LIBIPHLPAPI})
-set(ftptest_SOURCES src/dnsutils/address.c src/ftp/ftplib.c)
-
 set(nscache_SOURCES
     src/dnsutils/cache.c
     src/dnsutils/cache.h
@@ -1122,9 +1120,6 @@ program(setuidgid errmsg path stralloc mmap open scan str)
 program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
-  program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
-          stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
-          ${LIBIPHLPAPI})
   program(cpptest cpp hmap path fmt str)
 endif(BUILD_TESTS)
 
@@ -1136,6 +1131,11 @@ if(NOT WINDOWS_NATIVE AND USE_SSL)
   program(chttpcat strlist unix dns uri http stralloc buffer errmsg byte io tls socket scan str case alloc taia
           ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
 endif(NOT WINDOWS_NATIVE AND USE_SSL)
+
+if(NOT WINDOWS_NATIVE)
+  set(cftpcat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)
+  program(cftpcat strlist unix dns uri stralloc buffer errmsg byte io socket scan str case alloc taia)
+endif(NOT WINDOWS_NATIVE)
 
 program(least terminal ucs utf8 unix errmsg sig io strarray buffer stralloc open)
 link_program(least ${LIBMATH})

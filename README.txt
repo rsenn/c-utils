@@ -141,6 +141,7 @@
       src/dnsutils/dnsname.c Reverse lookup of IP address
       src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
       src/tcp/chttpcat.c   HTTP/HTTPS client, GET of every URL, stdin is POSTed chunked, -i -H -X -L -o
+      src/tcp/cftpcat.c    FTP client, ftp:// URL lists or downloads, HOST COMMAND runs ls/cat/cd/pwd/size/quote -u -p -P -v
       src/tcp/ctlscat.c    netcat style relay of stdin/stdout over TLS (plain with -n), connects or listens with -l
 
 
