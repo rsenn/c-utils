@@ -940,6 +940,7 @@ set(genmakefile_SOURCES
     src/genmakefile/cmake.c
     src/genmakefile/mplab.c
     src/genmakefile/path.c
+    src/genmakefile/compiler.c
     src/genmakefile/rule.c
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c

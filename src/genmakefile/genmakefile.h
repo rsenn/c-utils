@@ -97,7 +97,10 @@ extern dirs_t dirs;
 extern tools_t tools;
 extern make_capabilities_t make_capabs;
 extern const char* project_name;
-extern int cmd_objs, cmd_libs, cmd_bins;
+extern int cmd_objs, cmd_libs, cmd_bins, cmd_module, cmd_libs_explicit;
+extern const char* outfile;
+
+void usage(char* argv0);
 extern set_t link_libraries;
 extern MAP_T targetdirs, rules;
 

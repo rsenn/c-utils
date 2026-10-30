@@ -248,3 +248,16 @@ program. A terminal_resize hook that installs the handler and reports it as
 TERMINAL_KEY_RESIZE through a self-pipe would make both systems look the
 same.
 
+
+- genmakefile-compound-literals: The compiler setup in src/genmakefile/
+  compiler.c builds its flag lists with a series of var_push calls. The
+  predefined macros of a compiler in project.c, bcc55_defs, show a tidier
+  way: a plain list of strings that the code walks over.
+
+  Where such a list is used in only one place, it need not be a named
+  variable at all. A compound literal at the point of use, for example a
+  (const char* const[]){...} passed to a small helper that pushes every
+  entry, keeps the data next to the code that needs it. Rework the
+  per-compiler branches of set_compiler_type this way, and let the table of
+  bcc55 macros move into the same place. Not started; the move of the
+  compiler code into compiler.c was done as it was.
