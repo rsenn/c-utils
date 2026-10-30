@@ -233,20 +233,18 @@ plan is this:
 The pieces to touch are lib/dns/dns_resolve.c, dns_ip4.c, dns_ip6.c,
 dns_mx.c, dns_txt.c, dns_name.c and dnsopt.c.
 
-terminal-input-api: The terminal module covers the output side only. Key
-input is still read by the program from the raw descriptor, and least
-decodes the ESC sequences itself.
+terminal-windows-untested: The terminal module is only compile checked
+for a native Windows console, with mingw. Nothing of it has run there yet,
+neither the output nor terminal_getkey.
 
-The next step is terminal_getkey, which returns one key event: a code point
-or a named key such as up, page down, home, plus the shift, control and alt
-state. On POSIX it parses the CSI and SS3 sequences, and the rule from
-least stays: an ESC with nothing buffered behind it is a lone ESC and never
-blocks. On a native Windows console it reads the console key events
-directly, so nothing is turned into bytes and parsed again. Resize events
-should come out as a key event too, replacing SIGWINCH handling.
+It needs a run on a real console that checks text with UTF-8, colors and
+styles, the erase and scroll calls, the alternate screen, cursor save and
+restore, and the keys: arrows, page keys, function keys with modifiers, and
+the resize event. least itself does not build for Windows yet, so a small
+test program that calls the terminal functions is the quickest way.
 
-Then least drops handle_escape_sequence and the tty_in buffer. The Windows
-side of the whole module is only compile checked with mingw so far, and
-needs a run on a real console: text, colors, erase, scroll, alternate
-screen and the cursor save and restore.
+On POSIX a size change is still signalled by SIGWINCH and handled by the
+program. A terminal_resize hook that installs the handler and reports it as
+TERMINAL_KEY_RESIZE through a self-pipe would make both systems look the
+same.
 

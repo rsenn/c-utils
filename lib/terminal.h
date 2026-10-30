@@ -39,6 +39,31 @@ extern "C" {
 #define TERMINAL_UNDERLINE 2
 #define TERMINAL_REVERSE 4
 
+/* a key is a Unicode code point, control keys as their control byte: tab
+ * is 9, enter 10, escape 27, backspace 127, control-a 1. The named keys
+ * are above the Unicode range. */
+#define TERMINAL_KEY_UP 0x110001
+#define TERMINAL_KEY_DOWN 0x110002
+#define TERMINAL_KEY_RIGHT 0x110003
+#define TERMINAL_KEY_LEFT 0x110004
+#define TERMINAL_KEY_HOME 0x110005
+#define TERMINAL_KEY_END 0x110006
+#define TERMINAL_KEY_PAGEUP 0x110007
+#define TERMINAL_KEY_PAGEDOWN 0x110008
+#define TERMINAL_KEY_INSERT 0x110009
+#define TERMINAL_KEY_DELETE 0x11000a
+#define TERMINAL_KEY_RESIZE 0x11000b
+#define TERMINAL_KEY_F(n) (0x110100 + (n))
+
+/* modifiers of a key */
+#define TERMINAL_SHIFT 1
+#define TERMINAL_ALT 2
+#define TERMINAL_CTRL 4
+
+struct terminal_key {
+  unsigned code, mods;
+};
+
 struct terminal {
   buffer* out;
   int infd, outfd;
@@ -52,8 +77,11 @@ struct terminal {
   short savex, savey;
   char tail[4];
   unsigned ntail;
+  unsigned short hi; /* high surrogate of a key waiting for its pair */
 #else
   struct termios saved;
+  unsigned char inbuf[64];
+  unsigned inpos, inlen;
 #endif
 };
 
@@ -67,6 +95,20 @@ int terminal_init(struct terminal* t, int infd, int outfd, buffer* out);
  * normal screen, wrap on, cursor shown, colors reset. */
 int terminal_raw(struct terminal* t);
 void terminal_restore(struct terminal* t);
+
+/* terminal_getkey stores the next key. Returns 1, 0 if there is none
+ * (end of input, or on Windows only events that are no key) and -1 on
+ * error. A POSIX terminal blocks in read when nothing is buffered, so
+ * wait for the readability of t->infd first, and call again while
+ * terminal_pending says more is buffered. An escape sequence is decoded
+ * only from what is already buffered, an ESC with nothing behind it is the
+ * escape key and never waits. A Windows console reports a size change as
+ * TERMINAL_KEY_RESIZE, a POSIX terminal signals it with SIGWINCH. */
+int terminal_getkey(struct terminal* t, struct terminal_key* key);
+
+/* terminal_pending is the number of buffered input bytes, on Windows the
+ * number of pending console events */
+int terminal_pending(struct terminal* t);
 
 /* terminal_flush makes everything written so far visible */
 int terminal_flush(struct terminal* t);

@@ -1,6 +1,7 @@
 #include "../terminal_internal.h"
 
-/* terminal_raw keeps the signal keys, only line editing and echo go. */
+/* terminal_raw keeps the signal keys, only line editing and echo go. A
+ * console also gets the size change events. */
 int
 terminal_raw(struct terminal* t) {
 #if WINDOWS_NATIVE
@@ -9,7 +10,7 @@ terminal_raw(struct terminal* t) {
   if(!GetConsoleMode((HANDLE)t->in, &mode))
     return -1;
   t->inmode = mode;
-  if(!SetConsoleMode((HANDLE)t->in, mode & ~(DWORD)(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)))
+  if(!SetConsoleMode((HANDLE)t->in, (mode & ~(DWORD)(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT)) | ENABLE_WINDOW_INPUT))
     return -1;
 #else
   struct termios raw;

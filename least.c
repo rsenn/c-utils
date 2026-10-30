@@ -26,15 +26,14 @@
 #endif
 
 #include "lib/terminal.h"
+#include "lib/ucs.h"
 
 #define ESC 27
-
 
 static strarray lines;
 static int64 terminal_rows, terminal_cols, display_rows, first_line;
 
 const char* filename;
-buffer tty_in;
 static struct terminal term;
 
 static stralloc command_buf;
@@ -400,53 +399,26 @@ scroll_by(int64 offset) {
 #define scroll_to_top() scroll_to(0)
 #define scroll_to_bottom() scroll_to(max_first())
 
-/* ESC [ A, ESC O A, ESC [ 5 ~, ESC [ 1 ; 5 A ... Everything that is not
-   already buffered is a lone ESC and ignored (never block on it). */
+/* The arrow, page and home keys scroll. Shift scrolls 10 times as much,
+   control 100 times, alt a tenth of a page. */
 static void
-handle_escape_sequence(void) {
-  unsigned long key = 0, mod = 0, *p = &key;
-  char c;
+handle_named_key(const struct terminal_key* k) {
   int64 page = display_rows, step = 1;
 
-  if(!buffer_LEN(&tty_in) || buffer_getc(&tty_in, &c) != 1 || (c != '[' && c != 'O'))
-    return;
+  if(k->mods & TERMINAL_CTRL)
+    page *= 100, step = 100;
+  else if(k->mods & TERMINAL_SHIFT)
+    page *= 10, step = 10;
+  else if(k->mods & TERMINAL_ALT)
+    page = page / 10 ? page / 10 : 1;
 
-  for(;;) {
-    if(!buffer_LEN(&tty_in) || buffer_getc(&tty_in, &c) != 1)
-      return;
-    if(c >= '0' && c <= '9')
-      *p = *p * 10 + (c - '0');
-    else if(c == ';')
-      p = &mod;
-    else
-      break;
-  }
-
-  switch(mod) {
-    case 2 /*shift*/: page *= 10, step = 10; break;
-    case 5 /*control*/: page *= 100, step = 100; break;
-    case 3 /*alt*/: page = page / 10 ? page / 10 : 1; break;
-  }
-
-  if(c == '~') {
-    switch(key) {
-      case 1:
-      case 7: c = 'H'; break;
-      case 4:
-      case 8: c = 'F'; break;
-      case 5: c = 'P'; break;
-      case 6: c = 'N'; break;
-      default: return;
-    }
-  }
-
-  switch(c) {
-    case 'A': scroll_by(-step); break;
-    case 'B': scroll_by(step); break;
-    case 'H': scroll_to_top(); break;
-    case 'F': scroll_to_bottom(); break;
-    case 'P': scroll_by(-page); break;
-    case 'N': scroll_by(page); break;
+  switch(k->code) {
+    case TERMINAL_KEY_UP: scroll_by(-step); break;
+    case TERMINAL_KEY_DOWN: scroll_by(step); break;
+    case TERMINAL_KEY_HOME: scroll_to_top(); break;
+    case TERMINAL_KEY_END: scroll_to_bottom(); break;
+    case TERMINAL_KEY_PAGEUP: scroll_by(-page); break;
+    case TERMINAL_KEY_PAGEDOWN: scroll_by(page); break;
   }
 }
 
@@ -561,28 +533,31 @@ draw_prompt(void) {
 static void
 read_command(void) {
   int mode = command_mode;
-  unsigned char c;
+  struct terminal_key k;
   stralloc_zero(&command_buf);
   draw_prompt();
 
-  while(command_mode == mode && buffer_getc(&tty_in, &c) == 1) {
-    if(c == '\n' || c == '\r')
+  while(command_mode == mode && terminal_getkey(&term, &k) == 1) {
+    if(k.code == '\n' || k.code == '\r')
       break;
 
-    if(c == ESC) {
-      /* cancel; swallow the rest of a key sequence, if any */
-      buffer_SKIP(&tty_in, buffer_LEN(&tty_in));
+    if(k.code == ESC) {
       command_mode = 0;
       break;
     }
 
-    if(c == 0x7f || c == 8) {
+    if(k.code == 0x7f || k.code == 8) {
+      /* remove a whole UTF-8 character */
+      while(command_buf.len && (command_buf.s[command_buf.len - 1] & 0xc0) == 0x80)
+        command_buf.len--;
       if(command_buf.len)
         command_buf.len--;
-    } else if(c == 21) {
+    } else if(k.code == 21) {
       command_buf.len = 0;
-    } else if(c >= 0x20) {
-      stralloc_catc(&command_buf, c);
+    } else if(k.code >= 0x20 && k.code < 0x110000) {
+      char u[4];
+
+      stralloc_catb(&command_buf, u, fmt_ucs4_utf8(u, k.code));
     } else {
       continue;
     }
@@ -630,11 +605,24 @@ get_number(void) {
 
 int
 handle_input(void) {
-  unsigned char c;
+  struct terminal_key k;
+  unsigned c;
   int64 n;
 
-  if(buffer_getc(&tty_in, &c) < 1)
+  if(terminal_getkey(&term, &k) < 1)
     return 0;
+
+  if(k.code == TERMINAL_KEY_RESIZE) {
+    resized = 1;
+    return 1;
+  }
+
+  if(k.code >= 0x110000) {
+    handle_named_key(&k);
+    print_status();
+    return 1;
+  }
+  c = k.code;
 
   if(c >= '0' && c <= '9') {
     stralloc_catc(&command_buf, c);
@@ -709,7 +697,7 @@ handle_input(void) {
       command_mode = 3;
       read_command();
       break;
-    case ESC: handle_escape_sequence(); break;
+    case ESC: break;
 
     default: print_status(); return 0;
   }
@@ -784,7 +772,6 @@ main(int argc, char* argv[]) {
       diesys(127, "Unable to open file ", filename);
   }
 
-  buffer_read_fd(&tty_in, STDOUT_FILENO);
   terminal_init(&term, STDOUT_FILENO, STDOUT_FILENO, buffer_1);
 
   read_terminal_properties();
@@ -812,8 +799,8 @@ main(int argc, char* argv[]) {
     watchfd = input.fd;
   }
 
-  io_fd(tty_in.fd);
-  io_wantread(tty_in.fd);
+  io_fd(term.infd);
+  io_wantread(term.infd);
 
   if(watchfd != -1) {
     io_fd(watchfd);
@@ -845,7 +832,7 @@ main(int argc, char* argv[]) {
     }
 
     while((fd = io_canread()) != -1) {
-      if(fd == tty_in.fd)
+      if(fd == term.infd)
         on_terminal = 1;
 
       if(fd == watchfd) {
@@ -862,7 +849,14 @@ main(int argc, char* argv[]) {
     }
 
     if(on_terminal)
-      handle_input();
+      do
+        handle_input();
+      while(terminal_pending(&term) > 0);
+    if(resized) {
+      resized = 0;
+      read_terminal_properties();
+      scroll_to(first_line);
+    }
 
     if(on_input) {
       uint64 newsize = 0;
@@ -873,11 +867,13 @@ main(int argc, char* argv[]) {
       if(is_pipe) {
         /* never block on a partial line */
         if((ret = read_line(&input)) > 0)
-          while(have_line(&input) && (ret = read_line(&input)) > 0) {}
+          while(have_line(&input) && (ret = read_line(&input)) > 0) {
+          }
       } else {
         if(!get_filesize(input.fd, &newsize))
           newsize = 0;
-        while(get_position(&input) < newsize && (ret = read_line(&input)) > 0) {}
+        while(get_position(&input) < newsize && (ret = read_line(&input)) > 0) {
+        }
       }
 
       if(ret <= 0 && is_pipe) {
