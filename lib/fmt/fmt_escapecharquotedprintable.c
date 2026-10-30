@@ -9,9 +9,8 @@ fmt_escapecharquotedprintable(char* dest, int c) {
 
   if(dest) {
     dest[0] = '=';
-    dest[2] = fmt_tohex(ch & 0xf);
-    ch >>= 4;
-    dest[1] = fmt_tohex(ch & 0xf);
+    dest[2] = "0123456789ABCDEF"[ch & 0xf];
+    dest[1] = "0123456789ABCDEF"[(ch >> 4) & 0xf];
   }
   return 3;
 }

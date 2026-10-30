@@ -11,6 +11,6 @@
 void
 io_closeonexec(fd_type d) {
 #if !(defined(_WIN32) || defined(_WIN64))
-  fcntl(d, F_SETFL, fcntl(d, F_GETFL, 0) | FD_CLOEXEC);
+  fcntl(d, F_SETFD, fcntl(d, F_GETFD, 0) | FD_CLOEXEC);
 #endif
 }

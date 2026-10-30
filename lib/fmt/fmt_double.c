@@ -1,155 +1,117 @@
 #include "../fmt.h"
+#include "../byte.h"
 #include "../uint64.h"
-#include "../str.h"
 #include <math.h>
 
+/* formats d with up to prec digits after the point (default 6), trailing
+ * zeros are dropped, large and small values use the form 1.5e20, nan and
+ * infinity give NaN, Inf and -Inf. Returns the length written, or 0 if it
+ * does not fit in max bytes (max <= 0 means no limit). */
 size_t
-fmt_double(char* dest, double d, int maxlen, int prec) {
-  int s, i, initial = 1, writeok = (dest != 0);
-  long e, e10;
+fmt_double(char* dest, double d, int max, int prec) {
+  char tmp[48];
+  size_t n = 0, i;
+  int e10 = 0;
+  uint64 ip, fr, scale = 1;
 
-  double tmp = 10.0;
-  char* oldbuf = dest;
-
-  union {
-    double d;
-    uint64 x;
-  } __u;
-
-  if(__u.x == 0x8000000000000LU || (__u.x & 0x7FF0000000000000LU) == 0x7FF0000000000000LU || isnan(d)) {
-    str_copy(dest, "NaN");
-    return 3;
+  if(isnan(d)) {
+    byte_copy(tmp, 3, "NaN");
+    n = 3;
+    goto done;
   }
 
-  __u.d = d;
-
-  /* step 1: extract sign, mantissa and exponent */
-  s = __u.x >> 63;
-  e = ((__u.x >> 52) & ((1 << 11) - 1)) - 1023;
-  /*  uint64 m=*x & ((1ull<<52)-1); */
-  /* step 2: exponent is base 2, compute exponent for base 10 */
-  e10 = 1 + (long)(e * 0.30102999566398119802); /* log10(2) */
-  /* step 3: calculate 10^e10 */
-
-  if(s) {
+  if(d < 0) {
     d = -d;
-
-    if(writeok)
-      *dest = '-';
-    --maxlen;
-    dest++;
+    tmp[n++] = '-';
   }
 
-  if(d == 0.0) {
-    if(writeok)
-      *dest = '0';
-    --maxlen;
-    dest++;
-    return dest - oldbuf;
+  if(isinf(d)) {
+    byte_copy(tmp + n, 3, "Inf");
+    n += 3;
+    goto done;
   }
 
-  if(e10 <= 0 || (int)d == 0) {
-    if(writeok) {
-      dest[0] = '0';
-      dest[1] = '.';
-    }
-    dest += 2;
-  }
+  if(prec <= 0)
+    prec = 6;
+  if(prec > 15)
+    prec = 15;
 
-  if((i = e10) >= 0) {
-    while(i > 10) {
-      tmp = tmp * 1e10;
-      i -= 10;
-    }
+  if(d != 0) {
+    double m = d;
+    int x = 0;
 
-    while(i > 1) {
-      tmp = tmp * 10;
-      --i;
+    while(m >= 10) {
+      m /= 10;
+      ++x;
     }
-  } else {
-    i = (e10 = -e10);
-
-    while(i > 10) {
-      tmp = tmp * 1e-10;
-      i -= 10;
+    while(m < 1) {
+      m *= 10;
+      --x;
     }
-
-    while(i > 1) {
-      tmp = tmp / 10;
-      --i;
+    /* only values outside 1e-4 .. 1e15 use the exponent */
+    if(x < -4 || x > 14) {
+      d = m;
+      e10 = x;
     }
   }
 
-  while(d / tmp < 1) {
-    --e10;
-    tmp /= 10.0;
+  for(i = 0; i < (size_t)prec; ++i)
+    scale *= 10;
+
+  ip = (uint64)d;
+  fr = (uint64)((d - (double)ip) * (double)scale + 0.5);
+  if(fr >= scale) {
+    ++ip;
+    fr -= scale;
   }
-  /* step 4: see if precision is sufficient to display all digits */
+  if(e10 && ip >= 10) {
+    ip = 1;
+    ++e10;
+  }
 
-  if(e10 > prec) {
-    /* use scientific notation */
-    int len = fmt_double(writeok ? dest : 0, d / tmp, maxlen, prec);
+  {
+    char digits[24];
+    size_t len = 0;
 
-    if(len == 0)
-      return 0;
-    maxlen -= len;
-    dest += len;
+    do {
+      digits[len++] = (char)('0' + ip % 10);
+      ip /= 10;
+    } while(ip);
 
-    if(--maxlen >= 0) {
-      if(writeok)
-        *dest = 'e';
-      ++dest;
+    while(len)
+      tmp[n++] = digits[--len];
+  }
+
+  if(fr) {
+    size_t start = n + 1;
+
+    tmp[n++] = '.';
+    for(i = (size_t)prec; i > 0; --i) {
+      tmp[n + i - 1] = (char)('0' + fr % 10);
+      fr /= 10;
     }
+    n += (size_t)prec;
+    while(n > start && tmp[n - 1] == '0')
+      --n;
+  }
 
-    for(len = 1000; len > 0; len /= 10) {
-      if(e10 >= len || !initial) {
-        if(--maxlen >= 0) {
-          if(writeok)
-            *dest = (e10 / len) + '0';
-          ++dest;
-        }
-        initial = 0;
-        e10 = e10 % len;
-      }
+  if(e10) {
+    tmp[n++] = 'e';
+    if(e10 < 0) {
+      tmp[n++] = '-';
+      e10 = -e10;
     }
+    if(e10 >= 100)
+      tmp[n++] = (char)('0' + e10 / 100);
+    if(e10 >= 10)
+      tmp[n++] = (char)('0' + e10 / 10 % 10);
+    tmp[n++] = (char)('0' + e10 % 10);
+  }
 
-    if(maxlen >= 0)
-      return dest - oldbuf;
+done:
+  if(max > 0 && n > (size_t)max)
     return 0;
-  }
-  /* step 5: loop through the digits, inserting the decimal point when
-   * appropriate */
-
-  for(; prec > 0;) {
-    double tmp2 = d / tmp;
-    char c;
-    d -= ((int)tmp2 * tmp);
-    c = ((int)tmp2);
-
-    if((!initial) || c) {
-      if(--maxlen >= 0) {
-        initial = 0;
-
-        if(writeok)
-          *dest = c + '0';
-        ++dest;
-      } else
-        return 0;
-      --prec;
-    }
-
-    if(tmp > 0.5 && tmp < 1.5) {
-      tmp = 1e-1;
-      initial = 0;
-
-      if(--maxlen >= 0) {
-        if(writeok)
-          *dest = '.';
-        ++dest;
-      } else
-        return 0;
-    } else
-      tmp /= 10.0;
-  }
-  return dest - oldbuf;
+  if(dest)
+    byte_copy(dest, n, tmp);
+  return n;
 }
