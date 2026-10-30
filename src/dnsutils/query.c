@@ -21,7 +21,7 @@
 
 #include "roots.h"
 #include "log.h"
-#include "../../cache.h"
+#include "cache.h"
 #include "response.h"
 #include "query.h"
 #include "names.h"

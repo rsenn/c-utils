@@ -1,14 +1,14 @@
-#include "lib/alloc.h"
-#include "lib/byte.h"
-#include "lib/uint32.h"
-#include "lib/tai.h"
-#include "lib/mmap.h"
-#include "lib/open.h"
-#include "lib/path.h"
-#include "lib/unix.h"
+#include "../../lib/alloc.h"
+#include "../../lib/byte.h"
+#include "../../lib/uint32.h"
+#include "../../lib/tai.h"
+#include "../../lib/mmap.h"
+#include "../../lib/open.h"
+#include "../../lib/path.h"
+#include "../../lib/unix.h"
 
 #include <stdlib.h>
-#include "lib/bool.h"
+#include "../../lib/bool.h"
 #if WINDOWS_NATIVE
 #include <io.h>
 #else
@@ -68,7 +68,7 @@ information: 4-byte link; 4-byte keylen;
 4-byte datalen; 8-byte expire time; key;
 data->
 */
-#include "lib/errmsg.h"
+#include "../../lib/errmsg.h"
 
 #define MAXKEYLEN 1000
 #define MAXDATALEN 1000000

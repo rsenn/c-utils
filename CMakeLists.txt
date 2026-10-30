@@ -1048,8 +1048,8 @@ program(tcping textcode hmap unix dns case io array socket ndelay errmsg taia
 set(ftptest_SOURCES src/dnsutils/address.c src/ftp/ftplib.c)
 
 set(nscache_SOURCES
-    cache.c
-    cache.h
+    src/dnsutils/cache.c
+    src/dnsutils/cache.h
     src/dnsutils/log.c
     src/dnsutils/log.h
     src/dnsutils/query.c

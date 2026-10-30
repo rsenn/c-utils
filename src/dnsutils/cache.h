@@ -1,8 +1,8 @@
 #ifndef DNSCACHE_CACHE_H
 #define DNSCACHE_CACHE_H
 
-#include "lib/uint32.h"
-#include "lib/uint64.h"
+#include "../../lib/uint32.h"
+#include "../../lib/uint64.h"
 
 extern uint64 cache_motion;
 

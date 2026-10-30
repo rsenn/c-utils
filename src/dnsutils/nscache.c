@@ -28,7 +28,7 @@
 #include "response.h"
 #include "roots.h"
 #include "query.h"
-#include "../../cache.h"
+#include "cache.h"
 #include "log.h"
 
 #define FATAL "nscache: fatal: "
