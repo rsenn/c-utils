@@ -99,7 +99,7 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
   while(len--) {
     assert(*x);
 
-    if(*x == quote || (*x == '\\' && !(len > 0 && x[1] == 'u')))
+    if(*x == quote || (unsigned char)*x < 0x20 || (*x == '\\' && !(len > 0 && x[1] == 'u')))
       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));
     else
       buffer_PUTC(b, *x);

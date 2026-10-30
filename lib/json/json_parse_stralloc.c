@@ -13,6 +13,16 @@ json_parse_stralloc(charbuf* b, stralloc* out, int quoted) {
     if(ch == '\\') {
       if((ret = charbuf_nextc(b, &ch)) <= 0)
         break;
+
+      /* \uXXXX stays as it is, json_print writes it back unchanged */
+      switch(ch) {
+        case 'n': ch = '\n'; break;
+        case 'r': ch = '\r'; break;
+        case 't': ch = '\t'; break;
+        case 'b': ch = '\b'; break;
+        case 'f': ch = '\f'; break;
+        case 'u': stralloc_APPEND(&sa, "\\"); break;
+      }
     } else if(quoted && ch == '"') {
       charbuf_skip(b);
       ret = 1;

@@ -99,6 +99,12 @@
 - fixed the tokenizer: hex literals such as 0x2a, 0XFF and 0x1UL are typed
   TT_HEX_INT_LIT (they came out as TT_UNKNOWN with result 0). The header now
   says that TT_EOF is an ordinary token that repeats at the end of input
+- fixed the JSON printers of the library: json_compact_printer and
+  json_default_printer wrote strings below the top level without quotes
+  (the output was not valid JSON), the compact one is now free of white
+  space, and json_tostring uses it instead of a printer with uninitialised
+  fields. Control characters in strings are escaped, and the reader turns
+  \n, \r, \t, \b and \f in a string into the character
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has

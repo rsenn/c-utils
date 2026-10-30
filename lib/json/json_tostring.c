@@ -2,14 +2,6 @@
 #include "../stralloc.h"
 #include "../fmt.h"
 
-static void
-json_tostring_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
-  p->indent = "";
-  p->newline = "";
-  p->spacing = " ";
-  p->quote[0] = '"';
-};
-
 const char*
 json_tostring(jsonval val, stralloc* sa) {
   switch(val.type) {
@@ -35,7 +27,7 @@ json_tostring(jsonval val, stralloc* sa) {
       if(json_isnull(val))
         stralloc_cats(sa, "null");
       else
-        json_tosa(val, sa, &json_tostring_printer);
+        json_tosa(val, sa, &json_compact_printer);
       break;
     }
   }
