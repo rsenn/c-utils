@@ -570,6 +570,13 @@ sendmsg(int sockfd, const struct msghdr* msg, int flags) {
   return r;
 }
 
+/* musl declares the flags of sendmmsg and recvmmsg unsigned */
+#ifdef MUSL
+#define MMSG_FLAGS unsigned
+#else
+#define MMSG_FLAGS int
+#endif
+
 VISIBLE int
 sendmmsg(int sockfd,
 #ifdef __ANDROID__
@@ -577,7 +584,7 @@ sendmmsg(int sockfd,
 #endif
          struct mmsghdr* msgvec,
          unsigned vlen,
-         int flags) {
+         MMSG_FLAGS flags) {
   Sock* s;
   int r = libc_sendmmsg(sockfd, (struct mmsghdr*)msgvec, vlen, flags);
 
@@ -778,7 +785,7 @@ VISIBLE int
 recvmmsg(int sockfd,
          struct mmsghdr* msgvec,
          unsigned vlen,
-         int flags,
+         MMSG_FLAGS flags,
 #ifdef __ANDROID__
          const
 #endif

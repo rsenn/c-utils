@@ -723,9 +723,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/CheckOpenSSL.cmake)
 
 if(OPENSSL_FOUND)
   add_definitions(-DHAVE_OPENSSL)
-  include_directories(${OPENSSL_INCLUDE_DIRS})
-  link_directories(${OPENSSL_LIBRARY_DIRS})
-endif(OPENSSL_FOUND)
+  include_directories_nosys(${OPENSSL_INCLUDE_DIRS})
+  link_directories_nosys(${OPENSSL_LIBRARY_DIRS})
+endif(OPENSSL_FOUND AND USE_SSL)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 set(CMAKE_REQUIRED_INCLUDES "poll.h")
@@ -830,8 +830,8 @@ if(NOT ZLIB_FOUND)
 endif()
 
 if(USE_ZLIB)
-  include_directories(${ZLIB_INCLUDE_DIR})
-  link_directories(${ZLIB_LIBRARY_DIR})
+  include_directories_nosys(${ZLIB_INCLUDE_DIR})
+  link_directories_nosys(${ZLIB_LIBRARY_DIR})
 
   list(APPEND COMPRESS_LIBRARY_DEFINES HAVE_ZLIB=1)
 else(USE_ZLIB)
@@ -840,7 +840,7 @@ endif(USE_ZLIB)
 
 if(USE_BZIP)
   # message("BZIP2_LIBRARY: ${BZIP2_LIBRARY} BZIP2_FOUND: ${BZIP2_FOUND}") if(BZIP2_LIBRARY)
-  include_directories(${BZIP2_INCLUDE_DIR})
+  include_directories_nosys(${BZIP2_INCLUDE_DIR})
   # else(BZIP2_LIBRARY) add_definitions(-DHAVE_LIBBZ2=0) endif(BZIP2_LIBRARY)
   list(APPEND COMPRESS_LIBRARY_DEFINES HAVE_LIBBZ2=1)
 else(USE_BZIP)
@@ -849,7 +849,7 @@ endif(USE_BZIP)
 
 if(USE_LZMA)
   # message("LIBLZMA_LIBRARY: ${LIBLZMA_LIBRARY} LIBLZMA_FOUND: ${LIBLZMA_FOUND}") if(LIBLZMA_INCLUDE_DIR) link_libraries(${LIBLZMA_LIBRARY})
-  include_directories(${LIBLZMA_INCLUDE_DIR})
+  include_directories_nosys(${LIBLZMA_INCLUDE_DIR})
   # endif(LIBLZMA_INCLUDE_DIR) if(LIBLZMA_LIBRARY)
   add_definitions(-DLZMA_API_STATIC=1)
   # else(LIBLZMA_LIBRARY) add_definitions(-DHAVE_LIBLZMA=0) endif(LIBLZMA_LIBRARY)
@@ -860,7 +860,7 @@ else(USE_LZMA)
 endif(USE_LZMA)
 
 if(USE_BROTLI)
-  include_directories(${BROTLI_INCLUDE_DIR})
+  include_directories_nosys(${BROTLI_INCLUDE_DIR})
 
   list(APPEND COMPRESS_LIBRARY_DEFINES HAVE_BROTLI=1)
 else(USE_BROTLI)
@@ -965,11 +965,12 @@ endforeach(
   BZIP2_LIBRARY_DIR BZIP2_LIBRARY_DIRS OPENSSL_LIBRARY_DIRS OPENSSL_LIB_DIR)
 
 # dump(LINK_DIRS)
-link_directories(${LINK_DIRS})
+link_directories_nosys(${LINK_DIRS})
 
 if(LINK_STATIC)
   message(STATUS "Static linking")
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
+  target_compile_definitions(ccat PRIVATE ${COMPRESS_LIBRARY_DEFINES})
      OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static"
@@ -1095,7 +1096,7 @@ program(pelist buffer errmsg mmap pe str unix)
 program(omflist stralloc buffer errmsg omf mmap str unix)
 program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte cbmap
         dir env errmsg slist case str strarray strlist)
-program(plsconv stralloc buffer byte open playlist str unix)
+program(plsconv path stralloc buffer byte open playlist str unix)
 program(reg2cmd stralloc buffer byte fmt open scan str uint64)
 program(regfilter stralloc buffer byte fmt open scan str uint64)
 program(sln unix stralloc buffer byte errmsg path)

@@ -72,7 +72,7 @@ if(USE_SSL AND NOT BUILD_SSL)
     list(APPEND CMAKE_REQUIRED_INCLUDES "${OPENSSL_INCLUDE_DIRS}")
     check_include_file(openssl/ssl.h HAVE_OPENSSL_SSL_H)
 
-    link_directories(${OPENSSL_LIBRARY_DIRS})
+    link_directories_nosys(${OPENSSL_LIBRARY_DIRS})
 
   else(OPENSSL_FOUND)
     # message(STATUS "Searching for openssl using FindOpenSSL.cmake script...")

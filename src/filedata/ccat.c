@@ -199,16 +199,24 @@ main(int argc, char* argv[]) {
     buffer cbuf;
 
     switch(type) {
+#if HAVE_ZLIB
       case C_GZ:
         if(decompress)
           buffer_inflate(&cbuf, input);
         else
           buffer_deflate(&cbuf, output, level);
         break;
+#endif
+#if HAVE_LIBBZ2
       case C_BZ2: buffer_bz2(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+#endif
+#if HAVE_LIBLZMA
       case C_XZ:
       case C_LZMA: buffer_lzma(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+#endif
+#if HAVE_BROTLI
       case C_BROTLI: buffer_brotli(&cbuf, decompress ? input : output, decompress ? 0 : level); break;
+#endif
       default:
         buffer_putm_internal(buffer_2,
                              "ERROR: Unable to detect compression type from ",

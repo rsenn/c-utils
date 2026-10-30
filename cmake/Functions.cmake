@@ -1,3 +1,50 @@
+# link_directories() without the system library directories of the host. A
+# -L/usr/lib/x86_64-linux-gnu in front of those of a musl toolchain makes the
+# linker take the glibc libc.a.
+macro(link_directories_nosys)
+  set(_LIBDIRS "")
+  foreach(_DIR ${ARGN})
+    if(_DIR AND NOT "${_DIR}" STREQUAL "BEFORE" AND NOT "${_DIR}" STREQUAL "AFTER")
+      get_filename_component(_ABS "${_DIR}" ABSOLUTE)
+      list(FIND CMAKE_C_IMPLICIT_LINK_DIRECTORIES "${_ABS}" _IMPLICIT)
+      if(_IMPLICIT EQUAL -1 AND NOT "${_ABS}" MATCHES "^/(usr/)?lib(64)?(/[^/]+-linux-[^/]+)?/?$")
+        list(APPEND _LIBDIRS "${_DIR}")
+      endif()
+    endif()
+  endforeach()
+  if(_LIBDIRS)
+    link_directories(${_LIBDIRS})
+  endif()
+endmacro(link_directories_nosys)
+
+# include_directories() without the directories the compiler searches anyway.
+# A -I/usr/include puts the host (glibc) headers in front of those of a musl
+# or cross toolchain, and the build then fails in the system headers.
+macro(include_directories_nosys)
+  set(_INCDIRS "")
+  foreach(_DIR ${ARGN})
+    if(_DIR)
+      get_filename_component(_ABS "${_DIR}" ABSOLUTE)
+      list(FIND CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "${_ABS}" _IMPLICIT)
+      if(_IMPLICIT EQUAL -1 AND NOT "${_ABS}" STREQUAL "/usr/include")
+        list(APPEND _INCDIRS "${_DIR}")
+      elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+        # headers such as zlib.h that no toolchain directory has, searched last
+        add_compile_options("SHELL:-idirafter ${_ABS}")
+        # Debian puts some headers, such as openssl/opensslconf.h, below the
+        # architecture directory
+        execute_process(COMMAND gcc -print-multiarch OUTPUT_VARIABLE _MULTIARCH OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+        if(_MULTIARCH AND IS_DIRECTORY "${_ABS}/${_MULTIARCH}")
+          add_compile_options("SHELL:-idirafter ${_ABS}/${_MULTIARCH}")
+        endif()
+      endif()
+    endif()
+  endforeach()
+  if(_INCDIRS)
+    include_directories(${_INCDIRS})
+  endif()
+endmacro(include_directories_nosys)
+
 function(DUMP VAR)
   string(REGEX REPLACE "[;\n]" " " A "${ARGV}")
   message("\nVariable dump of: ${A}\n")
