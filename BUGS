@@ -540,3 +540,7 @@
   reference without a leading slash (`other.html`, `sub/x.html`) for a host name, so
   resolving against a base uri does not work; only `/path` forms keep the host. The
   branch that appends to the old `location` is unreachable.
+
+- debug-sl-reuses-the-length-as-counter: `debug_sl` in `lib/debug/debug_sl.c` uses `n` both
+  as the element length from `strlist_foreach` and as the running index (`n++`), so the
+  separator test `if(n)` and the printed `#n` numbers are wrong for most lists.

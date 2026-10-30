@@ -1,5 +1,5 @@
 #include "types.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 
 /**
  * @brief      Dump a config_t to debug_buf

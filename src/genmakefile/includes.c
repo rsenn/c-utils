@@ -1,7 +1,7 @@
 #include "includes.h"
 #include "rule.h"
 #include "ansi.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include "genmakefile.h"
 
 strlist include_dirs = {0, 0, 0};

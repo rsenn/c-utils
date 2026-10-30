@@ -26,6 +26,7 @@ set(MODSUBDIRS
     charbuf
     coff
     cpp
+    debug
     dir
     dlist
     dns

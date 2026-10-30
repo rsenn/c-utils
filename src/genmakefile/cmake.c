@@ -1,6 +1,6 @@
 #define MAP_USE_HMAP 1
 #include "genmakefile.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include "cmake.h"
 #include "input.h"
 #include "is.h"

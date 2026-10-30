@@ -5,7 +5,7 @@
 #include "../../lib/uint32.h"
 #include "../../lib/byte.h"
 #include "../../lib/sig.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include "genmakefile.h"
 #include "is.h"
 #include "path.h"

@@ -131,6 +131,7 @@ endfunction(DEFINE_HAVE)
 function(add_program PROG)
   unset(INCLUDES)
   unset(LIBS)
+  unset(DEPEND_TARGETS)
 
   list_contains("${BUILD_PROGRAMS}" "${PROG}" BUILD)
 
@@ -151,7 +152,13 @@ function(add_program PROG)
           list(APPEND INCLUDES "lib/${DEP}.h")
         endif(I GREATER -1 OR IS_DIRECTORY
                               "${CMAKE_CURRENT_SOURCE_DIR}/lib/${DEP}")
-        list(APPEND DEPS ${DEP})
+        if("${DEP}" STREQUAL "debug")
+          # "debug" is a keyword of target_link_libraries(), link the archive by path
+          list(APPEND DEPS "$<TARGET_FILE:debug>")
+          list(APPEND DEPEND_TARGETS debug)
+        else()
+          list(APPEND DEPS ${DEP})
+        endif()
       endif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}"
             AND NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${DEP}")
     endforeach(DEP ${ARGN})
@@ -172,6 +179,9 @@ function(add_program PROG)
     add_executable(${PROG} ${PROG_SOURCE} ${${PFX}_SOURCES} ${INCLUDES})
     target_link_libraries(${PROG} ${DEPS} ${ELECTRICFENCE_LIBRARY}
                           ${EXTRA_LIBRARIES})
+    if(DEPEND_TARGETS)
+      add_dependencies(${PROG} ${DEPEND_TARGETS})
+    endif(DEPEND_TARGETS)
     target_compile_definitions(${PROG} PRIVATE CONFIG_PREFIX="${CONFIG_PREFIX}")
     install(TARGETS ${PROG} DESTINATION bin)
     if(NOT EMSCRIPTEN AND OPENSSL_FOUND AND USE_SSL)

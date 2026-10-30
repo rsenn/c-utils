@@ -10,7 +10,7 @@
 #include "includes.h"
 #include "output.h"
 
-#include "../../debug.h"
+#include "../../lib/debug.h"
 
 #include "../../lib/windoze.h"
 #include "../../lib/unix.h"

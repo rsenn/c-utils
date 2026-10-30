@@ -933,8 +933,6 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES
     src/genmakefile/genmakefile.h
-    debug.c
-    debug.h
     src/genmakefile/cmake.c
     src/genmakefile/mplab.c
     src/genmakefile/path.c
@@ -994,7 +992,7 @@ program(elf64list buffer elf mmap uint16 uint32 uint64)
 program(elflist strlist buffer alloc errmsg unix elf mmap str)
 program(elfwrsec buffer alloc elf mmap)
 program(pemkwingui buffer alloc pe mmap)
-program(genmakefile ini set env sig set case errmsg strarray dlist slist rdir dir
+program(genmakefile ini debug set env sig set case errmsg strarray dlist slist rdir dir
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
         fmt byte str array safemult alloc json charbuf io)
 program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
@@ -1019,8 +1017,7 @@ program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array
 program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 program(opensearch-dump xml stralloc buffer)
 
-set(pathtool_SOURCES debug.c debug.h)
-program(pathtool set hmap stralloc buffer errmsg path strlist unix)
+program(pathtool debug set hmap stralloc buffer errmsg path strlist unix)
 
 program(pelist buffer errmsg mmap pe str unix)
 program(omflist stralloc buffer errmsg omf mmap str unix)
@@ -1106,7 +1103,7 @@ if(UNIX)
           strarray stralloc buffer taia tai)
 endif(UNIX)
 
-program(tinyproxy process unix path wait range dns taia tai hmap env ndelay
+program(tinyproxy debug process unix path wait range dns taia tai hmap env ndelay
         buffer strarray array strlist stralloc errmsg sig socket fmt scan io
         uint32)
 link_program(tinyproxy ${LIBMSWSOCK})

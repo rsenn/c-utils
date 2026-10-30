@@ -32,7 +32,7 @@
 #include "../../lib/process.h"
 #define MAP_USE_HMAP 1
 #include "../../lib/map.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include <errno.h>
 #include <fcntl.h>
 // #include <libgen.h>

@@ -12,7 +12,7 @@
 #define is_sep(c) (byte_chr(PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1, (c)) < sizeof(PATHSEP_S_MIXED) - 1)
 #include "../../lib/array.h"
 #include "../../lib/bool.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include <string.h>
 
 #define MAP_USE_HMAP 1

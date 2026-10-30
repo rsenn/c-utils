@@ -1,5 +1,5 @@
 #include "genmakefile.h"
-#include "../../debug.h"
+#include "../../lib/debug.h"
 #include "output.h"
 #include "ansi.h"
 
