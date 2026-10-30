@@ -1,13 +1,13 @@
-#ifndef _INI_H
-#define _INI_H
+#ifndef INI_H
+#define INI_H
 
-#include "lib/byte.h"
-#include "lib/stralloc.h"
-#include "lib/strarray.h"
-#include "lib/buffer.h"
+#include "byte.h"
+#include "stralloc.h"
+#include "strarray.h"
+#include "buffer.h"
 
 #define MAP_USE_HASHMAP 1
-#include "lib/map.h"
+#include "map.h"
 
 typedef struct ini_section {
   struct ini_section* next;
@@ -31,4 +31,4 @@ ini_init(ini_section_t* ini) {
   byte_zero(ini, sizeof(ini_section_t));
 }
 
-#endif /* defined _INI_H */
+#endif /* defined INI_H */

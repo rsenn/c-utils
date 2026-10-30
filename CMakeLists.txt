@@ -932,8 +932,6 @@ add_subdirectory(lib ${CMAKE_BINARY_DIR}/lib)
 set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 
 set(genmakefile_SOURCES
-    ini.c
-    ini.h
     src/genmakefile/genmakefile.h
     debug.c
     debug.h
@@ -996,7 +994,7 @@ program(elf64list buffer elf mmap uint16 uint32 uint64)
 program(elflist strlist buffer alloc errmsg unix elf mmap str)
 program(elfwrsec buffer alloc elf mmap)
 program(pemkwingui buffer alloc pe mmap)
-program(genmakefile set env sig set case errmsg strarray dlist slist rdir dir
+program(genmakefile ini set env sig set case errmsg strarray dlist slist rdir dir
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
         fmt byte str array safemult alloc json charbuf io)
 program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
@@ -1039,7 +1037,7 @@ program(torrent-progress stralloc buffer io mmap open uint64)
 program(xmlpp errmsg xml stralloc buffer hmap io unix)
 program(cc-wrap process errmsg env buffer path dir strarray strlist stralloc
         fmt)
-program(exe-wrap ini.c hashmap process errmsg env buffer path dir strarray
+program(exe-wrap ini hashmap process errmsg env buffer path dir strarray
         strlist stralloc fmt)
 program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc
         fmt alloc)
@@ -1135,7 +1133,6 @@ if(BUILD_TESTS)
   #program(strarraytest xml dns stralloc buffer mmap strarray unix)
   set(testihex_SOURCES lib/list.h)
   program(testihex errmsg unix path ihex uint16 stralloc buffer alloc mmap)
-  #program(testini ini.c ini.h hashmap stralloc buffer mmap open uint16)
   #program(tokenizertest errmsg tokenizer unix str scan buffer open)
   program(xmlscantest xml errmsg)
   program(xmltest xml stralloc buffer byte fmt hmap)

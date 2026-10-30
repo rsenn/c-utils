@@ -36,7 +36,7 @@
 #include "../../lib/scan.h"
 #include "../../lib/open.h"
 #include "../../lib/bool.h"
-#include "../../ini.h"
+#include "../../lib/ini.h"
 
 #if WINDOWS_NATIVE
 #define EXEEXT ".exe"

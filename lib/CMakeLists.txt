@@ -39,6 +39,7 @@ set(MODSUBDIRS
     http
     iarray
     ihex
+    ini
     io
     iob
     iom

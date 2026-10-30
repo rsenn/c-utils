@@ -1,5 +1,5 @@
 #include "genmakefile.h"
-#include "../../ini.h"
+#include "../../lib/ini.h"
 #include "../../debug.h"
 #define MAP_USE_HMAP 1
 #include "mplab.h"
