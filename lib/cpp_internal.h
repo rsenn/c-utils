@@ -262,7 +262,7 @@ struct cpp_node {
   struct cpp_obj* var;
 
   /* Numeric literal */
-  int64_t val;
+  int64 val;
   long double fval;
 };
 
