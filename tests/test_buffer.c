@@ -754,12 +754,12 @@ TEST(test_buffer_putxlong0) {
 TEST(test_buffer_skipspace) {
   buffer in;
 
-  /* buffer_skip_pred() (which buffer_skipspace() is built on) consumes
-     the byte that fails the predicate too, not just the matching run -
-     so all 4 bytes of "   x" are gone afterward, not just the 3
-     spaces. */
+  /* the run of spaces is skipped and the byte after it stays */
   buffer_frombuf(&in, "   x", 4);
-  ASSERT_EQ(4, buffer_skipspace(&in));
+  ASSERT_EQ(3, buffer_skipspace(&in));
+  ASSERT_EQ('x', *buffer_peek(&in));
+  ASSERT_EQ(0, buffer_skipspace(&in));
+  ASSERT_EQ(1, buffer_skipc(&in));
   ASSERT_EQ(1, buffer_EOF(&in));
 }
 

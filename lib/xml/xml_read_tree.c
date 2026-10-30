@@ -5,7 +5,6 @@
 #include "../str.h"
 #include "../xml.h"
 #include "../alloc.h"
-#include <assert.h>
 
 static void
 xmlreader_push(xmlreader* r, xmlnode* parent) {
@@ -20,7 +19,11 @@ xmlreader_push(xmlreader* r, xmlnode* parent) {
 static void
 xmlreader_pop(xmlreader* r) {
   xmlreader* prev;
-  assert(r->stack);
+
+  /* a closing tag without an opening one is ignored */
+  if(!r->stack)
+    return;
+
   prev = r->stack;
   byte_copy(r, sizeof(xmlreader), r->stack);
   alloc_free(prev);
@@ -47,18 +50,16 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
     }
 
     case XML_TEXT: {
-      xmlnode *pnode, *tnode, **nptr;
-      const char* x = name && name->s ? (const char*)name->s : /* value && (const char*)value->s ?
-                                                                  (const char*)value->s :  */
-                          "";
-      size_t i, n = name && name->len ? name->len : /*  value && value->len ? value->len : */ 0;
+      xmlnode* tnode;
+      const char* x = name && name->s ? (const char*)name->s : "";
+      size_t i, n = name && name->len ? name->len : 0;
 
       i = scan_whitenskip(x, n);
 
       x += i;
       n -= i;
 
-      if(n > 0 && (pnode = r->parent) && pnode->type == XML_ELEMENT && (&r->parent->children == r->ptr)) {
+      if(n > 0 && r->parent && r->parent->type == XML_ELEMENT) {
         tnode = xml_newnode(XML_TEXT);
 
         stralloc_zero(&text);
@@ -68,7 +69,9 @@ xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_
         tnode->name = text.s;
         text.s = 0;
         tnode->parent = r->parent;
-        tnode->next = *r->ptr;
+
+        if(*r->ptr)
+          r->ptr = &(*r->ptr)->next;
 
         *r->ptr = tnode;
       }

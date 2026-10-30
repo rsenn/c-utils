@@ -34,7 +34,6 @@ xml_vattributes(const char* arg, va_list args) {
 
   } while((arg = va_arg(args, const char*)));
 
-  hmap_dump(db, buffer_2);
   return db;
 }
 

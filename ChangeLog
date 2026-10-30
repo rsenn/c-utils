@@ -89,6 +89,13 @@
 - ccat: reports corrupt or truncated input with exit status 1 (it used its
   own buffer_copy that ignored errors), -t alone selects decompression, and
   compressing to a redirected standard output works
+- fixed the XML reader (xml_read_tree): elements with attributes no longer
+  crash it or lose their attributes, self-closing elements are found, text
+  after a child element is kept, comments with a > in them, CDATA and a
+  doctype are handled, and attributes may use single quotes, no quotes or
+  no value. The cause was buffer_skip_pred (and so buffer_skipspace), which
+  also swallowed the first byte that did not match; it now stops in front
+  of it. xml_attributes no longer prints a dump of the attributes
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has
