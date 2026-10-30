@@ -581,3 +581,14 @@
 - json-compact-printer-does-not-quote-strings: `json_tosa` with `json_compact_printer` writes the
   string `"x"` in an array as `x`, so the output is not valid JSON; the object form
   `{ "a": 1, ... }` also gets spaces despite the name.
+
+- cpp-scan-stray-endif: running `genmakefile --project` prints a message
+  for `lib/tls/tls_get_fd.c:14` and `lib/tls/tls_by_fd.c:15` pointing at the
+  final `#endif`, a line without a newline at the end of the file, and the
+  unit comes out with no dependencies. The preprocessor of `lib/cpp` probably
+  needs a newline appended in `cpp_tokenize_file`.
+
+- buffer-bz2-compress-writes-nothing: compressing with `buffer_bz2(&b, out, level)` (`lib/buffer/buffer_bz2.c`)
+  leaves the output empty although `ccat -c`/`czip` exit with 0, e.g. `czip h.txt -o h.bz2`
+  gives a 0 byte file; gz, xz, lzma and br work. The stream is probably never finished
+  (`BZ_FINISH`) when the buffer is closed.

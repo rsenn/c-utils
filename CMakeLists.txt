@@ -905,6 +905,10 @@ if(LINK_STATIC)
   message(STATUS "Static linking")
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
   target_compile_definitions(ccat PRIVATE ${COMPRESS_LIBRARY_DEFINES})
+  if(NOT WINDOWS_NATIVE)
+    # ccat run as czip compresses by default
+    install(CODE "execute_process(COMMAND \${CMAKE_COMMAND} -E create_symlink ccat \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/czip)")
+  endif(NOT WINDOWS_NATIVE)
      OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static"
@@ -1117,7 +1121,6 @@ program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
   program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD})
-  program(ziptest buffer str unix path io iarray mmap open byte ${COMPRESSION_LIBRARIES})
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
           ${LIBIPHLPAPI})

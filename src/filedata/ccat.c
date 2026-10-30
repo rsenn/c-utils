@@ -61,14 +61,21 @@ compression_from_filename(const char* fn) {
   return C_UNKNOWN;
 }
 
+/* run as czip (a link to ccat) it compresses by default */
+#define COMPRESS_NAME "czip"
+
 void
 usage(char* argv0) {
   buffer_putm_internal(buffer_1,
                        "Usage: ",
                        argv0,
-                       " [-o output] [infile or stdin]\n"
+                       " [-c|-d] [-t type] [-f] [-o output] [infile or stdin]\n"
                        "\n",
-                       "  -1 ... -11           compression level; default is 3\n",
+                       "  -c, --compress       compress, default when run as " COMPRESS_NAME "\n",
+                       "  -d, --decompress     decompress, default when run as ccat\n",
+                       "  -t, --type TYPE      compression type, else taken from the file name\n",
+                       "  -f, --force          overwrite the output file\n",
+                       "  -1 ... -9, --10, --11 compression level; default is 3\n",
                        "\n",
                        "Supported types are:",
                        NULL);
@@ -89,7 +96,7 @@ usage(char* argv0) {
 }
 int
 main(int argc, char* argv[]) {
-  int opt, index = 0,level = 10, decompress = -1;
+  int opt, index = 0, level = 3, decompress = -1;
   bool force = false;
   const char *in_filename = "-", *out_filename = "-";
   compression_type type = C_UNKNOWN, in_type = C_UNKNOWN, out_type = C_UNKNOWN;
@@ -106,6 +113,9 @@ main(int argc, char* argv[]) {
                                 {"force", 0, NULL, 'f'},
 
                                 {0, 0, 0, 0}};
+
+  if(str_equal(str_basename(argv[0]), COMPRESS_NAME))
+    decompress = 0;
 
   while((opt = unix_getopt_long(argc, argv, "123456789cdt:o:hf", opts, &index)) != -1) {
     switch(opt) {
@@ -131,7 +141,7 @@ main(int argc, char* argv[]) {
         buffer_putm_internal(buffer_2,
                              "Usage: ",
                              argv[0],
-                             "[-t TYPE] [-o OUTPUT] [file]\n",
+                             " [-c|-d] [-t TYPE] [-o OUTPUT] [file]\n",
                              NULL);
         exit(EXIT_FAILURE);
     }
@@ -220,7 +230,8 @@ main(int argc, char* argv[]) {
       default:
         buffer_putm_internal(buffer_2,
                              "ERROR: Unable to detect compression type from ",
-                             in_filename,
+                             decompress ? in_filename : out_filename,
+                             " (use -t)",
                              NULL);
         buffer_putnlflush(buffer_2);
         exit(EXIT_FAILURE);
