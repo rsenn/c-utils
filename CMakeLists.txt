@@ -1109,9 +1109,7 @@ program(parse unix strlist errmsg)
 program(setuidgid errmsg path stralloc mmap open scan str)
 program(lsproc strlist errmsg mmap buffer unix dir)
 
-if(BUILD_TESTS)
-  program(cpptest cpp hmap path fmt str)
-endif(BUILD_TESTS)
+program(cpre cpp hmap path fmt str)
 
 if(NOT WINDOWS_NATIVE AND USE_SSL)
   set(ctlscat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)

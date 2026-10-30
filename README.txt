@@ -186,7 +186,7 @@
 
   Basic usage examples or boilerplates:
 
-      src/toolchain/cpptest.c   C preprocessor driver (-D -I -P -L, dump defines, dependencies)
+      src/toolchain/cpre.c        C preprocessor driver (-D -I -P -L, dump defines, dependencies)
 
   The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.
 

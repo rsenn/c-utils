@@ -163,7 +163,7 @@ TODO
     sln.c
     nscache.c
     jsonpp.c
-    cpptest.c
+    cpre.c
     mediathek-parser.c
     compiler-wrapper.c
     examples/httpd.c
@@ -261,3 +261,14 @@ same.
   per-compiler branches of set_compiler_type this way, and let the table of
   bcc55 macros move into the same place. Not started; the move of the
   compiler code into compiler.c was done as it was.
+
+- genmakefile-scan-diagnostics: The preprocessor scan of the sources
+  prints what lib/cpp reports for a unit: warnings about #warning lines,
+  "extra token" at an #endif, and errors such as "expected ')'" at lines
+  that are plain code. A run over src/ prints several hundred such lines,
+  which hides what -v tells.
+
+  In scan_only mode the diagnostics of the preprocessor should be collected
+  and shown only when -v is given twice, with a count at -v. The errors on
+  plain code lines (src/genmakefile/project.c:254 is one) need a look of
+  their own, since a scan should not parse code at all.
