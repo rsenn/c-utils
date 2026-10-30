@@ -999,13 +999,13 @@ program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
         stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
-# set(ssltest_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
+set(ssltest_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
 
 program(impgen pe buffer byte mmap open)
 set(list_r_SOURCES src/dirlist/dump.c src/dirlist/dump.h)
 program(list-r errmsg path strarray strlist stralloc buffer array unix dir
         array fmt open str uint64 ${LIBADVAPI32})
-# program(macho32list mmap uint32)
+program(macho32list mmap uint32)
 if(USE_LZMA)
   program(mediathek-list errmsg path stralloc buffer alloc byte fmt http tls scan
           slist str unix strarray strlist ${LIBLZMA_LIBRARY} ${TLS_LIBRARIES}
@@ -1097,7 +1097,7 @@ program(q textcode unix errmsg env charbuf buffer path dir strarray strlist
         stralloc fmt)
 
 program(httpproxy unix http io hmap)
-# program(montty io hmap)
+program(montty io hmap)
 if(UNIX)
   program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay
           strarray stralloc buffer taia tai)
@@ -1116,17 +1116,16 @@ program(setuidgid errmsg path stralloc mmap open scan str)
 program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
-  # program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD}) program(ziptest buffer str unix ${COMPRESSION_LIBRARIES})
+  program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD})
   program(ziptest buffer str unix path io iarray mmap open byte ${COMPRESSION_LIBRARIES})
   program(tokenizertest errmsg tokenizer unix str scan buffer open)
-  #program(dnstest dns stralloc buffer errmsg ${LIBIPHLPAPI} ${LIBMSWSOCK})
+  program(dnstest dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
           ${LIBIPHLPAPI})
   program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
   set(testihex_SOURCES lib/list.h)
   program(testihex errmsg unix path ihex uint16 stralloc buffer alloc mmap)
-  #program(tokenizertest errmsg tokenizer unix str scan buffer open)
   program(xmlscantest xml errmsg)
   program(xmltest xml stralloc buffer byte fmt hmap)
   program(xmltest2 xml stralloc buffer byte fmt hmap)

@@ -562,3 +562,14 @@
 
 - xml-attributes-prints-debug-output: `xml_attributes` and `hmap` writes lines such as
   `#   19 version = "65"` to stdout while building a node, which mixes into tool output.
+
+- redir-does-not-compile: `src/tcp/redir.c` (the imported redir 2.2 tool) needs a port to
+  the lib primitives before it builds: `struct option` is unknown (use `struct
+  unix_longopt`), `inet_ntoa` is undeclared and line 740 does not parse. Its `program()`
+  line in `CMakeLists.txt` is commented out.
+
+- ftpcopy-ftpls-do-not-compile: `src/ftp/ftpcopy.c` and `src/ftp/ftpls.c` use the type
+  `strhash` and the `attribute_noreturn` macro of the original ftpcopy sources, neither
+  exists in this tree. Their `program()` lines in `CMakeLists.txt` are commented out.
+
+- montty-uses-stdio: `src/serial/montty.c` still uses `FILE*` and stdio instead of `buffer`.

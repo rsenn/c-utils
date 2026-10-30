@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#include <unix_getopt.h>
+#include "../../lib/unix.h"
 #define SYSLOG_NAMES
 #include <syslog.h>
 #include <sys/types.h>

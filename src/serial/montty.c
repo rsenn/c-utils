@@ -162,6 +162,7 @@ uu_lockerr(int e) {
 
 #endif
 
+int
 main(int argc, char* argv[]) {
   FILE* f;
   char logname[1024];
