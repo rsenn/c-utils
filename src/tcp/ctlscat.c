@@ -84,36 +84,6 @@ send_all(int s, const char* x, size_t n) {
 }
 
 static int
-connect_to(const char* host, uint16 p) {
-  address_t addr;
-  stralloc name;
-  int s;
-
-  stralloc_init(&name);
-
-  if(!address_scan(host, &addr)) {
-    stralloc_copys(&name, host);
-
-    if(address_lookup(&name, &addr, false) < 0) {
-      errmsg_warn("cannot resolve ", host, 0);
-      return -1;
-    }
-  }
-
-  if((s = (addr.ip6 ? socket_tcp6b : socket_tcp4b)()) == -1) {
-    errmsg_warnsys("socket", 0);
-    return -1;
-  }
-
-  if((addr.ip6 ? socket_connect6(s, addr.ip, p, addr.scope_id) : socket_connect4(s, addr.ip, p)) == -1) {
-    errmsg_warnsys("connect to ", host, 0);
-    close(s);
-    return -1;
-  }
-  return s;
-}
-
-static int
 accept_from(uint16 p) {
   char ip[16];
   uint16 peer;
@@ -276,7 +246,7 @@ main(int argc, char* argv[]) {
     if(!plain)
       tls_init(0, 0);
 
-    if((s = connect_to(argv[unix_optind], (uint16)v)) == -1)
+    if((s = address_connect(argv[unix_optind], (uint16)v)) == -1)
       return 1;
   }
 

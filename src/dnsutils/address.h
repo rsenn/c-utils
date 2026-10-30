@@ -15,5 +15,6 @@ int address_init(address_t*, char[16], bool ip6, uint32 scope_id);
 size_t address_fmt(char*, const address_t*);
 int address_lookup(stralloc*, address_t*, bool ip6);
 size_t address_scan(const char*, address_t*);
+int address_connect(const char* host, uint16 port);
 
 #endif /* defined _ADDRESS_H */

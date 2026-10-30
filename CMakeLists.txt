@@ -904,11 +904,6 @@ link_directories_nosys(${LINK_DIRS})
 if(LINK_STATIC)
   message(STATUS "Static linking")
   if(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang"
-  target_compile_definitions(ccat PRIVATE ${COMPRESS_LIBRARY_DEFINES})
-  if(NOT WINDOWS_NATIVE)
-    # ccat run as czip compresses by default
-    install(CODE "execute_process(COMMAND \${CMAKE_COMMAND} -E create_symlink ccat \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/czip)")
-  endif(NOT WINDOWS_NATIVE)
      OR "${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     if(NOT CMAKE_EXE_LINKER_FLAGS MATCHES "-static")
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static"
@@ -941,12 +936,12 @@ set(genmakefile_SOURCES
     src/genmakefile/mplab.c
     src/genmakefile/path.c
     src/genmakefile/compiler.c
-    src/genmakefile/project.c
     src/genmakefile/rule.c
     src/genmakefile/includes.c
     src/genmakefile/sourcedir.c
     src/genmakefile/sources.c
     src/genmakefile/types.c
+    src/genmakefile/project.c
     src/genmakefile/var.c
     src/genmakefile/generate.c
     src/genmakefile/input.c
@@ -972,6 +967,11 @@ if(USE_BZIP)
           uint64 ${COMPRESSION_LIBRARIES})
   program(ccat path case buffer open str unix ${ZLIB_LIBRARY}
           ${BROTLI_LIBRARIES} ${COMPRESSION_LIBRARIES} ${LIBMATH} ${LIBSHLWAPI})
+  target_compile_definitions(ccat PRIVATE ${COMPRESS_LIBRARY_DEFINES})
+  if(NOT WINDOWS_NATIVE)
+    # ccat run as czip compresses by default
+    install(CODE "execute_process(COMMAND \${CMAKE_COMMAND} -E create_symlink ccat \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/czip)")
+  endif(NOT WINDOWS_NATIVE)
 endif(USE_BZIP)
 program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 program(count-depth buffer fmt)
@@ -1133,7 +1133,7 @@ if(BUILD_TESTS)
 endif(BUILD_TESTS)
 
 if(NOT WINDOWS_NATIVE AND USE_SSL)
-  set(ctlscat_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
+  set(ctlscat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)
   program(ctlscat strlist unix dns stralloc buffer errmsg byte io tls socket ndelay scan str alloc taia
           ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
 endif(NOT WINDOWS_NATIVE AND USE_SSL)

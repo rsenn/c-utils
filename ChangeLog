@@ -50,3 +50,5 @@
   TCP, it connects or with -l waits for one connection. It replaces ssltest
 - known: gzip compression and decompression through buffer_deflate and
   buffer_inflate corrupt data above 32768 bytes (see BUGS)
+- lib/http: buffer_chunked decodes the chunked transfer encoding (it did
+  not work before), the new buffer_chunked_encode writes it. tests/test_http.c
