@@ -12,17 +12,16 @@ ihex_read_buf(ihex_file* ihf, const char* in, size_t n) {
   while(x < end) {
     size_t len = byte_chrs(x, end - x, "\r\n", 2);
 
-    ihex_record_read(&p.rec, x, len);
-
-    list_add_tail(p.link, &ihf->records);
-    pos.link = p.link;
+    if(len && ihex_record_read(&p.rec, x, len) > 0) {
+      list_add_tail(p.link, &ihf->records);
+      pos.link = p.link;
+      ret++;
+    }
 
     x += len;
 
-    while(*x == '\r' || *x == '\n')
+    while(x < end && (*x == '\r' || *x == '\n'))
       ++x;
-
-    ret++;
   }
 
   return ret;

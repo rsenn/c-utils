@@ -30,6 +30,9 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
   x += i;
   n -= i;
 
+  if(n < (size_t)len * 2 + 2)
+    return 0;
+
   if((i = scan_xchar(&x[(len * 2)], &chk)) != 2)
     return 0;
 
@@ -39,8 +42,7 @@ ihex_record_read(ihex_record** pihr, const char* in, size_t n) {
 
     for(j = 0; j < len; j++) {
       if((i = scan_xchar(x, &data[j])) != 2) {
-        alloc_free(*pihr);
-        *pihr = 0;
+        alloc_free(r);
         return 0;
       }
       x += i;

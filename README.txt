@@ -129,6 +129,7 @@
 
   Compression and integrity
 
+      src/filedata/ihextool.c Intel HEX swiss knife: info, records, dump, merge/cut, bin, frombin, verify, sum
       src/filedata/ccat.c  Compressed file cat with getopt() options and error reporting
       czip                 ccat run under this name (installed as a link) compresses by default; type from -t or the file extension (gz bz2 xz lzma br)
       crc32.c              Calculate crc32 checksum, using zlib or diet version
@@ -184,7 +185,6 @@
 
       src/tcp/httptest.c        Test HTTP client
       src/toolchain/cpptest.c   C preprocessor driver (-D -I -P -L, dump defines, dependencies)
-      src/filedata/testihex.c   Read and write Intel HEX files
 
   The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.
 

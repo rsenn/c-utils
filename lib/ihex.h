@@ -66,6 +66,24 @@ ssize_t ihex_record_read(ihex_record**, const char* in, size_t n);
 void ihex_record_write(ihex_record*, buffer* b);
 int ihex_write(ihex_file*, buffer* b);
 
+/* sets *base from an extended address record, 0 for any other record */
+int ihex_record_base(const ihex_record*, uint32* base);
+
+/* lowest and one past the highest data address, returns the data bytes */
+size_t ihex_range(ihex_file*, uint32* lo, uint32* hi);
+
+/* copies the data bytes in [base, base+size) to image and marks map */
+size_t ihex_copy_to(ihex_file*, uint32 base, uint8* image, uint8* map, size_t size);
+
+/* returns the number of records with a wrong checksum */
+size_t ihex_verify(ihex_file*);
+
+/* writes x[n] for address addr as data records, adds extended addresses */
+void ihex_write_data(buffer*, uint16* hi16, uint32 addr, const uint8* x, size_t n, unsigned reclen);
+
+/* writes the end of file record */
+void ihex_write_eof(buffer*);
+
 static inline const char*
 ihex_typestr(enum ihex_type_e type) {
   static const char* const types[] = {"DATA", "EOF", "EXTSEGADDR", 0, "EXTLINADDR"};

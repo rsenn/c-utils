@@ -50,6 +50,7 @@ TESTS(binfmt);
 TESTS(xml);
 TESTS(tokenizer);
 TESTS(json);
+TESTS(ihex);
 
 START() {
   EXEC(stralloc);
@@ -94,4 +95,5 @@ START() {
   EXEC(xml);
   EXEC(tokenizer);
   EXEC(json);
+  EXEC(ihex);
 }
