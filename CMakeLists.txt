@@ -1159,7 +1159,6 @@ program(nscache dns path errmsg dir array stralloc alloc env byte uint16
         ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
 program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
 program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
-set(jsonpp_SOURCES terminal.c terminal.h)
 
 program(jsonpp json errmsg charbuf unix)
 program(xml2json json xml charbuf errmsg unix)
@@ -1215,8 +1214,7 @@ if(BUILD_TESTS)
   #link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
 
-set(least_SOURCES terminal.c terminal.h)
-program(least unix errmsg sig io strarray buffer stralloc open)
+program(least terminal unix errmsg sig io strarray buffer stralloc open)
 link_program(least ${LIBMATH})
 link_program(eagle-init-brd ${LIBMATH})
 link_program(eagle-gen-cmds ${LIBMATH})

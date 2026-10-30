@@ -66,6 +66,7 @@ set(MODSUBDIRS
     strlist
     tai
     taia
+    terminal
     textbuf
     textcode
     tls
@@ -133,6 +134,7 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(dir PRIVATE stralloc)
   target_link_libraries(errmsg PRIVATE str)
   target_link_libraries(elf PRIVATE byte str range mmap uint64 uint32 uint16)
+  target_link_libraries(terminal PRIVATE buffer byte str)
   target_link_libraries(fmt PRIVATE byte str uint64 uint32)
   target_link_libraries(gpio PRIVATE mmap)
   target_link_libraries(hmap PRIVATE str)

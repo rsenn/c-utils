@@ -25,16 +25,17 @@
 #include <sys/inotify.h>
 #endif
 
-#include "terminal.h"
+#include "lib/terminal.h"
 
+#define ESC 27
 
-#define CSI "\x1b["
 
 static strarray lines;
 static int64 terminal_rows, terminal_cols, display_rows, first_line;
 
 const char* filename;
-buffer terminal;
+buffer tty_in;
+static struct terminal term;
 
 static stralloc command_buf;
 static int end_of_file, tab_size = 8;
@@ -58,26 +59,33 @@ line_at(size_t i) {
   return strarray_AT(&lines, i);
 }
 
-/* All escape sequences go through buffer_1 so that ordering is preserved
-   (terminal_*() without a buffer argument use a separate buffer). */
+/* All output goes through the terminal_* functions, so that ordering is
+   preserved and no escape code is written by hand. */
 static void
 goto_row(int64 row) {
-  buffer_puts(buffer_1, CSI);
-  buffer_putulonglong(buffer_1, row + 1);
-  buffer_puts(buffer_1, ";1H");
+  terminal_goto(&term, 0, (int)row);
+}
+
+/* col counts from 1 */
+static void
+goto_col(int64 col) {
+  terminal_column(&term, col < 1 ? 0 : (int)col - 1);
 }
 
 static void
-goto_col(int64 col) {
-  buffer_puts(buffer_1, CSI);
-  buffer_putulonglong(buffer_1, col < 1 ? 1 : col);
-  buffer_putc(buffer_1, 'G');
+put_number(unsigned long long n) {
+  char buf[FMT_ULONG];
+
+  terminal_put(&term, buf, fmt_ulonglong(buf, n));
 }
 
 void
 read_terminal_properties(void) {
-  terminal_cols = terminal_getwidth();
-  terminal_rows = terminal_getheight();
+  int cols = 0, rows = 0;
+
+  terminal_size(&term, &cols, &rows);
+  terminal_cols = cols;
+  terminal_rows = rows;
 
   if(terminal_cols < 1)
     terminal_cols = 80;
@@ -157,13 +165,100 @@ print_linenumber(size_t number, size_t pad) {
   len = n;
 
   while(pad-- > n) {
-    buffer_putspace(buffer_1);
+    terminal_putc(&term, ' ');
     len++;
   }
-  terminal_rgb_foreground(buffer_1, 143, 255, 245);
-  buffer_put(buffer_1, buf, n);
-  terminal_number_sequence(buffer_1, 0, 'm');
+  terminal_rgb_fg(&term, 143, 255, 245);
+  terminal_put(&term, buf, n);
+  terminal_reset(&term);
   return len;
+}
+
+/* xterm 256 color index to a terminal color */
+static void
+set_color256(int bg, int n) {
+  unsigned char r, g, b;
+
+  if(n < 16) {
+    if(bg)
+      terminal_bg(&term, n);
+    else
+      terminal_fg(&term, n);
+    return;
+  }
+  if(n < 232) {
+    n -= 16;
+    r = n / 36 ? (n / 36) * 40 + 55 : 0;
+    g = (n / 6) % 6 ? ((n / 6) % 6) * 40 + 55 : 0;
+    b = n % 6 ? (n % 6) * 40 + 55 : 0;
+  } else
+    r = g = b = 8 + 10 * (n - 232);
+  if(bg)
+    terminal_rgb_bg(&term, r, g, b);
+  else
+    terminal_rgb_fg(&term, r, g, b);
+}
+
+/* The text of a line may carry ANSI colors, such as the output of a
+   colored diff. They are not copied to the terminal but carried out with
+   the terminal_* functions, every other sequence is dropped. */
+static void
+apply_ansi(const char* s, size_t n) {
+  int p[16], np = 0, i;
+  size_t k;
+
+  if(n < 3 || s[0] != 27 || s[1] != '[' || s[n - 1] != 'm')
+    return;
+
+  p[0] = 0;
+  for(k = 2; k < n - 1; k++) {
+    if(s[k] >= '0' && s[k] <= '9')
+      p[np] = p[np] * 10 + (s[k] - '0');
+    else if(s[k] == ';' && np < 15)
+      p[++np] = 0;
+  }
+  np++;
+
+  for(i = 0; i < np; i++) {
+    int c = p[i];
+
+    if(c == 0)
+      terminal_reset(&term);
+    else if(c == 1)
+      terminal_style(&term, term.style | TERMINAL_BOLD);
+    else if(c == 4)
+      terminal_style(&term, term.style | TERMINAL_UNDERLINE);
+    else if(c == 7)
+      terminal_style(&term, term.style | TERMINAL_REVERSE);
+    else if(c == 22)
+      terminal_style(&term, term.style & ~TERMINAL_BOLD);
+    else if(c == 24)
+      terminal_style(&term, term.style & ~TERMINAL_UNDERLINE);
+    else if(c == 27)
+      terminal_style(&term, term.style & ~TERMINAL_REVERSE);
+    else if(c >= 30 && c <= 37)
+      terminal_fg(&term, c - 30);
+    else if(c >= 90 && c <= 97)
+      terminal_fg(&term, TERMINAL_BRIGHT | (c - 90));
+    else if(c >= 40 && c <= 47)
+      terminal_bg(&term, c - 40);
+    else if(c >= 100 && c <= 107)
+      terminal_bg(&term, TERMINAL_BRIGHT | (c - 100));
+    else if(c == 39)
+      terminal_fg(&term, TERMINAL_DEFAULT);
+    else if(c == 49)
+      terminal_bg(&term, TERMINAL_DEFAULT);
+    else if((c == 38 || c == 48) && i + 2 < np && p[i + 1] == 5) {
+      set_color256(c == 48, p[i + 2]);
+      i += 2;
+    } else if((c == 38 || c == 48) && i + 4 < np && p[i + 1] == 2) {
+      if(c == 48)
+        terminal_rgb_bg(&term, p[i + 2], p[i + 3], p[i + 4]);
+      else
+        terminal_rgb_fg(&term, p[i + 2], p[i + 3], p[i + 4]);
+      i += 4;
+    }
+  }
 }
 
 /* Print line `number` clipped to the terminal width: tabs become spaces
@@ -176,7 +271,7 @@ print_line(size_t number) {
 
   if(line_numbers) {
     col = print_linenumber(number + 1, number_width(line_count()));
-    buffer_putspace(buffer_1);
+    terminal_putc(&term, ' ');
     col++;
   }
 
@@ -185,29 +280,29 @@ print_line(size_t number) {
     size_t n;
 
     if((n = scan_ansiskip(&s[i], len - i)) > 0) {
-      buffer_put(buffer_1, &s[i], n);
+      apply_ansi(&s[i], n);
       i += n;
     } else if(c >= 0x80 && c < 0xc0) {
-      buffer_put(buffer_1, &s[i++], 1);
+      terminal_put(&term, &s[i++], 1);
     } else if(c == '\t') {
       n = tab_size - col % tab_size;
       if(col + n > (size_t)terminal_cols)
         break;
       col += n;
       while(n--)
-        buffer_putspace(buffer_1);
+        terminal_putc(&term, ' ');
       i++;
     } else if(c < 0x20 || c == 0x7f) {
       if(col + 2 > (size_t)terminal_cols)
         break;
-      buffer_putc(buffer_1, '^');
-      buffer_putc(buffer_1, c == 0x7f ? '?' : c + 64);
+      terminal_putc(&term, '^');
+      terminal_putc(&term, c == 0x7f ? '?' : c + 64);
       col += 2;
       i++;
     } else {
       if(col + 1 > (size_t)terminal_cols)
         break;
-      buffer_put(buffer_1, &s[i++], 1);
+      terminal_put(&term, &s[i++], 1);
       col++;
     }
   }
@@ -218,40 +313,45 @@ print_status(void) {
   int64 range = max_first();
 
   goto_row(display_rows);
-  buffer_puts(buffer_1, CSI "m" CSI "2K");
-  buffer_puts(buffer_1, CSI "7m");
-  buffer_puts(buffer_1, filename);
-  buffer_putspace(buffer_1);
+  terminal_reset(&term);
+  terminal_erase_line(&term, 2);
+  terminal_style(&term, TERMINAL_REVERSE);
+  terminal_puts(&term, filename);
+  terminal_putc(&term, ' ');
 
   if(first_line >= range) {
-    buffer_puts(buffer_1, "(END)");
+    terminal_puts(&term, "(END)");
   } else {
-    buffer_puts(buffer_1, "(line ");
-    buffer_putulonglong(buffer_1, first_line + 1);
-    buffer_putc(buffer_1, '/');
-    buffer_putulonglong(buffer_1, line_count());
-    buffer_putc(buffer_1, ')');
+    terminal_puts(&term, "(line ");
+    put_number(first_line + 1);
+    terminal_putc(&term, '/');
+    put_number(line_count());
+    terminal_putc(&term, ')');
   }
-  buffer_putspace(buffer_1);
-  buffer_putulonglong(buffer_1, range > 0 ? first_line * 100 / range : 100);
-  buffer_putc(buffer_1, '%');
+  terminal_putc(&term, ' ');
+  put_number(range > 0 ? first_line * 100 / range : 100);
+  terminal_putc(&term, '%');
 
   if(command_buf.len) {
-    buffer_puts(buffer_1, " [");
-    buffer_put(buffer_1, command_buf.s, command_buf.len);
-    buffer_putc(buffer_1, ']');
+    terminal_puts(&term, " [");
+    terminal_put(&term, command_buf.s, command_buf.len);
+    terminal_putc(&term, ']');
   }
-  buffer_puts(buffer_1, CSI "m");
-  buffer_flush(buffer_1);
+  terminal_reset(&term);
+  terminal_flush(&term);
 }
 
 static void
 print_added(size_t num_lines) {
   goto_row(display_rows);
-  buffer_puts(buffer_1, CSI "m" CSI "2K" CSI "7m+");
-  buffer_putulong(buffer_1, num_lines);
-  buffer_puts(buffer_1, " lines" CSI "m");
-  buffer_flush(buffer_1);
+  terminal_reset(&term);
+  terminal_erase_line(&term, 2);
+  terminal_style(&term, TERMINAL_REVERSE);
+  terminal_putc(&term, '+');
+  put_number(num_lines);
+  terminal_puts(&term, " lines");
+  terminal_reset(&term);
+  terminal_flush(&term);
 }
 
 /* Redraw the whole screen without clearing it first (no flicker). */
@@ -259,13 +359,14 @@ static void
 redraw(void) {
   int64 i;
 
-  buffer_puts(buffer_1, CSI "?7l");
+  terminal_linewrap(&term, 0);
 
   for(i = 0; i < display_rows; i++) {
     goto_row(i);
     if(first_line + i < line_count())
       print_line(first_line + i);
-    buffer_puts(buffer_1, CSI "m" CSI "K");
+    terminal_reset(&term);
+    terminal_erase_line(&term, 0);
   }
   print_status();
 }
@@ -307,11 +408,11 @@ handle_escape_sequence(void) {
   char c;
   int64 page = display_rows, step = 1;
 
-  if(!buffer_LEN(&terminal) || buffer_getc(&terminal, &c) != 1 || (c != '[' && c != 'O'))
+  if(!buffer_LEN(&tty_in) || buffer_getc(&tty_in, &c) != 1 || (c != '[' && c != 'O'))
     return;
 
   for(;;) {
-    if(!buffer_LEN(&terminal) || buffer_getc(&terminal, &c) != 1)
+    if(!buffer_LEN(&tty_in) || buffer_getc(&tty_in, &c) != 1)
       return;
     if(c >= '0' && c <= '9')
       *p = *p * 10 + (c - '0');
@@ -412,35 +513,37 @@ search_update(int (*predicate)(const char*, const char*)) {
 
   if((first = find_line(command_buf.s, predicate)) >= 0)
     matches = count_matches(command_buf.s, predicate);
-  buffer_puts(buffer_1, CSI "s");
+  terminal_cursor_save(&term);
   goto_col(terminal_cols - 30 - (int64)command_buf.len);
-  buffer_puts(buffer_1, CSI "0K" CSI "1m");
-  terminal_rgb_background(buffer_1, 25, 73, 216);
-  terminal_rgb_foreground(buffer_1, 208, 240, 248);
-  buffer_puts(buffer_1, "↓ ");
-  terminal_rgb_foreground(buffer_1, 230, 198, 5);
-  buffer_putsa(buffer_1, &command_buf);
+  terminal_erase_line(&term, 0);
+  terminal_style(&term, TERMINAL_BOLD);
+  terminal_rgb_bg(&term, 25, 73, 216);
+  terminal_rgb_fg(&term, 208, 240, 248);
+  terminal_puts(&term, "↓ ");
+  terminal_rgb_fg(&term, 230, 198, 5);
+  terminal_put(&term, command_buf.s, command_buf.len);
 
   if(matches) {
-    terminal_rgb_foreground(buffer_1, 208, 240, 248);
-    buffer_puts(buffer_1, " ✖");
-    terminal_rgb_foreground(buffer_1, 230, 198, 5);
-    buffer_putspace(buffer_1);
-    buffer_putulong(buffer_1, matches);
-    buffer_puts(buffer_1, " matches");
-    terminal_rgb_foreground(buffer_1, 208, 240, 248);
-    buffer_puts(buffer_1, " ⇲ ");
-    terminal_rgb_foreground(buffer_1, 230, 198, 5);
-    buffer_putulonglong(buffer_1, first + 1);
+    terminal_rgb_fg(&term, 208, 240, 248);
+    terminal_puts(&term, " ✖");
+    terminal_rgb_fg(&term, 230, 198, 5);
+    terminal_putc(&term, ' ');
+    put_number(matches);
+    terminal_puts(&term, " matches");
+    terminal_rgb_fg(&term, 208, 240, 248);
+    terminal_puts(&term, " ⇲ ");
+    terminal_rgb_fg(&term, 230, 198, 5);
+    put_number(first + 1);
   } else {
-    terminal_rgb_foreground(buffer_1, 208, 240, 248);
-    buffer_puts(buffer_1, " ∞ ");
-    terminal_rgb_foreground(buffer_1, 230, 198, 5);
-    buffer_puts(buffer_1, " not found");
+    terminal_rgb_fg(&term, 208, 240, 248);
+    terminal_puts(&term, " ∞ ");
+    terminal_rgb_fg(&term, 230, 198, 5);
+    terminal_puts(&term, " not found");
   }
-  buffer_putspace(buffer_1);
-  buffer_puts(buffer_1, CSI "m" CSI "u");
-  buffer_flush(buffer_1);
+  terminal_putc(&term, ' ');
+  terminal_reset(&term);
+  terminal_cursor_restore(&term);
+  terminal_flush(&term);
 }
 
 static const char* command_prefixes[4] = {":", " :", "/", "\\"};
@@ -448,10 +551,11 @@ static const char* command_prefixes[4] = {":", " :", "/", "\\"};
 static void
 draw_prompt(void) {
   goto_row(display_rows);
-  buffer_puts(buffer_1, CSI "m" CSI "2K");
-  buffer_puts(buffer_1, command_prefixes[command_mode & 0x03]);
-  buffer_putsa(buffer_1, &command_buf);
-  buffer_flush(buffer_1);
+  terminal_reset(&term);
+  terminal_erase_line(&term, 2);
+  terminal_puts(&term, command_prefixes[command_mode & 0x03]);
+  terminal_put(&term, command_buf.s, command_buf.len);
+  terminal_flush(&term);
 }
 
 static void
@@ -461,13 +565,13 @@ read_command(void) {
   stralloc_zero(&command_buf);
   draw_prompt();
 
-  while(command_mode == mode && buffer_getc(&terminal, &c) == 1) {
+  while(command_mode == mode && buffer_getc(&tty_in, &c) == 1) {
     if(c == '\n' || c == '\r')
       break;
 
     if(c == ESC) {
       /* cancel; swallow the rest of a key sequence, if any */
-      buffer_SKIP(&terminal, buffer_LEN(&terminal));
+      buffer_SKIP(&tty_in, buffer_LEN(&tty_in));
       command_mode = 0;
       break;
     }
@@ -529,7 +633,7 @@ handle_input(void) {
   unsigned char c;
   int64 n;
 
-  if(buffer_getc(&terminal, &c) < 1)
+  if(buffer_getc(&tty_in, &c) < 1)
     return 0;
 
   if(c >= '0' && c <= '9') {
@@ -648,10 +752,8 @@ interrupt(int sig) {
 
 void
 terminate(int sig) {
-  buffer_putnlflush(buffer_1);
-
-  terminal_restore();
-  buffer_flush(buffer_1);
+  terminal_putc(&term, '\n');
+  terminal_restore(&term);
 
   exit(0);
 }
@@ -682,7 +784,8 @@ main(int argc, char* argv[]) {
       diesys(127, "Unable to open file ", filename);
   }
 
-  buffer_read_fd(&terminal, STDOUT_FILENO);
+  buffer_read_fd(&tty_in, STDOUT_FILENO);
+  terminal_init(&term, STDOUT_FILENO, STDOUT_FILENO, buffer_1);
 
   read_terminal_properties();
   read_content(&input, display_rows);
@@ -696,8 +799,8 @@ main(int argc, char* argv[]) {
   }
 #endif
 
-  terminal_init();
-  terminal_set_alternate_screen();
+  terminal_raw(&term);
+  terminal_alt_screen(&term, 1);
   scroll_to(0);
 
   if(input.fd != STDIN_FILENO) {
@@ -709,8 +812,8 @@ main(int argc, char* argv[]) {
     watchfd = input.fd;
   }
 
-  io_fd(terminal.fd);
-  io_wantread(terminal.fd);
+  io_fd(tty_in.fd);
+  io_wantread(tty_in.fd);
 
   if(watchfd != -1) {
     io_fd(watchfd);
@@ -742,7 +845,7 @@ main(int argc, char* argv[]) {
     }
 
     while((fd = io_canread()) != -1) {
-      if(fd == terminal.fd)
+      if(fd == tty_in.fd)
         on_terminal = 1;
 
       if(fd == watchfd) {

@@ -50,9 +50,14 @@
       lib/vartab.h         Table for variable lookup stacked for subshell context
 
 
-  Dumb charset conversion UCS, UTF-8, Latin 1
+  Dumb charset conversion UCS, UTF-8, Latin 1, Punycode and IDNA
 
       lib/ucs.h
+
+
+  Terminal output through function calls (VT on POSIX, console API on Windows)
+
+      lib/terminal.h
 
 
   Periphery / Sensing
