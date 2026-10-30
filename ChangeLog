@@ -82,6 +82,13 @@
 - fixed fmt_escapecharjson (printable characters came out as \u0041),
   fmt_escapecharnonprintable (wrong length for \n and octal escapes) and
   fmt_escapecharquotedprintable (lower case hex digits, now =AB)
+- fixed gzip: buffer_deflate lost data above the buffer size and wrote no
+  trailer, so gzip rejected the result, and buffer_inflate never read on
+  past the first block. ccat and czip now agree with gzip on files of any
+  size. buffer_bz2 had the same read problem and stops at truncated data
+- ccat: reports corrupt or truncated input with exit status 1 (it used its
+  own buffer_copy that ignored errors), -t alone selects decompression, and
+  compressing to a redirected standard output works
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has

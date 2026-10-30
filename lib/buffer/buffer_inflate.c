@@ -12,36 +12,65 @@
 typedef struct {
   z_stream z;
   buffer* other;
+  int done;
   char buf[1024];
 } inflate_ctx;
 
+/* reads compressed data from the other buffer as it is needed, returns 0 at
+ * the end of the stream and -1 for corrupt or truncated data */
 static ssize_t
 buffer_inflate_read(fd_type fd, void* data, size_t n, buffer* b) {
-  int ret;
-  ssize_t have;
   inflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
+  buffer* other = ctx->other;
+  ssize_t r;
+  size_t used;
+  int ret;
 
-  z->avail_in = ctx->other->n - ctx->other->p;
-  z->next_in = (void*)&ctx->other->x[ctx->other->p];
-  z->next_out = data;
-  z->avail_out = n;
+  while(!ctx->done) {
+    if((r = buffer_feed(other)) < 0)
+      return -1;
 
-  ret = inflate(&ctx->z, 0);
+    if(r == 0)
+      return -1;
 
-  if(ret == Z_STREAM_ERROR)
-    return -1;
+    z->next_in = (void*)buffer_peek(other);
+    z->avail_in = r;
+    z->next_out = data;
+    z->avail_out = n;
 
-  have = n - z->avail_out;
+    ret = inflate(z, Z_NO_FLUSH);
 
-  return have;
+    used = r - z->avail_in;
+    buffer_seek(other, used);
+
+    if(ret == Z_STREAM_END)
+      ctx->done = 1;
+    else if(ret != Z_OK && ret != Z_BUF_ERROR)
+      return -1;
+
+    if(z->avail_out < n)
+      return n - z->avail_out;
+
+    if(used == 0 && !ctx->done)
+      return -1;
+  }
+
+  return 0;
+}
+
+static void
+buffer_inflate_close(buffer* b) {
+  inflate_ctx* ctx = b->cookie;
+
+  inflateEnd(&ctx->z);
+  b->deinit = NULL;
+  b->cookie = NULL;
+  free(ctx);
 }
 
 int
 buffer_inflate(buffer* b, buffer* in) {
-  int ret;
-  z_stream* z;
-
   inflate_ctx* ctx = calloc(1, sizeof(inflate_ctx));
 
   if(ctx == NULL)
@@ -49,22 +78,16 @@ buffer_inflate(buffer* b, buffer* in) {
 
   ctx->other = in;
 
-  z = &ctx->z;
-  z->zalloc = Z_NULL;
-  z->zfree = Z_NULL;
-  z->opaque = Z_NULL;
-
-  b->op = (void*)&buffer_inflate_read;
-  b->p = b->n = 0;
+  buffer_init(b, (buffer_op_fn*)&buffer_inflate_read, -1, ctx->buf, sizeof(ctx->buf));
   b->cookie = ctx;
+  b->deinit = &buffer_inflate_close;
 
-  b->x = ctx->buf;
-  b->a = sizeof(ctx->buf);
-
-  ret = inflateInit2(&ctx->z, 15 + 32);
-
-  if(ret != Z_OK)
+  if(inflateInit2(&ctx->z, 15 + 32) != Z_OK) {
+    free(ctx);
+    b->deinit = NULL;
+    b->cookie = NULL;
     return 0;
+  }
 
   return 1;
 }

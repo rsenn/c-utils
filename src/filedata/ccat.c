@@ -7,27 +7,13 @@
 #include "../../lib/byte.h"
 #include "../../lib/iarray.h"
 #include "../../lib/io.h"
+#include <unistd.h>
 #include "../../lib/getopt.h"
 #include "../../lib/path.h"
 #include "../../lib/case.h"
 
 #include <stdlib.h>
 #include "../../lib/bool.h"
-
-int
-buffer_copy(buffer* out, buffer* in) {
-  ssize_t r, n = 0;
-  char tmp[1024];
-
-  while((r = buffer_get(in, tmp, sizeof(tmp))) > 0) {
-    buffer_put(out, tmp, r);
-
-    n += r;
-  }
-
-  buffer_flush(out);
-  return n;
-}
 
 typedef enum compression_type { C_UNKNOWN = 0, C_GZ, C_BZ2, C_LZMA, C_XZ, C_BROTLI } compression_type;
 
@@ -197,6 +183,9 @@ main(int argc, char* argv[]) {
   }
 
   if(type != C_UNKNOWN) {
+    if(decompress == -1)
+      decompress = 1;
+
     if(in_type == C_UNKNOWN && decompress == 1)
       in_type = type;
 
@@ -207,6 +196,7 @@ main(int argc, char* argv[]) {
   {
     compression_type type = decompress ? in_type : out_type;
     buffer cbuf;
+    int failed;
 
     switch(type) {
 #if HAVE_ZLIB
@@ -237,21 +227,26 @@ main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    if(decompress == 0 && output == buffer_1) {
+    if(decompress == 0 && output == buffer_1 && isatty(1)) {
       buffer_putsflush(buffer_2,
                        "ERROR: Won't write compressed data to a terminal\n");
       exit(EXIT_FAILURE);
     }
 
-    if(decompress) {
-      buffer_copy(output, &cbuf);
-    } else {
-      buffer_copy(&cbuf, input);
+    if(decompress)
+      failed = buffer_copy(output, &cbuf) < 0;
+    else {
+      failed = buffer_copy(&cbuf, input) < 0;
       buffer_flush(&cbuf);
     }
-    
+
     buffer_close(&cbuf);
     buffer_flush(output);
+
+    if(failed) {
+      buffer_putsflush(buffer_2, "ERROR: corrupt, truncated or unwritable data\n");
+      return 1;
+    }
   }
 
   return 0;

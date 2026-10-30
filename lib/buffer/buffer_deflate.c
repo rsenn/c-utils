@@ -18,58 +18,67 @@ typedef struct {
   char buf[1024];
 } deflate_ctx;
 
+/* compresses all n bytes, the other buffer is flushed whenever it is full */
 static ssize_t
 buffer_deflate_write(fd_type fd, const void* data, size_t n, buffer* b) {
-  ssize_t have;
-  int ret;
   deflate_ctx* ctx = b->cookie;
   z_stream* z = &ctx->z;
+  buffer* other = ctx->other;
+  size_t a;
 
   z->avail_in = n;
   z->next_in = (void*)data;
 
-again:
-  z->next_out = (void*)&ctx->other->x[ctx->other->p];
-  z->avail_out = ctx->other->a - ctx->other->p;
+  while(z->avail_in > 0) {
+    if(!buffer_SPACE(other) && buffer_flush(other) < 0)
+      return -1;
 
-  ret = deflate(&ctx->z, 0);
+    a = buffer_SPACE(other);
+    z->next_out = (void*)buffer_PEEK(other);
+    z->avail_out = a;
 
-  if(ret == Z_OK && z->avail_out == 0) {
-    buffer_flush(ctx->other);
-    goto again;
+    if(deflate(z, Z_NO_FLUSH) == Z_STREAM_ERROR)
+      return -1;
+
+    other->p += a - z->avail_out;
   }
 
-  if(ret == Z_STREAM_ERROR)
-    return -1;
-
-  have = n - z->avail_in;
-
-  ctx->other->p += (ctx->other->a - ctx->other->p) - z->avail_out;
-
-  return have;
+  return n;
 }
 
+/* close writes what deflate still holds and the gzip trailer (Z_FINISH), a
+ * stream without it is rejected by gzip as truncated */
 static void
 buffer_deflate_close(buffer* b) {
   deflate_ctx* ctx = b->cookie;
+  z_stream* z = &ctx->z;
+  buffer* other = ctx->other;
+  size_t a;
+  int ret;
 
-  int ret, wr;
+  buffer_flush(b);
+
+  z->next_in = 0;
+  z->avail_in = 0;
 
   do {
-    ctx->z.next_out = (void*)&ctx->other->x[ctx->other->p];
-    ctx->z.avail_out = ctx->other->a - ctx->other->p;
+    if(!buffer_SPACE(other))
+      buffer_flush(other);
 
-    ret = deflate(&ctx->z, Z_SYNC_FLUSH);
+    a = buffer_SPACE(other);
+    z->next_out = (void*)buffer_PEEK(other);
+    z->avail_out = a;
 
-    wr = (ctx->other->a - ctx->other->p) - ctx->z.avail_out;
-    ctx->other->p += wr;
+    ret = deflate(z, Z_FINISH);
+    other->p += a - z->avail_out;
+  } while(ret == Z_OK || ret == Z_BUF_ERROR);
 
-  } while(ret == Z_OK);
-
-  buffer_flush(ctx->other);
+  deflateEnd(z);
+  buffer_flush(other);
 
   b->deinit = NULL;
-  buffer_close(b);
+  b->cookie = NULL;
+  free(ctx);
 }
 
 int
@@ -95,18 +104,19 @@ buffer_deflate(buffer* b, buffer* out, int level) {
   b->deinit = &buffer_deflate_close;
 
   ret = deflateInit2(&ctx->z, level, Z_DEFLATED, 15 + 16, 8, Z_DEFAULT_STRATEGY);
-  //
+
+  if(ret != Z_OK) {
+    free(ctx);
+    b->deinit = NULL;
+    b->cookie = NULL;
+    return 0;
+  }
+
   byte_zero(&ctx->hdr, sizeof(gz_header));
-  ctx->hdr.text = 0;
   ctx->hdr.time = time(NULL);
-  ctx->hdr.os = 1;
-  ctx->hdr.name = (void*)"test.c";
-  ctx->hdr.name_max = str_len((char*)ctx->hdr.name) + 1;
+  ctx->hdr.os = 3;
 
   deflateSetHeader(&ctx->z, &ctx->hdr);
-
-  if(ret != Z_OK)
-    return 0;
 
   return 1;
 }

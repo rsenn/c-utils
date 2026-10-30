@@ -5,6 +5,7 @@
 #include "../lib/uint64.h"
 #include "unit_test.h"
 #include "../lib/buffer.h"
+#include <fcntl.h>
 #include <unistd.h>
 
 /* Discards whatever buffer_flush() writes; used so OUTBUF's op is
@@ -898,11 +899,12 @@ TEST(test_buffer_putspadstart) {
 TEST(test_buffer_deflate) {
 #if HAVE_ZLIB
   buffer file, deflate, in, inflate;
-  char out[64];
+  static char data[400000], out[400000];
+  size_t i, got = 0;
   ssize_t n;
 
   ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_zip.tmp"));
-  ASSERT_EQ(0, buffer_deflate(&deflate, &file, 9));
+  ASSERT_NE(0, buffer_deflate(&deflate, &file, 9));
   buffer_puts(&deflate, "gzipp'd test text\n");
   buffer_flush(&deflate);
   buffer_close(&deflate);
@@ -910,15 +912,65 @@ TEST(test_buffer_deflate) {
 
   /* round trip: inflating what was deflated gives the text back */
   ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_zip.tmp"));
-  ASSERT_EQ(0, buffer_inflate(&inflate, &in));
+  ASSERT_NE(0, buffer_inflate(&inflate, &in));
   n = buffer_get(&inflate, out, sizeof(out));
-  unlink("test_buffer_zip.tmp");
+  buffer_close(&inflate);
 
   ASSERT_EQ(18, n);
   ASSERT_EQ(0, byte_diff(out, 18, "gzipp'd test text\n"));
+
+  /* well over the 32768 bytes of one deflate window and the buffers */
+  for(i = 0; i < sizeof(data); i++)
+    data[i] = (char)('a' + (i * 7 + i / 13) % 26);
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_zip.tmp"));
+  ASSERT_NE(0, buffer_deflate(&deflate, &file, 6));
+  buffer_put(&deflate, data, sizeof(data));
+  buffer_flush(&deflate);
+  buffer_close(&deflate);
+  buffer_close(&file);
+
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_zip.tmp"));
+  ASSERT_NE(0, buffer_inflate(&inflate, &in));
+  while((n = buffer_get(&inflate, out + got, sizeof(out) - got)) > 0)
+    got += (size_t)n;
+  buffer_close(&inflate);
+  unlink("test_buffer_zip.tmp");
+
+  ASSERT_EQ(sizeof(data), got);
+  ASSERT_EQ(0, byte_diff(out, got, data));
 #endif
 }
-TEST(test_buffer_inflate) {}
+TEST(test_buffer_inflate) {
+#if HAVE_ZLIB
+  buffer file, deflate, in, inflate;
+  static char data[100000], out[100000];
+  size_t i, len, got = 0;
+  ssize_t n;
+
+  for(i = 0; i < sizeof(data); i++)
+    data[i] = (char)('a' + (i * 7 + i / 13) % 26);
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_inflate.tmp"));
+  ASSERT_NE(0, buffer_deflate(&deflate, &file, 6));
+  buffer_put(&deflate, data, sizeof(data));
+  buffer_flush(&deflate);
+  buffer_close(&deflate);
+  len = (size_t)lseek(file.fd, 0, SEEK_CUR);
+  buffer_close(&file);
+
+  /* the file cut short is an error, not the end of the data */
+  ASSERT_EQ(0, truncate("test_buffer_inflate.tmp", (off_t)(len / 2)));
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_inflate.tmp"));
+  ASSERT_NE(0, buffer_inflate(&inflate, &in));
+  while((n = buffer_get(&inflate, out + got, sizeof(out) - got)) > 0)
+    got += (size_t)n;
+  buffer_close(&inflate);
+  unlink("test_buffer_inflate.tmp");
+
+  ASSERT_EQ(-1, n);
+#endif
+}
 
 /*
  * int buffer_gunzip(buffer*, const char* filename);

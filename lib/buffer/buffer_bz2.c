@@ -7,49 +7,48 @@
 
 #if HAVE_LIBBZ2
 
-#define BZ_BLOCK_SIZE 1024
-
 typedef struct {
   bz_stream strm;
-  int a;
+  int done;
   buffer* b;
   char buf[1024];
 } bz_ctx;
 
+/* reads compressed data from the other buffer as it is needed, returns 0 at
+ * the end of the stream and -1 for corrupt or truncated data */
 static ssize_t
 buffer_bzread_op(fd_type fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
-  int ret;
   ssize_t r;
-  size_t a;
-  int eof = 0;
+  size_t used;
+  int ret;
 
-  if((r = buffer_prefetch(ctx->b, BZ_BLOCK_SIZE)) > 0) {
-  } else {
-    return r;
-  }
+  while(!ctx->done) {
+    if((r = buffer_feed(ctx->b)) <= 0)
+      return -1;
 
-  strm->next_in = (char*)&ctx->b->x[ctx->b->p];
-  strm->avail_in = a = ctx->b->n - ctx->b->p;
-  strm->next_out = data;
-  strm->avail_out = n;
+    strm->next_in = (char*)buffer_peek(ctx->b);
+    strm->avail_in = r;
+    strm->next_out = data;
+    strm->avail_out = n;
 
-  ctx->a = !eof ? BZ_RUN : BZ_FINISH;
-
-  do {
     ret = BZ2_bzDecompress(strm);
-  } while(ctx->a == BZ_FINISH && ret != BZ_STREAM_END);
 
-  if(/* strm->avail_out == 0 */
-     ret == BZ_OK || ret == BZ_STREAM_END) {
-    ctx->b->p += a - strm->avail_in;
+    used = r - strm->avail_in;
+    buffer_seek(ctx->b, used);
 
-    return n - strm->avail_out;
+    if(ret == BZ_STREAM_END)
+      ctx->done = 1;
+    else if(ret != BZ_OK)
+      return -1;
+
+    if(strm->avail_out < n)
+      return n - strm->avail_out;
+
+    if(used == 0 && !ctx->done)
+      return -1;
   }
-
-  if(ret != BZ_OK)
-    return -1;
 
   return 0;
 }

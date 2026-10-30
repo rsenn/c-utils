@@ -22,6 +22,8 @@ string(REGEX REPLACE "([^ ;]*/tests/test_|\\.c)" "" TEST_NAMES "${TESTS}")
 #endforeach()
 
 add_executable(all_tests all_tests.c unit_test_runner.c unit_test.h unit_test.c ${TESTS})
+target_compile_definitions(all_tests PRIVATE ${COMPRESS_LIBRARY_DEFINES})
+target_link_libraries(all_tests ${ZLIB_LIBRARY} ${COMPRESSION_LIBRARIES})
 
 if(DO_TESTS)
   include(CTest)

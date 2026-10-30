@@ -588,9 +588,3 @@
   unit comes out with no dependencies. The preprocessor of `lib/cpp` probably
   needs a newline appended in `cpp_tokenize_file`.
 
-- buffer-deflate-inflate-corrupt-large-data: `ccat`/`czip` through `buffer_deflate` produce a gzip stream that
-  `gzip -dc` rejects ("invalid compressed data") for inputs over 32768 bytes, and `ccat` on
-  a `gzip -c` file of 4 MB differs from the original from byte 1026 on, so
-  `lib/buffer/buffer_deflate.c` and `buffer_inflate.c` lose data much like `buffer_bz2`
-  did (a write op that returns 0 when the output is full, which `buffer_stubborn` treats as an error).
-  `ccat` ignores the error from `buffer_copy`.
