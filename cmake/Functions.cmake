@@ -170,7 +170,7 @@ function(add_program PROG)
     # message("Program '${PROG}' INCLUDES: ${INCLUDES}") message("add_executable(${PROG} ${PROG}.c ${${PROG}_SOURCES} ${INCLUDES}")
     # the main source is ${PROG}.c in the top directory or in a src/ subdirectory
     set(PROG_SOURCE ${PROG}.c)
-    foreach(SRCDIR dnsutils binfmt toolchain ftp tcp eagle media xmljson serial filedata dirlist winreg intercept genmakefile)
+    foreach(SRCDIR dnsutils binfmt toolchain ftp tcp eagle media xmljson serial filedata dirlist winreg intercept genmakefile text system)
       if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${PROG_SOURCE}"
          AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${SRCDIR}/${PROG}.c")
         set(PROG_SOURCE src/${SRCDIR}/${PROG}.c)

@@ -21,7 +21,7 @@
 // All rights reserved.
 //
 //=--
-#include "utf8.h"
+#include "../../lib/utf8.h"
 
 // convert a wchar_t to a utf8 (multibyte)char
 // follows signature of int wctomb( char *m, wchar_t w )

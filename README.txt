@@ -161,7 +161,7 @@
   Path helpers
 
       src/toolchain/pathtool.c dropin for realpath, with --relative-to DIR feature and windows/msys support cygpath compliant
-      sln.c                for a /usr/lib/libX.so.major.minor file pass one or more link names: libX.so.major libX.so /lib/libX.so
+      src/system/sln.c     for a /usr/lib/libX.so.major.minor file pass one or more link names: libX.so.major libX.so /lib/libX.so
       src/toolchain/msys-shell.c Registry & path search for msys/msys2 environments and launch mintty and bash inside
 
   Utilities reading/writing XML/JSON
@@ -181,16 +181,16 @@
 
   Basic usage examples or boilerplates:
 
-      binfmttest.c         Test binary format readers
-      buffertest.c         Test I/O buffer system, chaining with zlib/bzip2/lzma filter
-      dnstest.c            Test DNS resolver
-      httptest.c           Test HTTP client
-      jsontest.c           Test JSON parser
-      strarraytest.c       Test array of char* pointer functions
-      xmltest.c            Test XML reading with callbacks (diet version of SAX)
-      xmltest2.c           Test XML reading as tree (diet version of DOM)
-      xmltest3.c           Test XML traversal and selection (diet version of getElementBy* and XPath)
-      xmltest4.c           Test XML query
-      ziptest.c            Simple universal file compression of *.gz, *.bz2, *.xz based on file extension
+      src/tcp/httptest.c        Test HTTP client
+      src/xmljson/jsontest.c    Test JSON parser, prints with timing
+      src/xmljson/xmlscantest.c Dump the tokens of an XML file
+      src/xmljson/xmltest.c     Test XML reading with callbacks (diet version of SAX)
+      src/xmljson/xmltest2.c    Test XML reading as tree (diet version of DOM)
+      src/toolchain/cpptest.c   C preprocessor driver (-D -I -P -L, dump defines, dependencies)
+      src/toolchain/tokenizertest.c Dump the tokens of a C file
+      src/filedata/testihex.c   Read and write Intel HEX files
+      src/filedata/ziptest.c    Simple universal file compression of *.gz, *.bz2, *.xz based on file extension
+
+  The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, buffer, ...) are in tests/.
 
 

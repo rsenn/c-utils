@@ -1,13 +1,13 @@
-#include "lib/stralloc.h"
-#include "lib/buffer.h"
-#include "lib/str.h"
-#include "lib/strlist.h"
-#include "lib/mmap.h"
-#include "lib/buffer.h"
-#include "lib/unix.h"
-#include "lib/dir.h"
-#include "lib/errmsg.h"
-#include "lib/open.h"
+#include "../../lib/stralloc.h"
+#include "../../lib/buffer.h"
+#include "../../lib/str.h"
+#include "../../lib/strlist.h"
+#include "../../lib/mmap.h"
+#include "../../lib/buffer.h"
+#include "../../lib/unix.h"
+#include "../../lib/dir.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/open.h"
 
 static strlist pidlist;
 

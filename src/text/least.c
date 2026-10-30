@@ -1,18 +1,18 @@
-#include "lib/uint64.h"
-#include "lib/byte.h"
-#include "lib/buffer.h"
-#include "lib/alloc.h"
-#include "lib/errmsg.h"
-#include "lib/strarray.h"
-#include "lib/scan.h"
-#include "lib/str.h"
-#include "lib/io.h"
-#include "lib/seek.h"
-#include "lib/sig.h"
-#include "lib/scan.h"
-#include "lib/unix.h"
-#include "lib/fmt.h"
-#include "lib/windoze.h"
+#include "../../lib/uint64.h"
+#include "../../lib/byte.h"
+#include "../../lib/buffer.h"
+#include "../../lib/alloc.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/strarray.h"
+#include "../../lib/scan.h"
+#include "../../lib/str.h"
+#include "../../lib/io.h"
+#include "../../lib/seek.h"
+#include "../../lib/sig.h"
+#include "../../lib/scan.h"
+#include "../../lib/unix.h"
+#include "../../lib/fmt.h"
+#include "../../lib/windoze.h"
 
 #include <assert.h>
 #include <ctype.h>
@@ -26,9 +26,9 @@
 #include <sys/inotify.h>
 #endif
 
-#include "lib/terminal.h"
-#include "lib/ucs.h"
-#include "lib/utf8.h"
+#include "../../lib/terminal.h"
+#include "../../lib/ucs.h"
+#include "../../lib/utf8.h"
 
 #define ESC 27
 

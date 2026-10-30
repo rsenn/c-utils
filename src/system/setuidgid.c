@@ -1,12 +1,12 @@
 #define _GNU_SOURCE
-#include "lib/errmsg.h"
-#include "lib/scan.h"
-#include "lib/open.h"
-#include "lib/mmap.h"
-#include "lib/str.h"
-#include "lib/byte.h"
-#include "lib/path.h"
-#include "lib/buffer.h"
+#include "../../lib/errmsg.h"
+#include "../../lib/scan.h"
+#include "../../lib/open.h"
+#include "../../lib/mmap.h"
+#include "../../lib/str.h"
+#include "../../lib/byte.h"
+#include "../../lib/path.h"
+#include "../../lib/buffer.h"
 
 #include <stdlib.h>
 
