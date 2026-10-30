@@ -1214,7 +1214,7 @@ if(BUILD_TESTS)
   #link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
 
-program(least terminal ucs unix errmsg sig io strarray buffer stralloc open)
+program(least terminal ucs utf8 unix errmsg sig io strarray buffer stralloc open)
 link_program(least ${LIBMATH})
 link_program(eagle-init-brd ${LIBMATH})
 link_program(eagle-gen-cmds ${LIBMATH})

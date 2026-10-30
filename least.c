@@ -1,4 +1,5 @@
 #include "lib/uint64.h"
+#include "lib/byte.h"
 #include "lib/buffer.h"
 #include "lib/alloc.h"
 #include "lib/errmsg.h"
@@ -27,6 +28,7 @@
 
 #include "lib/terminal.h"
 #include "lib/ucs.h"
+#include "lib/utf8.h"
 
 #define ESC 27
 
@@ -37,7 +39,8 @@ const char* filename;
 static struct terminal term;
 
 static stralloc command_buf;
-static int end_of_file, tab_size = 8;
+static int end_of_file, tab_size = 8, wrap = 1;
+static int64 hscroll;
 
 volatile sig_atomic_t running = 1, reset = 0, resized = 0, command_mode = 0, line_numbers = 0;
 
@@ -46,11 +49,23 @@ line_count(void) {
   return strarray_size(&lines);
 }
 
-/* largest useful value of first_line: last page is full, 0 if all fits */
-static inline int64
+static int64 line_rows(size_t i);
+
+/* largest useful value of first_line: last page is full, 0 if all fits.
+   A wrapped line takes more than one row. */
+static int64
 max_first(void) {
-  int64 n = line_count();
-  return n > display_rows ? n - display_rows : 0;
+  int64 n = line_count(), rows = 0, i;
+
+  if(!wrap)
+    return n > display_rows ? n - display_rows : 0;
+
+  for(i = n - 1; i >= 0; i--) {
+    rows += line_rows(i);
+    if(rows > display_rows)
+      return i + 1 < n ? i + 1 : n - 1;
+  }
+  return 0;
 }
 
 static const char*
@@ -99,7 +114,13 @@ read_line(buffer* buf) {
   stralloc line;
   stralloc_init(&line);
 
-  if((ret = buffer_getline_sa(buf, &line)) > 0) {
+  ret = buffer_getline_sa(buf, &line);
+
+  /* the last line of the input may have no newline */
+  if(ret == 0 && line.len > 0)
+    ret = 1;
+
+  if(ret > 0) {
     char* s;
     ssize_t i;
     int underline = 0;
@@ -260,51 +281,255 @@ apply_ansi(const char* s, size_t n) {
   }
 }
 
-/* Print line `number` clipped to the terminal width: tabs become spaces
-   (aligned to tab stops), ANSI sequences cost no width, UTF-8 continuation
-   bytes cost no width, other control characters are shown as ^X. */
-static void
-print_line(size_t number) {
-  const char* s = line_at(number);
-  size_t len = str_len(s), i = 0, col = 0;
+/* A line is cut into units: an ANSI sequence has no width, a tab goes to
+   the next tab stop, a control character is shown as ^X and takes 2, a
+   UTF-8 character takes what wc_charwidth says (0 for a combining one). */
+enum { U_TEXT, U_ANSI, U_TAB, U_CTRL };
 
-  if(line_numbers) {
-    col = print_linenumber(number + 1, number_width(line_count()));
+struct unit {
+  size_t n;
+  int width, kind;
+};
+
+static void
+next_unit(const char* s, size_t len, size_t col, struct unit* u) {
+  unsigned char c = s[0];
+  size_t n;
+  uint32 code;
+
+  u->n = 1;
+  u->width = 1;
+  u->kind = U_TEXT;
+
+  if((n = scan_ansiskip(s, len)) > 0) {
+    u->n = n > len ? len : n;
+    u->width = 0;
+    u->kind = U_ANSI;
+  } else if(c == '\t') {
+    u->width = tab_size - col % tab_size;
+    u->kind = U_TAB;
+  } else if(c < 0x20 || c == 0x7f) {
+    u->width = 2;
+    u->kind = U_CTRL;
+  } else if(c >= 0x80 && (n = scan_utf8_ucs4(s, len, &code)) > 0) {
+    u->n = n;
+    u->width = wc_charwidth((wchar_t)code);
+    if(u->width < 0)
+      u->width = 0;
+  }
+}
+
+/* the ANSI sequences applied so far in the line being drawn, they are
+   applied again after the indent of a wrapped row */
+static char sgr_hist[1024];
+static size_t sgr_len;
+
+struct pline {
+  int64 row, avail, used, rowcol, tw, pw, lo, hi, col;
+  int draw, shown;
+};
+
+/* spaces for the line number column, in the default colors */
+static void
+indent(struct pline* p) {
+  size_t i = 0, n;
+
+  terminal_reset(&term);
+  for(n = 0; n < (size_t)p->pw; n++)
     terminal_putc(&term, ' ');
-    col++;
+  while(i < sgr_len && (n = scan_ansiskip(&sgr_hist[i], sgr_len - i)) > 0) {
+    apply_ansi(&sgr_hist[i], n);
+    i += n;
+  }
+}
+
+/* start the next row of a wrapped line, 0 if the page is full */
+static int
+newrow(struct pline* p) {
+  if(p->used >= p->avail)
+    return 0;
+  p->used++;
+  p->rowcol = 0;
+  if(p->draw) {
+    goto_row(p->row + p->used - 1);
+    indent(p);
+  }
+  return 1;
+}
+
+/* Put the b[n] that is w cells wide. A wrapped line moves to the next row
+   if it does not fit, and a wide character is not split. Without wrapping
+   only the cells from lo to hi are shown, a wide character cut by the edge
+   becomes a space. Returns 0 when there is nothing more to show. */
+static int
+put_cells(struct pline* p, const char* b, size_t n, int w) {
+  int64 from, to, vis;
+
+  if(wrap) {
+    if(p->rowcol > 0 && p->rowcol + w > p->tw) {
+      if(p->draw)
+        for(; p->rowcol < p->tw; p->rowcol++)
+          terminal_putc(&term, ' ');
+      if(!newrow(p))
+        return 0;
+    }
+    if(p->draw)
+      terminal_put(&term, b, n);
+    p->rowcol += w;
+    p->col += w;
+    p->shown = 1;
+    return 1;
+  }
+
+  from = p->col > p->lo ? p->col : p->lo;
+  to = p->col + w < p->hi ? p->col + w : p->hi;
+  vis = to > from ? to - from : 0;
+
+  if(p->draw) {
+    if(vis == w)
+      terminal_put(&term, b, n);
+    else
+      for(from = 0; from < vis; from++)
+        terminal_putc(&term, ' ');
+  }
+  p->shown = vis == w;
+  p->rowcol += vis;
+  p->col += w;
+  return p->col < p->hi;
+}
+
+/* Print line `number` from screen row `row`, at most `avail` rows. Without
+   wrapping that is one row, the part from column hscroll. Returns the rows
+   used. With draw 0 nothing is written, it only counts. */
+static int64
+print_line(size_t number, int64 row, int64 avail, int draw) {
+  const char* s = line_at(number);
+  size_t len = str_len(s), i = 0;
+  struct pline p;
+
+  p.row = row;
+  p.avail = avail;
+  p.used = 1;
+  p.rowcol = p.col = p.shown = 0;
+  p.draw = draw;
+  p.pw = line_numbers ? (int64)number_width(line_count()) + 1 : 0;
+  p.tw = terminal_cols > p.pw ? terminal_cols - p.pw : 1;
+  p.lo = wrap ? 0 : hscroll;
+  p.hi = wrap ? ((int64)1 << 60) : hscroll + p.tw;
+
+  if(draw) {
+    goto_row(row);
+    sgr_len = 0;
+    if(line_numbers) {
+      print_linenumber(number + 1, number_width(line_count()));
+      terminal_putc(&term, ' ');
+    }
   }
 
   while(i < len) {
-    unsigned char c = s[i];
-    size_t n;
+    struct unit u;
+    int k;
 
-    if((n = scan_ansiskip(&s[i], len - i)) > 0) {
-      apply_ansi(&s[i], n);
-      i += n;
-    } else if(c >= 0x80 && c < 0xc0) {
-      terminal_put(&term, &s[i++], 1);
-    } else if(c == '\t') {
-      n = tab_size - col % tab_size;
-      if(col + n > (size_t)terminal_cols)
+    next_unit(&s[i], len - i, p.col, &u);
+
+    switch(u.kind) {
+      case U_ANSI:
+        if(draw) {
+          apply_ansi(&s[i], u.n);
+          if(sgr_len + u.n <= sizeof(sgr_hist)) {
+            byte_copy(sgr_hist + sgr_len, u.n, &s[i]);
+            sgr_len += u.n;
+          }
+        }
         break;
-      col += n;
-      while(n--)
-        terminal_putc(&term, ' ');
-      i++;
-    } else if(c < 0x20 || c == 0x7f) {
-      if(col + 2 > (size_t)terminal_cols)
+      case U_TAB:
+        for(k = 0; k < u.width; k++)
+          if(!put_cells(&p, " ", 1, 1))
+            goto done;
         break;
-      terminal_putc(&term, '^');
-      terminal_putc(&term, c == 0x7f ? '?' : c + 64);
-      col += 2;
-      i++;
-    } else {
-      if(col + 1 > (size_t)terminal_cols)
+      case U_CTRL:
+        if(!put_cells(&p, "^", 1, 1))
+          goto done;
+        if(!put_cells(&p, s[i] == 0x7f ? "?" : (char[]){s[i] + 64}, 1, 1))
+          goto done;
         break;
-      terminal_put(&term, &s[i++], 1);
-      col++;
+      default:
+        if(u.width == 0) {
+          if(draw && p.shown)
+            terminal_put(&term, &s[i], u.n);
+        } else if(!put_cells(&p, &s[i], u.n, u.width))
+          goto done;
+    }
+    i += u.n;
+  }
+
+done:
+  if(draw) {
+    terminal_reset(&term);
+    if(p.rowcol < p.tw)
+      terminal_erase_line(&term, 0);
+  }
+  return p.used;
+}
+
+static int64
+line_rows(size_t i) {
+  return wrap ? print_line(i, 0, (int64)1 << 40, 0) : 1;
+}
+
+/* the width of line i in cells */
+static int64
+line_width(size_t i) {
+  const char* s = line_at(i);
+  size_t len = str_len(s), pos = 0;
+  int64 col = 0;
+
+  while(pos < len) {
+    struct unit u;
+
+    next_unit(&s[pos], len - pos, col, &u);
+    col += u.width;
+    pos += u.n;
+  }
+  return col;
+}
+
+/* how far the page can be moved to the right: the longest line on it ends
+   at the right edge */
+static int64
+max_hscroll(void) {
+  int64 i, w, widest = 0, tw = terminal_cols - (line_numbers ? (int64)number_width(line_count()) + 1 : 0);
+
+  for(i = first_line; i < first_line + display_rows && i < line_count(); i++)
+    if((w = line_width(i)) > widest)
+      widest = w;
+  return widest > tw ? widest - tw : 0;
+}
+
+/* the lines that fill one page from first_line on, or back from it */
+static int64
+page_lines(int back) {
+  int64 i, rows = 0, count = 0, r;
+
+  if(!wrap)
+    return display_rows;
+
+  if(back) {
+    for(i = first_line - 1; i >= 0; i--) {
+      if(rows + (r = line_rows(i)) > display_rows)
+        break;
+      rows += r;
+      count++;
+    }
+  } else {
+    for(i = first_line; i < line_count(); i++) {
+      if(rows + (r = line_rows(i)) > display_rows)
+        break;
+      rows += r;
+      count++;
     }
   }
+  return count ? count : 1;
 }
 
 static void
@@ -331,6 +556,11 @@ print_status(void) {
   put_number(range > 0 ? first_line * 100 / range : 100);
   terminal_putc(&term, '%');
 
+  if(!wrap && hscroll > 0) {
+    terminal_puts(&term, " col ");
+    put_number(hscroll + 1);
+  }
+
   if(command_buf.len) {
     terminal_puts(&term, " [");
     terminal_put(&term, command_buf.s, command_buf.len);
@@ -356,16 +586,23 @@ print_added(size_t num_lines) {
 /* Redraw the whole screen without clearing it first (no flicker). */
 static void
 redraw(void) {
-  int64 i;
+  int64 row = 0, i = first_line, range;
 
   terminal_linewrap(&term, 0);
 
-  for(i = 0; i < display_rows; i++) {
-    goto_row(i);
-    if(first_line + i < line_count())
-      print_line(first_line + i);
-    terminal_reset(&term);
-    terminal_erase_line(&term, 0);
+  if(wrap)
+    hscroll = 0;
+  else if(hscroll > (range = max_hscroll()))
+    hscroll = range;
+
+  while(row < display_rows) {
+    if(i < line_count())
+      row += print_line(i++, row, display_rows - row, 1);
+    else {
+      goto_row(row++);
+      terminal_reset(&term);
+      terminal_erase_line(&term, 2);
+    }
   }
   print_status();
 }
@@ -394,31 +631,54 @@ scroll_by(int64 offset) {
     scroll_to(to);
 }
 
+/* move the page to the right, or to the left if offset is negative */
+void
+scroll_h(int64 offset) {
+  int64 to = hscroll + offset, range = wrap ? 0 : max_hscroll();
+
+  if(to > range)
+    to = range;
+  if(to < 0)
+    to = 0;
+  if(to != hscroll) {
+    hscroll = to;
+    redraw();
+  }
+}
+
 #define scroll_up() scroll_by(-1)
 #define scroll_down() scroll_by(1)
 #define scroll_to_top() scroll_to(0)
 #define scroll_to_bottom() scroll_to(max_first())
 
 /* The arrow, page and home keys scroll. Shift scrolls 10 times as much,
-   control 100 times, alt a tenth of a page. */
+   control 100 times, alt a tenth of a page. Left and right move the page
+   sideways in 8 columns when lines are not wrapped. */
 static void
 handle_named_key(const struct terminal_key* k) {
-  int64 page = display_rows, step = 1;
+  int64 mult = 1, page;
 
   if(k->mods & TERMINAL_CTRL)
-    page *= 100, step = 100;
+    mult = 100;
   else if(k->mods & TERMINAL_SHIFT)
-    page *= 10, step = 10;
-  else if(k->mods & TERMINAL_ALT)
-    page = page / 10 ? page / 10 : 1;
+    mult = 10;
 
   switch(k->code) {
-    case TERMINAL_KEY_UP: scroll_by(-step); break;
-    case TERMINAL_KEY_DOWN: scroll_by(step); break;
+    case TERMINAL_KEY_UP: scroll_by(-mult); break;
+    case TERMINAL_KEY_DOWN: scroll_by(mult); break;
+    case TERMINAL_KEY_LEFT: scroll_h(-8 * mult); break;
+    case TERMINAL_KEY_RIGHT: scroll_h(8 * mult); break;
     case TERMINAL_KEY_HOME: scroll_to_top(); break;
     case TERMINAL_KEY_END: scroll_to_bottom(); break;
-    case TERMINAL_KEY_PAGEUP: scroll_by(-page); break;
-    case TERMINAL_KEY_PAGEDOWN: scroll_by(page); break;
+    case TERMINAL_KEY_PAGEUP:
+    case TERMINAL_KEY_PAGEDOWN:
+      page = page_lines(k->code == TERMINAL_KEY_PAGEUP);
+      if(k->mods & TERMINAL_ALT)
+        page = page / 10 ? page / 10 : 1;
+      else
+        page *= mult;
+      scroll_by(k->code == TERMINAL_KEY_PAGEUP ? -page : page);
+      break;
   }
 }
 
@@ -656,19 +916,28 @@ handle_input(void) {
     case 'f':
     case 6:
     case 22:
-    case ' ': scroll_by(display_rows * n); break;
+    case ' ': scroll_by(page_lines(0) * n); break;
 
     case 'b':
     case 'B':
-    case 2: scroll_by(-display_rows * n); break;
+    case 2: scroll_by(-page_lines(1) * n); break;
 
     case 'd':
     case 'D':
-    case 4: scroll_by(display_rows / 2 * n); break;
+    case 4: scroll_by((page_lines(0) / 2 ? page_lines(0) / 2 : 1) * n); break;
 
     case 'u':
     case 'U':
-    case 21: scroll_by(-(display_rows / 2) * n); break;
+    case 21: scroll_by(-(page_lines(1) / 2 ? page_lines(1) / 2 : 1) * n); break;
+
+    case 'h': scroll_h(-8 * n); break;
+    case 'l': scroll_h(8 * n); break;
+
+    case 'w':
+      wrap = !wrap;
+      hscroll = 0;
+      scroll_to(first_line);
+      break;
 
     case 'g': scroll_to_top(); break;
     case 'G': scroll_to_bottom(); break;
@@ -754,7 +1023,7 @@ winsizechange(int sig) {
 int
 main(int argc, char* argv[]) {
   buffer input;
-  int watchfd = -1, wd, is_pipe = 0;
+  int watchfd = -1, wd, is_pipe = 0, argi = 1;
 
   sig_catch(SIGTERM, terminate);
   sig_catch(SIGINT, interrupt);
@@ -762,11 +1031,26 @@ main(int argc, char* argv[]) {
   sig_catch(SIGWINCH, winsizechange);
 #endif
 
-  if(argc < 2) {
+  /* -S does not wrap long lines, -N shows line numbers */
+  while(argi < argc && argv[argi][0] == '-' && argv[argi][1]) {
+    const char* f;
+
+    for(f = argv[argi] + 1; *f; f++) {
+      if(*f == 'S')
+        wrap = 0;
+      else if(*f == 'N')
+        line_numbers = 1;
+      else
+        die(2, "usage: least [-SN] [file]", 0);
+    }
+    argi++;
+  }
+
+  if(argi >= argc) {
     buffer_read_fd(&input, STDIN_FILENO);
     filename = "(stdin)";
   } else {
-    filename = argv[1];
+    filename = argv[argi];
 
     if(buffer_readfile(&input, filename))
       diesys(127, "Unable to open file ", filename);
