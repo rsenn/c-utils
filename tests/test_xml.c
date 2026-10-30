@@ -65,8 +65,35 @@ TEST(test_xml_read_tree) {
   xml_free(doc);
 }
 
+/*
+ * void xml_scanner_buf(xmlscanner*, buffer*);
+ * xmltoken xml_read_token(xmlscanner*);
+ */
+TEST(test_xml_read_token) {
+  static const char text[] = "<a k=\"v\">text</a>";
+  static const xmltokid expected[6] = {XML_TAG_NAME, XML_ATTR_NAME, XML_ATTR_VALUE, XML_TAG_CLOSE, XML_DATA, XML_TAG_CLOSE};
+  xmlscanner s;
+  xmltoken tok;
+  buffer in;
+  size_t i = 0;
+
+  buffer_frombuf(&in, text, sizeof(text) - 1);
+  xml_scanner_buf(&s, &in);
+
+  do {
+    tok = xml_read_token(&s);
+
+    if(tok.id != XML_EOF && i < 6)
+      ASSERT_EQ(expected[i], tok.id);
+    i++;
+  } while(tok.id != XML_EOF);
+
+  ASSERT_EQ(7, i);
+}
+
 #define RUN_XML_TESTS() \
   RUN(test_xml_build_print); \
-  RUN(test_xml_read_tree)
+  RUN(test_xml_read_tree); \
+  RUN(test_xml_read_token)
 
 TESTS(xml) { RUN_XML_TESTS(); }

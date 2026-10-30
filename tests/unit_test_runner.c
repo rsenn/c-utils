@@ -48,6 +48,8 @@ TESTS(strarray);
 TESTS(rdir);
 TESTS(binfmt);
 TESTS(xml);
+TESTS(tokenizer);
+TESTS(json);
 
 START() {
   EXEC(stralloc);
@@ -90,4 +92,6 @@ START() {
   EXEC(rdir);
   EXEC(binfmt);
   EXEC(xml);
+  EXEC(tokenizer);
+  EXEC(json);
 }

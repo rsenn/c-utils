@@ -182,15 +182,10 @@
   Basic usage examples or boilerplates:
 
       src/tcp/httptest.c        Test HTTP client
-      src/xmljson/jsontest.c    Test JSON parser, prints with timing
-      src/xmljson/xmlscantest.c Dump the tokens of an XML file
-      src/xmljson/xmltest.c     Test XML reading with callbacks (diet version of SAX)
-      src/xmljson/xmltest2.c    Test XML reading as tree (diet version of DOM)
       src/toolchain/cpptest.c   C preprocessor driver (-D -I -P -L, dump defines, dependencies)
-      src/toolchain/tokenizertest.c Dump the tokens of a C file
       src/filedata/testihex.c   Read and write Intel HEX files
       src/filedata/ziptest.c    Simple universal file compression of *.gz, *.bz2, *.xz based on file extension
 
-  The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, buffer, ...) are in tests/.
+  The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.
 
 

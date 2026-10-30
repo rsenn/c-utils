@@ -1118,17 +1118,11 @@ program(lsproc strlist errmsg mmap buffer unix dir)
 if(BUILD_TESTS)
   program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD})
   program(ziptest buffer str unix path io iarray mmap open byte ${COMPRESSION_LIBRARIES})
-  program(tokenizertest errmsg tokenizer unix str scan buffer open)
-  program(dnstest dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
           ${LIBIPHLPAPI})
-  program(jsontest json stralloc charbuf buffer byte fmt hmap mmap open)
   set(testihex_SOURCES lib/list.h)
   program(testihex errmsg unix path ihex uint16 stralloc buffer alloc mmap)
-  program(xmlscantest xml errmsg)
-  program(xmltest xml stralloc buffer byte fmt hmap)
-  program(xmltest2 xml stralloc buffer byte fmt hmap)
   program(httptest http uri tls dns slist xml sig stralloc buffer errmsg byte unix
           io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD}
           ${LIBDL})
