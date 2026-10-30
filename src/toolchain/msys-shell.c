@@ -28,12 +28,10 @@ setup_env() {
     env_set("MSYS2_PATH", "/usr/local/bin:/usr/bin:/bin");
 
   if(!env_get("MSYS2_PREFIX"))
-    env_set("MSYS2_PREFIX",
-            "B:\\PortableApps\\MSYS2Portable\\App\\msys32\\usr");
+    env_set("MSYS2_PREFIX", "B:\\PortableApps\\MSYS2Portable\\App\\msys32\\usr");
 
   if(!env_get("MSYS2_ROOT"))
-    env_set("MSYS2_ROOT",
-            "B:\\PortableApps\\MSYS2Portable\\App\\msys32");
+    env_set("MSYS2_ROOT", "B:\\PortableApps\\MSYS2Portable\\App\\msys32");
 
   if(!env_get("MSYSTEM"))
     env_set("MSYSTEM", "MSYS");

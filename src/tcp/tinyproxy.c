@@ -208,7 +208,7 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
   range_foreach(&result->data, x) {
     if(i++ > 0)
       buffer_puts(b, ", ");
-  
+
     buffer_put(b, buf, (result->data.elem_size == 16 ? fmt_ip6 : fmt_ip4)(buf, x));
 
     if(i == num_responses)
@@ -466,7 +466,7 @@ connection_delete(connection_t* c) {
     if(*ptr == c)
       break;
   }
-  
+
   *ptr = (connection_t*)c->link.next;
   alloc_free(c);
 }
@@ -512,7 +512,7 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
 
   if(prefix && *prefix)
     stralloc_catm_internal(&filename, "-", prefix, NULL);
-  
+
   stralloc_cats(&filename, suffix);
   x = filename.s;
   n = filename.len;
@@ -950,7 +950,7 @@ server_finalize() {
 
   if(stat((s = stralloc_cstr(&filename)), &st) != -1)
     unlink(s);
-  
+
   stralloc_init(&cmd);
   s = NULL;
 
@@ -1022,7 +1022,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     }
     close(out);
   */
-  
+
   pid = wait_pid(child_pid, &status);
 
   if(pid != -1) {
@@ -1275,9 +1275,7 @@ server_loop() {
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
-  sd_notifyf(0,
-             "STATUS=Ready. %d connections processed.\n",
-             connections_processed);
+  sd_notifyf(0, "STATUS=Ready. %d connections processed.\n", connections_processed);
 #endif
 }
 

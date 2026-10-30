@@ -88,7 +88,12 @@ typedef union {
   uint8_t u8[6];
 } u8seq;
 
-typedef enum { CONNECTED = 1, LOGGED_IN = 2, PASSIVE = 3, TRANSFERRING = 4 } ftp_state;
+typedef enum {
+  CONNECTED = 1,
+  LOGGED_IN = 2,
+  PASSIVE = 3,
+  TRANSFERRING = 4,
+} ftp_state;
 
 typedef struct {
   fd_type control_sock;
@@ -108,11 +113,8 @@ static struct {
 
 void
 usage(char* prog) {
-  buffer_putm_internal(buffer_2,
-                       "Usage: ",
-                       str_basename(prog),
-                       " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>",
-                       NULL);
+  buffer_putm_internal(
+      buffer_2, "Usage: ", str_basename(prog), " [-q] [-t timeout_sec] [-u timeout_usec] <host> <port>", NULL);
   buffer_putnlflush(buffer_2);
 }
 

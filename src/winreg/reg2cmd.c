@@ -52,7 +52,7 @@ static char
 char_tolower(char ch) {
   if(ch >= 'A' && ch <= 'Z')
     ch += 0x20;
-  
+
   return ch;
 }
 
@@ -76,7 +76,7 @@ collapse_unicode(char* buffer, size_t n) {
   while(buffer[i] == '\0')
     i++;
 
-  for(; i < n; o++, i += 2) 
+  for(; i < n; o++, i += 2)
     buffer[o] = buffer[i];
 
   buffer[o] = '\0';
@@ -239,8 +239,7 @@ reg2cmd() {
         rr = ROOT_HKCR;
       else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
         rr = ROOT_HKU;
-      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key,
-                                            "HKEY_CURRENT_CONFIG"))
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
         rr = ROOT_HKCC;
 
       if((o = strchr(key, '\\'))) {
@@ -260,9 +259,9 @@ reg2cmd() {
         if(!inquote && line.s[keyend] == '=') {
           valuestart = keyend + 1;
 
-          if(keystart > 0) 
+          if(keystart > 0)
             keyend--;
-          
+
           break;
         }
 
@@ -406,7 +405,7 @@ reg2cmd() {
               if(scan_fromhex(line.s[pos]) != -1)
                 buffer_putc(buffer_1, char_tolower(line.s[pos]));
             }
-            
+
             buffer_putc(buffer_1, '"');
             break;
           }
@@ -449,8 +448,7 @@ void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, mystr_basename(arg0));
-  buffer_puts(buffer_2,
-              " [-f] [input - file] [output - file]\n");
+  buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

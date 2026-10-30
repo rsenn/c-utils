@@ -22,7 +22,7 @@
  * you need to use the blocking
  * read/write functions!
  */
-//#define XONXOFF
+// #define XONXOFF
 #define XON 0x11  //!< XON flow control character
 #define XOFF 0x13 //!< XOFF flow control character
 
@@ -52,7 +52,7 @@
  * probed, it might change it's
  * settings.
  */
-//#define TRY_TO_OPEN_PORTS
+// #define TRY_TO_OPEN_PORTS
 
 /*!
  * \brief The timeout in seconds for raw

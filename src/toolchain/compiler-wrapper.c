@@ -199,7 +199,7 @@ void
 strlist_each(strlist* sl, void (*slptr)(const char*)) {
   int i, n = strlist_count(sl);
 
-  for(n = strlist_count(sl), i = 0; i < n; ++i) 
+  for(n = strlist_count(sl), i = 0; i < n; ++i)
     slptr(strlist_at(sl, i));
 }
 
@@ -323,20 +323,17 @@ read_arguments() {
     type = PICC18;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18",
-                       &compiler);
+      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC18", &compiler);
   } else if(!str_case_diffn(argv0, "picc", 4)) {
     type = PICC;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC",
-                       &compiler);
+      get_compiler_dir("C:/Program Files (x86)/HI-TECH Software/PICC", &compiler);
   } else if(strstr(argv0, "xc8") != NULL) {
     type = XC8;
 
     if(compiler.len == 0)
-      get_compiler_dir("C:/Program Files (x86)/Microchip/xc8",
-                       &compiler);
+      get_compiler_dir("C:/Program Files (x86)/Microchip/xc8", &compiler);
   }
 
   stralloc_0(&compiler);
@@ -421,9 +418,9 @@ execute_cmd() {
   stralloc_0(&chip);
   strlist_cat(&cmd, &longopts);
 
- n = strlist_count(&includedirs);
+  n = strlist_count(&includedirs);
 
-  for(i = 0; i < n; ++i) 
+  for(i = 0; i < n; ++i)
     strlist_pushm_internal(&cmd, "-I", strlist_at(&includedirs, i), NULL);
 
   n = strlist_count(&defines);
@@ -507,12 +504,12 @@ execute_cmd() {
         strlist_push(&cmd, "--pre");
         break;
       }
-      
+
       case COMPILE: {
         strlist_push(&cmd, "-S");
         break;
       }
-      
+
       case COMPILE_AND_ASSEMBLE: {
         strlist_push(&cmd, "--pass1");
         break;
@@ -559,7 +556,7 @@ execute_cmd() {
         strlist_push(&cmd, "-E");
         break;
       }
-      
+
       case COMPILE: {
         strlist_push(&cmd, "-S");
         break;
@@ -569,16 +566,16 @@ execute_cmd() {
         strlist_push(&cmd, "-c");
         break;
       }
-      
+
       default: {
         break;
       }
     }
 
-    if(debug) 
+    if(debug)
       strlist_pushm_internal(&cmd, "--debug", "--debug-xtra", NULL);
 
-    if(output_dir.len > 0) 
+    if(output_dir.len > 0)
       stralloc_copy(&outp, &output_dir);
 
     if(output_file.len > 0) {
@@ -663,7 +660,7 @@ print_strlist(buffer* b, const strlist* sl, const char* separator, const char* q
         buffer_puts(b, quot);
     }
   }
-  
+
   buffer_puts(b, "\n");
   buffer_flush(b);
 }
@@ -693,7 +690,7 @@ main(int argc, char* argv[]) {
 
   strlist_init(&args, '\0');
 
-  for(i = 1; i < argc; ++i) 
+  for(i = 1; i < argc; ++i)
     strlist_push(&args, argv[i]);
 
   DUMP_LIST(err_buf, args, "\n\t", "'");

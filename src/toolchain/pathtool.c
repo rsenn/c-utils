@@ -356,7 +356,7 @@ mingw_prefix(stralloc* sa) {
  * `wine`. */
 static int
 wine_mounts_read(MAP_T map) {
-  const char* wineprefix,* home;
+  const char *wineprefix, *home;
   stralloc prefix, full, target, key;
   dir_t d;
   char* name;
@@ -628,7 +628,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   stralloc tmp;
-  int c, digit_optind = 0,index = 0;
+  int c, digit_optind = 0, index = 0;
   const char* rel_to = NULL;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},

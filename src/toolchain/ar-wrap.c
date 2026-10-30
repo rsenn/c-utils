@@ -412,7 +412,7 @@ main(int argc, char* argv[]) {
           stralloc_prepends(&arg, "+-");
       }
 
-      if(tlib) 
+      if(tlib)
         if(stralloc_equals(&arg, "/a") || stralloc_equals(&arg, "/u"))
           continue;
 
@@ -434,7 +434,7 @@ main(int argc, char* argv[]) {
 
   if(!path_exists(realcmd.s)) {
     errmsg_warnsys("doesn't exist: ", realcmd.s, " \"", sa.s, "\" : ", 0);
-    //return 127;
+    // return 127;
   }
 
 #if DEBUG

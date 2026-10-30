@@ -231,8 +231,7 @@ regfilter() {
         rr = ROOT_HKCR;
       else if(KEY_EQ(key, "HKU") || KEY_EQ(key, "HKEY_USERS"))
         rr = ROOT_HKU;
-      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key,
-                                            "HKEY_CURRENT_CONFIG"))
+      else if(KEY_EQ(key, "HKCC") || KEY_EQ(key, "HKEY_CURRENT_CONFIG"))
         rr = ROOT_HKCC;
 
       o = strchr(key, '\\');
@@ -442,8 +441,7 @@ void
 usage(char* arg0) {
   buffer_puts(buffer_2, "Usage: ");
   buffer_puts(buffer_2, str_basename(arg0));
-  buffer_puts(buffer_2,
-              " [-f] [input - file] [output - file]\n");
+  buffer_puts(buffer_2, " [-f] [input - file] [output - file]\n");
   buffer_flush(buffer_2);
   exit(1);
 }

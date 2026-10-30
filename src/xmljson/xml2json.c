@@ -105,12 +105,12 @@ xmllist_to_jsonarray(xmlnode* list) {
     if(n->type == XML_TEXT) {
       if(!n->name[0] || str_is(n->name, isspace))
         continue;
-    
+
       v = json_string(n->name);
     } else {
       if(n->name[0] == '/')
         continue;
-    
+
       v = xml_to_json_obj(n);
     }
 
@@ -179,7 +179,7 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
 
         if(str_equal(prop, "class") || str_equal(prop, "className"))
           prop = class_property;
-        
+
         ptr = t->vals.val_chars;
         charbuf_froms(&b, ptr, 2);
 
@@ -236,7 +236,7 @@ static jsonval
 xml_to_json(xmlnode* node) {
   if(node->type == XML_DOCUMENT || node->attributes == NULL)
     return xmllist_to_jsonarray(node->children);
- 
+
   return xml_to_json_obj(node);
 }
 
@@ -287,7 +287,7 @@ int
 testwalk(xmlnode* node, xmlnode* root) {
   if(node->name && node->name[0] != '/' && node->type == XML_ELEMENT) {
     int depth = xml_depth(node);
-   
+
     buffer_putm_internal(buffer_2, "walk: ", node->name, " depth: ", NULL);
     buffer_putlong(buffer_2, depth);
     buffer_putnlflush(buffer_2);

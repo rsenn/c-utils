@@ -106,7 +106,8 @@ pathlist_lookup(const strarray* path, const strarray* pathext, const char* bin, 
       exist = path_exists(name.s);
 
 #ifdef DEBUG_OUTPUT
-      buffer_putm_internal(buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", exist ? "true" : "false", ";", NULL);
+      buffer_putm_internal(
+          buffer_2, "path_find(\"", *dir_p, "\", \"", name.s, "\", out) = ", exist ? "true" : "false", ";", NULL);
       buffer_putnlflush(buffer_2);
 #endif
 

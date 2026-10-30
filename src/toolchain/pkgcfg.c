@@ -186,7 +186,7 @@ static int
 get_op_index(const stralloc* op) {
   int i;
 
-  for(i = 0; op_strings[i]; i++) 
+  for(i = 0; op_strings[i]; i++)
     if(stralloc_equals(op, op_strings[i]))
       return i;
 
@@ -208,9 +208,9 @@ extract_paths(const stralloc* sa, strlist* paths) {
 
     n = scan_nonwhitenskip(s, e - s);
 
-    if(*s == PATHSEP_C) 
+    if(*s == PATHSEP_C)
       strlist_pushb(paths, s, n);
-    
+
     s += n;
   }
 }
@@ -223,7 +223,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   posix_spawnattr_t attr;
 #endif
   int p[2], stdio[3];
-  char* argv[3],* envp[1];
+  char *argv[3], *envp[1];
   const char* bin;
   stralloc dir;
 
@@ -281,7 +281,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
 const char*
 host_arch(const char* compiler, stralloc* out) {
   int tcc = str_contains(compiler, "tcc");
-   const char* s = exec_program(compiler, tcc ? "-vv" : "-dumpmachine", out);
+  const char* s = exec_program(compiler, tcc ? "-vv" : "-dumpmachine", out);
 
   if(tcc) {
     const char* p;
@@ -378,8 +378,8 @@ wordexp_sa(const char* s, stralloc* sa, MAP_T vars) {
       v = MAP_GET(vars, var.s, var.len + 1);
 
       stralloc_cats(sa, v);
-      //wordexp_sa(v, sa, vars);
-      
+      // wordexp_sa(v, sa, vars);
+
       n += 1;
     }
   }
@@ -405,12 +405,12 @@ pkg_expand(pkg* pf, const char* key, stralloc* out) {
   stralloc_init(&v);
   stralloc_copys(&k, key);
   stralloc_nul(&k);
-  
+
   k.s[0] = toupper(k.s[0]);
 
   if((s = pkg_get(pf, key)) == NULL)
     return 0;
-  
+
   stralloc_copys(&v, s);
 
   for(;;) {
@@ -478,7 +478,7 @@ pkg_format_version(uint64 v, stralloc* sa) {
 
     if(sa->len)
       stralloc_catb(sa, ".", 1);
-  
+
     stralloc_catlong(sa, num);
   }
 
@@ -524,7 +524,7 @@ pkg_read(buffer* b, pkg* p) {
     if(ret == 0 || name.s[0] == '\0')
       break;
 
-    if(name.len > 1) 
+    if(name.len > 1)
       sep = name.s[--name.len];
 
     while(buffer_peekc(b, &ch) && (ch == ' ' || ch == '\t'))
@@ -656,7 +656,7 @@ visit_dump(const void* key, size_t key_len, const void* value, size_t value_len,
   buffer_put(ptr->b, value, value_len - 1);
   buffer_puts(ptr->b, isupper(((char*)key)[0]) ? "\n" : "\"\n");
   buffer_flush(ptr->b);
-  
+
   return 1;
 }
 
@@ -901,7 +901,7 @@ pkg_dump_cond(const cond* c) {
   buffer_puts(buffer_2, "'");
   buffer_puts(buffer_2, ", version_val = ");
   buffer_putxlonglong0(buffer_2, c->version_val, 16);
-  
+
   {
     stralloc ver;
     stralloc_init(&ver);
@@ -1055,7 +1055,7 @@ pkg_conf(strarray* modules, id code, int mode) {
       if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
         strlist sl;
         const char* s;
-        
+
         strlist_init(&sl, '\0');
         stralloc_nul(&value);
         strlist_froms(&sl, value.s, ' ');
@@ -1097,7 +1097,7 @@ pkg_conf(strarray* modules, id code, int mode) {
         strlist_pushb_unique(&output, x, i);
       }
 
-      if(value.len) 
+      if(value.len)
         pkg_output(value.s, value.len);
     }
 
@@ -1199,7 +1199,7 @@ pkgcfg_init(const char* self) {
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
 
-  if(!self[str_chr(self, '/')]) 
+  if(!self[str_chr(self, '/')])
     if(path_lookup(&dir, env_get("PATH"), self))
       self = dir.s;
 
@@ -1267,9 +1267,9 @@ pkgcfg_init(const char* self) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(path_exists(dir.s) && sysroot == 0) 
+  if(path_exists(dir.s) && sysroot == 0)
     sysroot = str_dup(dir.s);
-  
+
 #ifdef DEBUG_OUTPUT_
   if(sysroot) {
     buffer_puts(buffer_2, "sysroot: ");
@@ -1341,20 +1341,14 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --help, -h                        show this help\n");
   buffer_puts(buffer_1, "  --prefix, -p DIRECTORY            Set prefix directory\n");
   buffer_puts(buffer_1, "  --host, -m MACHINE                Set canonical host\n");
-  buffer_puts(buffer_1,
-              "  --cflags                          print required CFLAGS to stdout\n");
-  buffer_puts(buffer_1,
-              "  --libs                            print required linker flags to stdout\n");
-  buffer_puts(buffer_1,
-              "  --path                            show the exact filenames for any matching .pc files\n");
-  buffer_puts(buffer_1,
-              "  --modversion                      print the specified module's version to stdout\n");
+  buffer_puts(buffer_1, "  --cflags                          print required CFLAGS to stdout\n");
+  buffer_puts(buffer_1, "  --libs                            print required linker flags to stdout\n");
+  buffer_puts(buffer_1, "  --path                            show the exact filenames for any matching .pc files\n");
+  buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
-  buffer_puts(buffer_1,
-              "  --list-path                       list path of all known packages\n");
+  buffer_puts(buffer_1, "  --list-path                       list path of all known packages\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
-  buffer_puts(buffer_1,
-              "  --debug                           show verbose debug information\n");
+  buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
   buffer_puts(buffer_1,
               "  --unsorted                        unsorted list output (default)\n"

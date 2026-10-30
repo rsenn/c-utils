@@ -73,7 +73,7 @@ debug_sl(const char* name, const strlist* l) {
   stralloc tmp;
 
   stralloc_init(&tmp);
-  
+
   strlist_foreach(l, x, n) {
     if(tmp.len)
       stralloc_catc(&tmp, ' ');
@@ -272,7 +272,7 @@ main(int argc, char* argv[], char* envp[]) {
 
   if(stralloc_endb(&prog, EXEEXT, str_len(EXEEXT)))
     prog.len -= str_len(EXEEXT);
-  
+
   stralloc_nul(&prog);
 
 #ifdef DEBUG

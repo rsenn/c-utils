@@ -162,7 +162,7 @@ main(int argc, char* argv[], char* envp[]) {
   strlist args;
   char** av;
   int ret;
-  const char* pathstr,* logfile = getenv("LOGFILE");
+  const char *pathstr, *logfile = getenv("LOGFILE");
 
   errmsg_iam(argv[0]);
 
