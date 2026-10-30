@@ -83,28 +83,114 @@ function(debug_option NAME DESC)
   endif(${${MODULE}_LIBS})
 endfunction(debug_option NAME DESC)
 
+#
+# var2define <NAME> [DEFINED_VALUE] [VAR_NAME]
+#
+# Add the compile definition -DNAME: =1 or =0 by the truth of variable NAME,
+# or =DEFINED_VALUE if VAR_NAME is true.
+#
+function(var2define NAME)
+  if(${ARGC} GREATER_EQUAL 3)
+    set(VAR_NAME "${ARGV1}")
+  else()
+    set(VAR_NAME "${NAME}")
+  endif()
+
+  set(VALUE "${${VAR_NAME}}")
+  if(${ARGC} LESS_EQUAL 1 AND ${ARGC} GREATER_EQUAL 0)
+    if(VALUE)
+      add_definitions(-D${NAME}=1)
+    else()
+      add_definitions(-D${NAME}=0)
+    endif()
+  else()
+    if(VALUE)
+      add_definitions(-D${NAME}=${ARGV1})
+    endif()
+  endif()
+endfunction()
+
+#
+# clean_name <STRING> <OUTPUT-VAR>
+#
+function(clean_name STR OUTPUT_VAR)
+  string(TOUPPER "${STR}" STR)
+  string(REGEX REPLACE "[^A-Za-z0-9_]" "_" STR "${STR}")
+  set("${OUTPUT_VAR}" "${STR}" PARENT_SCOPE)
+endfunction()
+
+#
+# check_function_def <FUNCTION NAME> [RESULT VARIABLE] [PREPROC_DEF]
+#
 macro(check_function_def FUNC)
-  string(TOUPPER "${FUNC}" FUNC_U)
-  #message("FUNC_U: ${FUNC_U}")
-  if(ARGC EQUAL 1)
-    string(TOUPPER "HAVE_${FUNC_U}" RESULT_VAR)
-  else(ARGC EQUAL 1)
-    set(RESULT_VAR "${ARGN}")
-  endif(ARGC EQUAL 1)
-  #message("RESULT_VAR: ${RESULT_VAR}")
-  # message("FUNC: ${FUNC} RESULT_VAR: ${RESULT_VAR}")
-  check_function_exists("${FUNC}" "${RESULT_VAR}")
+  if(${ARGC} GREATER 1)
+    set(RESULT_VAR "${ARGV1}")
+  else()
+    string(TOUPPER "HAVE_${FUNC}" RESULT_VAR)
+  endif()
+
+  if(${ARGC} GREATER 2)
+    set(PREPROC_DEF "${ARGV2}")
+  else()
+    string(TOUPPER "HAVE_${FUNC}" PREPROC_DEF)
+  endif()
+
+  if(NOT DEFINED ${RESULT_VAR})
+    check_function_exists("${FUNC}" "_${RESULT_VAR}")
+
+    if(${_${RESULT_VAR}})
+      set("${RESULT_VAR}" TRUE CACHE INTERNAL "Define this if you have the '${FUNC}' function")
+    else()
+      set("${RESULT_VAR}" FALSE CACHE INTERNAL "Define this if you have the '${FUNC}' function")
+    endif()
+  endif()
+
   if(${${RESULT_VAR}})
-    set("${RESULT_VAR}" TRUE CACHE BOOL "Have the '${FUNC}' function")
-    # add_definitions(-D${RESULT_VAR}) message("${RESULT_VAR} ${${RESULT_VAR}}")
-  endif(${${RESULT_VAR}})
-endmacro(check_function_def FUNC RESULT_VAR)
+    if(NOT "${PREPROC_DEF}" STREQUAL "")
+      set("${PREPROC_DEF}" "1")
+      var2define("${PREPROC_DEF}" 1)
+    endif()
+  endif()
+endmacro(check_function_def FUNC)
 macro(check_functions)
   foreach(FUNC ${ARGN})
     string(TOUPPER "HAVE_${FUNC}" RESULT_VAR)
     check_function_def("${FUNC}" "${RESULT_VAR}")
   endforeach(FUNC ${ARGN})
 endmacro(check_functions)
+
+#
+# check_include_def <INCLUDE> [RESULT VARIABLE] [PREPROC_DEF]
+#
+macro(check_include_def INC)
+  if(ARGC GREATER_EQUAL 2)
+    set(RESULT_VAR "${ARGV1}")
+    set(PREPROC_DEF "${ARGV2}")
+  else()
+    clean_name("HAVE_${INC}" RESULT_VAR)
+    set(PREPROC_DEF "${RESULT_VAR}")
+  endif()
+
+  check_include_file("${INC}" "${RESULT_VAR}")
+
+  if(${${RESULT_VAR}})
+    set("${RESULT_VAR}" TRUE CACHE INTERNAL "Define this if you have the '${INC}' header file")
+
+    if(NOT "${PREPROC_DEF}" STREQUAL "")
+      var2define("${PREPROC_DEF}" 1)
+    endif()
+  endif()
+endmacro(check_include_def INC)
+
+#
+# check_includes <INCLUDE FILES...>
+#
+macro(check_includes)
+  foreach(INC ${ARGN})
+    clean_name("HAVE_${INC}" RESULT_VAR)
+    check_include_def("${INC}" "${RESULT_VAR}")
+  endforeach(INC ${ARGN})
+endmacro(check_includes)
 
 function(list_contains LIST ITEM OUTPUT_VAR)
   set(RESULT FALSE)
