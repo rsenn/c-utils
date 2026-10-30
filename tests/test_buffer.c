@@ -821,7 +821,34 @@ TEST(test_buffer_writefile) {}
  * int buffer_brotli(buffer*, buffer*, int compress);
  */
 TEST(test_buffer_lzma) {}
-TEST(test_buffer_bz2) {}
+TEST(test_buffer_bz2) {
+#if HAVE_LIBBZ2
+  buffer file, bz, in, unbz;
+  static char data[400000], out[400000];
+  size_t i, got = 0;
+  ssize_t n;
+
+  /* more than one 300000 byte bzip2 block at level 3 */
+  for(i = 0; i < sizeof(data); i++)
+    data[i] = (char)('a' + (i * 7 + i / 13) % 26);
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_bz2.tmp"));
+  ASSERT_NE(0, buffer_bz2(&bz, &file, 3));
+  buffer_put(&bz, data, sizeof(data));
+  buffer_flush(&bz);
+  buffer_close(&bz);
+  buffer_close(&file);
+
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_bz2.tmp"));
+  ASSERT_NE(0, buffer_bz2(&unbz, &in, 0));
+  while((n = buffer_get(&unbz, out + got, sizeof(out) - got)) > 0)
+    got += (size_t)n;
+  unlink("test_buffer_bz2.tmp");
+
+  ASSERT_EQ(sizeof(data), got);
+  ASSERT_EQ(0, byte_diff(out, got, data));
+#endif
+}
 TEST(test_buffer_brotli) {}
 
 /*

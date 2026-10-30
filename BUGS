@@ -588,7 +588,9 @@
   unit comes out with no dependencies. The preprocessor of `lib/cpp` probably
   needs a newline appended in `cpp_tokenize_file`.
 
-- buffer-bz2-compress-writes-nothing: compressing with `buffer_bz2(&b, out, level)` (`lib/buffer/buffer_bz2.c`)
-  leaves the output empty although `ccat -c`/`czip` exit with 0, e.g. `czip h.txt -o h.bz2`
-  gives a 0 byte file; gz, xz, lzma and br work. The stream is probably never finished
-  (`BZ_FINISH`) when the buffer is closed.
+- buffer-deflate-inflate-corrupt-large-data: `ccat`/`czip` through `buffer_deflate` produce a gzip stream that
+  `gzip -dc` rejects ("invalid compressed data") for inputs over 32768 bytes, and `ccat` on
+  a `gzip -c` file of 4 MB differs from the original from byte 1026 on, so
+  `lib/buffer/buffer_deflate.c` and `buffer_inflate.c` lose data much like `buffer_bz2`
+  did (a write op that returns 0 when the output is full, which `buffer_stubborn` treats as an error).
+  `ccat` ignores the error from `buffer_copy`.

@@ -54,71 +54,73 @@ buffer_bzread_op(fd_type fd, void* data, size_t n, buffer* b) {
   return 0;
 }
 
+/* compresses all n bytes, bzip2 takes no input while its output is full, so
+ * the other buffer is flushed and the call repeated until the input is used */
 static ssize_t
 buffer_bzwrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   bz_ctx* ctx = b->cookie;
   bz_stream* strm = &ctx->strm;
-  int ret;
   buffer* other = ctx->b;
-  ssize_t r, a = buffer_SPACE(other);
-  int eof = 0;
+  size_t a;
 
   strm->next_in = data;
   strm->avail_in = n;
-  strm->next_out = (char*)buffer_PEEK(other);
-  strm->avail_out = a;
 
-  ctx->a = BZ_RUN;
+  while(strm->avail_in > 0) {
+    if(!buffer_SPACE(other) && buffer_flush(other) < 0)
+      return -1;
 
-  ret = BZ2_bzCompress(strm, ctx->a);
+    a = buffer_SPACE(other);
+    strm->next_out = (char*)buffer_PEEK(other);
+    strm->avail_out = a;
 
-  if(strm->avail_in == 0 || ret == BZ_STREAM_END) {
-    r = n - strm->avail_in;
+    if(BZ2_bzCompress(strm, BZ_RUN) != BZ_RUN_OK)
+      return -1;
 
-    if(r > 0) {
-      a = buffer_SPACE(other) - strm->avail_out;
-      other->p += a;
-      return r;
-    }
+    other->p += a - strm->avail_out;
+  }
 
-  } else if(ret != BZ_OK)
-    return -1;
-
-  return 0;
+  return n;
 }
 
+/* close writes what the compressor still holds (BZ_FINISH) and the stream
+ * trailer; without it bzip2 keeps the whole block and the output is empty */
 static void
 buffer_bz_close(buffer* b) {
   bz_ctx* ctx = b->cookie;
   buffer* other = ctx->b;
   bz_stream* strm = &ctx->strm;
-  int ret;
-  ssize_t a;
 
-  ctx->a = BZ_FLUSH;
+  if(b->op == (void*)&buffer_bzwrite_op) {
+    int ret;
+    size_t a;
 
-  strm->next_in = (char*)buffer_PEEK(b);
-  strm->avail_in = buffer_LEN(b);
+    buffer_flush(b);
 
-  while(strm->avail_in > 0) {
-    strm->next_out = (char*)buffer_PEEK(other);
-    strm->avail_out = a = buffer_SPACE(other);
+    strm->next_in = 0;
+    strm->avail_in = 0;
 
-    ret = b->op == &buffer_bzwrite_op ? BZ2_bzCompress(strm, ctx->a) : BZ2_bzDecompress(strm);
+    do {
+      if(!buffer_SPACE(other))
+        buffer_flush(other);
 
-    if(ret == BZ_FLUSH_OK)
-      ctx->a = BZ_FINISH;
+      a = buffer_SPACE(other);
+      strm->next_out = (char*)buffer_PEEK(other);
+      strm->avail_out = a;
 
-    if(ret == BZ_FINISH_OK || ret == BZ_STREAM_END)
-      break;
+      ret = BZ2_bzCompress(strm, BZ_FINISH);
+      other->p += a - strm->avail_out;
+    } while(ret == BZ_FINISH_OK);
+
+    BZ2_bzCompressEnd(strm);
+    buffer_flush(other);
+  } else {
+    BZ2_bzDecompressEnd(strm);
   }
 
-  other->p += a - strm->avail_out;
-
-  buffer_flush(other);
-
   b->deinit = 0;
-  buffer_close(b);
+  b->cookie = 0;
+  free(ctx);
 }
 
 int
