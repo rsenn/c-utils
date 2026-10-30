@@ -272,3 +272,29 @@ same.
   and shown only when -v is given twice, with a count at -v. The errors on
   plain code lines (src/genmakefile/project.c:254 is one) need a look of
   their own, since a scan should not parse code at all.
+
+- port-cdb: The constant database module of libowfat is missing here.
+  The other copy has it in ~/Sources/chaosircd/libowfat (cdb.h,
+  cdb_make.h and cdb/). README.txt already lists cdb among the modules,
+  but there is no lib/cdb, and the commented-out cdb_find in
+  src/dnsutils/query.c shows where a lookup table would be used. A cdb
+  file is what djbdns and qmail use for data.cdb, so reading and writing
+  those files needs it.
+
+  Port it as lib/cdb.h, lib/cdb_make.h and lib/cdb/ with one function per
+  file, add cdb to MODSUBDIRS in lib/CMakeLists.txt and write
+  tests/test_cdb.c. The functions to split are:
+
+    cdb.c: cdb_free, cdb_init, cdb_read, cdb_findstart, cdb_findnext,
+      cdb_find, cdb_successor
+    cdb_hash.c: cdb_hashadd, cdb_hash
+    cdb_make.c: cdb_make_start, cdb_make_addbegin, cdb_make_addend,
+      cdb_make_add, cdb_make_finish
+    cdb_traverse.c: cdb_firstkey, cdb_nextkey
+
+  The reader maps the file with mmap and has a MinGW branch with
+  MapViewOfFile that needs a look. The types are int64 and uint32 of the
+  library, not the _t ones. The test should write a database with
+  cdb_make, read every key back, walk it with cdb_firstkey, and compare
+  the file with one made by the cdb tools if they are installed.
+
