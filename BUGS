@@ -535,3 +535,8 @@
   (the `X(...)` macro uses at file scope, e.g. `dnsq.c:72`, `d` undeclared at `dnsq.c:145`,
   `dnstrace.c:98`), which is why their `program()` lines in `CMakeLists.txt` are commented
   out. They call `dnsopt_parse` already, but this was never built or run.
+
+- uri-scan-relative-path-is-a-host: `uri_scan` in `lib/uri/uri_scan.c` takes a relative
+  reference without a leading slash (`other.html`, `sub/x.html`) for a host name, so
+  resolving against a base uri does not work; only `/path` forms keep the host. The
+  branch that appends to the old `location` is unreachable.

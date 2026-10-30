@@ -11,7 +11,7 @@
 #include "lib/unix.h"
 #include "lib/slist.h"
 #include "lib/xml.h"
-#include "uri.h"
+#include "lib/uri.h"
 
 #include <errno.h>
 #include <string.h>

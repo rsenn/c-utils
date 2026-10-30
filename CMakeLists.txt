@@ -1001,8 +1001,6 @@ program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
         stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
-set(httptest_SOURCES uri.c uri.h)
-
 # set(ssltest_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
 
 program(impgen pe buffer byte mmap open)
@@ -1139,7 +1137,7 @@ if(BUILD_TESTS)
   program(xmltest2 xml stralloc buffer byte fmt hmap)
   program(xmltest3 xml stralloc buffer byte fmt hmap)
   #program(xmltest4 xml stralloc buffer array byte cb cbmap fmt hmap mmap scan str strlist)
-  program(httptest http tls dns slist xml sig stralloc buffer errmsg byte unix
+  program(httptest http uri tls dns slist xml sig stralloc buffer errmsg byte unix
           io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD}
           ${LIBDL})
   program(cpptest cpp hmap path fmt str)

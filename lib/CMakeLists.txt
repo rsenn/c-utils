@@ -77,6 +77,7 @@ set(MODSUBDIRS
     uint32
     uint64
     unix
+    uri
     utf8
     wait
     xml)

@@ -42,6 +42,7 @@ TESTS(seek);
 TESTS(tai);
 TESTS(ndelay);
 TESTS(ini);
+TESTS(uri);
 
 START() {
   EXEC(stralloc);
@@ -78,4 +79,5 @@ START() {
   EXEC(tai);
   EXEC(ndelay);
   EXEC(ini);
+  EXEC(uri);
 }
