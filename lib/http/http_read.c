@@ -41,7 +41,7 @@ http_read(fd_type fd, char* buf, size_t len, buffer* b) {
   if(!n)
     return 0;
 
-  uint32_t iteration = 0;
+  uint32 iteration = 0;
 
 again:
   ++iteration;

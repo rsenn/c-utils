@@ -17,7 +17,7 @@ cpp_convert_int(cpp_token* tok) {
     base = 8;
   }
 
-  int64_t val = strtoul(p, &p, base);
+  int64 val = strtoul(p, &p, base);
 
   /* Read U, L or LL suffixes.*/
   bool l = false, u = false;

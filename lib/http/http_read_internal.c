@@ -19,7 +19,7 @@ http_read_internal(fd_type fd, char* buf, size_t len, buffer* b) {
   ssize_t ret = 0;
   char* x = buf;
   size_t n = len;
-  uint32_t iteration = 0;
+  uint32 iteration = 0;
 
 again:
   ++iteration;
