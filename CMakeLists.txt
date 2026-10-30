@@ -1006,7 +1006,6 @@ program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
         stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
-set(ssltest_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
 
 program(impgen pe buffer byte mmap open)
 set(list_r_SOURCES src/dirlist/dump.c src/dirlist/dump.h)
@@ -1123,7 +1122,6 @@ program(setuidgid errmsg path stralloc mmap open scan str)
 program(lsproc strlist errmsg mmap buffer unix dir)
 
 if(BUILD_TESTS)
-  program(ssltest strlist unix dns stralloc buffer errmsg byte io  tls socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBDL} ${LIBPTHREAD})
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
           ${LIBIPHLPAPI})
@@ -1133,6 +1131,12 @@ if(BUILD_TESTS)
   program(cpptest cpp hmap path fmt str)
   #link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
+
+if(NOT WINDOWS_NATIVE AND USE_SSL)
+  set(ctlscat_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
+  program(ctlscat strlist unix dns stralloc buffer errmsg byte io tls socket ndelay scan str alloc taia
+          ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
+endif(NOT WINDOWS_NATIVE AND USE_SSL)
 
 program(least terminal ucs utf8 unix errmsg sig io strarray buffer stralloc open)
 link_program(least ${LIBMATH})

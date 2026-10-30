@@ -140,6 +140,7 @@
       src/dnsutils/dnsip.c Resolve hostname into IP addresses (NS from resolv.conf or DNSCACHE environment variable)
       src/dnsutils/dnsname.c Reverse lookup of IP address
       src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
+      src/tcp/ctlscat.c    netcat style relay of stdin/stdout over TLS (plain with -n), connects or listens with -l
 
 
   Binary file tools
