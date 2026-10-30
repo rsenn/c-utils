@@ -9,7 +9,7 @@
 #if __STDC_VERSION__ >= 199901L
 #include <stdint.h>
 #elif defined(__BORLANDC__)
-#include <systypes.h>
+/* <systypes.h> would typedef uint8, uint16 and uint32 a second time */
 #elif defined(__LCC__)
 #include <stdint.h>
 /*#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)

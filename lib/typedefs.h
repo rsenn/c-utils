@@ -28,6 +28,9 @@ extern "C" {
 
 #if !defined(__LCC__)
 #if defined(__BORLANDC__)
+/* bcc32 has no ssize_t of its own, ptrdiff_t is as wide as a size_t */
+#define _SSIZE_T_DEFINED 1
+typedef ptrdiff_t ssize_t;
 
 #elif defined(_MSC_VER)
 #include <intsafe.h>

@@ -8,11 +8,11 @@
 
 #if __STDC_VERSION__ >= 199901L
 #include <stdint.h>
+#elif defined(__BORLANDC__)
+/* <systypes.h> would typedef uint8, uint16 and uint32 a second time */
 #elif defined(_WIN32) || defined(__MINGW32__)
 #define __MS_types__
 #include <sys/types.h>
-#elif defined(__BORLANDC__)
-#include <systypes.h>
 #elif defined(__LCC__)
 #include <stdint.h>
 /*#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)
@@ -33,10 +33,8 @@ extern "C" {
 
 #if defined(__BORLANDC__)
 
-#if __BORLANDC__ >= 0x570
 typedef unsigned int uint32;
 typedef signed int int32;
-#endif
 
 #elif defined(__UINT32_TYPE__) && defined(__INT32_TYPE__)
 typedef __UINT32_TYPE__ uint32;
