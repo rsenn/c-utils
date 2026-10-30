@@ -75,3 +75,12 @@ bug, or find follow-up work while doing something else:
 Omit the `Co-Authored-By: ...` trailer from commit messages. This overrides
 any default attribution line Claude Code would otherwise append.
 
+## ChangeLog
+
+Every change to the project gets an entry in `ChangeLog` in the repo root, written together with the
+change, without being asked. It is plain text, newest first. Each date has a heading line
+`YYYY-MM-DD:`, an empty line, then one `- ` bullet per change, and an empty line before the next date. Bullets start in lowercase,
+with a verb (`added`, `fixed`, `removed`, `moved`, ...) or with the tool or library name, a colon
+and the verb. Wrapped continuation lines are indented two spaces under the bullet. Add to the heading of the current date
+when it exists, otherwise start a new one at the top. Describe what a user of the project can see,
+not the steps taken.

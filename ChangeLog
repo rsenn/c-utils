@@ -1,0 +1,52 @@
+2026-10-30:
+
+- genmakefile: moved the compiler and target setup (set_machine, set_chip,
+  set_system, set_make_type, set_compiler_type, resolve_toolchain) out of
+  genmakefile.c into compiler.c and compiler.h
+- genmakefile: sources are scanned with the preprocessor of lib/cpp when
+  the predefined macros of the compiler are known (bcc55 so far), so #if
+  gates are evaluated for the target. Other compilers keep the text scanner
+- genmakefile: programs are the sources with a main(), lib/<name>.h with
+  lib/<name>/ is a library module, every program links the modules its
+  headers name (and what those need), header dependencies are listed for
+  each object
+- genmakefile: added --lib-dir to name the directory of the lib modules
+- genmakefile: bcc55 builds use .obj, .exe and .lib, link cw32mt.lib and
+  import32.lib, and the terminator of an inline file starts its line as
+  Borland make requires
+- lib/cpp: added a scan-only mode for dependency scans (missing headers and
+  #error are skipped, headers below the compiler's include directories are
+  not read, the gcc macros of the host are not defined)
+- lib/typedefs.h, lib/uint16.h, lib/uint32.h, lib/uint64.h: fixed the type
+  definitions for Borland C++ 5.5 (ssize_t, duplicate uint8/16/32 typedefs
+  from systypes.h, uint32 on bcc32 versions before 5.7)
+- known: genmakefile reports a stray #endif for files that do not end in a
+  newline (see cpp-scan-stray-endif in BUGS)
+- ini, uri, debug: moved from the project root into the libraries lib/ini,
+  lib/uri and lib/debug, one function per file. ini_read now chains the
+  sections it reads, ini_write and ini_keys no longer crash
+- cache.[ch]: moved to src/dnsutils, only nscache and query use it
+- tests: unit tests for ini, uri, textcode, strarray, rdir, binfmt, xml
+  (build, print, read, token scanner), json, tokenizer, ihex and bz2
+  compression, replacing the test programs they came from
+- src: the programs left in the project root moved to src/text, src/system,
+  src/filedata, src/tcp, src/toolchain and src/cxx, the root holds no
+  source code any more
+- removed the programs dnstest (a copy of dnsip), jsontest (jsonpp does the
+  job), xmltest, xmltest2, xmlscantest, tokenizertest, cpptest2, binfmttest,
+  strarraytest, buffertest, rdir-test, xmltest3, xmltest4, ziptest, preproc.c
+- re-enabled macho32list, montty and cpptest in the build
+- ccat: compresses as well, run as czip (installed as a link) it compresses
+  by default, the type comes from -t or the file name; the default level is
+  3 as the usage text says
+- buffer_bz2: compressing to bz2 wrote an empty file and lost data at every
+  block of 300000 bytes, fixed
+- ihextool: the new installed Intel HEX tool with the commands info,
+  records, dump, merge (cut, extract), bin, frombin, verify and sum, it
+  replaces testihex. lib/ihex gets ihex_range, ihex_copy_to,
+  ihex_record_base, ihex_verify, ihex_write_data and ihex_write_eof, the
+  reader skips lines that are no record
+- ctlscat: the new installed netcat style relay for TLS or, with -n, plain
+  TCP, it connects or with -l waits for one connection. It replaces ssltest
+- known: gzip compression and decompression through buffer_deflate and
+  buffer_inflate corrupt data above 32768 bytes (see BUGS)
