@@ -17,6 +17,8 @@
 #define EAGAIN 11
 #endif
 
+int dns_tcp = 0;
+
 static int
 serverwantstcp(const char* buf, unsigned int len) {
   char out[12];
@@ -171,6 +173,13 @@ thisudp(struct dns_transmit* d) {
         d->query[2] = dns_random(256);
         d->query[3] = dns_random(256);
 
+        DNS_DEBUG({
+          char srv[DNS_FMT_SERVER];
+          srv[dns_fmt_server(srv, ip, d->iplen)] = 0;
+          dns_debug_num("udp round ", d->udploop, 0);
+          dns_debug_msg("  trying server ", srv, 0);
+        });
+
         d->s1 = 1 + (d->iplen == 16 ? socket_udp6() : socket_udp4());
         err = errno;
 
@@ -197,12 +206,15 @@ thisudp(struct dns_transmit* d) {
           if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {
             struct taia now;
             taia_now(&now);
-            taia_uint(&d->deadline, timeouts[d->udploop]);
+            dns_timeout(&d->deadline, timeouts[d->udploop]);
             taia_add(&d->deadline, &d->deadline, &now);
             d->tcpstate = 0;
+            dns_trace("send", 0, ip, d->iplen, d->query + 2, d->querylen - 2);
+            DNS_DEBUG(dns_debug_num("udp timeout in ms: ", dns_timeout_ms ? dns_timeout_ms : timeouts[d->udploop] * 1000UL, 0));
             return 0;
           }
 
+        DNS_DEBUG(dns_debug_msg("udp connect/send failed", 0, 0));
         socketfree(d);
       }
     }
@@ -243,6 +255,12 @@ thistcp(struct dns_transmit* d) {
       d->query[2] = dns_random(256);
       d->query[3] = dns_random(256);
 
+      DNS_DEBUG({
+        char srv[DNS_FMT_SERVER];
+        srv[dns_fmt_server(srv, ip, d->iplen)] = 0;
+        dns_debug_msg("tcp connect to ", srv, 0);
+      });
+
       d->s1 = 1 + (d->iplen == 16 ? socket_tcp6() : socket_tcp4());
 
       if(!d->s1) {
@@ -256,7 +274,7 @@ thistcp(struct dns_transmit* d) {
       }
 
       taia_now(&now);
-      taia_uint(&d->deadline, 10);
+      dns_timeout(&d->deadline, 10);
       taia_add(&d->deadline, &d->deadline, &now);
 
       if(d->iplen == 16)
@@ -327,7 +345,12 @@ dns_transmit_start(struct dns_transmit* d,
 
   d->udploop = flagrecursive ? 1 : 0;
 
-  if(len + 16 > 512)
+  DNS_DEBUG({
+    dns_debug_num("transmit start, recursive=", flagrecursive != 0, 0);
+    dns_debug_num("  query length ", len + 16, dns_tcp ? ", tcp requested" : len + 16 > 512 ? ", too long for udp, using tcp" : ", using udp");
+  });
+
+  if(dns_tcp || len + 16 > 512)
     return firsttcp(d);
   return firstudp(d);
 }
@@ -363,6 +386,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     if(taia_less(when, &d->deadline))
       return 0;
     errno = ETIMEDOUT;
+    DNS_DEBUG(dns_debug_num("timeout in tcpstate ", d->tcpstate, ", trying next server"));
 
     if(d->tcpstate == 0)
       return nextudp(d);
@@ -384,16 +408,23 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
       return nextudp(d);
     }
 
+    dns_trace("recv", 0, d->servers + d->iplen * d->curserver, d->iplen, udpbuf, r);
+
     if((unsigned long)r + 1 > sizeof udpbuf)
       return 0;
 
-    if(irrelevant(d, udpbuf, r))
+    if(irrelevant(d, udpbuf, r)) {
+      DNS_DEBUG(dns_debug_msg("packet is irrelevant (id/question mismatch), ignored", 0, 0));
       return 0;
+    }
 
-    if(serverwantstcp(udpbuf, r))
+    if(serverwantstcp(udpbuf, r)) {
+      DNS_DEBUG(dns_debug_msg("reply truncated, retrying over tcp", 0, 0));
       return firsttcp(d);
+    }
 
     if(serverfailed(udpbuf, r)) {
+      DNS_DEBUG(dns_debug_msg("server failed, trying next", 0, 0));
       if(d->udploop == 2)
         return 0;
       return nextudp(d);
@@ -430,6 +461,8 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     have connection to curserver on TCP socket s
     have sent pos bytes of query
     */
+    if(d->pos == 0)
+      dns_trace("send", 1, d->servers + d->iplen * d->curserver, d->iplen, d->query + 2, d->querylen - 2);
     r = send(fd, d->query + d->pos, d->querylen - d->pos, 0);
 
     if(r <= 0)
@@ -439,7 +472,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
     if(d->pos == d->querylen) {
       struct taia now;
       taia_now(&now);
-      taia_uint(&d->deadline, 10);
+      dns_timeout(&d->deadline, 10);
       taia_add(&d->deadline, &d->deadline, &now);
       d->tcpstate = 3;
     }
@@ -500,6 +533,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
       return 0;
 
     socketfree(d);
+    dns_trace("recv", 1, d->servers + d->iplen * d->curserver, d->iplen, d->packet, d->packetlen);
 
     if(irrelevant(d, d->packet, d->packetlen))
       return nexttcp(d);

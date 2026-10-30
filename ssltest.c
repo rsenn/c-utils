@@ -15,7 +15,7 @@
 #include "lib/textcode.h"
 #include "lib/byte.h"
 
-#include "address.h"
+#include "src/dnsutils/address.h"
 #include <signal.h>
 #include <stdarg.h>
 #include <ctype.h>

@@ -63,8 +63,8 @@
 
 #define MAP_USE_HMAP 1
 #include "lib/map.h"
-#include "address.h"
-#include "ftplib.h"
+#include "src/dnsutils/address.h"
+#include "src/ftp/ftplib.h"
 
 #if WINDOWS_NATIVE
 #include <io.h>

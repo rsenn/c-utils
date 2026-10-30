@@ -51,6 +51,42 @@ struct dns_transmit {
   unsigned int iplen;
 };
 
+/* set by the client programs, see dnsopt.h. dns_verbose shows each query and
+ * reply on stderr, dns_debug adds hex dumps and internals and only has an
+ * effect in a build with DEBUG_OUTPUT */
+extern int dns_verbose;
+extern int dns_debug;
+
+/* dns_family limits the resolver servers to IPv4 (4) or IPv6 (6), 0 is both.
+ * dns_timeout_ms is the time of one attempt in milliseconds, 0 is the default
+ * of 1, 3, 11 and 45 seconds for UDP and 10 for TCP. */
+extern int dns_family;
+
+/* dns_recurse asks the servers for recursion, dns_resolve uses it. dns_tcp
+ * sends every query over TCP instead of UDP. */
+extern int dns_recurse;
+extern int dns_tcp;
+extern unsigned long dns_timeout_ms;
+void dns_timeout(struct taia* t, unsigned int secs);
+
+#define DNS_FMT_SERVER 64
+size_t dns_fmt_server(char* dest, const char* ip, unsigned int iplen);
+void dns_trace(const char* dir, int tcp, const char* ip, unsigned int iplen, const char* pkt, unsigned int len);
+void dns_debug_msg(const char* a, const char* b, const char* c);
+void dns_debug_num(const char* a, unsigned long n, const char* b);
+void dns_debug_hex(const char* what, const char* buf, unsigned int len);
+
+#ifdef DEBUG_OUTPUT
+#define DNS_DEBUG(x) \
+  do { \
+    if(dns_debug) { \
+      x; \
+    } \
+  } while(0)
+#else
+#define DNS_DEBUG(x) ((void)0)
+#endif
+
 void dns_random_init(const char*);
 unsigned int dns_random(unsigned int);
 
@@ -67,6 +103,7 @@ int dns_domain_suffix(const char*, const char*);
 unsigned int dns_domain_suffixpos(const char*, const char*);
 int dns_domain_fromdot(char**, const char*, size_t);
 int dns_domain_todot_cat(stralloc* out, const char* d);
+int dns_domain_todot_utf8_cat(stralloc* out, const char* d);
 unsigned int dns_domain_todot(char* out, const char* in);
 unsigned int dns_domain_todot_inline(char* x);
 
@@ -80,6 +117,7 @@ void dns_transmit_io(struct dns_transmit*, iopause_fd*, struct taia*);
 int dns_transmit_get(struct dns_transmit*, const iopause_fd*, const struct taia*);
 
 int dns_resolvconfip(char*);
+void dns_resolvconfip_reset(void);
 int dns_resolve(const char*, const char*);
 extern struct dns_transmit dns_resolve_tx;
 extern unsigned int dns_port;

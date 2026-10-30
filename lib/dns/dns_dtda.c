@@ -1,6 +1,7 @@
 #include "../stralloc.h"
 #include "../dns.h"
 #include "../byte.h"
+#include "../ucs.h"
 
 int
 dns_domain_todot_cat(stralloc* out, const char* d) {
@@ -44,6 +45,24 @@ dns_domain_todot_cat(stralloc* out, const char* d) {
     if(!stralloc_append(out, "."))
       return 0;
   }
+}
+
+/* like dns_domain_todot_cat, with xn-- labels shown as UTF-8 */
+int
+dns_domain_todot_utf8_cat(stralloc* out, const char* d) {
+  stralloc ace = {0, 0, 0};
+  char u[1024];
+  size_t len;
+  int ret = 0;
+
+  if(dns_domain_todot_cat(&ace, d)) {
+    if((len = ucs_idna_to_unicode(u, sizeof u, ace.s, ace.len)))
+      ret = stralloc_catb(out, u, len);
+    else
+      ret = stralloc_catb(out, ace.s, ace.len);
+  }
+  stralloc_free(&ace);
+  return ret;
 }
 
 unsigned int

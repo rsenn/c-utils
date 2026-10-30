@@ -6,6 +6,7 @@
 #include "../taia.h"
 
 struct dns_transmit dns_resolve_tx;
+int dns_recurse = 1;
 
 int
 dns_resolve(const char* q, const char qtype[2]) {
@@ -18,7 +19,7 @@ dns_resolve(const char* q, const char qtype[2]) {
   if(dns_resolvconfip(servers) == -1)
     return -1;
 
-  if(dns_transmit_start(&dns_resolve_tx, servers, 1, q, qtype, V6any) == -1)
+  if(dns_transmit_start(&dns_resolve_tx, servers, dns_recurse, q, qtype, V6any) == -1)
     return -1;
 
   for(;;) {

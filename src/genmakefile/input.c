@@ -2,7 +2,7 @@
 #include "ansi.h"
 #include "var.h"
 #include "generate.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 #include "../../lib/set.h"
 #include <errno.h>
 

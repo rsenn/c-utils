@@ -530,3 +530,8 @@
   already defines `readclose_append(int64 fd, ...)` and `lib/open.h` declares the
   `int64` form, so `cmake --build` stops in the `stralloc` target ("conflicting types")
   and no program links. Remove the file or the other definition.
+
+- dnsq-dnsqr-dnstrace-do-not-compile: `dnsq.c`, `dnsqr.c` and `dnstrace.c` fail to compile
+  (the `X(...)` macro uses at file scope, e.g. `dnsq.c:72`, `d` undeclared at `dnsq.c:145`,
+  `dnstrace.c:98`), which is why their `program()` lines in `CMakeLists.txt` are commented
+  out. They call `dnsopt_parse` already, but this was never built or run.

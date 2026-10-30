@@ -2,7 +2,7 @@
 #include "is.h"
 #include "ansi.h"
 #include "../../lib/rdir.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 
 set_t sources_set = {0};
 stralloc sources_dir = {0, 0, 0};

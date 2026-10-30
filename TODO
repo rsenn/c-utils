@@ -209,3 +209,27 @@ TODO
     src/genmakefile/is.h
     pkgcfg.c line 299
 
+dns-parallel-lookups: The dns client tools (dnsip and friends) ask every
+name and every @server one after another, because dnsopt_run calls the
+lookup function in a plain loop. With several servers the slowest one holds
+up all the others, and a dead server costs its full timeout each time.
+
+Doing the lookups side by side needs changes in the library, which is why it
+was left out. dns_resolve and dns_ip4 use the single global dns_resolve_tx
+and a blocking loop around iopause, and dns_resolvconfip returns one
+process-wide server list that dnsopt switches through the environment. The
+plan is this:
+
+  - Give dns_ip4, dns_ip6, dns_mx, dns_txt and dns_name a variant that takes
+    its own struct dns_transmit and server list, with a start function and a
+    step function that finishes without blocking, like dns_transmit_start,
+    dns_transmit_io and dns_transmit_get already do.
+  - Let dnsopt_run start one transmit per name and server pair, collect the
+    iopause_fd entries into one array, call iopause once and step each
+    transmit that is ready.
+  - Print the results in command line order, not in arrival order, so the
+    server prefix lines stay grouped per name.
+
+The pieces to touch are lib/dns/dns_resolve.c, dns_ip4.c, dns_ip6.c,
+dns_mx.c, dns_txt.c, dns_name.c and dnsopt.c.
+

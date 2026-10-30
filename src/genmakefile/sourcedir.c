@@ -3,7 +3,7 @@
 #include "is.h"
 #include "ansi.h"
 #include "includes.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 
 MAP_T sourcedir_map;
 const char* sourcedir_varname = "DISTDIR";

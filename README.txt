@@ -91,15 +91,15 @@
 
   Command line (CLI) utilities:
 
-      pkgcfg.c             Drop-in pkg-config, prints compile and link flags for package
-      impgen.c             Generate a .DEF file from a .DLL library
+      src/toolchain/pkgcfg.c Drop-in pkg-config, prints compile and link flags for package
+      src/binfmt/impgen.c  Generate a .DEF file from a .DLL library
 
-      ar-wrap.c            generic cross-compiler wrapper for the archiver (lib bundler)
-      cc-wrap.c            generic cross-compiler wrapper for the front (preprocessor, compiler, assembler)
-      compiler-wrapper.c   A compiler driver for Microchip PIC toolchains (picc,picc18,xc8,sdcc)
-      cmake-run.c          find cross environment using dir and path functions and pass it to CMake
+      src/toolchain/ar-wrap.c generic cross-compiler wrapper for the archiver (lib bundler)
+      src/toolchain/cc-wrap.c generic cross-compiler wrapper for the front (preprocessor, compiler, assembler)
+      src/toolchain/compiler-wrapper.c A compiler driver for Microchip PIC toolchains (picc,picc18,xc8,sdcc)
+      src/toolchain/cmake-run.c find cross environment using dir and path functions and pass it to CMake
 
-      genmakefile.c        Makefile / Ninja generator based on
+      src/genmakefile/genmakefile.c Makefile / Ninja generator based on
 
                                 *.c *.h          files
                                 .                directories
@@ -113,65 +113,65 @@
                                 -I and -D        add include/definition
 
 
-      ntldd.c              recurse dynamic bindings of .exe files like /usr/bin/ldd on Linux
-      pelist.c             List .EXE and .DLL file sections, import tables and export directories
-      omflist.c            List OMF object files symbols
-      cofflist.c           List COFF object files symbols
-      elflist.c            List Elf32 headers, sections, segments, symbols and dynamic section
-      elf64list.c          List Elf64 headers, sections, segments, symbols and dynamic section
-      macho32list.c        List Mach-O segments and symbol table
+      src/binfmt/ntldd.c   recurse dynamic bindings of .exe files like /usr/bin/ldd on Linux
+      src/binfmt/pelist.c  List .EXE and .DLL file sections, import tables and export directories
+      src/binfmt/omflist.c List OMF object files symbols
+      src/binfmt/cofflist.c List COFF object files symbols
+      src/binfmt/elflist.c List Elf32 headers, sections, segments, symbols and dynamic section
+      src/binfmt/elf64list.c List Elf64 headers, sections, segments, symbols and dynamic section
+      src/binfmt/macho32list.c List Mach-O segments and symbol table
 
 
   Compression and integrity
 
-      ccat.c               Compressed file cat with getopt() options and error reporting
+      src/filedata/ccat.c  Compressed file cat with getopt() options and error reporting
       crc32.c              Calculate crc32 checksum, using zlib or diet version
 
 
   Network utilities
 
-      dnsip.c              Resolve hostname into IP addresses (NS from resolv.conf or DNSCACHE environment variable)
-      dnsname.c            Reverse lookup of IP address
-      tcping.c             try to TCP connect and output time of each acknowledge or reset
+      src/dnsutils/dnsip.c Resolve hostname into IP addresses (NS from resolv.conf or DNSCACHE environment variable)
+      src/dnsutils/dnsname.c Reverse lookup of IP address
+      src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
 
 
   Binary file tools
 
-      bsdiffcat.c          Translates a binary diff made with bsdiff into patch(buf, offset, ifval, thenval) calls
-      hexedit.c            Memory map a file and process a set of patch data in the form: ADDRESS IF-BYTE SET-BYTE
-      torrent-progress.c   memory map incomplete torrent data calculate percentage of pages which are all zero-bytes
+      src/filedata/bsdiffcat.c Translates a binary diff made with bsdiff into patch(buf, offset, ifval, thenval) calls
+      src/filedata/hexedit.c Memory map a file and process a set of patch data in the form: ADDRESS IF-BYTE SET-BYTE
+      src/filedata/torrent-progress.c memory map incomplete torrent data calculate percentage of pages which are all zero-bytes
 
 
   Media and streams
 
-      mediathek-list.c     HTTP load and filter mediathek-filme.json of the MediathekView application
-      mediathek-parser.c   Parse a mediathek-filme.json store and generate a Playlist from it
+      src/media/mediathek-list.c HTTP load and filter mediathek-filme.json of the MediathekView application
+      src/media/mediathek-parser.c Parse a mediathek-filme.json store and generate a Playlist from it
 
   Windows registry
 
-      reg2cmd.c            Convert a windows registry .REG file into a .BAT with REG ADD commands
-      regfilter.c          zombie copy reg2cmd, was intended a filtering version, like grepdiff
+      src/winreg/reg2cmd.c Convert a windows registry .REG file into a .BAT with REG ADD commands
+      src/winreg/regfilter.c zombie copy reg2cmd, was intended a filtering version, like grepdiff
 
 
   Path helpers
 
-      pathtool.c           dropin for realpath, with --relative-to DIR feature and windows/msys support cygpath compliant
+      src/toolchain/pathtool.c dropin for realpath, with --relative-to DIR feature and windows/msys support cygpath compliant
       sln.c                for a /usr/lib/libX.so.major.minor file pass one or more link names: libX.so.major libX.so /lib/libX.so
-      msys-shell.c         Registry & path search for msys/msys2 environments and launch mintty and bash inside
+      src/toolchain/msys-shell.c Registry & path search for msys/msys2 environments and launch mintty and bash inside
 
   Utilities reading/writing XML/JSON
 
-      opensearch-dump.c    parse an OpenSearch XML file into an URL /search?query=%s to have them in Firefox/Chrome
-      plsconv.c            Convert playlists between the formats .M3U .PLS .XSPF
+      src/xmljson/opensearch-dump.c parse an OpenSearch XML file into an URL /search?query=%s to have them in Firefox/Chrome
+      src/media/plsconv.c  Convert playlists between the formats .M3U .PLS .XSPF
 
-      xmlpp.c              pretty-print XML/XHML
-      jsonpp.c             Pretty-print JSON data
-      xml2json.c           convert an element tree into json objects { tagName, ...attributes, children: [ ..innerElements
-      xml2moon.c           convert XHTML content into lapis html generator syntax: element prop: val, prop2: ..
+      src/xmljson/xmlpp.c  pretty-print XML/XHML
+      src/xmljson/jsonpp.c Pretty-print JSON data
+      src/xmljson/xml2json.c convert an element tree into json objects { tagName, ...attributes, children: [ ..innerElements
+      src/xmljson/xml2moon.c convert XHTML content into lapis html generator syntax: element prop: val, prop2: ..
 
-      eagle-gen-cmds.c     Read EAGLE XML schematics/layouts and generate commands to draw contour and x/y axis measures
-      eagle-init-brd.c     Generate component arrangement congruent with Schematic and generate translate and rotate commands
-      eagle-to-circuit.c   Read EAGLE XML packages and netlists, write .circuit file for striprouter
+      src/eagle/eagle-gen-cmds.c Read EAGLE XML schematics/layouts and generate commands to draw contour and x/y axis measures
+      src/eagle/eagle-init-brd.c Generate component arrangement congruent with Schematic and generate translate and rotate commands
+      src/eagle/eagle-to-circuit.c Read EAGLE XML packages and netlists, write .circuit file for striprouter
 
 
   Basic usage examples or boilerplates:

@@ -1,5 +1,5 @@
 #include "is.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 
 /**
  * @defgroup path functions

@@ -1,4 +1,4 @@
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 #include "../../debug.h"
 #include "output.h"
 #include "ansi.h"

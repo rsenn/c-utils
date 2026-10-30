@@ -1,4 +1,4 @@
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 #include "../../ini.h"
 #include "../../debug.h"
 #define MAP_USE_HMAP 1

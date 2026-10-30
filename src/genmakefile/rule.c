@@ -2,7 +2,7 @@
 #include "path.h"
 #include "is.h"
 #include "ansi.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 #include "../../debug.h"
 #include <string.h>
 #include <assert.h>

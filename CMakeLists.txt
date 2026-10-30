@@ -999,7 +999,7 @@ set(COMMON_LIBS strlist array safemult scan str byte mmap open fmt)
 set(genmakefile_SOURCES
     ini.c
     ini.h
-    genmakefile.h
+    src/genmakefile/genmakefile.h
     debug.c
     debug.h
     src/genmakefile/cmake.c
@@ -1039,16 +1039,16 @@ endif(USE_BZIP)
 program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
 program(count-depth buffer fmt)
 program(decode-ls-lR stralloc buffer byte fmt io open str)
-program(dnsip dns stralloc buffer errmsg socket ${LIBIPHLPAPI})
-program(dnsname dns stralloc buffer errmsg ${LIBIPHLPAPI})
-program(dnsip6 dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-program(dnsip6q dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-program(dnsipq dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-program(dnsmx dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-#[[program(dnsq dns case stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-program(dnsqr dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})]]
-# program(dnstrace dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
-program(dnstxt dns stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnsip dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI})
+program(dnsname dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg ${LIBIPHLPAPI})
+program(dnsip6 dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnsip6q dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnsipq dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnsmx dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+#[[program(dnsq dns src/dnsutils/dnsopt.c unix env scan str case stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnsqr dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})]]
+# program(dnstrace dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
+program(dnstxt dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI} ${LIBMSWSOCK})
 
 program(eagle-gen-cmds xml stralloc buffer strarray array byte cb cbmap errmsg
         fmt hmap mmap scan str unix ${LIBMATH})
@@ -1070,10 +1070,10 @@ program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
 set(httptest_SOURCES uri.c uri.h)
 
-# set(ssltest_SOURCES address.c address.h)
+# set(ssltest_SOURCES src/dnsutils/address.c src/dnsutils/address.h)
 
 program(impgen pe buffer byte mmap open)
-set(list_r_SOURCES dump.c dump.h)
+set(list_r_SOURCES src/dirlist/dump.c src/dirlist/dump.h)
 program(list-r errmsg path strarray strlist stralloc buffer array unix dir
         array fmt open str uint64 ${LIBADVAPI32})
 # program(macho32list mmap uint32)
@@ -1110,25 +1110,25 @@ program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc
         fmt alloc)
 program(cofflist coff unix errmsg stralloc buffer mmap)
 program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
-set(tcping_SOURCES address.c)
+set(tcping_SOURCES src/dnsutils/address.c)
 program(tcping textcode hmap unix dns case io array socket ndelay errmsg taia
         tai buffer stralloc mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
         ${LIBIPHLPAPI})
-set(ftptest_SOURCES address.c ftplib.c)
+set(ftptest_SOURCES src/dnsutils/address.c src/ftp/ftplib.c)
 
 set(nscache_SOURCES
     cache.c
     cache.h
-    log.c
-    log.h
-    query.c
-    query.h
-    response.c
-    response.h
-    roots.c
-    roots.h
-    names.c
-    names.h
+    src/dnsutils/log.c
+    src/dnsutils/log.h
+    src/dnsutils/query.c
+    src/dnsutils/query.h
+    src/dnsutils/response.c
+    src/dnsutils/response.h
+    src/dnsutils/roots.c
+    src/dnsutils/roots.h
+    src/dnsutils/names.c
+    src/dnsutils/names.h
     lib/alloc.h
     lib/array.h
     lib/buffer.h
@@ -1224,13 +1224,13 @@ link_program(eagle-gen-cmds ${LIBMATH})
 #[[program(ftpcopy io)
 program(ftpls io)
 
-set(ftpcopy_SOURCES ftpparse.c ftplib.c ftp_read_lis.c)
-set(ftpls_SOURCES ftpparse.c ftplib.c ftp_read_lis.c)]]
+set(ftpcopy_SOURCES src/ftp/ftpparse.c src/ftp/ftplib.c src/ftp/ftp_read_lis.c)
+set(ftpls_SOURCES src/ftp/ftpparse.c src/ftp/ftplib.c src/ftp/ftp_read_lis.c)]]
 
 # program(libc-resolv-override dns errmsg  mmap open scan str)
 
 if(ENABLE_SHARED AND BUILD_SHARED_LIBS)
-  add_module(libresolvoverride libc-resolv-override.c dns stralloc)
+  add_module(libresolvoverride src/dnsutils/libc-resolv-override.c dns stralloc)
 endif(ENABLE_SHARED AND BUILD_SHARED_LIBS)
 
 if(BUILD_TESTS)
@@ -1262,7 +1262,7 @@ set(CPACK_VERBATIM_VARIABLES YES)
 
 include(CPack)
  
-# socket-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc socket/TLS
+# src/intercept/socket-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc socket/TLS
 # calls) -- LD_PRELOAD and <netinet/in.h>/<sys/un.h>/<dlfcn.h> have no
 # WINDOWS_NATIVE (mingw/MSVC) equivalent, so this tool is POSIX-only.
 if(NOT WINDOWS_NATIVE)
@@ -1315,7 +1315,7 @@ set(socket_intercept_SOURCES
     lib/stralloc/stralloc_copys.c
 )
 
-add_library(socket-intercept SHARED socket-intercept.c
+add_library(socket-intercept SHARED src/intercept/socket-intercept.c
                                     ${socket_intercept_SOURCES})
 set_target_properties(socket-intercept PROPERTIES PREFIX "")
 
@@ -1335,7 +1335,7 @@ target_link_libraries(socket-intercept PUBLIC dl pthread)
 install(TARGETS socket-intercept DESTINATION "lib")
 endif(NOT WINDOWS_NATIVE)
 
-# exec-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc exec*() calls)
+# src/intercept/exec-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc exec*() calls)
 # that redirects execs by basename -- LD_PRELOAD and <dlfcn.h> have no
 # WINDOWS_NATIVE (mingw/MSVC) equivalent, so this tool is POSIX-only.
 if(NOT WINDOWS_NATIVE)
@@ -1370,7 +1370,7 @@ set(exec_intercept_SOURCES
     lib/str/str_tok.c
 )
 
-add_library(exec-intercept SHARED exec-intercept.c ${exec_intercept_SOURCES})
+add_library(exec-intercept SHARED src/intercept/exec-intercept.c ${exec_intercept_SOURCES})
 set_target_properties(exec-intercept PROPERTIES PREFIX "")
 
 if(F_VISIBILITY)
@@ -1390,7 +1390,7 @@ install(TARGETS exec-intercept DESTINATION "lib")
 # given) and execs <program> -- see the EXEC_INTERCEPT_MAIN block at the
 # top of exec-intercept.c. Only main() and its own helpers are compiled
 # in this mode; none of the interception code above is needed or built.
-add_executable(exec-intercept-launcher exec-intercept.c)
+add_executable(exec-intercept-launcher src/intercept/exec-intercept.c)
 set_target_properties(exec-intercept-launcher PROPERTIES
     OUTPUT_NAME "exec-intercept"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")

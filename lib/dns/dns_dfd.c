@@ -1,15 +1,26 @@
 #include "../byte.h"
 #include "../dns.h"
+#include "../ucs.h"
 #include <errno.h>
 #include <stdlib.h>
 
 int
 dns_domain_fromdot(char** out, const char* buf, size_t n) {
-  char label[63], name[255];
+  char label[63], name[255], ace[255];
   unsigned int labellen = 0, namelen = 0;
   char ch, *x;
+  size_t i;
 
   errno = EINVAL;
+
+  /* non-ASCII input is an internationalized name, convert it to ACE */
+  for(i = 0; i < n; ++i)
+    if((unsigned char)buf[i] >= 0x80) {
+      if(!(n = ucs_idna_to_ascii(ace, sizeof ace, buf, n)))
+        return 0;
+      buf = ace;
+      break;
+    }
 
   for(;;) {
     if(!n)

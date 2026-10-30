@@ -146,8 +146,17 @@ getopt_real(int argc, char* const argv[], const char* optstring, const struct un
               }
               break;
             case required_argument:
-              if(spec_long[pos_eq] == '\0') {
+              if(pos_eq == 0) {
                 ++unix_optind;
+
+                if(unix_optind >= argc - postpone_count) {
+                  if(unix_opterr) {
+                    buffer_putm_internal(unix_optbuf, "option requires an argument: ", optdef->name, NULL);
+                    buffer_putnlflush(unix_optbuf);
+                  }
+                  nextchar = 0;
+                  return '?';
+                }
                 unix_optarg = argv[unix_optind];
               } else {
                 unix_optarg = (char*)spec_long + pos_eq + 1;

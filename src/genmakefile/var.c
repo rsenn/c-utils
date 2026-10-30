@@ -1,6 +1,6 @@
 #include "var.h"
 #include "../../lib/str.h"
-#include "../../genmakefile.h"
+#include "genmakefile.h"
 
 MAP_T vars;
 linklib_fmt *format_linklib_fn = 0, *format_linkdir_fn = &format_linkdir_switch;

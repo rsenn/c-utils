@@ -12,6 +12,7 @@
 #include "../scan.h"
 #include "../str.h"
 
+#include <errno.h>
 #include <stdlib.h>
 
 #if WINDOWS
@@ -49,6 +50,7 @@ typedef struct {
 static stralloc data;
 
 unsigned int dns_port = 53;
+int dns_family = 0;
 
 /* splitport separates "ip:port" (or "[ip6]:port") into buf and *port.
    a bare IPv6 address (more than one ':') without brackets is returned
@@ -205,8 +207,28 @@ init(char ip[256]) {
   }
 
   if(!iplen) {
-    byte_copy(ip, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1");
+    if(dns_family == 4)
+      byte_copy(ip, 16, "\0\0\0\0\0\0\0\0\0\0\377\377\177\0\0\1");
+    else
+      byte_copy(ip, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1");
     iplen = 16;
+  }
+
+  /* keep only the servers of the wanted address family */
+  if(dns_family) {
+    int k, n = 0;
+
+    for(k = 0; k < iplen; k += 16)
+      if(!ip6_isv4mapped(ip + k) == (dns_family == 6)) {
+        byte_copy(ip + n, 16, ip + k);
+        n += 16;
+      }
+
+    if(!n) {
+      errno = EAFNOSUPPORT;
+      return -1;
+    }
+    iplen = n;
   }
   byte_zero(ip + iplen, 256 - iplen);
 
@@ -219,6 +241,21 @@ init(char ip[256]) {
       port = u;
   }
   dns_port = (unsigned int)port;
+
+  DNS_DEBUG({
+    char srv[DNS_FMT_SERVER];
+    size_t k;
+
+    dns_debug_msg("DNSCACHE=", getenv("DNSCACHE"), getenv("DNSCACHE") ? 0 : "(unset)");
+    dns_debug_msg("DNSCACHEIP=", getenv("DNSCACHEIP"), getenv("DNSCACHEIP") ? 0 : "(unset)");
+    dns_debug_msg("DNSCACHEPORT=", getenv("DNSCACHEPORT"), getenv("DNSCACHEPORT") ? 0 : "(unset)");
+    dns_debug_num("resolver servers: ", (unsigned long)iplen / 16, 0);
+
+    for(k = 0; k < (size_t)iplen; k += 16) {
+      srv[dns_fmt_server(srv, ip + k, 16)] = 0;
+      dns_debug_msg("  server ", srv, 0);
+    }
+  });
 
   return iplen;
 }
@@ -252,4 +289,11 @@ dns_resolvconfip(char s[256]) {
   --uses;
   byte_copy(s, 256, ip);
   return 0;
+}
+
+/* dns_resolvconfip_reset drops the cached server list, so that a changed
+ * DNSCACHEIP or DNSCACHE is read by the next dns_resolvconfip. */
+void
+dns_resolvconfip_reset(void) {
+  ok = 0;
 }
