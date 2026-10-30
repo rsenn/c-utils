@@ -544,3 +544,21 @@
 - debug-sl-reuses-the-length-as-counter: `debug_sl` in `lib/debug/debug_sl.c` uses `n` both
   as the element length from `strlist_foreach` and as the running index (`n++`), so the
   separator test `if(n)` and the printed `#n` numbers are wrong for most lists.
+
+- xml-read-tree-crashes-on-attributes-and-text: `xml_read_tree` (`xml_read_callback` in
+  `lib/xml/xml_read_callback.c`) segfaults on an element with attributes whose child has
+  text, e.g. `<a v="1">\n  <b>x</b>\n</a>`; without the attribute, or with only
+  self-closing children, it reads fine. Found while turning `xmltest3.c` into
+  `tests/test_xml.c`.
+
+- xml-read-tree-self-closing-and-attributes-lost: after `xml_read_tree`, `xml_find_all_1`
+  with `xml_match_name` does not find a self-closing element (`<a>\n<b k="x" />\n</a>`
+  gives 0 nodes for `b`) and `xml_get_attribute` returns NULL for the attributes of an
+  element that is found (`<b k="x">t</b>`).
+
+- binfmt-open-never-fails-or-detects-type: `binfmt_open` in `lib/binfmt/binfmt_open.c` only
+  maps the file and returns 0 for a missing file as well; `type`, `bits` and the section
+  ranges are never filled in.
+
+- xml-attributes-prints-debug-output: `xml_attributes` and `hmap` writes lines such as
+  `#   19 version = "65"` to stdout while building a node, which mixes into tool output.

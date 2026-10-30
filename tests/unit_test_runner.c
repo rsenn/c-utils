@@ -44,6 +44,10 @@ TESTS(ndelay);
 TESTS(ini);
 TESTS(uri);
 TESTS(textcode);
+TESTS(strarray);
+TESTS(rdir);
+TESTS(binfmt);
+TESTS(xml);
 
 START() {
   EXEC(stralloc);
@@ -82,4 +86,8 @@ START() {
   EXEC(ini);
   EXEC(uri);
   EXEC(textcode);
+  EXEC(strarray);
+  EXEC(rdir);
+  EXEC(binfmt);
+  EXEC(xml);
 }

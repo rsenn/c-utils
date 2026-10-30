@@ -5,6 +5,7 @@
 #include "../lib/uint64.h"
 #include "unit_test.h"
 #include "../lib/buffer.h"
+#include <unistd.h>
 
 /* Discards whatever buffer_flush() writes; used so OUTBUF's op is
    never a NULL pointer (buffer_stubborn() does not guard against
@@ -867,7 +868,29 @@ TEST(test_buffer_putspadstart) {
  * int buffer_deflate(buffer*, buffer* out, int level);
  * int buffer_inflate(buffer*, buffer* in);
  */
-TEST(test_buffer_deflate) {}
+TEST(test_buffer_deflate) {
+#if HAVE_ZLIB
+  buffer file, deflate, in, inflate;
+  char out[64];
+  ssize_t n;
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_zip.tmp"));
+  ASSERT_EQ(0, buffer_deflate(&deflate, &file, 9));
+  buffer_puts(&deflate, "gzipp'd test text\n");
+  buffer_flush(&deflate);
+  buffer_close(&deflate);
+  buffer_close(&file);
+
+  /* round trip: inflating what was deflated gives the text back */
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_zip.tmp"));
+  ASSERT_EQ(0, buffer_inflate(&inflate, &in));
+  n = buffer_get(&inflate, out, sizeof(out));
+  unlink("test_buffer_zip.tmp");
+
+  ASSERT_EQ(18, n);
+  ASSERT_EQ(0, byte_diff(out, 18, "gzipp'd test text\n"));
+#endif
+}
 TEST(test_buffer_inflate) {}
 
 /*
