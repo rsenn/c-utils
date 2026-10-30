@@ -1125,16 +1125,15 @@ if(BUILD_TESTS)
   program(ftptest hmap unix dns case io array socket ndelay errmsg taia tai
           stralloc buffer mmap open fmt scan str byte uint16 ${LIBMSWSOCK}
           ${LIBIPHLPAPI})
-  program(httptest http uri tls dns slist xml sig stralloc buffer errmsg byte unix
-          io socket alloc taia ${TLS_LIBRARIES} ${LIBMSWSOCK} ${LIBPTHREAD}
-          ${LIBDL})
   program(cpptest cpp hmap path fmt str)
-  #link_program(httptest ${LIBDL})
 endif(BUILD_TESTS)
 
 if(NOT WINDOWS_NATIVE AND USE_SSL)
   set(ctlscat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)
   program(ctlscat strlist unix dns stralloc buffer errmsg byte io tls socket ndelay scan str alloc taia
+          ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
+  set(chttpcat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)
+  program(chttpcat strlist unix dns uri http stralloc buffer errmsg byte io tls socket scan str case alloc taia
           ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
 endif(NOT WINDOWS_NATIVE AND USE_SSL)
 

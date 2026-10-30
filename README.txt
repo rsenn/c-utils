@@ -140,6 +140,7 @@
       src/dnsutils/dnsip.c Resolve hostname into IP addresses (NS from resolv.conf or DNSCACHE environment variable)
       src/dnsutils/dnsname.c Reverse lookup of IP address
       src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
+      src/tcp/chttpcat.c   HTTP/HTTPS client, GET of every URL, stdin is POSTed chunked, -i -H -X -L -o
       src/tcp/ctlscat.c    netcat style relay of stdin/stdout over TLS (plain with -n), connects or listens with -l
 
 
@@ -184,7 +185,6 @@
 
   Basic usage examples or boilerplates:
 
-      src/tcp/httptest.c        Test HTTP client
       src/toolchain/cpptest.c   C preprocessor driver (-D -I -P -L, dump defines, dependencies)
 
   The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.

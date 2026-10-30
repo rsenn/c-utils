@@ -2,6 +2,7 @@
 #define _ADDRESS_H
 
 #include "../../lib/bool.h"
+#include "../../lib/uint16.h"
 #include "../../lib/uint32.h"
 #include "../../lib/stralloc.h"
 
