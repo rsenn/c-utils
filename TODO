@@ -298,3 +298,35 @@ same.
   cdb_make, read every key back, walk it with cdb_firstkey, and compare
   the file with one made by the cdb tools if they are installed.
 
+brotli-bcc55-c99:
+brotli builds with bcc102 (clang, C99) but not with Borland C++ 5.5 or
+5.6, whose compilers are C89. The generated makefile is fine; what is
+left for them is a handful of declarations after statements and a for
+loop that declares its counter, plus a stdint.h (third_party/compat/bcc55
+has one).
+
+Places found:
+  c/dec/decode.c lines 491-493 and 2092
+  c/enc/matching_tag_mask.h line 39
+  c/enc/encode.c line 248
+
+Patch the vendored tree or carry the changes as a patch file; decide which,
+or leave brotli to bcc102.
+
+genmakefile-skip-unbuildable-units:
+A unit whose preprocessor scan records a missing include, unistd.h or
+sys/socket.h for a Windows compiler, cannot be built for that compiler.
+Today the compile fails and make goes on with -i. The Unix-only programs
+(ftp, dnsutils, serial, tcp) are the bulk of the 224 error lines left with
+bcc102. genmakefile could leave such a unit out and say so with -v.
+
+Portable files that lack a guard must still be fixed in the source, so the
+skip should list what it left out.
+
+genmakefile-pragma-comment-lib:
+Win32 compilers name import libraries from the source with a pragma
+comment(lib, "shlwapi.lib"). genmakefile could read these during the
+preprocessor scan and add them to the libraries of the program, and show
+them with -v when porting a foreign project. Details in
+.ai-context/genmakefile-idea-pragma-comment-lib.md.
+

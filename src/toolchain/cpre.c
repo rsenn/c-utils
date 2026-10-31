@@ -34,6 +34,8 @@ static buffer *out, tmpbuf;
 
 int
 main(int argc, char** argv) {
+  cpp_token* t;
+  cpp_macro* m;
   int ret, c, index = 0;
   char *tmp, *fn;
   int no_process = 0, no_line = 0, dump_defines = 0;
@@ -202,13 +204,13 @@ main(int argc, char** argv) {
   }
 
   if(opt_dump)
-    for(cpp_token* t = tok2; t; t = t->next)
+    for(t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
   
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
   if(dump_defines)
-    for(cpp_macro* m = *ptr; m; m = m->next) {
+    for(m = *ptr; m; m = m->next) {
       cpp_print_macro(buffer_2, m);
       buffer_flush(buffer_2);
   

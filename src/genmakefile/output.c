@@ -16,9 +16,10 @@ make_capabilities_t make_capabs = 0;
  */
 static void
 extract_vars(const char* x, size_t len, set_t* out) {
+  size_t i;
   set_clear(out);
 
-  for(size_t i = 0; i < len; ++i) {
+  for(i = 0; i < len; ++i) {
     const char* p = &x[i];
 
     if(i + 4 <= len && *p == '$' && p[1] == '(') {
@@ -153,8 +154,10 @@ output_all_vars(buffer* b, MAP_T* vars, strlist* varnames, build_tool_t tool) {
 
   strlist_foreach_s(varnames, name) {
 #ifdef DEBUG_OUTPUT
-    buffer_putm_internal(debug_buf, "Outputting variable '", name, "'.", 0);
-    buffer_putnlflush(debug_buf);
+    if(dump_level >= 2) {
+      buffer_putm_internal(debug_buf, "Outputting variable '", name, "'.", 0);
+      buffer_putnlflush(debug_buf);
+    }
 #endif
 
     output_var(b, vars, name, serial, tool);
@@ -189,21 +192,23 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   stralloc_copys(&name, rule->name);
 
 #ifdef DEBUG_OUTPUT
-  buffer_puts(debug_buf, "RULE\n  " YELLOW256 "name" NC ": ");
-  buffer_puts(debug_buf, rule->name);
-  buffer_puts(debug_buf, "\n  " PURPLE256 "recipe" NC ": ");
-  buffer_putsa(debug_buf, &rule->recipe);
-  buffer_puts(debug_buf, "\n  " BLUE256 "output" NC ":\n\t");
-  buffer_putset(debug_buf, &rule->output, "\n\t", 2);
-  buffer_puts(debug_buf, "\n  " GREEN256 "prereq" NC ":\n\t");
-  buffer_putset(debug_buf, &rule->prereq, "\n\t", 2);
+  if(dump_level >= 2) {
+    buffer_puts(debug_buf, "RULE\n  " YELLOW256 "name" NC ": ");
+    buffer_puts(debug_buf, rule->name);
+    buffer_puts(debug_buf, "\n  " PURPLE256 "recipe" NC ": ");
+    buffer_putsa(debug_buf, &rule->recipe);
+    buffer_puts(debug_buf, "\n  " BLUE256 "output" NC ":\n\t");
+    buffer_putset(debug_buf, &rule->output, "\n\t", 2);
+    buffer_puts(debug_buf, "\n  " GREEN256 "prereq" NC ":\n\t");
+    buffer_putset(debug_buf, &rule->prereq, "\n\t", 2);
 
-  if(array_length(&rule->deps, sizeof(target*))) {
-    buffer_puts(debug_buf, "\n  deps" NC ": ");
-    print_rule_deps(debug_buf, rule);
+    if(array_length(&rule->deps, sizeof(target*))) {
+      buffer_puts(debug_buf, "\n  deps" NC ": ");
+      print_rule_deps(debug_buf, rule);
+    }
+
+    buffer_putnlflush(debug_buf);
   }
-
-  buffer_putnlflush(debug_buf);
 #endif
 
   if(rule->phony || (num_prereqs == 0 && str_diffn(rule->name, dirs.work.sa.s, dirs.work.sa.len) &&
@@ -528,10 +533,12 @@ output_all_rules(buffer* b, build_tool_t tool, const char quote[], char psa, cha
       continue;
 
 #ifdef DEBUG_OUTPUT
-    buffer_puts(debug_buf, "Outputting rule '");
-    buffer_puts(debug_buf, name);
-    buffer_putc(debug_buf, '\'');
-    buffer_putnlflush(debug_buf);
+    if(dump_level >= 2) {
+      buffer_puts(debug_buf, "Outputting rule '");
+      buffer_puts(debug_buf, name);
+      buffer_putc(debug_buf, '\'');
+      buffer_putnlflush(debug_buf);
+    }
 #endif
 
     if(tool == TOOL_NINJA)
@@ -664,4 +671,152 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
 
   buffer_putnl(b, flush);
   rule->serial = serial;
+}
+
+/**
+ * @brief      Output the switches of the sources: for each name a conditional
+ *             of the sources asks about, a definition that is added to DEFS
+ *             when the build is given a value for that name, e.g.
+ *             `make USE_UART=1`. Without one the name stays undefined.
+ *
+ * @param      b         Output buffer
+ * @param[in]  tool      Build tool
+ * @param      switches  The names
+ */
+void
+output_switches(buffer* b, build_tool_t tool, const strarray* switches) {
+  char** p;
+  int bang = str_start(tools.make, "borland") || str_start(tools.make, "bmake") || str_start(tools.make, "nmake") ||
+             str_start(tools.make, "po");
+
+  if(!strarray_size(switches) || tool == TOOL_NINJA)
+    return;
+
+  if(tool == TOOL_BATCH)
+    buffer_putm_internal(b, "REM Give a name below a value to define it, e.g. SET USE_X=1", newline, NULL);
+  else if(tool == TOOL_SHELL)
+    buffer_putm_internal(b, "# Give a name below a value to define it, e.g. USE_X=1", newline, NULL);
+  else
+    buffer_putm_internal(b, "# Give a name below a value to define it, e.g. ", bang ? "make -DUSE_X=1" : "make USE_X=1", newline, NULL);
+
+  strarray_foreach(switches, p) {
+    const char* n = *p;
+
+    if(tool == TOOL_BATCH)
+      buffer_putm_internal(b, "IF DEFINED ", n, " SET DEFS=%DEFS% -D", n, "=%", n, "%", newline, NULL);
+    else if(tool == TOOL_SHELL)
+      buffer_putm_internal(b, "if [ -n \"$", n, "\" ]; then DEFS=\"$DEFS -D", n, "=$", n, "\"; fi", newline, NULL);
+    else if(bang)
+      buffer_putm_internal(b, "!ifdef ", n, newline, "DEFS = $(DEFS) -D", n, "=$(", n, ")", newline, "!endif", newline, NULL);
+    else
+      buffer_putm_internal(b, n, " ?=", newline, "ifneq ($(", n, "),)", newline, "DEFS += -D", n, "=$(", n, ")", newline, "endif", newline, NULL);
+  }
+
+  buffer_putnl(b, 0);
+  buffer_flush(b);
+}
+
+/**
+ * @brief      Output the optional packages
+ *
+ * A package is enabled by giving its variable (LIBZ) a value: the library
+ * names. LIBZ_INCLUDEDIR and LIBZ_LIBDIR add the search paths.
+ *
+ * @param      b     Output buffer
+ * @param      tool  Build tool
+ * @param      deps  Entries "MACRO=VARIABLE"
+ */
+void
+output_deps(buffer* b, build_tool_t tool, const strarray* deps) {
+  char** p;
+  int bang = str_start(tools.make, "borland") || str_start(tools.make, "bmake") || str_start(tools.make, "nmake") ||
+             str_start(tools.make, "po");
+
+  if(!strarray_size(deps) || tool == TOOL_NINJA)
+    return;
+
+  if(tool == TOOL_BATCH)
+    buffer_putm_internal(b, "REM Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths", newline, NULL);
+  else if(tool == TOOL_SHELL)
+    buffer_putm_internal(b, "# Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths", newline, NULL);
+  else
+    buffer_putm_internal(b, "# Set a package to its library names to use it, e.g. ", bang ? "make -DLIBZ=z" : "make LIBZ=z", newline, "# <NAME>_INCLUDEDIR and <NAME>_LIBDIR add the paths", newline, NULL);
+
+  strarray_foreach(deps, p) {
+    size_t n = str_chr(*p, '=');
+    char* macro = str_ndup(*p, n);
+    const char* v = *p + n + 1;
+    stralloc inc, lib, dir;
+
+    stralloc_init(&inc);
+    stralloc_init(&lib);
+    stralloc_init(&dir);
+    stralloc_catm(&inc, v, "_INCLUDEDIR", NULL);
+    stralloc_nul(&inc);
+    stralloc_catm(&lib, v, "_LIBDIR", NULL);
+    stralloc_nul(&lib);
+
+    if(format_linkdir_fn) {
+      stralloc ref;
+
+      stralloc_init(&ref);
+      stralloc_catm(&ref, "$(", lib.s, ")", NULL);
+      stralloc_nul(&ref);
+      format_linkdir_fn(ref.s, &dir);
+      stralloc_free(&ref);
+    }
+
+    stralloc_nul(&dir);
+
+    if(tool == TOOL_BATCH) {
+      buffer_putm_internal(b, "IF DEFINED ", v, " SET DEFS=%DEFS% -D", macro, "=1 & SET LIBS=%LIBS% %", v, "%", newline, NULL);
+      buffer_putm_internal(b, "IF DEFINED ", inc.s, " SET CPPFLAGS=%CPPFLAGS% -I%", inc.s, "%", newline, NULL);
+      buffer_putm_internal(b, "IF DEFINED ", lib.s, " SET LDFLAGS=%LDFLAGS% ", dir.s, newline, NULL);
+    } else if(tool == TOOL_SHELL) {
+      buffer_putm_internal(b, "if [ -n \"$", v, "\" ]; then DEFS=\"$DEFS -D", macro, "=1\"; LIBS=\"$LIBS $", v, "\"; fi", newline, NULL);
+      buffer_putm_internal(b, "if [ -n \"$", inc.s, "\" ]; then CPPFLAGS=\"$CPPFLAGS -I$", inc.s, "\"; fi", newline, NULL);
+      buffer_putm_internal(b, "if [ -n \"$", lib.s, "\" ]; then LDFLAGS=\"$LDFLAGS ", dir.s, "\"; fi", newline, NULL);
+    } else if(bang) {
+      buffer_putm_internal(b, "!ifdef ", v, newline, "DEFS = $(DEFS) -D", macro, "=1", newline, "LIBS = $(LIBS) $(", v, ")", newline, NULL);
+      buffer_putm_internal(b, "!ifdef ", inc.s, newline, "CPPFLAGS = $(CPPFLAGS) -I$(", inc.s, ")", newline, "!endif", newline, NULL);
+      buffer_putm_internal(b, "!ifdef ", lib.s, newline, "LDFLAGS = $(LDFLAGS) ", dir.s, newline, "!endif", newline, "!endif", newline, NULL);
+    } else {
+      buffer_putm_internal(b, "ifneq ($(", v, "),)", newline, "DEFS += -D", macro, "=1", newline, "LIBS += $(", v, ")", newline, NULL);
+      buffer_putm_internal(b, "ifneq ($(", inc.s, "),)", newline, "CPPFLAGS += -I$(", inc.s, ")", newline, "endif", newline, NULL);
+      buffer_putm_internal(b, "ifneq ($(", lib.s, "),)", newline, "LDFLAGS += ", dir.s, newline, "endif", newline, "endif", newline, NULL);
+    }
+
+    stralloc_free(&inc);
+    stralloc_free(&lib);
+    stralloc_free(&dir);
+    alloc_free(macro);
+  }
+
+  buffer_putnl(b, 0);
+  buffer_flush(b);
+}
+
+/**
+ * @brief      Output a variable that a value given to make takes precedence over
+ *
+ * The assignments of the variables overrule the command line of Borland make.
+ */
+void
+output_default(buffer* b, build_tool_t tool, const char* name, const char* value) {
+  int bang = str_start(tools.make, "borland") || str_start(tools.make, "bmake") || str_start(tools.make, "nmake") ||
+             str_start(tools.make, "po");
+
+  if(tool == TOOL_NINJA)
+    return;
+
+  if(tool == TOOL_BATCH)
+    buffer_putm_internal(b, "IF NOT DEFINED ", name, " SET ", name, "=", value, newline, NULL);
+  else if(tool == TOOL_SHELL)
+    buffer_putm_internal(b, ": ${", name, ":=", value, "}", newline, NULL);
+  else if(bang)
+    buffer_putm_internal(b, "!ifndef ", name, newline, name, " = ", value, newline, "!endif", newline, NULL);
+  else
+    buffer_putm_internal(b, name, " ?= ", value, newline, NULL);
+
+  buffer_flush(b);
 }

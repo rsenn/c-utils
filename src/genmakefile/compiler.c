@@ -35,6 +35,7 @@ static const char* compiler_types[] = {
     "occ", "orange", "pelles", "picc",        "po",  "sdcc", "tcc", "vc", "vs20", "xc8", "zapcc", 0,
 };
 
+int ilink_by_hand; /* the link command names the linker itself: $(ILINK) */
 const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *quote_args = "";
 bool batchmode, cygming;
 build_tool_t build_tool = 0;
@@ -79,10 +80,28 @@ static const char* const bcc55_defs[] = {
     "_STDCALL_SUPPORTED=", "__MT__=1",          "_MT=1",         0,
 };
 
+/* bcc32c of C++ Builder 10.2 (clang 3.3.1 based), found the same way; its
+   defaults give a console program with the dynamic run time */
+static const char* const bcc102_defs[] = {
+    "__BORLANDC__=0x0730", "__CODEGEARC__=0x0730", "__CODEGEARC_VERSION__=0x7308CAF", "__TURBOC__=0x0730",
+    "__BCPLUSPLUS__=0x0730", "__TCPLUSPLUS__=0x0730", "__clang__=1", "__clang_major__=3", "__clang_minor__=3",
+    "__llvm__=1", "_M_IX86=600", "_M_IX86_FP=0", "__i386__=1", "__i386=1",
+    "_WIN32=1", "_Windows=1", "__FLAT__=1", "_INTEGRAL_MAX_BITS=64", "__STDC__=1", "__STDC_VERSION__=199901L",
+    "__STDC_HOSTED__=1", "__SIZEOF_POINTER__=4", "__SIZEOF_LONG__=4", "__SIZEOF_INT__=4", "__SIZEOF_LONG_LONG__=8",
+    "__BYTE_ORDER__=1234", "__ORDER_LITTLE_ENDIAN__=1234", "_STDCALL_SUPPORTED=1", "__CHAR_BIT__=8", 0,
+};
+
+/* the compilers of C++ Builder 5.5, 5.6 and 6.0 are the classic ones, the
+   clang based ones of Embarcadero come after them */
+static int
+bcc_classic(const char* compiler) {
+  return str_contains(compiler, "55") || str_contains(compiler, "56") || str_contains(compiler, "60");
+}
+
 const char* const*
 compiler_predefs(const char* compiler) {
-  if(compiler && str_start(compiler, "bcc") && str_contains(compiler, "55"))
-    return bcc55_defs;
+  if(compiler && str_start(compiler, "bcc"))
+    return bcc_classic(compiler) ? (str_contains(compiler, "55") ? bcc55_defs : 0) : bcc102_defs;
 
   return 0;
 }
@@ -200,6 +219,7 @@ set_make_type(void) {
     make_begin_inline = "@&&|\r\n ";
     make_sep_inline = " ";
     make_end_inline = "\r\n|";
+    stralloc_copys(&commands.mkdir, "IF NOT EXIST $@ MKDIR $@");
     inst = "COPY /Y";
     newline = "\r\n";
   } else if(str_start(tools.make, "nmake")) {
@@ -252,7 +272,8 @@ set_make_type(void) {
 
 static bool
 is_compiler(const char* s) {
-  for(int i = 0; compiler_types[i]; i++)
+  int i;
+  for(i = 0; compiler_types[i]; i++)
     if(str_start(s, compiler_types[i]))
       return true;
 
@@ -448,6 +469,7 @@ set_compiler_type(const char* compiler) {
     exts.obj = ".obj";
     exts.bin = ".exe";
     exts.lib = ".lib";
+    libpfx = "";
     format_linklib_fn = &format_linklib_lib;
     // pathsep_args = '\\';
     // var_push("DEFS", "-DWIN32_LEAN_AND_MEAN");
@@ -457,30 +479,39 @@ set_compiler_type(const char* compiler) {
     else if(cfg.build_type == BUILD_TYPE_RELEASE || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_set("CFLAGS", "-O -O2");
     // var_push("CFLAGS", "-q");
-    var_push("CFLAGS", "-tWC -tWM");
-    var_push("CPPFLAGS", "-Dinline=__inline");
-    var_push("LDFLAGS", "-q");
+
+    if(bcc_classic(compiler)) {
+      var_push("CFLAGS", "-tWC -tWM");
+      var_push("CPPFLAGS", "-Dinline=__inline");
+      var_push("LDFLAGS", "-q");
+    }
 
     if(cfg.build_type == BUILD_TYPE_DEBUG)
       var_push("CFLAGS", "-w");
 
-    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
+    if(cfg.build_type == BUILD_TYPE_MINSIZEREL && bcc_classic(compiler))
       var_push("CFLAGS", "-d -a-");
 
     /* Embracadero C++ */
 
-    if(!str_contains(compiler, "55") && !str_contains(compiler, "60")) {
+    if(!bcc_classic(compiler)) {
       var_set("CC", "bcc32c");
       var_set("CXX", "bcc32x");
-      /* C99 standard */
-      var_push("CFLAGS", "-An");
-
+      /* its configuration file gives the include and library paths, C99 and
+         a console program are the defaults (-std=c99 makes the driver fail) */
       if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
         var_push("CFLAGS", "-v");
 
       /*if(cfg.build_type != BUILD_TYPE_DEBUG)
           var_push("CFLAGS", "-Or");*/
-      set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ ", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      /* the linker is called by hand: the driver runs the incremental
+         ilink32 of the same package, which does not run under wine, and
+         objects of both compilers link with the old one (give LINK=...) */
+      set_command(&commands.link, "$(ILINK) -Tpe -ap -c -x $(LDFLAGS) $(EXTRA_LDFLAGS)",
+                  "c0x32.obj $^, $@,, $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+      var_push("STDC_LIBS", "cw32.lib");
+      var_push("STDC_LIBS", "import32.lib");
+      ilink_by_hand = 1;
 
       /* Borland C++ Builder 5.5 */
     } else {
@@ -508,9 +539,13 @@ set_compiler_type(const char* compiler) {
 
     var_set("LINK", "ilink32");
     var_set("LIB", "tlib");
-    var_push("STDC_LIBS", "cw32mt.lib");
-    var_push("STDC_LIBS", "import32.lib");
-    set_command(&commands.lib, "$(LIB) /p256 $@ /u", "$^");
+    if(bcc_classic(compiler)) {
+      var_push("STDC_LIBS", "cw32mt.lib");
+      var_push("STDC_LIBS", "import32.lib");
+    }
+
+    /* tlib adds a module only when given as +module; $+ is the list of objects with that + before each */
+    set_command(&commands.lib, "$(LIB) /p256 $@ /u", "$+");
     quote_args = "\"";
     pathsep_args = '\\';
 

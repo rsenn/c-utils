@@ -932,6 +932,7 @@ set(genmakefile_SOURCES
     src/genmakefile/sources.c
     src/genmakefile/types.c
     src/genmakefile/project.c
+    src/genmakefile/matrix.c
     src/genmakefile/var.c
     src/genmakefile/generate.c
     src/genmakefile/input.c

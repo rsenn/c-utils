@@ -186,10 +186,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
   strlist_init(&list, '\0');
   strlist_zero(&list);
 
-#ifdef DEBUG_OUTPUT
-  buffer_putm_internal(debug_buf, "[1]", BLUE256, "sourcedir_addsource(", NC, source, BLUE256, ") ", NC, NULL);
-  buffer_putnlflush(debug_buf);
-#endif
+  LOG(2, "scanning ", source);
 
   path_dirname_s(source, &dir);
   stralloc_nul(&dir);

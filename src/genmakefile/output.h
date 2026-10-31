@@ -5,6 +5,7 @@
 #include "rule.h"
 #include "../../lib/buffer.h"
 #include "../../lib/strlist.h"
+#include "../../lib/strarray.h"
 #include "../../lib/map.h"
 
 extern int output_width;
@@ -39,6 +40,9 @@ void output_ninja_rule(buffer*, const char*, const stralloc*);
 void output_make_rule(buffer*, target*, build_tool_t, const char*, char, char, const char*);
 void output_ninja_target(buffer*, target*, char);
 void output_script(buffer*, target*, build_tool_t, const char*, char, const char*);
+void output_switches(buffer*, build_tool_t, const strarray*);
+void output_default(buffer*, build_tool_t, const char* name, const char* value);
+void output_deps(buffer*, build_tool_t, const strarray*);
 void output_var(buffer*, MAP_T*, const char*, int, build_tool_t);
 
 extern make_capabilities_t make_capabs;

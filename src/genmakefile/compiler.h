@@ -6,6 +6,7 @@
 
 /* how the generated makefile is written for the selected make program */
 extern const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment, *cross_compile, *quote_args;
+extern int ilink_by_hand;
 extern bool batchmode, cygming;
 extern build_tool_t build_tool;
 

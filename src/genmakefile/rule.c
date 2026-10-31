@@ -323,7 +323,7 @@ rule_command_subst(target* rule,
       continue;
     }
 
-    if(i + 2 <= in->len && *p == '$' && str_chr("@^<|", p[1]) < 4) {
+    if(i + 2 <= in->len && *p == '$' && str_chr("@^<|+", p[1]) < 5) {
       switch(p[1]) {
         case '@': {
           size_t p = out->len;
@@ -340,6 +340,22 @@ rule_command_subst(target* rule,
 
         case '|': {
           stralloc_subst(out, prereq, plen, " ", sep ? sep : "\n ");
+          break;
+        }
+
+        case '+': {
+          /* -+ replaces a stale member; quoted, as tlib reads a - in a bare name as an operator */
+          stralloc plus;
+
+          stralloc_init(&plus);
+          stralloc_copys(&plus, "\"");
+          stralloc_cats(&plus, sep ? sep : "\n ");
+          stralloc_cats(&plus, "-+\"");
+          stralloc_nul(&plus);
+          stralloc_cats(out, "-+\"");
+          stralloc_subst(out, prereq, plen, " ", plus.s);
+          stralloc_catc(out, '"');
+          stralloc_free(&plus);
           break;
         }
 
@@ -801,9 +817,10 @@ rule_list(const strlist* targets, array* out) {
  */
 void
 transform_subst_sa(const stralloc* in, stralloc* out, const char* pfx, const char* sfx, int to_lower) {
+  size_t i;
   stralloc_zero(out);
 
-  for(size_t i = 0; i < in->len; ++i) {
+  for(i = 0; i < in->len; ++i) {
     const char* p = &in->s[i];
 
     if(i + 4 <= in->len && *p == '$' && p[1] == '(') {
@@ -868,12 +885,13 @@ rule_output_s(target* rule) {
 
 void
 set_subst_b(const set_t* set, const char* in, size_t len, stralloc* out, const char* replacement) {
+  size_t i;
   stralloc value;
   stralloc_init(&value);
   set_join(set, " ", &value);
   stralloc_nul(&value);
 
-  for(size_t i = 0; i < len;) {
+  for(i = 0; i < len;) {
     if(value.len > 0 && i + value.len <= len)
       if(i == 0 || isspace(in[i - 1]))
         if(i + value.len == len || isspace(in[i + value.len]))

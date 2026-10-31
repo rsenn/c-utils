@@ -524,6 +524,7 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
   size_t n = 0;
 
   slink_foreach(words, word) {
+    cfg_setting* setting;
     if(!str_diffn(word->name, "IDLOC", 5))
       break;
 
@@ -533,7 +534,7 @@ cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
     if(comments && output_name)
       add_comment(output, word->name);
 
-    for(cfg_setting* setting = word->settings; setting; setting = setting->next) {
+    for(setting = word->settings; setting; setting = setting->next) {
       if((value = cfg_get_value(word, setting)) == NULL) {
         buffer_puts(buffer_2, "WARNING:  value ");
         buffer_putxlong(buffer_2, cfg_read_word(word, setting));

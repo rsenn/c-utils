@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "../../lib/uint32.h"
 #include "project.h"
+#include "matrix.h"
 #include "compiler.h"
 #include "../../lib/byte.h"
 #include "../../lib/sig.h"
@@ -42,6 +43,7 @@ const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "D
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
+int verbose = 0, dump_level = 0;
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0, cmd_libs_explicit = 0;
 commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
@@ -113,6 +115,10 @@ mkdir_sa(const stralloc* dir, int mode) {
 
   if(sa.len > 0 && stralloc_endb(&sa, &pathsep_make, 1))
     sa.len -= 1;
+
+  /* the directory is made here and now: with the separator of this system, not of the make program */
+  if(pathsep_make != PATHSEP_C)
+    stralloc_replacec(&sa, pathsep_make, PATHSEP_C);
 
   stralloc_nul(&sa);
   ret = _mkdir(sa.s, mode);
@@ -444,6 +450,17 @@ usage(char* argv0) {
                        "  -S, --build-as-lib TARGET build target as library\n"
                        "\n"
                        "      --lib-dir DIR         directory of the lib modules (default: lib)\n"
+                       "      --library NAME        the sources that have no main() make the library NAME\n"
+                       "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
+                       "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
+                       "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
+                       "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
+                       "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
+                       "      --code-offset ADDRESS address the program is loaded to\n"
+                       "                            (with --chip: bin/<compiler>-<chip>/ and obj/<compiler>-<chip>/<build id>/)\n"
+                       "  -v, --verbose             tell what is being done (twice: every source scanned)\n"
+                       "  -G, --dump                dump the state when built with DEBUG_OUTPUT (twice: all rules)\n"
+                       "  -x FILE                   write the debug log to FILE\n"
                        "  -i, --install             create installation rule_map\n"
                        "\n"
                        //"  -R, --objdir   DIR        object directory\n"
@@ -466,6 +483,7 @@ usage(char* argv0) {
                        "\n"
                        "     gcc         GNU make\n"
                        "     bcc55       Borland C++ Builder 5.5\n"
+                       "     bcc102      Embarcadero C++ 10.2 (bcc32c, clang based, C99)\n"
                        "     bcc         Borland C++ Builder >= 6.0\n"
                        "     lcc         lcc\n"
                        "     tcc         TinyCC\n"
@@ -536,6 +554,21 @@ resolve_directories(void) {
 
   if(dirs.out.sa.len == 0)
     path_cat_sa(&dirs.out.sa, dirs.this.sa.s, dirs.this.sa.len, dirs.work.sa.s, dirs.work.sa.len);
+
+  if(dirs.obj.sa.len == 0 && matrix_active()) {
+    stralloc bin, obj;
+
+    stralloc_init(&bin);
+    stralloc_init(&obj);
+    matrix_dirs(&bin, &obj);
+    path_cat_sa(&dirs.obj.sa, dirs.work.sa.s, dirs.work.sa.len, obj.s, obj.len);
+
+    if(dirs.bin.sa.len == 0)
+      path_cat_sa(&dirs.bin.sa, dirs.work.sa.s, dirs.work.sa.len, bin.s, bin.len);
+
+    stralloc_free(&bin);
+    stralloc_free(&obj);
+  }
 
   if(dirs.obj.sa.len == 0) {
     if(strlist_contains(&dirs.work, "build") && strlist_count(&dirs.work) > 1) {
@@ -610,7 +643,20 @@ setup_search_paths(strarray* libdirs, strarray* libs, strarray* includes) {
   if(tools.preproc)
     var_set("CPP", tools.preproc);
 
-  strarray_foreach(libdirs, it) { push_linkdir("LIBS", *it); }
+  /* the link command of Borland puts the objects and $(LIBS) into a response file, where bcc32 does not
+     take a -L, so the directories go to the options */
+  strarray_foreach(libdirs, it) {
+    int borland = str_start(tools.make, "borland") || str_start(tools.make, "bmake");
+
+    /* ilink32 takes a / for the start of an option, so a path has backslashes */
+    if(borland) {
+      stralloc_copys(&tmp, *it);
+      stralloc_replacec(&tmp, '/', '\\');
+      stralloc_nul(&tmp);
+    }
+
+    push_linkdir(borland ? "LDFLAGS" : "LIBS", borland ? tmp.s : *it);
+  }
   strarray_foreach(libs, it) { with_lib(*it); }
   strarray_foreach(includes, it) { includes_add(*it); }
 
@@ -751,6 +797,7 @@ ingest_input_file(target* all, target* compile_target) {
   MAP_PAIR_T iter;
 
   MAP_FOREACH(rule_map, iter) {
+    size_t i;
     target* rule = MAP_ITER_VALUE(iter);
     static const char* varnames[] = {
         "CFLAGS",
@@ -759,7 +806,7 @@ ingest_input_file(target* all, target* compile_target) {
         0,
     };
 
-    for(size_t i = 0; varnames[i]; ++i) {
+    for(i = 0; varnames[i]; ++i) {
       const char* value;
 
       if(!(value = var_get(varnames[i])) || !value[0])
@@ -805,6 +852,7 @@ ingest_input_file(target* all, target* compile_target) {
  */
 static void
 compute_common_flags(void) {
+  size_t i;
   static const char* varnames[] = {
       "CFLAGS",
       "CPPFLAGS",
@@ -814,7 +862,7 @@ compute_common_flags(void) {
 
   var_list("COMMON_FLAGS", 0)->value.sep = ' ';
 
-  for(size_t i = 0; varnames[i]; ++i) {
+  for(i = 0; varnames[i]; ++i) {
     var_t* v;
 
     if((v = var_list(varnames[i], 0))) {
@@ -1156,7 +1204,7 @@ generate_auxiliary_rules(target* all) {
     }
   }
 
-  if(inst_bins || inst_libs)
+  if((inst_bins || inst_libs) && !rule_find("install"))
     generate_install_rules();
 }
 
@@ -1165,13 +1213,17 @@ generate_auxiliary_rules(target* all) {
  *             source directory, source file, and the resolved
  *             config/exts/commands/dirs/tools state -- to debug_buf.
  *             Called once, right before the output-writing step. A no-op
- *             unless compiled with DEBUG_OUTPUT.
+ *             unless compiled with DEBUG_OUTPUT and --dump was given
+ *             (twice for the rules as well).
  */
 static void
 dump_state(void) {
 #ifdef DEBUG_OUTPUT
   MAP_PAIR_T t;
   struct dnode* link;
+
+  if(!dump_level)
+    return;
 
   buffer_puts(debug_buf, "==== genmakefile state dump ====\n");
 
@@ -1196,8 +1248,10 @@ dump_state(void) {
   buffer_putm_internal(debug_buf, " preproc=", tools.preproc ? tools.preproc : "", NULL);
   buffer_putnlflush(debug_buf);
 
-  buffer_puts(debug_buf, "-- rules --\n");
-  MAP_FOREACH(rule_map, t) { rule_dump(MAP_ITER_VALUE(t)); }
+  if(dump_level >= 2) {
+    buffer_puts(debug_buf, "-- rules --\n");
+    MAP_FOREACH(rule_map, t) { rule_dump(MAP_ITER_VALUE(t)); }
+  }
 
   buffer_puts(debug_buf, "-- vars --\n");
   MAP_FOREACH(vars, t) { var_dump(MAP_ITER_KEY(t), (var_t*)MAP_ITER_VALUE(t)); }
@@ -1209,6 +1263,9 @@ dump_state(void) {
   dlist_foreach_down(&sources_list, link) { sourcefile_dump(dlist_data(link, sourcefile*)); }
 
   buffer_putnlflush(debug_buf);
+#else
+  if(dump_level)
+    errmsg_warn("--dump needs a build with DEBUG_OUTPUT", 0);
 #endif
 }
 
@@ -1248,6 +1305,8 @@ write_project_file(buffer* out) {
  */
 static void
 write_makefile_output(buffer* out, strlist* cmdline) {
+  strarray switches, deps;
+
   buffer_putm_internal(out, comment, " Generated by:", newline, comment, "  ", NULL);
   buffer_putsa(out, &cmdline->sa);
   buffer_putsflush(out, newline);
@@ -1270,6 +1329,11 @@ write_makefile_output(buffer* out, strlist* cmdline) {
     stralloc_free(&tmp);
   }
 
+  strarray_init(&switches);
+  project_switches(&switches);
+  strarray_init(&deps);
+  project_deps(&deps);
+
   {
     strlist varnames;
 
@@ -1279,6 +1343,14 @@ write_makefile_output(buffer* out, strlist* cmdline) {
     output_all_vars(out, &vars, &varnames, build_tool);
     strlist_free(&varnames);
   }
+
+  output_switches(out, build_tool, &switches);
+  if(ilink_by_hand)
+    output_default(out, build_tool, "ILINK", "ilink32");
+
+  output_deps(out, build_tool, &deps);
+  strarray_free(&switches);
+  strarray_free(&deps);
 
   if(str_equal(tools.make, "gmake")) {
     strlist_nul(&vpath);
@@ -1376,7 +1448,7 @@ parse_target_options(
   const char* objdir = NULL;
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "ha:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
+    c = unix_getopt_long(argc, argv, "hvGe:j:H:U:Z:Q:K:a:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
 
     if(c == -1)
       break;
@@ -1521,6 +1593,61 @@ parse_target_options(
         break;
       }
 
+      case 'U': {
+        project_switch_prefix = arg;
+        break;
+      }
+
+      case 'j': {
+        project_libname = arg;
+        break;
+      }
+
+      case 'H': {
+        size_t n;
+
+        for(; *arg; arg += n + (arg[n] == ',')) {
+          n = str_chr(arg, ',');
+          strarray_push(&project_headers, str_ndup(arg, n));
+        }
+        break;
+      }
+
+      case 'e': {
+        size_t n;
+
+        for(; *arg; arg += n + (arg[n] == ',')) {
+          n = str_chr(arg, ',');
+          strarray_push(&project_dep_names, str_ndup(arg, n));
+        }
+        break;
+      }
+
+      case 'Z': {
+        matrix_xtal = arg;
+        break;
+      }
+
+      case 'Q': {
+        matrix_baud = arg;
+        break;
+      }
+
+      case 'K': {
+        matrix_offset = arg;
+        break;
+      }
+
+      case 'v': {
+        ++verbose;
+        break;
+      }
+
+      case 'G': {
+        ++dump_level;
+        break;
+      }
+
       case 'Y': {
         project_libdir = arg;
         break;
@@ -1625,6 +1752,15 @@ main(int argc, char* argv[]) {
       {"lang-c", 0, &cfg.lang, LANG_C},
       {"width", 0, &output_width, 'W'},
       {"lib-dir", 1, 0, 'Y'},
+      {"verbose", 0, 0, 'v'},
+      {"xtal", 1, 0, 'Z'},
+      {"switch-prefix", 1, 0, 'U'},
+      {"dep", 1, 0, 'e'},
+      {"library", 1, 0, 'j'},
+      {"header", 1, 0, 'H'},
+      {"baud", 1, 0, 'Q'},
+      {"code-offset", 1, 0, 'K'},
+      {"dump", 0, 0, 'G'},
       {"cxx", 0, &cfg.lang, LANG_CXX},
       {"c++", 0, &cfg.lang, LANG_CXX},
       {0, 0, 0, 0},
@@ -1703,6 +1839,10 @@ main(int argc, char* argv[]) {
     cmd_libs = 1;
   }
 
+  /* a library given by name is installed with its headers, not its tools */
+  if(project_libname)
+    inst_bins = 0;
+
   if(inst_bins)
     cmd_bins = 1;
 
@@ -1716,12 +1856,17 @@ main(int argc, char* argv[]) {
   if((ret = resolve_toolchain(argv[0])))
     goto quit;
 
+  LOG(1, "compiler ", tools.compiler ? tools.compiler : "(none)", ", make ", tools.make ? tools.make : "(none)");
+
+  matrix_defines();
   resolve_directories();
 
   setup_search_paths(&libdirs, &libs, &includes);
 
   if((ret = open_output_file(&filebuf, &out)))
     goto quit;
+
+  LOG(1, "writing to ", outfile ? outfile : "standard output");
 
   seed_base_rules(&all, &compile_target);
 
@@ -1741,9 +1886,15 @@ main(int argc, char* argv[]) {
   /* a compiler whose macros are known is scanned with the preprocessor,
      the others with the text scanner */
   if(!infile && !cmake_builddir && strarray_size(&args) && compiler_predefs(tools.compiler)) {
+    LOG(1, "scanning with the preprocessor of ", tools.compiler);
     finalize_build_metadata();
     project_generate(&args, &includes, cmd_bins, cmd_libs);
   } else {
+    if(infile)
+      LOG(1, "reading ", infile);
+    else
+      LOG(1, "scanning the sources with the text scanner");
+
     if((ret = discover_sources(&args, &sources)))
       goto fail;
 
@@ -1807,11 +1958,14 @@ main(int argc, char* argv[]) {
     generate_all_rules(&sources, all);
   }
 
+  LOG(1, "generating the remaining rules");
   generate_auxiliary_rules(all);
 
   dump_state();
 
 fail:
+  LOG(1, "writing the output");
+
   if(!write_project_file(out))
     write_makefile_output(out, &cmdline);
 

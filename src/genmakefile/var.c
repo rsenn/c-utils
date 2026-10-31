@@ -321,11 +321,12 @@ var_subst_b(const char* name, stralloc* out, const char* in, size_t len, const c
     value = "";
 
   {
+    size_t i;
     size_t vlen = str_len(value);
 
     vlen = byte_trimr(value, vlen, " \t\v\n", 3);
 
-    for(size_t i = 0; i < len;) {
+    for(i = 0; i < len;) {
       if(i + vlen <= len)
         if(i == 0 || isspace(in[i - 1]))
           if(i + vlen == len || isspace(in[i + vlen]))

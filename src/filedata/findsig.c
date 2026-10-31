@@ -99,16 +99,18 @@ read_file(FILE* f, size_t* file_sz) {
 
 long
 find_sig(uint8_t* file_buf, size_t file_sz, uint8_t* pat_buf, int pat_len, char* mask) {
+  long i;
   if(pat_len > file_sz) {
     return -1;
   }
 
   // naive searching algorithm (slow)
 
-  for(long i = 0; i < file_sz; i++) {
+  for(i = 0; i < file_sz; i++) {
+    int j;
     int found = 1;
 
-    for(int j = 0; j < pat_len; j++) {
+    for(j = 0; j < pat_len; j++) {
       if(mask[j] != '?' && file_buf[i + j] != pat_buf[j]) {
         found = 0;
         break;
@@ -125,6 +127,7 @@ find_sig(uint8_t* file_buf, size_t file_sz, uint8_t* pat_buf, int pat_len, char*
 
 int
 main(int argc, char** argv) {
+  int i;
   if(argc < 3) {
     printf("usage: ./findsig [file] [pattern]\n");
     printf("\tpattern format example: \"05 ff 0a bb ? ? 12 34 56 ? ?\"\n");
@@ -151,14 +154,14 @@ main(int argc, char** argv) {
 #ifdef PRINT_EXTRA
   printf("mask: ");
 
-  for(int i = 0; i < mask_len; i++) {
+  for(i = 0; i < mask_len; i++) {
     putchar(mask[i]);
   }
   putchar('\n');
 
   printf("pattern bytes: ");
 
-  for(int i = 0; i < pat_len; i++) {
+  for(i = 0; i < pat_len; i++) {
     printf("\\x%02x", pat_buf[i]);
   }
   putchar('\n');
@@ -169,10 +172,11 @@ main(int argc, char** argv) {
   if(addr == -1) {
     printf("pattern not found\n");
   } else {
+    int i;
     printf("found at addr: 0x%lx\n", addr);
     printf("matched bytes: ");
 
-    for(int i = addr; i < addr + pat_len; i++) {
+    for(i = addr; i < addr + pat_len; i++) {
       printf("\\x%02x", file_buf[i]);
     }
     putchar('\n');

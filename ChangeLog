@@ -1,5 +1,78 @@
 2026-10-30:
 
+- genmakefile: -t bcc102 selects the clang based bcc32c of Embarcadero C++
+  10.2 (C99): its predefined macros are known, so the preprocessor scan
+  runs, and the classic bcc32 options and run time libraries are left out;
+  programs are linked by calling $(ILINK) (default ilink32) itself, and
+  make -DILINK=... names another one (the 6.90 linker does not run under
+  wine, the one of bcc55 links the objects); -L directories of a Borland
+  make file are written with backslashes
+- genmakefile: --library NAME makes one library of the sources without a
+  main(), for the flat third party trees; -i then installs NAME.lib and its
+  public headers (--header, and those below an include directory) below
+  $(prefix) (default inst-<compiler>); .c files can be given as arguments,
+  not only directories
+- third_party/compat/bcc55/stdint.h: the part of stdint.h Borland C++ 5.5
+  lacks
+- genmakefile: the packages the sources query as HAVE_BROTLI, HAVE_LIBBZ2,
+  HAVE_LIBLZMA and HAVE_ZLIB (and any named with --dep) are enabled from the
+  make file by giving LIBBROTLI, LIBBZ2, LIBLZMA, LIBZ (plus _INCLUDEDIR and
+  _LIBDIR) a value, and are off otherwise
+- genmakefile: a Borland library that already exists is updated member by
+  member (tlib -+), so a rebuilt object no longer stays stale in it
+- fmt_double: builds with Borland C++ 5.5, which has no isnan and isinf
+- genmakefile: a program links the libraries behind a header that only
+  includes others (map.h gives hmap), and a library links those of the
+  public headers its own sources reach (io.h gives iarray)
+- genmakefile: Borland libraries are filled again (tlib reads a - in a bare
+  module name as an operator, so every module was dropped as a duplicate);
+  -l names a Borland import library as NAME.lib without a lib prefix
+- genmakefile: only the names that begin with USE_ (--switch-prefix), that
+  no #define of the sources gives a value (fallbacks included) and that no #if
+  compares or calculates with become switches in the generated file; the
+  conditionals of branches that are not taken are read as well
+- genmakefile: the mkdir rules of a Borland make file used mkdir -p, and
+  were not made at all for directories named with backslashes, so the
+  objects had no directory to go to
+- lib/cpp: track_queries also collects the names of the #defines read
+  (defined_names) and the names an #if uses as more than a truth value
+  (undef_cmp)
+- sources for Borland C++ 5.5 (C89): declarations moved to the top of their
+  block, no empty initializers or compound literals in lib/cpp, uint16_t,
+  uint32_t and uint64_t, alloca and HAVE_ALLOCA in lib/windoze.h, Unix-only
+  files stubbed (io_passfd, iob_prefetch), #warning and tls files guarded;
+  lib/path: DRIVE() searched with str_contains where str_has was meant;
+  PATH_LIST_FOREACH takes the position variable as its fifth argument
+- genmakefile: the output, work and object directories are made with the
+  directory separator of the system it runs on. For a Borland or nmake file
+  the separator of the make program (a backslash) was used, which made
+  directories named like \tmp\x\y in the working directory
+- lib/io.h: config.h is only included when HAVE_CONFIG_H is defined, like in
+  the other files, so that a build without a configure step (Borland make)
+  finds all it needs
+- genmakefile: a header alone in lib/ (lib/windoze.h) is no library module
+  any more, a module needs a directory lib/<name>/ with sources as well
+- genmakefile: added --xtal HZ, --baud BPS and --code-offset ADDRESS for
+  firmware builds. With --chip and one of them, a file builds one point of
+  the matrix of the PIC projects: objects below
+  obj/<compiler>-<chip>/<type>_<mhz>mhz_<kbps>kbps[_at<offset>]/<program>/,
+  binaries as bin/<compiler>-<chip>/<program>_<type>_<mhz>mhz_<kbps>kbps[_at<offset>],
+  and the macros _XTAL_FREQ, XTAL_USED (48 MHz: intosc48), UART_BAUD,
+  PIC<CHIP>, __<chip> and __DEBUG or __NDEBUG are defined
+- genmakefile: the names the sources ask about in #if conditionals and
+  that nothing defines (USE_UART, _XTAL_FREQ and the like, but not the
+  compiler macros starting with __) become switches in the generated file:
+  a build that is given a value for one, for example make USE_UART=1 (make
+  -DUSE_UART=1 for Borland make and nmake), adds -DUSE_UART=1 to DEFS. Without
+  a value the name stays undefined. Written for make, gmake, Borland make,
+  nmake, batch and shell files; ninja has no way to take them
+- lib/cpp: with track_queries set in cpp_ctx the preprocessor collects the
+  names a conditional asks about while no macro of that name exists:
+  undef_tested for #ifdef, #ifndef and defined(), undef_valued for names
+  used by value in an #if or #elif
+- genmakefile: the preprocessor scan finds the names the sources query and
+  never define (the USE_* switches of the PIC firmware), tested and valued
+  separately; -v tells how many, -v -v lists them
 - genmakefile: added -v/--verbose, which tells what is being done (the
   compiler and make type, the output file, the scan, the rule creation);
   given twice it also names every source the scan starts with. Headers

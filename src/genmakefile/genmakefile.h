@@ -119,4 +119,21 @@ extern char pathsep_make;
 extern char pathsep_args;
 extern const char* builddir_varname;
 
+/* -v counts the verbosity: 1 reports what is being done, 2 also every source
+   the scan starts with; --dump counts the state dump of a DEBUG_OUTPUT build:
+   1 the settings, 2 also every rule */
+extern int verbose, dump_level;
+extern const char* const build_types[];
+
+#define LOG(level, ...) \
+  do { \
+    if(verbose >= (level)) { \
+      buffer_putm_internal(buffer_2, "genmakefile: ", __VA_ARGS__, (char*)0); \
+      buffer_putnlflush(buffer_2); \
+    } \
+  } while(0)
+
+/* number as a string, for LOG */
+#define LOG_NUM(buf, n) ((buf)[fmt_ulong((buf), (unsigned long)(n))] = '\0', (buf))
+
 #endif

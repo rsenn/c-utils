@@ -87,6 +87,14 @@ How the headers are found depends on the compiler:
 | `-S, --build-as-lib TARGET` | build `TARGET` as a library |
 | `-i, --install` | add install rules |
 | `--lib-dir DIR` | directory of the lib modules (default `lib`) |
+| `-v`, `--verbose` | tell what is being done; twice: also every source the scan starts with |
+| `-G`, `--dump` | dump the state (only in a build with `DEBUG_OUTPUT`); twice: also every rule |
+| `-x FILE` | write the debug log to FILE |
+| `--dep NAME[,NAME]` | optional packages: the make file enables `HAVE_<NAME>` when `LIB<NAME>` is set (see Optional packages) |
+| `--switch-prefix STR` | names the sources query that begin with STR are switches (default `USE_`) |
+| `--xtal HZ` | clock of the microcontroller, defines `_XTAL_FREQ` |
+| `--baud BPS` | baud rate of the serial port, defines `UART_BAUD` |
+| `--code-offset ADDRESS` | address the program is loaded to |
 
 Without any of the `--create-` options programs, libraries and objects are
 all generated.
@@ -183,3 +191,94 @@ library.
   generated makefile is correct, the compiler stops on the sources.
 - Programs are placed in one directory by their base name, so two programs
   of the same name in different source directories collide.
+
+## Switches found in the sources
+
+The preprocessor scan notes every name a conditional asks about while no
+macro of that name exists: with `#ifdef`, `#ifndef` or `defined()`, or used
+by value in an `#if` or `#elif`. Branches that are not taken are read for
+this too. A name is a switch of the build when
+
+- it begins with `USE_` (change it with `--switch-prefix`, an empty prefix
+  takes every name),
+- no `#define` of the sources gives it a value, the fallback
+  `#ifndef USE_X` / `#define USE_X 1` / `#endif` being one, and
+- no `#if` compares it or calculates with it (`#if USE_X > 1`); only a plain
+  truth value, as in `#if USE_X` or `#if !USE_X && USE_Y`, qualifies.
+
+For each switch the generated file has a definition that is added to `DEFS`
+when the build is given a value:
+
+    make USE_UART=1              (GNU make and others)
+    make -DUSE_UART=1            (Borland make)
+    nmake USE_UART=1             (nmake)
+
+Without a value the name stays undefined, so the file builds the same as
+before. `-v -v` lists the names the scan found and tells why a `USE_` name
+is no switch. Only the preprocessor scan finds switches, which is used for
+the compilers whose macros are known (bcc55 so far).
+
+## Firmware builds (one file per point of the matrix)
+
+The firmware of a microcontroller is built for a compiler, a chip, a build
+type, a clock, a baud rate and a load address. A file holds one such point;
+a shell loop makes the others. With `--chip` and at least one of `--xtal`,
+`--baud` and `--code-offset`, the layout is
+
+    obj/<compiler>-<chip>/<build id>/<program>/<source>.<ext>
+    bin/<compiler>-<chip>/<program>_<build id>.<ext>
+
+with the build id `<type>_<mhz>mhz_<kbps>kbps[_at<offset>]`, for example
+`debug_20mhz_38kbps` or `release_intosc48mhz_38kbps_at0x2000`. 48 MHz is the
+internal oscillator with its PLL and reads `intosc48`; an offset of zero is
+left out. Every program has objects of its own, since a program may be given
+other macros than the next one.
+
+    genmakefile -t xc8 -m make -I. -Ilib -Isrc --chip=18f25k50 \
+        --xtal 48000000 --baud 38400 --code-offset 0x2000 --release \
+        -o rgbtest-18f25k50-xc8-release.mk src/ lib/
+
+## Optional packages
+
+The compression packages the sources query with `#if HAVE_BROTLI`,
+`HAVE_LIBBZ2`, `HAVE_LIBLZMA` and `HAVE_ZLIB` are found by the scan, and
+`--dep NAME` adds any other package (`HAVE_<NAME>`, enabled by `LIB<NAME>`).
+The generated file leaves them off until the make variable is given, either
+on the command line or in the environment:
+
+| Variable | Effect |
+|---|---|
+| `LIBBROTLI`, `LIBBZ2`, `LIBLZMA`, `LIBZ` | the library names; defines `HAVE_<..>=1` and adds them to `LIBS` |
+| `<VAR>_INCLUDEDIR` | adds `-I<dir>` to `CPPFLAGS` |
+| `<VAR>_LIBDIR` | adds the library path to `LDFLAGS` |
+
+Borland make: `make -DLIBZ=zlib.lib -DLIBZ_INCLUDEDIR=C:\z\include -DLIBZ_LIBDIR=C:\z\lib`.
+
+## Flat libraries (third party trees)
+
+`--library NAME` turns every source without a `main()` among the arguments
+into the library `NAME` (`NAME.lib` in the library directory of the output),
+and the programs link it. With `-i` an `install` rule copies the library to
+`$(prefix)/lib` and the public headers to `$(prefix)/include`: the headers
+below an `include` directory of the sources (keeping the part after it) and
+those named with `--header`. `prefix` defaults to `inst-<compiler>`.
+
+    genmakefile -m borland -t bcc55 -I/opt/bcc55/include -L/opt/bcc55/lib \
+      --library bz2 --header bzlib.h --create-libs --no-create-bins -i \
+      -o bcc55.mk .
+    make -f bcc55.mk install
+
+The result is what a project passes back with `LIBBZ2=bz2.lib`,
+`LIBBZ2_INCLUDEDIR=...\include` and `LIBBZ2_LIBDIR=...\lib` (see Optional
+packages).
+
+## Embarcadero C++ (bcc102)
+
+`-t bcc102` generates for `bcc32c`, the clang based C99 compiler of
+Embarcadero C++ 10.2. Its configuration file supplies the include and
+library paths of the compiler; give `-L<dir>/lib/win32c/release` (and
+`.../psdk`) for the start-up object and the run time, which the make file
+passes to `ilink32`. The linker is `$(ILINK)`: under wine the linker of the
+same package stops with LME200, and the one of bcc55 links the objects, so
+there use `make -DILINK=/opt/bcc55/bin/ilink32.exe`.
+
