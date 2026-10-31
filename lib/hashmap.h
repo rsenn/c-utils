@@ -54,8 +54,9 @@ void hashmap_rehash(hashmap*);
 static inline uint64
 hashmap_fnv_hash(const char* s, size_t len) {
   uint64 hash = 0xcbf29ce484222325;
+  size_t i;
 
-  for(size_t i = 0; i < len; i++) {
+  for(i = 0; i < len; i++) {
     hash *= 0x100000001b3;
     hash ^= (unsigned char)s[i];
   }

@@ -28,6 +28,8 @@ static int seq = 0;
 
 ssize_t
 http_read(fd_type fd, char* buf, size_t len, buffer* b) {
+  uint32 iteration;
+  int err;
   http* h = b->cookie ? b->cookie : (http*)(ptrdiff_t)fd;
   buffer* in = &h->q.in;
   http_response* response = h->response;
@@ -41,13 +43,13 @@ http_read(fd_type fd, char* buf, size_t len, buffer* b) {
   if(!n)
     return 0;
 
-  uint32 iteration = 0;
+  iteration = 0;
 
 again:
   ++iteration;
 
   r = response->status == HTTP_RECV_HEADER ? buffer_freshen(in) : buffer_feed(in);
-  int err = h->err;
+  err = h->err;
 
   if(r < 0 && err != EAGAIN && err != EWOULDBLOCK)
     response->status = HTTP_STATUS_ERROR;

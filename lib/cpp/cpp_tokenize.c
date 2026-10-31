@@ -24,7 +24,7 @@ add_line_numbers(cpp_ctx* pp, cpp_file* file, cpp_token* tok) {
 cpp_token*
 cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
   char* p = file->contents;
-  cpp_token head = {};
+  cpp_token head = {0};
   cpp_token* cur = &head;
 
   pp->cur_file = file;
@@ -33,6 +33,8 @@ cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
   pp->has_sp = 0;
 
   while(*p) {
+    size_t ident_len;
+    size_t punct_len;
     /* Skip line comments. */
     if(str_start(p, "//")) {
       char* q = p;
@@ -156,7 +158,7 @@ cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
     }
 
     /* Identifier or keyword */
-    size_t ident_len = cpp_read_ident(p);
+    ident_len = cpp_read_ident(p);
 
     if(ident_len) {
       cur = cur->next = cpp_token_new(pp, TK_IDENT, p, p + ident_len);
@@ -165,7 +167,7 @@ cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
     }
 
     /* Punctuators */
-    size_t punct_len = cpp_read_punct(p);
+    punct_len = cpp_read_punct(p);
 
     if(punct_len) {
       cur = cur->next = cpp_token_new(pp, TK_PUNCT, p, p + punct_len);
@@ -181,10 +183,14 @@ cpp_tokenize(cpp_ctx* pp, cpp_file* file) {
   return head.next;
 }
 
-cpp_type *cpp_ty_void = &(cpp_type){TY_VOID, 1, 1}, *cpp_ty_bool = &(cpp_type){TY_BOOL, 1, 1},
-         *cpp_ty_char = &(cpp_type){TY_CHAR, 1, 1}, *cpp_ty_short = &(cpp_type){TY_SHORT, 2, 2},
-         *cpp_ty_int = &(cpp_type){TY_INT, 4, 4}, *cpp_ty_long = &(cpp_type){TY_LONG, 8, 8},
-         *cpp_ty_uchar = &(cpp_type){TY_CHAR, 1, 1, true}, *cpp_ty_ushort = &(cpp_type){TY_SHORT, 2, 2, true},
-         *cpp_ty_uint = &(cpp_type){TY_INT, 4, 4, true}, *cpp_ty_ulong = &(cpp_type){TY_LONG, 8, 8, true},
-         *cpp_ty_float = &(cpp_type){TY_FLOAT, 4, 4}, *cpp_ty_double = &(cpp_type){TY_DOUBLE, 8, 8},
-         *cpp_ty_ldouble = &(cpp_type){TY_LDOUBLE, 16, 16};
+/* the basic types; plain objects, since bcc32 has no compound literals */
+static cpp_type ty_void = {TY_VOID, 1, 1}, ty_bool = {TY_BOOL, 1, 1}, ty_char = {TY_CHAR, 1, 1},
+                ty_short = {TY_SHORT, 2, 2}, ty_int = {TY_INT, 4, 4}, ty_long = {TY_LONG, 8, 8},
+                ty_uchar = {TY_CHAR, 1, 1, true}, ty_ushort = {TY_SHORT, 2, 2, true}, ty_uint = {TY_INT, 4, 4, true},
+                ty_ulong = {TY_LONG, 8, 8, true}, ty_float = {TY_FLOAT, 4, 4}, ty_double = {TY_DOUBLE, 8, 8},
+                ty_ldouble = {TY_LDOUBLE, 16, 16};
+
+cpp_type *cpp_ty_void = &ty_void, *cpp_ty_bool = &ty_bool, *cpp_ty_char = &ty_char, *cpp_ty_short = &ty_short,
+         *cpp_ty_int = &ty_int, *cpp_ty_long = &ty_long, *cpp_ty_uchar = &ty_uchar, *cpp_ty_ushort = &ty_ushort,
+         *cpp_ty_uint = &ty_uint, *cpp_ty_ulong = &ty_ulong, *cpp_ty_float = &ty_float, *cpp_ty_double = &ty_double,
+         *cpp_ty_ldouble = &ty_ldouble;

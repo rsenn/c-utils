@@ -21,17 +21,20 @@ cpp_search_include_next(cpp_ctx* pp, char* filename) {
 
 char*
 cpp_search_include_paths(cpp_ctx* pp, char* filename) {
+  char* cached;
+  size_t num_include_paths;
+  size_t i;
   if(filename[0] == '/')
     return filename;
 
-  char* cached = hashmap_get(&pp->inc_cache, filename);
+  cached = hashmap_get(&pp->inc_cache, filename);
   if(cached)
     return cached;
 
-  size_t num_include_paths = strarray_size(&pp->inc_paths);
+  num_include_paths = strarray_size(&pp->inc_paths);
 
   /* Search a file from the include paths. */
-  for(size_t i = 0; i < num_include_paths; i++) {
+  for(i = 0; i < num_include_paths; i++) {
     char* path = path_join(strarray_AT(&pp->inc_paths, i), filename);
 
     if(!path_exists(path))

@@ -7,5 +7,6 @@
 #include <sys/signal.h>
 #endif
 
-struct sigaction const sig_dfl = {.sa_handler = SIG_DFL};
-struct sigaction const sig_ign = {.sa_handler = SIG_IGN};
+/* sa_handler is the first member */
+struct sigaction const sig_dfl = {SIG_DFL};
+struct sigaction const sig_ign = {SIG_IGN};

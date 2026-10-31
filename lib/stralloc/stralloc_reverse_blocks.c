@@ -7,6 +7,7 @@
 
 void
 stralloc_reverse_blocks(stralloc* sa, size_t size) {
+  size_t i;
   size_t n = sa->len / (size << 1);
 
 #ifdef __GNUC__
@@ -17,7 +18,7 @@ stralloc_reverse_blocks(stralloc* sa, size_t size) {
   char* tmp = malloc(size);
 #endif
 
-  for(size_t i = 0; i < n; i++) {
+  for(i = 0; i < n; i++) {
     byte_copy(tmp, size, sa->s + i * size);
     byte_copy(sa->s + i * size, size, sa->s + (2 * n - 1 - i) * size);
     byte_copy(sa->s + (2 * n - 1 - i) * size, size, tmp);

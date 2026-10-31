@@ -8,6 +8,10 @@
 #endif
 /*#include "haveip6.h"*/
 
+#ifndef IP_MULTICAST_LOOP
+#define IP_MULTICAST_LOOP 11 /* winsock2.h; missing in the winsock.h of Borland C++ */
+#endif
+
 int
 socket_mcloop6(int s, char loop) {
 #ifdef LIBC_HAS_IP6

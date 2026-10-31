@@ -10,6 +10,9 @@
 #include <stdint.h>
 #elif defined(__BORLANDC__)
 /* <systypes.h> would typedef uint8, uint16 and uint32 a second time */
+/* no <stdint.h> */
+typedef unsigned int uint32_t;
+typedef signed int int32_t;
 #elif defined(_WIN32) || defined(__MINGW32__)
 #define __MS_types__
 #include <sys/types.h>

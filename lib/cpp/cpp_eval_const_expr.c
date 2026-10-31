@@ -5,6 +5,9 @@
 /* Read and evaluate a constant expression. */
 long
 cpp_eval_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_token* rest2;
+  long val;
+  cpp_token *t, *prev = 0;
   cpp_token* start = tok;
   cpp_token* expr = cpp_read_const_expr(pp, rest, tok->next);
   expr = cpp_preprocess2(pp, expr);
@@ -16,9 +19,11 @@ cpp_eval_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
      we replace remaining non-macro identifiers with "0" before
      evaluating a constant expression. For example, `#if foo` is
      equivalent to `#if 0` if foo is not defined. */
-  for(cpp_token* t = expr; t->kind != TK_EOF; t = t->next) {
+  for(t = expr; t->kind != TK_EOF; prev = t, t = t->next) {
     if(t->kind == TK_IDENT) {
       cpp_token* next = t->next;
+
+      cpp_query_undefined(pp, t, cpp_is_truth_operand(prev, t) ? 1 : 2);
       *t = *cpp_new_num_token(pp, 0, t);
       t->next = next;
     }
@@ -27,8 +32,7 @@ cpp_eval_const_expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   /* Convert pp-numbers to regular numbers */
   cpp_convert_tokens(expr);
 
-  cpp_token* rest2;
-  long val = cpp_const_expr(pp, &rest2, expr);
+  val = cpp_const_expr(pp, &rest2, expr);
 
   if(rest2->kind != TK_EOF)
     cpp_error_tok(rest2, "extra token");

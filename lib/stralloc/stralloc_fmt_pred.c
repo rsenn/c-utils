@@ -2,9 +2,10 @@
 
 size_t
 stralloc_fmt_pred(stralloc* out, const char* in, size_t in_len, size_t (*fn)(char*, int), int (*pred)(int)) {
+  size_t i;
   stralloc_zero(out);
 
-  for(size_t i = 0; i < in_len; ++i) {
+  for(i = 0; i < in_len; ++i) {
     if(!stralloc_readyplus(out, 10))
       return 0;
 

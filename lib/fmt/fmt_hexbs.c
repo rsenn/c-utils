@@ -6,7 +6,8 @@ fmt_hexbs(void* out, const void* d, size_t len) {
   char* s = (char*)out;
 
   if(s) {
-    for(size_t i = 0; i < len; ++i) {
+    size_t i;
+    for(i = 0; i < len; ++i) {
       if(i > 0)
         *s++ = ' ';
 

@@ -21,10 +21,11 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
     if(c->working == -2)
       return -2; /* iomux was aborted */
     for(;;) {
+      int n;
       unsigned int f = c->l;
       if(f == c->h)
         break; /* no elements in queue */
-      int n = (f + 1) % SLOTS;
+      n = (f + 1) % SLOTS;
       if(__sync_bool_compare_and_swap(&c->l, f, n)) {
         /* we got one, and its index is in f */
         *s = c->q[f].fd;
@@ -104,7 +105,9 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
         }
       }
 #else
+#ifndef __BORLANDC__ /* #warning is not known to cpp32 */
 #warning "only epoll and kqueue supported for now"
+#endif
 #endif
       /* We need to signal the other threads.
      Either there are other events left, or we need one of them to

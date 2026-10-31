@@ -5,10 +5,16 @@
 /* Otherwise, do nothing and return false. */
 bool
 cpp_expand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_macro* m;
+  cpp_token* macro_token;
+  cpp_macro_arg* args;
+  cpp_token* rparen;
+  cpp_hideset* hs;
+  cpp_token* body;
+  cpp_token* t;
   if(cpp_hideset_contains(tok->hideset, tok->loc, tok->len))
     return false;
 
-  cpp_macro* m;
 
   if(tok->kind != TK_IDENT)
     return false;
@@ -25,10 +31,11 @@ cpp_expand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 
   /* Object-like macro application */
   if(m->is_objlike) {
+    cpp_token* t;
     cpp_hideset* hs = cpp_hideset_union(tok->hideset, cpp_hideset_new(m->name));
     cpp_token* body = cpp_hideset_add(m->body, hs);
 
-    for(cpp_token* t = body; t->kind != TK_EOF; t = t->next)
+    for(t = body; t->kind != TK_EOF; t = t->next)
       t->origin = tok;
 
     *rest = cpp_token_append(body, tok->next);
@@ -43,22 +50,22 @@ cpp_expand(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
     return false;
 
   /* Function-like macro application */
-  cpp_token* macro_token = tok;
-  cpp_macro_arg* args = cpp_read_macro_args(&tok, tok, m->params, m->va_args_name);
-  cpp_token* rparen = tok;
+  macro_token = tok;
+  args = cpp_read_macro_args(&tok, tok, m->params, m->va_args_name);
+  rparen = tok;
 
   /* Tokens that consist a func-like macro invocation may have different
      hidesets, and if that's the case, it's not clear what the hideset
      for the new tokens should be. We take the interesection of the
      macro token and the closing parenthesis and use it as a new hideset
      as explained in the Dave Prossor's algorithm. */
-  cpp_hideset* hs = cpp_hideset_intersection(macro_token->hideset, rparen->hideset);
+  hs = cpp_hideset_intersection(macro_token->hideset, rparen->hideset);
   hs = cpp_hideset_union(hs, cpp_hideset_new(m->name));
 
-  cpp_token* body = cpp_subst(pp, m->body, args);
+  body = cpp_subst(pp, m->body, args);
   body = cpp_hideset_add(body, hs);
 
-  for(cpp_token* t = body; t->kind != TK_EOF; t = t->next)
+  for(t = body; t->kind != TK_EOF; t = t->next)
     t->origin = macro_token;
 
   *rest = cpp_token_append(body, tok->next);

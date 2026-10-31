@@ -8,4 +8,8 @@ cpp_free(cpp_ctx* pp) {
   strarray_free(&pp->inc_paths);
   strarray_free(&pp->inc_missing);
   strarray_free(&pp->inc_system);
+  strarray_free(&pp->undef_tested);
+  strarray_free(&pp->undef_valued);
+  strarray_free(&pp->undef_cmp);
+  strarray_free(&pp->defined_names);
 }

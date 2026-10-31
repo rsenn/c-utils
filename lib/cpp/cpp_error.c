@@ -30,6 +30,7 @@ display_width(char* p, size_t len) {
                ^ <error message here> */
 void
 cpp_verror_at(char* filename, char* input, int line_no, char* loc, char* fmt, va_list ap) {
+  size_t indent;
   char *line = loc, *end = loc;
 
   /* Find a line containing `loc`. */
@@ -39,7 +40,7 @@ cpp_verror_at(char* filename, char* input, int line_no, char* loc, char* fmt, va
   while(*end && *end != '\n')
     end++;
 
-  size_t indent = buffer_2->p;
+  indent = buffer_2->p;
 
   buffer_puts(buffer_2, filename);
   buffer_putc(buffer_2, ':');
@@ -65,13 +66,14 @@ cpp_verror_at(char* filename, char* input, int line_no, char* loc, char* fmt, va
 
 void
 cpp_error_at(cpp_ctx* pp, char* loc, char* fmt, ...) {
+  va_list ap;
+  char* p;
   int line_no = 1;
 
-  for(char* p = pp->cur_file->contents; p < loc; p++)
+  for(p = pp->cur_file->contents; p < loc; p++)
     if(*p == '\n')
       line_no++;
 
-  va_list ap;
   va_start(ap, fmt);
   cpp_verror_at(pp->cur_file->name, pp->cur_file->contents, line_no, loc, fmt, ap);
   exit(1);

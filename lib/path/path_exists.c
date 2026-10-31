@@ -21,7 +21,11 @@ int
 path_exists(const char* p) {
 #if WINDOWS_NATIVE
   size_t len = u8s_len(p);
+#ifdef HAVE_ALLOCA
+  wchar_t* w = alloca((len + 1) * sizeof(wchar_t));
+#else
   wchar_t w[len + 1];
+#endif
 
   u8s_to_wcs(w, p, len);
   w[len] = '\0';

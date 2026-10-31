@@ -5,6 +5,7 @@
 
 void
 stralloc_dump(const stralloc* sa, buffer* b) {
+  size_t i;
   size_t n;
   char x[16] = {'\\'};
 
@@ -14,7 +15,7 @@ stralloc_dump(const stralloc* sa, buffer* b) {
 
   n = sa->len < 100 ? sa->len : 100;
 
-  for(size_t i = 0; i < n; i++) {
+  for(i = 0; i < n; i++) {
     uint32 c;
 
     if((c = (unsigned int)(unsigned char)sa->s[i]) < 0x20 || c == '"') {

@@ -2,6 +2,15 @@
 #include "../byte.h"
 #include "../uint64.h"
 #include <math.h>
+#include <float.h>
+
+#ifdef __BORLANDC__
+/* its math.h has neither and the _isnan of float.h is not in the import library */
+#undef isnan
+#undef isinf
+#define isnan(x) ((x) != (x))
+#define isinf(x) ((x) > DBL_MAX)
+#endif
 
 /* formats d with up to prec digits after the point (default 6), trailing
  * zeros are dropped, large and small values use the form 1.5e20, nan and

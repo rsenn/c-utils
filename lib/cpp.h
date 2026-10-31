@@ -11,7 +11,9 @@
 #include "hashmap.h"
 #include "strarray.h"
 #include "buffer.h"
+#ifndef __BORLANDC__
 #include <sys/time.h>
+#endif
 #include <time.h>
 
 #ifdef __cplusplus

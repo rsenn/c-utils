@@ -2,6 +2,9 @@
 
 bool
 cpp_convert_int(cpp_token* tok) {
+  cpp_type* ty;
+  int64 val;
+  bool l, u;
   char* p = tok->loc;
 
   /* Read a binary, octal, decimal or hexadecimal number.*/
@@ -17,10 +20,11 @@ cpp_convert_int(cpp_token* tok) {
     base = 8;
   }
 
-  int64 val = strtoul(p, &p, base);
+  val = strtoul(p, &p, base);
 
   /* Read U, L or LL suffixes.*/
-  bool l = false, u = false;
+  l = false;
+  u = false;
 
   if(str_start(p, "LLU") || str_start(p, "LLu") || str_start(p, "llU") || str_start(p, "llu") || str_start(p, "ULL") ||
      str_start(p, "Ull") || str_start(p, "uLL") || str_start(p, "ull")) {
@@ -44,7 +48,6 @@ cpp_convert_int(cpp_token* tok) {
     return false;
 
   /* Infer a type.*/
-  cpp_type* ty;
 
   if(base == 10) {
     if(l && u)

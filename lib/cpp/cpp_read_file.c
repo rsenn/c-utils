@@ -14,6 +14,7 @@
 /* Returns the contents of a given file. */
 char*
 cpp_read_file(char* path) {
+  char* s;
   fd_type fd;
   seek_pos size;
 
@@ -51,7 +52,7 @@ cpp_read_file(char* path) {
 #endif
 
   seek_begin(fd);
-  char* s = alloc(size + 1);
+  s = alloc(size + 1);
 
   if(read(fd, s, size) == size) {
     s[size] = '\0';

@@ -21,10 +21,11 @@ file_macro(cpp_ctx* pp, cpp_token* tmpl) {
 
 static cpp_token*
 line_macro(cpp_ctx* pp, cpp_token* tmpl) {
+  int i;
   while(tmpl->origin)
     tmpl = tmpl->origin;
 
-  int i = tmpl->line_no + tmpl->file->line_delta;
+  i = tmpl->line_no + tmpl->file->line_delta;
   return cpp_new_num_token(pp, i, tmpl);
 }
 

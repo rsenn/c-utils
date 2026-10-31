@@ -4,6 +4,7 @@
 /* Entry point function of the preprocessor. */
 cpp_token*
 cpp_preprocess(cpp_ctx* pp, cpp_token* tok) {
+  cpp_token* t;
   tok = cpp_preprocess2(pp, tok);
 
   if(pp->cur_cond_incl)
@@ -12,7 +13,7 @@ cpp_preprocess(cpp_ctx* pp, cpp_token* tok) {
   cpp_convert_tokens(tok);
   cpp_join_adjacent_string_literals(tok);
 
-  for(cpp_token* t = tok; t; t = t->next)
+  for(t = tok; t; t = t->next)
     t->line_no += t->line_delta;
 
   return tok;

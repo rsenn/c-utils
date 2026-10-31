@@ -4,7 +4,8 @@
 
 cpp_macro_arg*
 cpp_read_macro_arg_one(cpp_token** rest, cpp_token* tok, bool read_rest) {
-  cpp_token head = {};
+  cpp_macro_arg* arg;
+  cpp_token head = {0};
   cpp_token* cur = &head;
   int level = 0;
 
@@ -29,7 +30,7 @@ cpp_read_macro_arg_one(cpp_token** rest, cpp_token* tok, bool read_rest) {
 
   cur->next = cpp_token_eof(tok);
 
-  cpp_macro_arg* arg = alloc_zero(sizeof(cpp_macro_arg));
+  arg = alloc_zero(sizeof(cpp_macro_arg));
   arg->tok = head.next;
   *rest = tok;
   return arg;

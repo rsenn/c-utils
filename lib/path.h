@@ -77,14 +77,15 @@ int path_readlink(const char*, stralloc*);
 int path_resolve(const char* p, size_t n, stralloc* sa, int symbolic, const char* cwd, size_t cwdn);
 size_t path_rootlen(const char*, size_t);
 
-/* PATH_LIST_FOREACH(l, n, elem, elen) visits every element of a PATH-style list, empty ones too
+/* PATH_LIST_FOREACH(l, n, elem, elen, pos) visits every element of a PATH-style list, empty ones too
  * (an empty element is the current directory):  "a::b:" -> "a", "", "b", ""
  *
  *   const char*  l     the list           size_t  n     its length
  *   const char*  elem  receives the start  size_t  elen  receives the length
+ *   size_t       pos   the position in the list, declared by the caller
  * ----------------------------------------------------------------------- */
-#define PATH_LIST_FOREACH(l, n, elem, elen) \
-  for(size_t pl_pos_ = 0; pl_pos_ != (size_t)-1 && ((elem) = (l) + pl_pos_, (elen) = path_listlen((elem), (n)-pl_pos_), 1); pl_pos_ = path_listnext((l), (n), pl_pos_))
+#define PATH_LIST_FOREACH(l, n, elem, elen, pos) \
+  for((pos) = 0; (pos) != (size_t)-1 && ((elem) = (l) + (pos), (elen) = path_listlen((elem), (n) - (pos)), 1); (pos) = path_listnext((l), (n), (pos)))
 
 #define path_basename_s(s) path_basename((s), str_len((s)), 0)
 

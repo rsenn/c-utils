@@ -15,9 +15,11 @@ cpp_print_tokens(buffer* out, cpp_token* tok, bool line_directives) {
     if(tok->origin) {
       filename = "";
     } else if(line <= 1 || tok->at_bol) {
+      int same_file;
+      int diff;
       ++line_no;
-      int same_file = filename == tok->filename || str_equal(filename, tok->filename);
-      int diff = tok->line_no - line_no;
+      same_file = filename == tok->filename || str_equal(filename, tok->filename);
+      diff = tok->line_no - line_no;
 
       if(!line_directives || (same_file && (diff > 0 && diff < 2))) {
         if(same_file && diff > 0) {
@@ -44,6 +46,7 @@ cpp_print_tokens(buffer* out, cpp_token* tok, bool line_directives) {
 
     if(tok->has_space) {
       if(tok->at_bol) {
+        int sz;
         cpp_token* tok2 = tok->origin ? tok->origin : tok;
         char *p = tok2->loc, *x = tok2->file->contents;
 
@@ -54,7 +57,7 @@ cpp_print_tokens(buffer* out, cpp_token* tok, bool line_directives) {
           --p;
         }
 
-        int sz = tok2->loc - p;
+        sz = tok2->loc - p;
 
         if(sz > 0)
           buffer_put(out, p, sz);

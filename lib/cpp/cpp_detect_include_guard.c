@@ -4,6 +4,7 @@
 
 char*
 cpp_detect_include_guard(cpp_token* tok) {
+  char* macro;
   /* Detect the first two lines. */
   if(!cpp_is_hash(tok) || !cpp_equal(tok->next, "ifndef"))
     return NULL;
@@ -13,7 +14,7 @@ cpp_detect_include_guard(cpp_token* tok) {
   if(tok->kind != TK_IDENT)
     return NULL;
 
-  char* macro = str_ndup(tok->loc, tok->len);
+  macro = str_ndup(tok->loc, tok->len);
   tok = tok->next;
 
   if(!cpp_is_hash(tok) || !cpp_equal(tok->next, "define") || !cpp_equal(tok->next->next, macro))

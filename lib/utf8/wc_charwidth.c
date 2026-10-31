@@ -36,14 +36,14 @@ wc_charwidth(wchar_t c) {
       -1,
   };
 
-  if(in_range(range1, c))
-    return 0;
-
   static wchar_t range2[] = {
       0x1100, 0x115F, 0x2329,  0x2329,  0x232A,  0x232A,  0x2E80,  0x303E,  0x3040, 0xA4CF,
       0xAC00, 0xD7A3, 0xF900,  0xFAFF,  0xFE10,  0xFE19,  0xFE30,  0xFE6F,  0xFF00, 0xFF60,
       0xFFE0, 0xFFE6, 0x1F000, 0x1F644, 0x20000, 0x2FFFD, 0x30000, 0x3FFFD, -1,
   };
+
+  if(in_range(range1, c))
+    return 0;
 
   if(in_range(range2, c))
     return 2;
@@ -53,7 +53,8 @@ wc_charwidth(wchar_t c) {
 
 static int
 in_range(wchar_t* range, wchar_t c) {
-  for(int i = 0; range[i] != -1; i += 2)
+  int i;
+  for(i = 0; range[i] != -1; i += 2)
     if(range[i] <= c && c <= range[i + 1])
       return 1;
 

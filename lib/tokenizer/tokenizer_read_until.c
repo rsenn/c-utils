@@ -2,6 +2,7 @@
 
 int
 tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl) {
+  size_t i;
   int c, marker_is_nl = !str_diff(marker, "\n");
   char* s = t->buf;
 
@@ -33,7 +34,7 @@ tokenizer_read_until(tokenizer* t, const char* marker, int stop_at_nl) {
 
   *s = 0;
 
-  for(size_t i = str_len(marker); i > 0;)
+  for(i = str_len(marker); i > 0;)
     tokenizer_ungetc(t, marker[--i]);
 
   return 1;

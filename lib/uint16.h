@@ -10,6 +10,9 @@
 #include <stdint.h>
 #elif defined(__BORLANDC__)
 /* <systypes.h> would typedef uint8, uint16 and uint32 a second time */
+/* no <stdint.h> */
+typedef unsigned short uint16_t;
+typedef signed short int16_t;
 #elif defined(__LCC__)
 #include <stdint.h>
 /*#elif !defined(_MSC_VER) && !defined(__MSYS__) && !defined(__CYGWIN__)

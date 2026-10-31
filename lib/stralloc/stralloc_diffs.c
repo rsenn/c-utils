@@ -5,9 +5,10 @@
 
 extern int
 stralloc_diffs(const stralloc* a, const char* b) {
+  size_t i;
   int j;
 
-  for(size_t i = 0;; ++i) {
+  for(i = 0;; ++i) {
     if(i == a->len)
       return !b[i] ? 0 : -1;
 

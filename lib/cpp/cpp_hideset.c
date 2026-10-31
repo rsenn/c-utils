@@ -20,7 +20,7 @@ cpp_hideset_free(cpp_hideset* hs) {
 
 cpp_token*
 cpp_hideset_add(cpp_token* tok, cpp_hideset* hs) {
-  cpp_token head = {};
+  cpp_token head = {0};
   cpp_token* cur = &head;
 
   for(; tok; tok = tok->next) {
@@ -43,7 +43,7 @@ cpp_hideset_contains(cpp_hideset* hs, char* s, int len) {
 
 cpp_hideset*
 cpp_hideset_intersection(cpp_hideset* hs1, cpp_hideset* hs2) {
-  cpp_hideset head = {};
+  cpp_hideset head = {0};
   cpp_hideset* cur = &head;
 
   for(; hs1; hs1 = hs1->next)
@@ -55,7 +55,7 @@ cpp_hideset_intersection(cpp_hideset* hs1, cpp_hideset* hs2) {
 
 cpp_hideset*
 cpp_hideset_union(cpp_hideset* hs1, cpp_hideset* hs2) {
-  cpp_hideset head = {};
+  cpp_hideset head = {0};
   cpp_hideset* cur = &head;
 
   for(; hs1; hs1 = hs1->next)

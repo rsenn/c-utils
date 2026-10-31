@@ -7,10 +7,12 @@ static bool has_varargs(cpp_macro_arg*);
 /* Replace func-like macro parameters with given arguments. */
 cpp_token*
 cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
-  cpp_token head = {};
+  cpp_token head = {0};
   cpp_token* cur = &head;
 
   while(tok->kind != TK_EOF) {
+    cpp_macro_arg* arg;
+    cpp_token* t;
     /* "#" followed by a parameter is replaced with stringized actuals. */
     if(cpp_equal(tok, "#")) {
       cpp_macro_arg* arg = find_arg(args, tok->next);
@@ -41,18 +43,20 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
     }
 
     if(cpp_equal(tok, "##")) {
+      cpp_macro_arg* arg;
       if(cur == &head)
         cpp_error_tok(tok, "'##' cannot appear at start of macro expansion");
 
       if(tok->next->kind == TK_EOF)
         cpp_error_tok(tok, "'##' cannot appear at end of macro expansion");
 
-      cpp_macro_arg* arg = find_arg(args, tok->next);
+      arg = find_arg(args, tok->next);
       if(arg) {
         if(arg->tok->kind != TK_EOF) {
+          cpp_token* t;
           *cur = *cpp_paste(pp, cur, arg->tok);
 
-          for(cpp_token* t = arg->tok->next; t->kind != TK_EOF; t = t->next)
+          for(t = arg->tok->next; t->kind != TK_EOF; t = t->next)
             cur = cur->next = cpp_token_copy(t);
         }
 
@@ -65,7 +69,7 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
       continue;
     }
 
-    cpp_macro_arg* arg = find_arg(args, tok);
+    arg = find_arg(args, tok);
 
     if(arg && cpp_equal(tok->next, "##")) {
       cpp_token* rhs = tok->next->next;
@@ -74,7 +78,8 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
         cpp_macro_arg* arg2 = find_arg(args, rhs);
 
         if(arg2) {
-          for(cpp_token* t = arg2->tok; t->kind != TK_EOF; t = t->next)
+          cpp_token* t;
+          for(t = arg2->tok; t->kind != TK_EOF; t = t->next)
             cur = cur->next = cpp_token_copy(t);
         } else {
           cur = cur->next = cpp_token_copy(rhs);
@@ -84,7 +89,7 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
         continue;
       }
 
-      for(cpp_token* t = arg->tok; t->kind != TK_EOF; t = t->next)
+      for(t = arg->tok; t->kind != TK_EOF; t = t->next)
         cur = cur->next = cpp_token_copy(t);
 
       tok = tok->next;
@@ -94,10 +99,11 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
     /* If __VA_ARG__ is empty, __VA_OPT__(x) is expanded to the
        empty token list. Otherwise, __VA_OPT__(x) is expanded to x. */
     if(cpp_equal(tok, "__VA_OPT__") && cpp_equal(tok->next, "(")) {
+      cpp_token* t;
       cpp_macro_arg* arg = cpp_read_macro_arg_one(&tok, tok->next->next, true);
 
       if(has_varargs(args))
-        for(cpp_token* t = arg->tok; t->kind != TK_EOF; t = t->next)
+        for(t = arg->tok; t->kind != TK_EOF; t = t->next)
           cur = cur->next = t;
 
       tok = cpp_skip(tok, ")");
@@ -131,7 +137,8 @@ cpp_subst(cpp_ctx* pp, cpp_token* tok, cpp_macro_arg* args) {
 
 static cpp_macro_arg*
 find_arg(cpp_macro_arg* args, cpp_token* tok) {
-  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
+  cpp_macro_arg* ap;
+  for(ap = args; ap; ap = ap->next)
     if(tok->len == str_len(ap->name) && !str_diffn(tok->loc, ap->name, tok->len))
       return ap;
 
@@ -140,7 +147,8 @@ find_arg(cpp_macro_arg* args, cpp_token* tok) {
 
 static bool
 has_varargs(cpp_macro_arg* args) {
-  for(cpp_macro_arg* ap = args; ap; ap = ap->next)
+  cpp_macro_arg* ap;
+  for(ap = args; ap; ap = ap->next)
     if(str_equal(ap->name, "__VA_ARGS__"))
       return ap->tok->kind != TK_EOF;
 

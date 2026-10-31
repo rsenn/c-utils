@@ -62,11 +62,12 @@ cpp_token_copy(cpp_token* tok) {
 /* Append tok2 to the end of tok1. */
 cpp_token*
 cpp_token_append(cpp_token* tok1, cpp_token* tok2) {
+  cpp_token head = {0};
+  cpp_token* cur;
   if(tok1->kind == TK_EOF)
     return tok2;
 
-  cpp_token head = {};
-  cpp_token* cur = &head;
+  cur = &head;
 
   for(; tok1->kind != TK_EOF; tok1 = tok1->next)
     cur = cur->next = cpp_token_copy(tok1);
@@ -77,6 +78,8 @@ cpp_token_append(cpp_token* tok1, cpp_token* tok2) {
 
 void
 cpp_token_dump(buffer* out, cpp_token* tok) {
+  static const char* const kinds[] = {"IDENT  ", "PUNCT  ", "KEYWORD", "STR    ", "NUM    ", "PP_NUM ", "EOF    "};
+
   if(tok->file) {
     buffer_puts(out, "file: ");
     buffer_puts(out, tok->file->name);
@@ -95,8 +98,7 @@ cpp_token_dump(buffer* out, cpp_token* tok) {
   }
 
   buffer_puts(out, "  kind: ");
-  buffer_puts(
-      out, ((const char*[]){"IDENT  ", "PUNCT  ", "KEYWORD", "STR    ", "NUM    ", "PP_NUM ", "EOF    "}[tok->kind]));
+  buffer_puts(out, kinds[tok->kind]);
 
   buffer_puts(out, "  at_bol=");
   buffer_putulong(out, tok->at_bol);

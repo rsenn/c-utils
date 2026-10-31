@@ -10,15 +10,17 @@
    This function converts a pp-number token to a regular number token. */
 void
 cpp_convert_number(cpp_token* tok) {
+  cpp_type* ty;
+  char* end;
+  long double val;
+
   /* Try to parse as an integer constant. */
   if(cpp_convert_int(tok))
     return;
 
   /* If it's not an integer, it must be a floating point constant. */
-  char* end;
-  long double val = strtold(tok->loc, &end);
+  val = strtold(tok->loc, &end);
 
-  cpp_type* ty;
   if(*end == 'f' || *end == 'F') {
     ty = cpp_ty_float;
     end++;

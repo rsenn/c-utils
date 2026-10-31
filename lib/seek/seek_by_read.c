@@ -13,7 +13,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #endif
-#ifdef HAVE_ALLOCA
+#if defined(HAVE_ALLOCA) && !defined(__BORLANDC__)
 #include <alloca.h>
 #endif
 

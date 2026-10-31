@@ -1,4 +1,4 @@
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__BORLANDC__)
 
 #include <windows.h>
 #include <mswsock.h>
@@ -56,8 +56,8 @@ iob_send(fd_type s, io_batch* b) {
   if(x[i].type == FROMBUF) {
     fprintf(stderr, "found non-sent buffer batch entry at %d\n", i);
     if(x + i + 1 < last && (x[i + 1].type == FROMFILE)) {
-      fprintf(stderr, "Next is a file, can use TransmitFile\n", i);
       TRANSMIT_FILE_BUFFERS tfb;
+      fprintf(stderr, "Next is a file, can use TransmitFile\n", i);
       e->sendfilequeued = 1;
       memset(&tfb, 0, sizeof(tfb));
       memset(&e[i].os, 0, sizeof(e[i].os));
@@ -88,7 +88,7 @@ iob_send(fd_type s, io_batch* b) {
     } else {
       e->writequeued = 1;
       fprintf(stderr, "Queueing WriteFile on %p...", s);
-      if(!WriteFile(s, x[i].buf + x[i].offset, x[i].n, 0, &e->ow)) {
+      if(!WriteFile((HANDLE)s, x[i].buf + x[i].offset, x[i].n, 0, &e->ow)) {
         if(GetLastError() == ERROR_IO_PENDING) {
           fprintf(stderr, " pending.\n");
           e->writequeued = 1;

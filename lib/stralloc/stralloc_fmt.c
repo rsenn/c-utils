@@ -3,7 +3,8 @@
 
 size_t
 stralloc_fmt(stralloc* out, const char* in, size_t len, size_t (*fn)(char*, int)) {
-  for(size_t i = 0; i < len; ++i) {
+  size_t i;
+  for(i = 0; i < len; ++i) {
     size_t n = ((size_t(*)(char*, uint32, void*))fn)(0, (unsigned int)(unsigned char)in[i], 0);
 
     if(!stralloc_readyplus(out, n + 1))

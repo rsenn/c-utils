@@ -29,6 +29,14 @@
 
 #define _FILE_OFFSET_BITS 64
 
+#ifdef __BORLANDC__
+/* the alloca() of Borland C++ is declared in malloc.h */
+#include <malloc.h>
+#ifndef HAVE_ALLOCA
+#define HAVE_ALLOCA 1
+#endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

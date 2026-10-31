@@ -4,10 +4,15 @@
 
 void
 cpp_read_macro_definition(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  char* name;
   if(tok->kind != TK_IDENT)
     cpp_error_tok(tok, "macro name must be an identifier");
 
-  char* name = str_ndup(tok->loc, tok->len);
+  name = str_ndup(tok->loc, tok->len);
+
+  if(pp->track_queries)
+    strarray_push_unique(&pp->defined_names, name);
+
   tok = tok->next;
 
   if(!tok->has_space && cpp_equal(tok, "(")) {

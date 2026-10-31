@@ -83,6 +83,7 @@ tokenizer_next(tokenizer* t, token* out) {
   }
 
   if(s == t->buf) {
+    int i;
     int wide = 0;
 
     if(c == TOKENIZER_EOF) {
@@ -105,7 +106,7 @@ tokenizer_next(tokenizer* t, token* out) {
       return apply_coords(t, out, s + 3, 1);
     }
 
-    for(int i = 0; i < t->custom_count; i++)
+    for(i = 0; i < t->custom_count; i++)
 
       if(sequence_follows(t, c, t->custom_tokens[i])) {
         const char* p = t->custom_tokens[i];

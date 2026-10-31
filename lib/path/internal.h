@@ -31,7 +31,7 @@
 #define SEPCHARS "\\/"
 #define NSEP 2
 #define SEP(c) ((c) == '/' || (c) == '\\')
-#define DRIVE(p, n) (((n) >= 2 && !str_contains(SEPCHARS ".", (p)[0]) && (p)[1] == ':') ? 2 : 0)
+#define DRIVE(p, n) (((n) >= 2 && !str_has(SEPCHARS ".", (p)[0]) && (p)[1] == ':') ? 2 : 0)
 #else
 #define SEPCHARS "/"
 #define NSEP 1

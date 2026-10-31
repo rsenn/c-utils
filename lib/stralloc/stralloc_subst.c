@@ -4,9 +4,10 @@
 
 int
 stralloc_subst(stralloc* out, const char* b, size_t len, const char* from, const char* to) {
+  size_t i;
   size_t plen = str_len(from);
 
-  for(size_t i = 0; i < len;) {
+  for(i = 0; i < len;) {
     if(i + plen <= len && byte_equal(from, plen, &b[i])) {
       if(!stralloc_cats(out, to))
         return 0;

@@ -5,10 +5,11 @@
 
 cpp_macro_param*
 cpp_read_macro_params(cpp_token** rest, cpp_token* tok, char** va_args_name) {
-  cpp_macro_param head = {};
+  cpp_macro_param head = {0};
   cpp_macro_param* cur = &head;
 
   while(!cpp_equal(tok, ")")) {
+    cpp_macro_param* m;
     if(cur != &head)
       tok = cpp_skip(tok, ",");
 
@@ -27,7 +28,7 @@ cpp_read_macro_params(cpp_token** rest, cpp_token* tok, char** va_args_name) {
       return head.next;
     }
 
-    cpp_macro_param* m = alloc_zero(sizeof(cpp_macro_param));
+    m = alloc_zero(sizeof(cpp_macro_param));
     m->name = str_ndup(tok->loc, tok->len);
     cur = cur->next = m;
     tok = tok->next;

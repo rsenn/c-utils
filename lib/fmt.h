@@ -64,8 +64,8 @@ size_t fmt_xlong(char* dest, unsigned long src);
  * If dest is not NULL, write result to dest */
 size_t fmt_8long(char* dest, unsigned long src);
 
-/* like fmt_8long for unsigned long long, where long has 32 bits */
-size_t fmt_8longlong(char* dest, unsigned long long src);
+/* like fmt_8long for uint64, where long has 32 bits */
+size_t fmt_8longlong(char* dest, uint64 src);
 
 #define fmt_uint(dest, src) fmt_ulong(dest, src)
 #define fmt_int(dest, src) fmt_long(dest, src)

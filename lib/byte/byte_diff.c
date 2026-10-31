@@ -7,6 +7,7 @@
  * bytes past the first difference. */
 int
 byte_diff(const void* a, size_t len, const void* b) {
+  size_t i;
 #if 0
   /* this gets miscompiled by gcc 4.3.2 on x86_64 */
   const unsigned char* s = a;
@@ -20,7 +21,7 @@ byte_diff(const void* a, size_t len, const void* b) {
   }
   return j;
 #else
-  for(size_t i = 0; i < len; ++i) {
+  for(i = 0; i < len; ++i) {
     int r;
 
     if((r = ((unsigned char*)a)[i] - ((unsigned char*)b)[i]))

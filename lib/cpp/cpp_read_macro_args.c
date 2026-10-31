@@ -4,12 +4,14 @@
 
 cpp_macro_arg*
 cpp_read_macro_args(cpp_token** rest, cpp_token* tok, cpp_macro_param* params, char* va_args_name) {
+  cpp_macro_arg head = {0};
+  cpp_macro_arg* cur;
+  cpp_macro_param* pp;
   cpp_token* start = tok;
   tok = tok->next->next;
 
-  cpp_macro_arg head = {};
-  cpp_macro_arg* cur = &head;
-  cpp_macro_param* pp = params;
+  cur = &head;
+  pp = params;
 
   for(; pp; pp = pp->next) {
     if(cur != &head)

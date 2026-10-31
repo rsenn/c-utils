@@ -30,6 +30,8 @@ iom_add(iomux_t* c, int64 s, unsigned int events) {
          (void*)s);
   return kevent(c->ctx, &kev, 1, 0, 0, &ts);
 #else
+#ifndef __BORLANDC__ /* #warning is not known to cpp32 */
 #warning "only epoll and kqueue supported for now"
+#endif
 #endif
 }

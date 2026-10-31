@@ -1,4 +1,4 @@
-#ifdef __MINGW32__
+#if defined(__MINGW32__) || defined(__BORLANDC__)
 #include "../io_internal.h"
 #include <errno.h>
 int

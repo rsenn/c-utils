@@ -7,9 +7,10 @@
  * memory, stralloc_copyb leaves sa alone and returns 0. */
 int
 stralloc_copywcb(stralloc* sa, const wchar_t* x, size_t n) {
+  size_t i;
   size_t bytes = 0;
 
-  for(size_t i = 0; x[i]; ++i)
+  for(i = 0; x[i]; ++i)
     bytes += wc_u8len(x[i]);
 
   if(stralloc_ready(sa, bytes)) {

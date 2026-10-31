@@ -8,6 +8,15 @@
 
 static cpp_token* include_file(cpp_ctx* pp, cpp_token* tok, char* path, cpp_token* filename_tok);
 
+/* skips a branch that is not taken, noting what is in it */
+static cpp_token*
+skip_branch(cpp_ctx* pp, cpp_token* tok) {
+  cpp_token* end = cpp_skip_cond_incl(tok);
+
+  cpp_note_skipped(pp, tok, end);
+  return end;
+}
+
 static cpp_cond_incl*
 push_cond_incl(cpp_ctx* pp, cpp_token* tok, bool included) {
   cpp_cond_incl* ci;
@@ -35,10 +44,11 @@ pop_cond_incl(cpp_ctx* pp) {
 
 cpp_token*
 cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
-  cpp_token head = {};
+  cpp_token head = {0};
   cpp_token* cur = &head;
 
   while(tok->kind != TK_EOF) {
+    cpp_token* start;
     /* If it is a macro, expand it. */
     if(cpp_expand(pp, &tok, tok))
       continue;
@@ -52,20 +62,22 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       continue;
     }
 
-    cpp_token* start = tok;
+    start = tok;
     tok = tok->next;
 
     if(cpp_equal(tok, "include")) {
+      char* path;
       bool is_dquote;
       char* filename = cpp_read_include_filename(pp, &tok, tok->next, &is_dquote);
 
       if(filename[0] != '/' && is_dquote) {
+        char* path;
         stralloc dir;
         stralloc_init(&dir);
         path_dirname_s(start->file->name, &dir);
         stralloc_nul(&dir);
 
-        char* path = path_join(dir.s, filename);
+        path = path_join(dir.s, filename);
         stralloc_free(&dir);
 
         if(path_exists(path)) {
@@ -76,7 +88,7 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
         }
       }
 
-      char* path = cpp_search_include_paths(pp, filename);
+      path = cpp_search_include_paths(pp, filename);
       tok = include_file(pp, tok, path ? path : filename, start->next->next);
       continue;
     }
@@ -111,31 +123,37 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       push_cond_incl(pp, start, val);
 
       if(!val)
-        tok = cpp_skip_cond_incl(tok);
+        tok = skip_branch(pp, tok);
 
       continue;
     }
 
     if(cpp_equal(tok, "ifdef")) {
-      bool defined = cpp_macro_find(pp, tok->next);
+      bool defined;
+      cpp_query_undefined(pp, tok->next, 0);
+
+      defined = cpp_macro_find(pp, tok->next);
 
       push_cond_incl(pp, tok, defined);
       tok = cpp_skip_line(tok->next->next);
 
       if(!defined)
-        tok = cpp_skip_cond_incl(tok);
+        tok = skip_branch(pp, tok);
 
       continue;
     }
 
     if(cpp_equal(tok, "ifndef")) {
-      bool defined = cpp_macro_find(pp, tok->next);
+      bool defined;
+      cpp_query_undefined(pp, tok->next, 0);
+
+      defined = cpp_macro_find(pp, tok->next);
 
       push_cond_incl(pp, tok, !defined);
       tok = cpp_skip_line(tok->next->next);
 
       if(defined)
-        tok = cpp_skip_cond_incl(tok);
+        tok = skip_branch(pp, tok);
 
       continue;
     }
@@ -149,7 +167,7 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       if(!pp->cur_cond_incl->included && cpp_eval_const_expr(pp, &tok, tok))
         pp->cur_cond_incl->included = true;
       else
-        tok = cpp_skip_cond_incl(tok);
+        tok = skip_branch(pp, tok);
 
       continue;
     }
@@ -162,7 +180,7 @@ cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
       tok = cpp_skip_line(tok->next);
 
       if(pp->cur_cond_incl->included)
-        tok = cpp_skip_cond_incl(tok);
+        tok = skip_branch(pp, tok);
 
       continue;
     }

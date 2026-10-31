@@ -17,15 +17,22 @@ char*
 path_gethome(int uid) {
   static char home[PATH_MAX + 1];
 
-#if WINDOWS_NATIVE
+#if defined(__BORLANDC__)
+  /* SHGetKnownFolderPath is newer than the headers of Borland C++ 5.5 */
+  if(!SHGetSpecialFolderPathA(NULL, home, CSIDL_PROFILE, FALSE))
+    return NULL;
+
+  return home;
+#elif WINDOWS_NATIVE
   PWSTR wpath = NULL;
+  int len;
 
   /* retrieve user profile directory via the Windows Known Folders API */
   if(FAILED(SHGetKnownFolderPath(&FOLDERID_Profile, 0, NULL, &wpath)))
     return NULL;
 
   /* convert the utf-16 windows path directly to utf-8 */
-  int len = WideCharToMultiByte(CP_UTF8, 0, wpath, -1, home, sizeof(home), NULL, NULL);
+  len = WideCharToMultiByte(CP_UTF8, 0, wpath, -1, home, sizeof(home), NULL, NULL);
 
   /* free the memory allocated by SHGetKnownFolderPath */
   CoTaskMemFree(wpath);

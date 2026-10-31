@@ -6,7 +6,7 @@
    create a new list of tokens for `#if` arguments. */
 cpp_token*
 cpp_copy_line(cpp_token** rest, cpp_token* t) {
-  cpp_token head = {};
+  cpp_token head = {0};
   cpp_token *tok = t, *cur = &head;
 
   for(; tok->kind != TK_EOF && !tok->at_bol; tok = tok->next)

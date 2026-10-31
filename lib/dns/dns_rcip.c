@@ -1,6 +1,10 @@
 #define USE_WS2_32 1
 
 #include "../socket_internal.h"
+
+#ifndef EAFNOSUPPORT
+#define EAFNOSUPPORT 102 /* as in mingw; Borland C++ has none */
+#endif
 #include "../byte.h"
 #include "../case.h"
 #include "../dns.h"

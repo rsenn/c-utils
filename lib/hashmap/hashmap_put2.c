@@ -19,6 +19,8 @@ hashmap_put2(hashmap* map, const char* key, size_t keylen, void* val) {
 
 static hashentry*
 get_or_insert_entry(hashmap* map, char* key, size_t keylen) {
+  uint64 hash;
+  size_t i;
   if(!map->buckets) {
     map->buckets = alloc_zero(HASHMAP_INIT_SIZE * sizeof(hashentry));
     map->capacity = HASHMAP_INIT_SIZE;
@@ -26,9 +28,9 @@ get_or_insert_entry(hashmap* map, char* key, size_t keylen) {
     hashmap_rehash(map);
   }
 
-  uint64 hash = hashmap_fnv_hash(key, keylen);
+  hash = hashmap_fnv_hash(key, keylen);
 
-  for(size_t i = 0; i < map->capacity; i++) {
+  for(i = 0; i < map->capacity; i++) {
     hashentry* ent = &map->buckets[(hash + i) % map->capacity];
 
     if(hashmap_match(ent, key, keylen))

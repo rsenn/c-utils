@@ -5,10 +5,11 @@
 /* Double-quote a given string and returns it. */
 char*
 cpp_quote_string(const char* str) {
+  size_t i;
   size_t bufsize = 3;
   char *buf, *p;
 
-  for(size_t i = 0; str[i]; i++) {
+  for(i = 0; str[i]; i++) {
     if(str[i] == '\\' || str[i] == '"')
       bufsize++;
 
@@ -18,7 +19,7 @@ cpp_quote_string(const char* str) {
   p = buf = alloc_zero(bufsize);
   *p++ = '"';
 
-  for(size_t i = 0; str[i]; i++) {
+  for(i = 0; str[i]; i++) {
     if(str[i] == '\\' || str[i] == '"')
       *p++ = '\\';
 

@@ -5,6 +5,7 @@
 
 cpp_token*
 cpp_tokenize_file(cpp_ctx* pp, char* path) {
+  cpp_file* file;
   char* p;
 
   if(!(p = cpp_read_file(path)))
@@ -54,7 +55,7 @@ cpp_tokenize_file(cpp_ctx* pp, char* path) {
   cpp_convert_universal_chars(p);
 
   /* Save the filename for assembler .file directive. */
-  cpp_file* file = cpp_file_new(path, pp->in_file_no + 1, p);
+  file = cpp_file_new(path, pp->in_file_no + 1, p);
 
   /* Save the filename for assembler .file directive. */
   alloc_re(&pp->in_files, 0, sizeof(char*) * (pp->in_file_no + 2));

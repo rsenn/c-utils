@@ -55,6 +55,7 @@ is_typename(cpp_token* tok) {
   static hashmap map;
 
   if(map.capacity == 0) {
+    int i;
     static char* kw[] = {
         "void",     "_Bool",  "char",     "short",         "int",        "long",         "struct",    "union",
         "typedef",  "enum",   "static",   "extern",        "_Alignas",   "signed",       "unsigned",  "const",
@@ -62,7 +63,7 @@ is_typename(cpp_token* tok) {
         "double",   "typeof", "inline",   "_Thread_local", "__thread",   "_Atomic",
     };
 
-    for(int i = 0; i < sizeof(kw) / sizeof(*kw); i++)
+    for(i = 0; i < sizeof(kw) / sizeof(*kw); i++)
       hashmap_put(&map, kw[i], (void*)1);
   }
 
@@ -71,9 +72,9 @@ is_typename(cpp_token* tok) {
 
 static cpp_node*
 new_cast(cpp_node* expr, cpp_type* ty) {
+  cpp_node* node;
   add_type(expr);
 
-  cpp_node* node;
 
   if((node = alloc_zero(sizeof(cpp_node)))) {
     node->kind = ND_CAST;
@@ -269,6 +270,7 @@ usual_arith_conv(cpp_node** lhs, cpp_node** rhs) {
 
 static void
 add_type(cpp_node* node) {
+  cpp_node* n;
   if(!node || node->ty)
     return;
 
@@ -280,10 +282,10 @@ add_type(cpp_node* node) {
   add_type(node->init);
   add_type(node->inc);
 
-  for(cpp_node* n = node->body; n; n = n->next)
+  for(n = node->body; n; n = n->next)
     add_type(n);
 
-  for(cpp_node* n = node->args; n; n = n->next)
+  for(n = node->args; n; n = n->next)
     add_type(n);
 
   switch(node->kind) {
@@ -618,12 +620,18 @@ is_const_expr(cpp_node* node) {
 // to bitfields.
 static cpp_node*
 to_assign(cpp_ctx* pp, cpp_node* binary) {
+  cpp_token* tok;
+  cpp_obj* var;
+  cpp_node* expr1;
+  cpp_node* expr2;
   add_type(binary->lhs);
   add_type(binary->rhs);
-  cpp_token* tok = binary->tok;
+  tok = binary->tok;
 
   // Convert `A.x op= C` to `tmp = &A, (*tmp).x = (*tmp).x op C`.
   if(binary->lhs->kind == ND_MEMBER) {
+    cpp_node* expr3;
+    cpp_node* expr4;
     cpp_obj* var = new_lvar(pp, "", pointer_to(binary->lhs->lhs->ty));
 
     cpp_node* expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs->lhs, tok), tok);
@@ -631,10 +639,10 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
     cpp_node* expr2 = new_unary(ND_MEMBER, new_unary(ND_DEREF, new_var_node(var, tok), tok), tok);
     expr2->member = binary->lhs->member;
 
-    cpp_node* expr3 = new_unary(ND_MEMBER, new_unary(ND_DEREF, new_var_node(var, tok), tok), tok);
+    expr3 = new_unary(ND_MEMBER, new_unary(ND_DEREF, new_var_node(var, tok), tok), tok);
     expr3->member = binary->lhs->member;
 
-    cpp_node* expr4 = new_binary(ND_ASSIGN, expr2, new_binary(binary->kind, expr3, binary->rhs, tok), tok);
+    expr4 = new_binary(ND_ASSIGN, expr2, new_binary(binary->kind, expr3, binary->rhs, tok), tok);
 
     return new_binary(ND_COMMA, expr1, expr4, tok);
   }
@@ -649,7 +657,11 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
   //   new;
   // })
   if(binary->lhs->ty->is_atomic) {
-    cpp_node head = {};
+    cpp_node* loop;
+    cpp_node* cas;
+    cpp_node* node;
+    cpp_node* body;
+    cpp_node head = {0};
     cpp_node* cur = &head;
 
     cpp_obj* addr = new_lvar(pp, "", pointer_to(binary->lhs->ty));
@@ -669,19 +681,19 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
                   new_binary(ND_ASSIGN, new_var_node(old, tok), new_unary(ND_DEREF, new_var_node(addr, tok), tok), tok),
                   tok);
 
-    cpp_node* loop = new_node(ND_DO, tok);
+    loop = new_node(ND_DO, tok);
     loop->brk_label = new_unique_name(pp);
     loop->cont_label = new_unique_name(pp);
 
-    cpp_node* body = new_binary(ND_ASSIGN,
-                                new_var_node(new, tok),
-                                new_binary(binary->kind, new_var_node(old, tok), new_var_node(val, tok), tok),
-                                tok);
+    body = new_binary(ND_ASSIGN,
+                      new_var_node(new, tok),
+                      new_binary(binary->kind, new_var_node(old, tok), new_var_node(val, tok), tok),
+                      tok);
 
     loop->then = new_node(ND_BLOCK, tok);
     loop->then->body = new_unary(ND_EXPR_STMT, body, tok);
 
-    cpp_node* cas = new_node(ND_CAS, tok);
+    cas = new_node(ND_CAS, tok);
     cas->cas_addr = new_var_node(addr, tok);
     cas->cas_old = new_unary(ND_ADDR, new_var_node(old, tok), tok);
     cas->cas_new = new_var_node(new, tok);
@@ -690,21 +702,20 @@ to_assign(cpp_ctx* pp, cpp_node* binary) {
     cur = cur->next = loop;
     cur = cur->next = new_unary(ND_EXPR_STMT, new_var_node(new, tok), tok);
 
-    cpp_node* node = new_node(ND_STMT_EXPR, tok);
+    node = new_node(ND_STMT_EXPR, tok);
     node->body = head.next;
     return node;
   }
 
   // Convert `A op= B` to ``tmp = &A, *tmp = *tmp op B`.
-  cpp_obj* var = new_lvar(pp, "", pointer_to(binary->lhs->ty));
+  var = new_lvar(pp, "", pointer_to(binary->lhs->ty));
 
-  cpp_node* expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs, tok), tok);
+  expr1 = new_binary(ND_ASSIGN, new_var_node(var, tok), new_unary(ND_ADDR, binary->lhs, tok), tok);
 
-  cpp_node* expr2 =
-      new_binary(ND_ASSIGN,
-                 new_unary(ND_DEREF, new_var_node(var, tok), tok),
-                 new_binary(binary->kind, new_unary(ND_DEREF, new_var_node(var, tok), tok), binary->rhs, tok),
-                 tok);
+  expr2 = new_binary(ND_ASSIGN,
+                     new_unary(ND_DEREF, new_var_node(var, tok), tok),
+                     new_binary(binary->kind, new_unary(ND_DEREF, new_var_node(var, tok), tok), binary->rhs, tok),
+                     tok);
 
   return new_binary(ND_COMMA, expr1, expr2, tok);
 }
@@ -768,6 +779,7 @@ expr(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 // conditional = logor ("?" expr? ":" conditional)?
 static cpp_node*
 conditional(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
+  cpp_node* node;
   cpp_node* cond = logor(pp, &tok, tok);
 
   if(!cpp_equal(tok, "?")) {
@@ -776,18 +788,21 @@ conditional(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   }
 
   if(cpp_equal(tok->next, ":")) {
+    struct cpp_obj* var;
+    cpp_node* lhs;
+    cpp_node* rhs;
     // [GNU] Compile `a ?: b` as `tmp = a, tmp ? tmp : b`.
     add_type(cond);
-    struct cpp_obj* var = new_lvar(pp, "", cond->ty);
-    cpp_node* lhs = new_binary(ND_ASSIGN, new_var_node(var, tok), cond, tok);
-    cpp_node* rhs = new_node(ND_COND, tok);
+    var = new_lvar(pp, "", cond->ty);
+    lhs = new_binary(ND_ASSIGN, new_var_node(var, tok), cond, tok);
+    rhs = new_node(ND_COND, tok);
     rhs->cond = new_var_node(var, tok);
     rhs->then = new_var_node(var, tok);
     rhs->els = conditional(pp, rest, tok->next->next);
     return new_binary(ND_COMMA, lhs, rhs, tok);
   }
 
-  cpp_node* node = new_node(ND_COND, tok);
+  node = new_node(ND_COND, tok);
   node->cond = cond;
   node->then = expr(pp, &tok, tok->next);
   tok = cpp_skip(tok, ":");
@@ -981,18 +996,20 @@ new_sub(cpp_node* lhs, cpp_node* rhs, cpp_token* tok) {
 
   // VLA + num
   if(lhs->ty->base->kind == TY_VLA) {
+    cpp_node* node;
     rhs = new_binary(ND_MUL, rhs, new_var_node(lhs->ty->base->vla_size, tok), tok);
     add_type(rhs);
-    cpp_node* node = new_binary(ND_SUB, lhs, rhs, tok);
+    node = new_binary(ND_SUB, lhs, rhs, tok);
     node->ty = lhs->ty;
     return node;
   }
 
   // ptr - num
   if(lhs->ty->base && is_integer(rhs->ty)) {
+    cpp_node* node;
     rhs = new_binary(ND_MUL, rhs, new_long(lhs->ty->base->size, tok), tok);
     add_type(rhs);
-    cpp_node* node = new_binary(ND_SUB, lhs, rhs, tok);
+    node = new_binary(ND_SUB, lhs, rhs, tok);
     node->ty = lhs->ty;
     return node;
   }
@@ -1062,6 +1079,7 @@ mul(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 static cpp_node*
 cast(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   if(cpp_equal(tok, "(") && is_typename(tok->next)) {
+    cpp_node* node;
     cpp_token* start = tok;
     cpp_type* ty = 0; // typename(&tok, tok->next);
     tok = cpp_skip(tok, ")");
@@ -1071,7 +1089,7 @@ cast(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
       return unary(pp, rest, start);
 
     // type cast
-    cpp_node* node = new_cast(cast(pp, rest, tok), ty);
+    node = new_cast(cast(pp, rest, tok), ty);
     node->tok = start;
     return node;
   }

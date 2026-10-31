@@ -2,9 +2,10 @@
 
 size_t
 u8b_len(const char* u8, size_t n) {
+  size_t i;
   size_t len = 0;
 
-  for(size_t i = 0; i < n;) {
+  for(i = 0; i < n;) {
     const char c = u8[i];
 
     if(!(c & 0x80)) {

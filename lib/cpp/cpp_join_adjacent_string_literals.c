@@ -24,19 +24,23 @@ get_string_kind(cpp_token* tok) {
    as per the C spec. */
 void
 cpp_join_adjacent_string_literals(cpp_token* tok) {
+  cpp_token* tok1;
   /* First pass: If regular string literals are adjacent to wide
      string literals, regular string literals are converted to a wide
      type before concatenation. In this pass, we do the conversion. **/
-  for(cpp_token* tok1 = tok; tok1->kind != TK_EOF;) {
+  for(tok1 = tok; tok1->kind != TK_EOF;) {
+    cpp_string_kind kind;
+    cpp_type* basety;
+    cpp_token* t;
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
       continue;
     }
 
-    cpp_string_kind kind = get_string_kind(tok1);
-    cpp_type* basety = tok1->ty->base;
+    kind = get_string_kind(tok1);
+    basety = tok1->ty->base;
 
-    for(cpp_token* t = tok1->next; t->kind == TK_STR; t = t->next) {
+    for(t = tok1->next; t->kind == TK_STR; t = t->next) {
       cpp_string_kind k = get_string_kind(t);
 
       if(kind == STR_NONE) {
@@ -61,26 +65,31 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
   }
 
   /* Second pass: concatenate adjacent string literals. */
-  for(cpp_token* tok1 = tok; tok1->kind != TK_EOF;) {
+  for(tok1 = tok; tok1->kind != TK_EOF;) {
+    cpp_token* tok2;
+    int len;
+    char* buf;
+    int i;
+    cpp_token* t;
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
       continue;
     }
 
-    cpp_token* tok2 = tok1->next;
+    tok2 = tok1->next;
 
     while(tok2->kind == TK_STR)
       tok2 = tok2->next;
 
-    int len = tok1->ty->array_len;
+    len = tok1->ty->array_len;
 
-    for(cpp_token* t = tok1->next; t != tok2; t = t->next)
+    for(t = tok1->next; t != tok2; t = t->next)
       len = len + t->ty->array_len - 1;
 
-    char* buf = alloc_zero(tok1->ty->base->size * len);
-    int i = 0;
+    buf = alloc_zero(tok1->ty->base->size * len);
+    i = 0;
 
-    for(cpp_token* t = tok1; t != tok2; t = t->next) {
+    for(t = tok1; t != tok2; t = t->next) {
       byte_copy(buf + i, t->ty->size, t->str);
       i = i + t->ty->size - t->ty->base->size;
     }

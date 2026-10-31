@@ -367,6 +367,16 @@ struct cpp_ctx {
   strarray inc_missing;
   strarray inc_system; /* scan_only: headers below these directories are not read */
 
+  /* query tracking: with track_queries set, the names a conditional asks
+     about while no macro of that name exists are collected -- in
+     undef_tested when asked with #ifdef, #ifndef or defined(), in
+     undef_valued when used by value in an #if or #elif. A name the
+     expression uses as more than a plain truth value (compared, added, ...)
+     is in undef_cmp as well. defined_names has the name of every #define
+     read, those in skipped branches too */
+  int track_queries;
+  strarray undef_tested, undef_valued, undef_cmp, defined_names;
+
   /* used by cpp_tokenize_file.c */
   cpp_file** in_files;
   int in_file_no;
@@ -384,7 +394,9 @@ cpp_macro* cpp_add_builtin(cpp_ctx*, char*, macro_handler_fn*);
 
 static inline bool
 cpp_in_range(const uint32* range, uint32 c) {
-  for(size_t i = 0; range[i] != -1; i += 2)
+  size_t i;
+
+  for(i = 0; range[i] != -1; i += 2)
     if(range[i] <= c && c <= range[i + 1])
       return true;
 
@@ -396,6 +408,10 @@ cpp_file_dup(cpp_file* file) {
   ++file->ref_count;
   return file;
 }
+
+void cpp_query_undefined(cpp_ctx* pp, cpp_token* tok, int by_value);
+int cpp_is_truth_operand(cpp_token* prev, cpp_token* tok);
+void cpp_note_skipped(cpp_ctx* pp, cpp_token* from, cpp_token* to);
 
 static inline cpp_macro*
 cpp_macro_find(cpp_ctx* pp, cpp_token* tok) {
@@ -461,7 +477,9 @@ cpp_is_keyword(cpp_token* tok) {
         "__thread",     "_Atomic",   "__attribute__",
     };
 
-    for(int i = 0; i < sizeof(kw) / sizeof(*kw); i++)
+    int i;
+
+    for(i = 0; i < sizeof(kw) / sizeof(*kw); i++)
       hashmap_put(&map, kw[i], (void*)1);
   }
 
@@ -521,8 +539,9 @@ cpp_remove_backslash_newline(char* p) {
 static inline wchar_t
 cpp_read_universal_char(char* p, size_t len) {
   wchar_t c = 0;
+  size_t i;
 
-  for(size_t i = 0; i < len; i++) {
+  for(i = 0; i < len; i++) {
     if(!isxdigit(p[i]))
       return 0;
 
@@ -604,12 +623,12 @@ cpp_read_escaped_char(cpp_ctx* pp, char** new_pos, char* p) {
 
   if(*p == 'x') {
     /* Read a hexadecimal number. */
+    int c = 0;
+
     p++;
 
     if(!isxdigit(*p))
       cpp_error_at(pp, p, "invalid hex escape sequence");
-
-    int c = 0;
 
     for(; isxdigit(*p); p++)
       c = (c << 4) + scan_fromhex(*p);
@@ -666,15 +685,17 @@ cpp_read_string_literal(cpp_ctx* pp, char* start, char* quote) {
   char* end = cpp_string_literal_end(pp, quote + 1);
   char* buf = alloc_zero(end - quote);
   size_t len = 0;
+  char* p;
+  cpp_token* tok;
 
-  for(char* p = quote + 1; p < end;) {
+  for(p = quote + 1; p < end;) {
     if(*p == '\\')
       buf[len++] = cpp_read_escaped_char(pp, &p, p + 1);
     else
       buf[len++] = *p++;
   }
 
-  cpp_token* tok = cpp_token_new(pp, TK_STR, start, end + 1);
+  tok = cpp_token_new(pp, TK_STR, start, end + 1);
   tok->ty = cpp_array_of(cpp_ty_char, len + 1);
   tok->str = buf;
   return tok;
@@ -787,7 +808,9 @@ cpp_read_punct(char* p) {
       "++",  "--",  "%=",  "&=", "|=", "^=", "&&", "||", "<<", ">>", "##",
   };
 
-  for(size_t i = 0; i < sizeof(kw) / sizeof(*kw); i++)
+  size_t i;
+
+  for(i = 0; i < sizeof(kw) / sizeof(*kw); i++)
     if(str_start(p, kw[i]))
       return str_len(kw[i]);
 

@@ -5,9 +5,10 @@
 
 int
 stralloc_diff(const stralloc* a, const stralloc* b) {
+  size_t i;
   int j;
 
-  for(size_t i = 0;; ++i) {
+  for(i = 0;; ++i) {
     if(i == a->len)
       return i == b->len ? 0 : -1;
 

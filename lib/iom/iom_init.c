@@ -26,7 +26,9 @@ iom_init(iomux_t* c) {
     }
   }
 #else
+#ifndef __BORLANDC__ /* #warning is not known to cpp32 */
 #warning "only epoll and kqueue supported for now"
+#endif
 #endif
   unsigned int i;
   c->working = 0;

@@ -12,9 +12,9 @@
 size_t
 path_search(char* out, size_t cap, const char* l, size_t ln, const char* name, size_t nl, int (*ok)(const char*, void*), void* arg) {
   const char* e;
-  size_t el, n;
+  size_t el, n, pos;
 
-  PATH_LIST_FOREACH(l, ln, e, el) {
+  PATH_LIST_FOREACH(l, ln, e, el, pos) {
     n = path_cat(out, cap, e, el, name, nl);
 
     if(n < cap && ok(out, arg))

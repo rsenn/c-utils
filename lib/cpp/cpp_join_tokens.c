@@ -6,22 +6,25 @@
 /* Concatenates all tokens in `tok` and returns a new string. */
 char*
 cpp_join_tokens(cpp_token* tok, cpp_token* end) {
+  char* buf;
+  int pos;
+  cpp_token* t;
   /* Compute the length of the resulting token. */
   int len = 1;
 
-  for(cpp_token* t = tok; t != end && t->kind != TK_EOF; t = t->next) {
+  for(t = tok; t != end && t->kind != TK_EOF; t = t->next) {
     if(t != tok && t->has_space)
       len++;
 
     len += t->len;
   }
 
-  char* buf = alloc_zero(len);
+  buf = alloc_zero(len);
 
   /* Copy token texts. */
-  int pos = 0;
+  pos = 0;
 
-  for(cpp_token* t = tok; t != end && t->kind != TK_EOF; t = t->next) {
+  for(t = tok; t != end && t->kind != TK_EOF; t = t->next) {
     if(t != tok && t->has_space)
       buf[pos++] = ' ';
 

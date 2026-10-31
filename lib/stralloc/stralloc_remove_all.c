@@ -3,12 +3,13 @@
 
 void
 stralloc_remove_all(stralloc* sa, register const char* delchars, register unsigned int delcharslen) {
+  size_t i;
   register char *x, *t;
 
   if(!(x = t = sa->s))
     return; /* safety */
 
-  for(size_t i = sa->len; i > 0; --i) {
+  for(i = sa->len; i > 0; --i) {
     if(byte_chr(delchars, delcharslen, *x) == delcharslen) /* good char found */
       *t++ = *x;
 
