@@ -29,39 +29,6 @@ path_prefix_b(const stralloc* prefix, const char* x, size_t n, stralloc* out, ch
 }
 
 /**
- * @brief       Adds a prefix to the specified path
- *
- * @param      prefix  Prefix to add
- * @param      path    The path string
- * @param      out     Write output here
- * @param[in]  psm     Path separator for makefile
- */
-void
-path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
-  path_prefix_b(prefix, path, str_len(path), out, psm);
-  stralloc_nul(out);
-}
-
-/**
- * @brief      Adds a prefix to the specified path
- *
- * @param      prefix  Prefix to add
- * @param      sa      Path string
- * @param[in]  psm     Path separator for makefile
- */
-void
-path_prefix_sa(const stralloc* prefix, stralloc* sa, char psm) {
-  if(prefix->len && !stralloc_equals(prefix, ".")) {
-    stralloc_insertb(sa, prefix->s, 0, prefix->len);
-
-    if(!stralloc_endb(prefix, &psm, 1))
-      stralloc_insertb(sa, &psm, prefix->len, 1);
-  }
-
-  stralloc_nul(sa);
-}
-
-/**
  * @brief      Changes extension of a path
  *
  * @param[in]  in    Input path
@@ -93,7 +60,7 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  *
  * @return     Path string
  */
-static char*
+char*
 path_output2_dir(const char* in, stralloc* out, const char* ext, char psa, const stralloc* dir) {
   stralloc abs;
   stralloc_init(&abs);
@@ -107,21 +74,6 @@ path_output2_dir(const char* in, stralloc* out, const char* ext, char psa, const
     stralloc_catc(out, psa);
 
   return path_extension(in, out, ext);
-}
-
-/**
- * @brief      Returns an output path anchored under dirs.obj
- *
- * @param[in]  in    Input path
- * @param      out   Output path
- * @param[in]  ext   Extension
- * @param[in]  psa    Path separator for arguments
- *
- * @return     Path string
- */
-char*
-path_output2(const char* in, stralloc* out, const char* ext, char psa) {
-  return path_output2_dir(in, out, ext, psa, &dirs.obj.sa);
 }
 
 /**

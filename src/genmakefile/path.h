@@ -2,13 +2,17 @@
 #define GENMAKEFILE_PATH_H
 
 #include "../../lib/stralloc.h"
+#include "../../lib/str.h"
 #include "../../lib/set.h"
 
 void path_prefix_b(const stralloc*, const char* x, size_t n, stralloc* out, char psm);
-void path_prefix_s(const stralloc*, const char* path, stralloc* out, char psm);
-void path_prefix_sa(const stralloc*, stralloc* sa, char psm);
+static inline void
+path_prefix_s(const stralloc* prefix, const char* path, stralloc* out, char psm) {
+  path_prefix_b(prefix, path, str_len(path), out, psm);
+}
 char* path_extension(const char*, stralloc* out, const char* ext);
-char* path_output2(const char*, stralloc* out, const char* ext, char psa);
+char* path_output2_dir(const char*, stralloc* out, const char* ext, char psa, const stralloc* dir);
+#define path_output2(in, out, ext, psa) path_output2_dir((in), (out), (ext), (psa), &dirs.obj.sa)
 char* path_output(const char*, stralloc* out, const char* ext, char psa);
 char* path_output2_bin(const char*, stralloc* out, const char* ext, char psa);
 char* path_output_bin(const char*, stralloc* out, const char* ext, char psa);
