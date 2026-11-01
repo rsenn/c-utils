@@ -6,6 +6,12 @@ char*
 xml_get_text(xmlnode* node, stralloc* out) {
   xmlnode* tnode = node;
 
+  (void)tnode;
+  if(!node) { /* no node: leave out as it is (this used to dereference NULL) */
+    stralloc_nul(out);
+    return out->s;
+  }
+
   if(node->type != XML_TEXT) {
     if(node->next && node->next->type == XML_TEXT)
       node = node->next;
