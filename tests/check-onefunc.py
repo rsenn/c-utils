@@ -10,7 +10,17 @@ for f in sorted(glob.glob(os.path.join(root, 'lib/*/*.c'))):
     base = os.path.basename(f)[:-2]
     lines = open(f, errors='ignore').read().split('\n')
     pub = []
+    unit = 0   # depth inside a #ifdef UNITTEST block: the embedded unit tests of libowfat are not API
     for i, l in enumerate(lines):
+        c = re.match(r'^\s*#\s*(if|ifdef|ifndef|endif)\b(.*)', l)
+        if c:
+            if unit:
+                unit += 1 if c.group(1) != 'endif' else -1
+            elif c.group(1) in ('if', 'ifdef') and 'UNITTEST' in c.group(2):
+                unit = 1
+            continue
+        if unit:
+            continue
         m = re.match(r'^([A-Za-z_]\w*)\(', l)
         if m and i > 0:
             prev = lines[i - 1]
