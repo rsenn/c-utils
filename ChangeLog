@@ -16,6 +16,11 @@
   fmt_iso8601 and fmt_escapecharxml (wrote a terminating NUL byte beyond the
   returned length), fmt_utf8 (refused values above 0x3ffffff) and
   fmt_escapecharc (refused characters above 0xff).
+- doc: added doc/small-and-fast.md (the design rules of "Writing Small And
+  Fast Software" and where they are in the tree, dietlibc support) and
+  doc/libowfat-compat.md (what libowfat compatibility means, how it is
+  tested, the differences that stay); README.txt starts with a primer on
+  the lineage djb, libowfat, c-utils.
 - cdb, critbit: added the constant database (cdb.h, cdb_make.h) and the
   crit-bit tree of libowfat (critbit.h) as modules; added the libowfat
   functions fmt_netstring, fmt_varint, fmt_pb_*, scan_netstring, scan_pb_*,

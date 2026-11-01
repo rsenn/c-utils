@@ -624,3 +624,17 @@
   dereferences in `cpp_hideset_intersection`, `cpp_hideset_union` and
   `cpp_token_append` when an allocation fails.
 
+- no-license-file: the repository has no top-level `LICENSE` or `COPYING`; only
+  `lib/cbmap/LICENSE` exists. Large parts descend from libowfat 0.32, which is
+  licensed GPL version 2 only (`lib/cdb/`, `lib/critbit/`, the `fmt_pb_*`,
+  `fmt_netstring`, `scan_pb_*`, `scan_netstring` and `scan_iso8601` functions,
+  and the headers marked "this header file comes from libowfat"). Until the
+  project license is chosen and the file added, the terms of the whole tree are
+  unclear, and `third_party/` carries its own licenses on top.
+
+- libowfat-longlong-types: `fmt_ulonglong`, `fmt_longlong`, `fmt_xlonglong`,
+  `fmt_8longlong`, `fmt_human`, `fmt_humank`, `fmt_asn1derlength` and
+  `fmt_asn1dertag` take `uint64`/`int64` by value where libowfat uses
+  `unsigned long long`. Calls are unaffected, but taking the address of one into
+  a function pointer of libowfat's type warns on LP64 Linux. Change the
+  declarations in `lib/fmt.h` and the definitions together if it ever matters.
