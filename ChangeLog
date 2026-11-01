@@ -83,6 +83,7 @@
   (chip, -D, -I and the .c files of its first configuration), tried on USB-uC
   and the USB-Stack HID mouse example (tests/genmakefile/import-mplabx.sh).
 - genmakefile: --pair-headers follows #if, #ifdef, #ifndef, #elif, #else and #define with the -D options, so the sources of an #include that is switched off are not added (a name of the system or compiler, like __XC8, counts as unknown and the branch is taken).
+- genmakefile: --project FILE reads the [project] section of an INI file as command line arguments (toolchain, make, chip, xtal, baud, build, define, include, link, library, import, conf, pair-headers, sources); arguments on the command line win (tests/genmakefile/project-file.sh).
 - genmakefile: --import-mplabx takes the optimization level of the project (-Os small, -O0 debug, -O1 and up release) as the build type.
 - genmakefile: --mplabx-conf NAME picks a configuration of a MPLAB X project (USB-uC has eleven, one per chip); --import-mplabx also reads MPLAB 8 .mcp project files.
 - fixed: genmakefile could not read a source given with an absolute path.
