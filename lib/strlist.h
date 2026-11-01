@@ -87,6 +87,9 @@ strlist_next_b(const strlist* sl, const char* ptr, size_t* n) {
 }
 
 void strlist_init(strlist* sl, char sep);
+/* strlist_at points into the list: every element but the last one is NUL
+ * terminated (the separator), the last one ends at sa.len. Use strlist_at_n when
+ * the element may be the last one. An empty element cannot be stored. */
 char* strlist_at(const strlist*, size_t i);
 char* strlist_at_n(const strlist*, size_t i, size_t* n);
 int strlist_cat(strlist*, const strlist* l);
@@ -114,6 +117,7 @@ int strlist_push_unique(strlist*, const char* s);
 strlist strlist_range(const strlist*, size_t from, size_t to);
 size_t strlist_remove_all(strlist*, const strlist* remove);
 int strlist_remove_at(strlist*, size_t n);
+int strlist_erase_element(strlist*, size_t pos, size_t len);
 int strlist_removeb(strlist*, const char* x, size_t n);
 int strlist_removes(strlist*, const char* s);
 int strlist_shift_n(strlist*, size_t i);
