@@ -227,6 +227,7 @@ int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, in
 #endif
 
 void buffer_frombuf(buffer*, const char* x, size_t l); /* buffer reads from static buffer */
+void buffer_fromstr(buffer*, char* s, size_t n); /* buffer reads the n bytes at s */
 int buffer_copybuf(buffer*, const char* x, size_t l);
 #ifdef ARRAY_H
 void buffer_fromarray(buffer*, array* a); /* buffer reads from array */

@@ -20,8 +20,13 @@ json_parse_number(jsonval* val, charbuf* b) {
     for(;;) {
       stralloc_APPEND(&num, &c);
 
-      if((ret = charbuf_nextc(b, &c)) <= 0)
-        return ret;
+      if((ret = charbuf_nextc(b, &c)) <= 0) {
+        if(ret < 0) {
+          stralloc_free(&num);
+          return ret;
+        }
+        break; /* the end of the input ends the number (a number at the end of a document used to be dropped) */
+      }
 
       if(!isdigit(c) && c != '.' && c != 'E' && c != 'e') {
         /* the sign of an exponent, 1e-5 or 1E+5 */

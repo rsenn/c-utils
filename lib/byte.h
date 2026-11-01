@@ -41,6 +41,7 @@ size_t byte_rchrs(const void*, size_t, const char*, size_t);
 size_t byte_skip(const void* p, size_t n, char c) __pure__;
 size_t byte_rskip(const void* p, size_t n, char c) __pure__;
 size_t byte_rskipn(const void* p, size_t n, char c) __pure__;
+size_t byte_case_start(const void* x1, size_t len, const void* x2); /* 1 if the NUL terminated x2 is a prefix of x1, ignoring case */
 #define byte_skipn(p, n, c) byte_chr((p), (n), (c))
 
 /* byte_copy copies in[0] to out[0], in[1] to out[1], ... and in[len-1]
