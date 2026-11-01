@@ -7,7 +7,7 @@ What is checked, how, and what is left. Regenerate with `tests/make-api-status.p
 | unit tests | `build/.../tests/all_tests` (run in `tests/`) | 876 tests pass; `valgrind -q --error-exitcode=9` clean |
 | every header compiles alone | `tests/check-headers.sh` | 0 failures |
 | libowfat source compatibility | `tests/libowfat-compat/` (see `doc/libowfat-compat.md`) | 517 prototypes, 0 missing |
-| one function per file | `tests/check-onefunc.py` | 58 files deviate from one function per file |
+| one function per file | `tests/check-onefunc.py` | 48 files deviate from one function per file |
 | genmakefile | `tests/genmakefile/{pair-headers,import-mplabx,project-file,infer-sources}.sh GENMAKEFILE` | all pass |
 | functions not named by a test | this script | 123 |
 
@@ -66,7 +66,6 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/io/io_wantread.c io_wantread io_wantread_really
 * lib/io/io_wantwrite.c io_wantwrite io_wantwrite_really
 * lib/path/path_access.c hasAccessRight path_access
-* lib/scan/scan_utf8_sem.c scan_utf8_sem test_main
 * lib/scan/scan_varint.c scan_pb_type0_int scan_varint
 * lib/sig/sig_stack.c sig_pop sig_pusha
 * lib/socket/socket_send6.c socket_send6 socket_send6_flag
@@ -74,16 +73,7 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/socket/winsock_init.c __winsock_init
 * lib/socket/winsock_socketpair.c wsa_socketpair
 * lib/strarray/strarray_glob.c strarray_glob strarray_glob_b
-* lib/textcode/fmt_jsonescape.c fmt_jsonescape unittest_main
-* lib/textcode/scan_base64.c scan_base64 unittest_main
-* lib/textcode/scan_base64url.c scan_base64url unittest_main
-* lib/textcode/scan_cescape.c scan_cescape unittest_main
-* lib/textcode/scan_hexdump.c scan_hexdump unittest_main
-* lib/textcode/scan_html.c scan_html scan_html_tagarg unittest_main
-* lib/textcode/scan_jsonescape.c scan_jsonescape unittest_main
-* lib/textcode/scan_ldapescape.c scan_ldapescape unittest_main
-* lib/textcode/scan_urlencoded.c scan_urlencoded scan_urlencoded2 unittest_main
-* lib/textcode/scan_uuencoded.c scan_uuencoded unittest_main
+* lib/textcode/scan_html.c scan_html scan_html_tagarg
 * lib/tls/tls_init.c tls_context tls_init tls_verify
 * lib/tls/tls_new.c tls_client tls_server
 * lib/ucs/ucs_latin1.c ucs_from_latin1_char ucs_to_latin1_char
