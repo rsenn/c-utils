@@ -34,6 +34,7 @@
 #include "../lib/memalign.h"
 #include "../lib/hmap.h"
 #include "../lib/hmap_internal.h"
+#include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -731,6 +732,101 @@ TEST(test_hmap_internals) {
   ASSERT_EQ(NULL, hmap_lookup(db, "alphc", 5, hmap_hash("alphc", 5)));
   hmap_destroy(&db);
 }
+/*
+ * open_filename, mmap_filename
+ */
+TEST(test_open_mmap_filename) {
+  const char* fn = "/tmp/c-utils-openfn.tmp";
+  int fd = open_trunc(fn);
+  stralloc sa;
+  size_t n;
+  char* map;
+
+  write(fd, "data", 4);
+  close(fd);
+  fd = open_read(fn);
+  stralloc_init(&sa);
+  ASSERT_EQ(1, open_filename(fd, &sa));
+  stralloc_nul(&sa);
+  ASSERT_STR_EQUAL(fn, sa.s);
+
+  map = mmap_read_fd(fd, &n);
+  ASSERT_EQ(1, map != NULL);
+  stralloc_zero(&sa);
+  ASSERT_EQ(1, mmap_filename(map, &sa));
+  stralloc_nul(&sa);
+  ASSERT_STR_EQUAL(fn, sa.s);
+  mmap_unmap(map, n);
+  close(fd);
+  stralloc_free(&sa);
+  unlink(fn);
+}
+
+/*
+ * buffer_dummyread, buffer_stubborn, buffer_stubborn_read, stralloc_dump, stralloc_fmt_call
+ */
+static int calls;
+static ssize_t
+flaky_write(fd_type fd, void* x, size_t n, void* b) {
+  (void)fd;
+  (void)x;
+  (void)b;
+  if(++calls == 1) {
+    errno = EINTR;
+    return -1;
+  }
+  return n > 2 ? 2 : (ssize_t)n; /* short writes */
+}
+
+static size_t
+fmt_two(char* dest, void* a, void* b, void* c, void* d) {
+  (void)c;
+  (void)d;
+  if(dest) {
+    dest[0] = *(char*)a;
+    dest[1] = *(char*)b;
+  }
+  return 2;
+}
+
+TEST(test_buffer_stubborn_dump_fmtcall) {
+  buffer b;
+  stralloc sa, out;
+  char x = 'p', y = 'q';
+  void* av[4];
+  size_t n;
+
+  byte_zero(&b, sizeof b);
+  ASSERT_EQ(0, buffer_dummyread(0, NULL, 10, &b));
+
+  calls = 0;
+  ASSERT_EQ(0, buffer_stubborn((buffer_op_proto*)(void*)flaky_write, 1, "abcde", 5, NULL));
+  ASSERT_EQ(1, calls >= 4); /* the interrupted call is repeated, short writes continue */
+  calls = 1;
+  ASSERT_EQ(2, buffer_stubborn_read((buffer_op_proto*)(void*)flaky_write, 1, "abc", 3, NULL));
+
+  stralloc_init(&sa);
+  stralloc_copys(&sa, "a\"b\n");
+  stralloc_init(&out);
+  buffer_tosa(&b, &out);
+  stralloc_dump(&sa, &b);
+  buffer_flush(&b);
+  stralloc_nul(&out);
+  ASSERT_EQ(1, str_contains(out.s, "stralloc"));
+  ASSERT_EQ(1, str_contains(out.s, "\\n"));
+  stralloc_free(&out);
+  stralloc_free(&sa);
+
+  stralloc_init(&sa);
+  av[0] = &x;
+  av[1] = &y;
+  av[2] = av[3] = NULL;
+  n = stralloc_fmt_call(&sa, (stralloc_fmt_fn*)(void*)fmt_two, av);
+  ASSERT_EQ(2, n);
+  ASSERT_EQ(2, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 2, "pq"));
+  stralloc_free(&sa);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -751,6 +847,8 @@ TEST(test_hmap_internals) {
   RUN(test_cb_strarray_strlist_more); \
   RUN(test_path_process_misc); \
   RUN(test_memalign); \
-  RUN(test_hmap_internals)
+  RUN(test_hmap_internals); \
+  RUN(test_open_mmap_filename); \
+  RUN(test_buffer_stubborn_dump_fmtcall)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }

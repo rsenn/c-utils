@@ -7,6 +7,7 @@
 #ifndef TEXTCODE_H
 #define TEXTCODE_H
 
+#include "array.h"
 #include <stddef.h>
 
 #ifdef __cplusplus
@@ -130,7 +131,6 @@ size_t scan_to_sa(size_t (*func)(const char*, char*, size_t*), const char* src, 
 #define scan_jsonescape_sa(src, sa) scan_to_sa(scan_jsonescape, src, sa)
 #endif
 
-#ifdef ARRAY_H
 void fmt_to_array(size_t (*func)(char*, const char*, size_t), array* a, const char* src, size_t len);
 
 void fmt_tofrom_array(size_t (*func)(char*, const char*, size_t), array* dest, array* src);
@@ -149,7 +149,6 @@ void fmt_tofrom_array2(size_t (*func)(char*, const char*, size_t, const char*),
 size_t scan_to_array(size_t (*func)(const char*, char*, size_t*), const char* src, array* dest);
 
 size_t scan_tofrom_array(size_t (*func)(const char*, char*, size_t*), array* src, array* dest);
-#endif
 
 size_t fmt_stripwhitespace(char* dest, const char* src, size_t len);
 
