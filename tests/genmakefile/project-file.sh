@@ -22,6 +22,10 @@ define = USE_ADC=1 DEBUG_UART
 include = lib
 pair-headers = yes
 sources = main.c
+
+[define]
+all = FROM_ALL=1
+USE_SWITCH = 2
 INI
 "$G" --project genmakefile.ini -o Makefile >/dev/null 2>&1 || { echo "FAIL: genmakefile"; exit 1; }
 grep -q '^CHIP = 18f2550' Makefile || { echo "FAIL: chip"; exit 1; }
@@ -32,6 +36,7 @@ grep -q '/adc\.p1' Makefile || { echo "FAIL: pair-headers via the project file";
 # the command line comes last and wins
 "$G" --project genmakefile.ini --chip 18f25k50 -o M2 >/dev/null 2>&1
 grep -q '^CHIP = 18f25k50' M2 || { echo "FAIL: command line does not win"; exit 1; }
+grep -q 'FROM_ALL=1' Makefile && grep -q 'USE_SWITCH=2' Makefile || { echo "FAIL: [define]"; exit 1; }
 "$G" --project genmakefile.ini --dump-project >dump.txt 2>&1
 grep -qx -- '--chip' dump.txt && grep -qx '18f2550' dump.txt && grep -qx -- '-DUSE_ADC=1' dump.txt || { echo "FAIL: --dump-project"; exit 1; }
 echo "project-file: ok"

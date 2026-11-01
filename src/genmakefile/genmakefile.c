@@ -2304,7 +2304,7 @@ import_project(int* argcp, char** argv) {
   strarray out;
   char** nv;
   size_t k, pos = 0;
-  int in_project = 0;
+  int in_project = 0, in_define = 0;
 
   for(i = 1; i < *argcp; ++i)
     if(str_equal(argv[i], "--project") && i + 1 < *argcp) {
@@ -2342,6 +2342,56 @@ import_project(int* argcp, char** argv) {
 
     if(*l == '[') {
       in_project = str_start(l, "[project]");
+      in_define = str_start(l, "[define]");
+    } else if(in_define && *l && *l != ';' && *l != '#' && (eq = l + str_chr(l, '=')) && *eq == '=') {
+      /* [define]: all = A=1 B -> -DA=1 -DB, any other key NAME = VALUE -> -DNAME=VALUE */
+      char* v = eq + 1;
+      stralloc key, val;
+      size_t a = 0;
+
+      kl = (size_t)(eq - l);
+      while(kl && (l[kl - 1] == ' ' || l[kl - 1] == '\t'))
+        --kl;
+      while(*v == ' ' || *v == '\t')
+        ++v;
+      stralloc_init(&key);
+      stralloc_copyb(&key, l, kl);
+      stralloc_nul(&key);
+      stralloc_init(&val);
+      stralloc_copys(&val, v);
+      stralloc_nul(&val);
+      if(!str_diff(key.s, "all")) {
+        while(a < val.len) {
+          size_t e = str_chrs(val.s + a, " \t", 2);
+
+          if(e) {
+            stralloc opt;
+
+            stralloc_init(&opt);
+            stralloc_copys(&opt, "-D");
+            stralloc_catb(&opt, val.s + a, e);
+            stralloc_nul(&opt);
+            strarray_push(&out, opt.s);
+            stralloc_free(&opt);
+          }
+          a += e + 1;
+        }
+      } else {
+        stralloc opt;
+
+        stralloc_init(&opt);
+        stralloc_copys(&opt, "-D");
+        stralloc_cats(&opt, key.s);
+        if(val.len) {
+          stralloc_catc(&opt, '=');
+          stralloc_cats(&opt, val.s);
+        }
+        stralloc_nul(&opt);
+        strarray_push(&out, opt.s);
+        stralloc_free(&opt);
+      }
+      stralloc_free(&key);
+      stralloc_free(&val);
     } else if(in_project && *l && *l != ';' && *l != '#' && (eq = l + str_chr(l, '=')) && *eq == '=') {
       char* v = eq + 1;
       stralloc key, val;
