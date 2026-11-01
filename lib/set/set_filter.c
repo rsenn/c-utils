@@ -1,4 +1,7 @@
 #include "../set.h"
+/* Adds the values for which pred(value, size) is true to out, in order.
+ * Returns how many were added, or -1 if the memory ran out. */
+/* The same for the values for which pred is false. */
 
 static int
 filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t), int want) {
@@ -15,15 +18,7 @@ filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t), int want) 
   return added;
 }
 
-/* Adds the values for which pred(value, size) is true to out, in order.
- * Returns how many were added, or -1 if the memory ran out. */
 int
 set_filter(const set_t* in, set_t* out, int (*pred)(const char*, size_t)) {
   return filter(in, out, pred, 1);
-}
-
-/* The same for the values for which pred is false. */
-int
-set_filter_out(const set_t* in, set_t* out, int (*pred)(const char*, size_t)) {
-  return filter(in, out, pred, 0);
 }

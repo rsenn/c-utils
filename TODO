@@ -396,7 +396,7 @@ them with -v when porting a foreign project. Details in
 
 - one-function-per-file-exceptions:
   The rule of one public function per file in lib/<module>/ is kept for new
-  code, but 73 older files break it. Some hold a family that always goes
+  code, but 58 older files break it. Some hold a family that always goes
   together (cpp_hideset, dns_domain, pe_header, safemult); some have a file
   name that is not the function name (bmap_get holds bmap_get_, dns_dfd holds
   dns_domain_fromdot, io_fd holds io_getfds and io_fd_flags). A program that

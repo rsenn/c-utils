@@ -75,6 +75,7 @@
 - fixed: cpp_read_file left the descriptor open.
 - fixed: buffer_rewind emptied a buffer made by buffer_frombuf or an mmap reader, so a tokenizer_rewind lost its input.
 - API: 15 files got the name of the one function they hold (bmap_get_.c, buffer_unixread.c, dns_domain_fromdot.c, ...); 73 files still break one function per file.
+- API: 15 files got the name of the one function they hold (bmap_get_.c, buffer_unixread.c, dns_domain_fromdot.c, ...); 73 files still break one function per file. Then 15 more files with static helpers or global declarations (dns_ip4, dns_mx, xml_find_pred, ...) were split, one function to a file: 58 are left.
 - doc/api-status.md: what is checked, how, and the lists of what is left (functions without a test, files that break one function per file).
 - API: 39 files that held several public functions were split, one function to a file (88 are left, see tests/check-onefunc.py); buffer_dummyreadbuf, buffer_dummyread_fromstr and strarray_sort_compare are declared.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
