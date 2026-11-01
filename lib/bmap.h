@@ -56,6 +56,8 @@ void bmap_deinit_(bmap_base_t* m);
 void* bmap_get_(bmap_base_t* m, const char* key);
 int bmap_set_(bmap_base_t* m, const char* key, void* value, int vsize);
 void bmap_remove_(bmap_base_t* m, const char* key);
+/* the link that points to the node of key (so the node can be unlinked), NULL if there is none */
+bmap_node_t** bmap_getref(bmap_base_t* m, const char* key);
 bmap_iter_t bmap_iter_(void);
 const char* bmap_next_(bmap_base_t* m, bmap_iter_t* iter);
 

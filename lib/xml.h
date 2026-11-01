@@ -6,6 +6,7 @@
 #ifndef XML_H
 #define XML_H
 
+#include <stdarg.h>
 #include <sys/types.h>
 #include <assert.h>
 #include "buffer.h"
@@ -105,6 +106,7 @@ int xml_has_attr(xmlnode* node, const void* names, const strlist* attrs);
 #endif
 void xml_add_child(xmlnode* parent, xmlnode* node);
 HMAP_DB* xml_attributes(const char* arg, ...);
+HMAP_DB* xml_vattributes(const char* arg, va_list args);
 xmlnode* xml_attrnode(const char* name, size_t name_len, const char* value, size_t value_len);
 xmlnode* xml_child_element_attrs(const char* name, xmlnode* parent, const char* arg, ...);
 xmlnode* xml_child_element(const char* name, xmlnode* parent);
@@ -133,6 +135,7 @@ xmlnode* xml_find_pred_1(xmlnode* node, xml_pred_t*, const void* arg);
 xmlnode* xml_find_pred_2(xmlnode* node, xml_pred_t*, const void* a0, const void* a1);
 xmlnode* xml_find_pred_3(xmlnode* node, xml_pred_t*, const void* a0, const void* a1, const void* a2);
 xmlnode* xml_find_pred_n(xmlnode* node, xml_pred_t*, int n, ...);
+xmlnode* xml_vfind_pred_n(xmlnode* node, xml_pred_t*, int n, va_list args);
 xmlnode* xml_find_with_attrs(xmlnode* node, const char* attrs);
 void xml_free(xmlnode* node);
 double xml_get_attribute_double(xmlnode* node, const char* attr);
@@ -184,6 +187,7 @@ xml_num_attrs(xmlnode* node) {
 void xml_set_attribute_double(xmlnode*, const char* a, double d, int prec);
 void xml_set_attribute(xmlnode*, const char* a, const char* v);
 int xml_set_attributes(xmlnode*, ...);
+int xml_vset_attributes(xmlnode*, va_list args);
 HMAP_DB* xml_attributes(const char* arg, ...);
 xmlnode* xml_element(const char*);
 xmlnode* xml_child_element(const char*, xmlnode*);

@@ -2,6 +2,7 @@
 #include "../lib/bmap.h"
 #include "../lib/fmt.h"
 #include "../lib/str.h"
+#include "../lib/byte.h"
 
 /*
  * bmap_init, bmap_set, bmap_get, bmap_remove, bmap_iter, bmap_next, bmap_deinit:
@@ -78,7 +79,39 @@ TEST(test_bmap_string_values) {
   bmap_deinit(&m);
 }
 
+/*
+ * the functions behind the macros: bmap_set_, bmap_get_, bmap_remove_, bmap_iter_, bmap_next_,
+ * bmap_deinit_, and bmap_getref
+ */
+TEST(test_bmap_underscore_functions) {
+  bmap_base_t base;
+  bmap_iter_t it;
+  int v = 7, *p;
+  const char* k;
+  bmap_node_t** ref;
+
+  byte_zero(&base, sizeof base);
+  ASSERT_EQ(NULL, bmap_getref(&base, "x")); /* nothing in an empty map */
+  ASSERT_EQ(0, bmap_set_(&base, "x", &v, sizeof v));
+  p = bmap_get_(&base, "x");
+  ASSERT_EQ(1, p != NULL);
+  ASSERT_EQ(7, *p);
+  ref = bmap_getref(&base, "x");
+  ASSERT_EQ(1, ref != NULL && *ref != NULL);
+  ASSERT_EQ(NULL, bmap_getref(&base, "y"));
+
+  it = bmap_iter_();
+  k = bmap_next_(&base, &it);
+  ASSERT_STR_EQUAL("x", k);
+  ASSERT_EQ(NULL, bmap_next_(&base, &it));
+
+  bmap_remove_(&base, "x");
+  ASSERT_EQ(NULL, bmap_get_(&base, "x"));
+  bmap_deinit_(&base);
+}
+
 #define RUN_BMAP_TESTS() \
+  RUN(test_bmap_underscore_functions); \
   RUN(test_bmap_set_get); \
   RUN(test_bmap_remove); \
   RUN(test_bmap_iterate_and_grow); \
