@@ -21,6 +21,9 @@ charbuf_pred_skip(charbuf* b, int (*pred)(int, size_t, void*), void* ptr) {
     ret = n;
     break;
   }
+  /* end of input or error after n matching characters: report them */
+  if(ret <= 0 && n > 0)
+    ret = n;
 
 #ifdef DEBUG_CHARBUF_
   if(debug) {
