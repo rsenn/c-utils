@@ -1,5 +1,15 @@
-#ifndef _WORDEXP_H
-#define _WORDEXP_H
+#ifndef CUTILS_WORDEXP_H
+#define CUTILS_WORDEXP_H
+
+/* The system's header where there is one: the replacement below has a different
+ * wordexp_t and different flag values, mixing the two reads the wrong fields. */
+#if !defined(_WIN32) && !defined(__MSYS__) && !defined(__CYGWIN__) && defined(__has_include_next)
+#if __has_include_next(<wordexp.h>)
+#include_next <wordexp.h>
+#define WORDEXP_SYSTEM 1
+#endif
+#endif
+#ifndef WORDEXP_SYSTEM
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,5 +47,7 @@ void wordfree(wordexp_t*);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* WORDEXP_SYSTEM */
 
 #endif

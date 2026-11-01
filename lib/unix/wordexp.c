@@ -1,3 +1,7 @@
+#include "../wordexp.h"
+
+/* where the system has wordexp() this file is not needed */
+#ifndef WORDEXP_SYSTEM
 #define _POSIX_SOURCE 1
 #define _GNU_SOURCE 1
 #define _MISC_SOURCE 1
@@ -135,3 +139,4 @@ wordfree(wordexp_t* we) {
   free(we->we_wordv);
   we->we_wordc = 0;
 }
+#endif /* WORDEXP_SYSTEM */

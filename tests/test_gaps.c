@@ -1,3 +1,4 @@
+#define _GNU_SOURCE 1
 #include "../lib/stralloc.h"
 #include "../lib/array.h"
 #include "unit_test.h"
@@ -46,6 +47,11 @@
 #include "../lib/textbuf.h"
 #include "../lib/iob_internal.h"
 #include "../lib/socket.h"
+#include "../lib/glob.h"
+#include "../lib/wordexp.h"
+#include "../lib/fnmatch.h"
+#include "../lib/unix.h"
+#include <stdio.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
@@ -1106,6 +1112,89 @@ TEST(test_assorted_leftovers) {
   if(u >= 0)
     socket_close(u);
 }
+/*
+ * the buffer read/write operations on descriptors, buffer_dummyreadbuf/mmap, io_fd and friends,
+ * the C library services of unix.h (fnmatch, ftruncate, readlink, getpagesize, glob, wordexp, popen)
+ */
+TEST(test_buffer_unix_ops_and_libc_services) {
+  int p[2];
+  char got[16];
+  buffer b;
+  const char* fn = "/tmp/c-utils-unixsvc.tmp";
+  const char* ln = "/tmp/c-utils-unixsvc.lnk";
+  int fd;
+  char target[128];
+  glob_t g;
+  wordexp_t we;
+  FILE* f;
+  char line[64];
+
+  ASSERT_EQ(0, pipe(p));
+  ASSERT_EQ(3, buffer_unixwrite(p[1], "xyz", 3));
+  ASSERT_EQ(3, buffer_unixread(p[0], got, sizeof got));
+  ASSERT_EQ(0, byte_diff(got, 3, "xyz"));
+  close(p[0]);
+  close(p[1]);
+
+  byte_zero(&b, sizeof b);
+  ASSERT_EQ(0, buffer_dummyreadbuf(0, got, 4, &b));
+  ASSERT_EQ(0, buffer_dummyreadmmap(0, got, 4, &b));
+  ASSERT_EQ(0, buffer_dummyread_fromstr());
+
+  ASSERT_EQ(0, fnmatch("*.c", "file.c", 0));
+  ASSERT_EQ(FNM_NOMATCH, fnmatch("*.c", "file.h", 0));
+
+  fd = open(fn, O_RDWR | O_CREAT | O_TRUNC, 0600);
+  write(fd, "0123456789", 10);
+  ASSERT_EQ(0, ftruncate(fd, 4));
+  ASSERT_EQ(4, lseek(fd, 0, SEEK_END));
+  close(fd);
+  ASSERT_EQ(1, getpagesize() >= 4096);
+
+  unlink(ln);
+  ASSERT_EQ(0, symlink(fn, ln));
+  ASSERT_EQ((ssize_t)str_len(fn), readlink(ln, target, sizeof target));
+  ASSERT_EQ(0, byte_diff(target, str_len(fn), fn));
+  unlink(ln);
+
+  ASSERT_EQ(0, glob("/tmp/c-utils-unixsvc.t*", 0, NULL, &g));
+  ASSERT_EQ(1, g.gl_pathc >= 1);
+  ASSERT_STR_EQUAL(fn, g.gl_pathv[0]);
+  globfree(&g);
+
+  ASSERT_EQ(0, wordexp("a 'b c' d", &we, 0));
+  ASSERT_EQ(3, we.we_wordc);
+  ASSERT_STR_EQUAL("b c", we.we_wordv[1]);
+  wordfree(&we);
+
+  f = popen("echo popen-ok", "r");
+  ASSERT_EQ(1, f != NULL);
+  ASSERT_EQ(1, fgets(line, sizeof line, f) != NULL);
+  ASSERT_EQ(1, str_start(line, "popen-ok"));
+  ASSERT_EQ(0, pclose(f));
+  unlink(fn);
+}
+
+/*
+ * io_fd, io_fd_flags, io_fd_canwrite, io_getfds, io_wantread_really and the _really variants
+ */
+TEST(test_io_registration) {
+  int64 fds[2];
+  char c;
+
+  ASSERT_NE(0, io_pipe(fds));
+  ASSERT_EQ(1, io_getfds() != NULL);
+  ASSERT_EQ(1, io_fd(fds[0]));
+  ASSERT_EQ(1, io_fd_flags(fds[1], IO_FD_NONBLOCK));
+  io_wantread(fds[0]);
+  io_dontwantread(fds[0]);
+  io_wantwrite(fds[1]);
+  io_dontwantwrite(fds[1]);
+  ASSERT_EQ(1, io_fd_canwrite(fds[1]) >= 0);
+  (void)c;
+  io_close(fds[0]);
+  io_close(fds[1]);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -1132,6 +1221,8 @@ TEST(test_assorted_leftovers) {
   RUN(test_va_list_forms); \
   RUN(test_cdb_successor_tokenizer_rewind); \
   RUN(test_sig_pusha_and_dumps); \
-  RUN(test_assorted_leftovers)
+  RUN(test_assorted_leftovers); \
+  RUN(test_buffer_unix_ops_and_libc_services); \
+  RUN(test_io_registration)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
