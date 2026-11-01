@@ -1,15 +1,15 @@
 # API and test status
 
-What is checked, how, and what is left. Regenerate the numbers with the commands in the table.
+What is checked, how, and what is left. Regenerate with `tests/make-api-status.py N`.
 
 | check | command | result |
 |---|---|---|
 | unit tests | `build/.../tests/all_tests` (run in `tests/`) | 876 tests pass; `valgrind -q --error-exitcode=9` clean |
 | every header compiles alone | `tests/check-headers.sh` | 0 failures |
 | libowfat source compatibility | `tests/libowfat-compat/` (see `doc/libowfat-compat.md`) | 517 prototypes, 0 missing |
-| one function per file | `tests/check-onefunc.py` | 88 files deviate (listed below) |
+| one function per file | `tests/check-onefunc.py` | 73 files deviate from one function per file |
 | genmakefile | `tests/genmakefile/{pair-headers,import-mplabx,project-file,infer-sources}.sh GENMAKEFILE` | all pass |
-| functions not named by a test | script in the history of this file (identifiers of `lib/*/*.c` not in `tests/test_*.c`) | 123 |
+| functions not named by a test | this script | 123 |
 
 ## Functions not named by a test
 
@@ -44,26 +44,15 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 ## Files that break the one function per file rule
 
 * lib/alloc/alloc.c alloc alloc_free
-* lib/bmap/bmap_deinit.c bmap_deinit_
-* lib/bmap/bmap_get.c bmap_get_
-* lib/bmap/bmap_iter.c bmap_iter_
-* lib/bmap/bmap_next.c bmap_next_
-* lib/bmap/bmap_remove.c bmap_remove_
-* lib/bmap/bmap_set.c bmap_set_
 * lib/buffer/buffer_bzip.c buffer_bunzip buffer_bunzip_fd buffer_bzip buffer_bzip_fd
 * lib/buffer/buffer_gzip.c buffer_gunzip buffer_gunzip_fd buffer_gzip buffer_gzip_fd
-* lib/buffer/buffer_read.c buffer_unixread
-* lib/buffer/buffer_stubborn2.c buffer_stubborn_read
-* lib/buffer/buffer_write.c buffer_unixwrite
 * lib/cb/cb_find_prefix.c cb_find_prefix cb_find_top_i
 * lib/cbmap/cbmap_alloc.c cbmap_mem_allocated cbmap_mem_debug_calloc cbmap_mem_debug_free cbmap_mem_debug_mem cbmap_mem_debug_strdup cbmap_mem_debug_strndup cbmap_mem_mem_dup cbmap_mem_memalign cbmap_mem_posix_memalign
 * lib/cbmap/cbmap_new.c cbmap_default_allocator cbmap_default_deallocator cbmap_new cbmap_new_with_custom_allocation cbmap_new_with_static_keys_and_values cbmap_nop_allocator cbmap_nop_deallocator
 * lib/cbmap/memalign.c memalign_alloc memalign_alloc_aligned memalign_free
-* lib/charbuf/charbuf_stubborn.c charbuf_stubborn_read
 * lib/cpp/cpp_error.c cpp_error_at cpp_error_tok cpp_verror_at cpp_warn_tok
 * lib/cpp/cpp_token.c cpp_token_append cpp_token_copy cpp_token_dump cpp_token_eof cpp_token_free cpp_token_new
 * lib/dns/dns_debug.c dns_debug_hex dns_debug_msg dns_debug_num
-* lib/dns/dns_dfd.c dns_domain_fromdot
 * lib/dns/dns_dtda.c dns_domain_todot dns_domain_todot_cat dns_domain_todot_inline dns_domain_todot_utf8_cat
 * lib/dns/dns_ip4.c dns_ip4 dns_ip4_packet
 * lib/dns/dns_ip6.c dns_ip6 dns_ip6_packet
@@ -71,11 +60,8 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/dns/dns_ipq6.c dns_ip6_qualify dns_ip6_qualify_rules
 * lib/dns/dns_mx.c dns_mx dns_mx_packet
 * lib/dns/dns_name.c dns_name4 dns_name6 dns_name_packet
-* lib/dns/dns_nd.c dns_name4_domain
-* lib/dns/dns_nd6.c dns_name6_domain
 * lib/dns/dns_random.c dns_random dns_random_init
 * lib/dns/dns_rcip.c dns_resolvconfip dns_resolvconfip_reset
-* lib/dns/dns_rcrw.c dns_resolvconfrewrite
 * lib/dns/dns_transmit.c dns_transmit_free dns_transmit_get dns_transmit_io dns_transmit_start
 * lib/dns/dns_txt.c dns_txt dns_txt_packet
 * lib/env/env_put.c env_clear env_init env_put env_put2 env_put2b env_putb env_unset_internal
@@ -111,7 +97,6 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/tls/tls_init.c tls_context tls_init tls_verify
 * lib/tls/tls_new.c tls_client tls_server
 * lib/ucs/ucs_latin1.c ucs_from_latin1_char ucs_to_latin1_char
-* lib/unix/errno.c unix_errno
 * lib/unix/getopt.c unix_getopt unix_getopt_long
 * lib/unix/glob.c glob globfree
 * lib/unix/pipe2.c pipe pipe2
