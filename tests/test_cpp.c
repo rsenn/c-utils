@@ -398,7 +398,87 @@ TEST(test_cpp_lines_macros_expr) {
   ASSERT_EQ(0, byte_diff(rest->loc, 1, "d")); /* stops at the start of the next line */
   cpp_free(&pp);
 }
+/*
+ * cpp_read_macro_params, cpp_read_macro_arg_one, cpp_read_macro_args, cpp_stringize,
+ * cpp_skip_cond_incl(2), cpp_detect_include_guard
+ */
+TEST(test_cpp_macro_parsing_helpers) {
+  cpp_ctx pp;
+  cpp_token *t, *rest, *s;
+  cpp_macro_param* params;
+  cpp_macro_arg *arg, *args;
+  char* va = NULL;
+  char* joined;
+
+  cpp_init(&pp);
+
+  /* "a, b) body": the parameters, stopping behind the closing parenthesis */
+  t = tokens_of(&pp, "a, b) body");
+  params = cpp_read_macro_params(&rest, t, &va);
+  ASSERT_EQ(1, params != NULL && params->next != NULL);
+  ASSERT_STR_EQUAL("a", params->name);
+  ASSERT_STR_EQUAL("b", params->next->name);
+  ASSERT_EQ(NULL, params->next->next);
+  ASSERT_EQ(NULL, va);
+  ASSERT_EQ(0, byte_diff(rest->loc, 4, "body"));
+
+  t = tokens_of(&pp, "x, ...) rest");
+  params = cpp_read_macro_params(&rest, t, &va);
+  ASSERT_STR_EQUAL("x", params->name);
+  ASSERT_STR_EQUAL("__VA_ARGS__", va);
+
+  t = tokens_of(&pp, "args...) rest");
+  va = NULL;
+  params = cpp_read_macro_params(&rest, t, &va);
+  ASSERT_EQ(NULL, params);
+  ASSERT_STR_EQUAL("args", va); /* a named variable argument list */
+
+  /* one argument: up to a comma at the top level, parentheses are matched */
+  t = tokens_of(&pp, "f(1, 2), 3)");
+  arg = cpp_read_macro_arg_one(&rest, t, 0);
+  joined = cpp_join_tokens(arg->tok, NULL);
+  ASSERT_STR_EQUAL("f(1, 2)", joined);
+  alloc_free(joined);
+  ASSERT_EQ(1, cpp_equal(rest, ","));
+  arg = cpp_read_macro_arg_one(&rest, t, 1); /* read_rest: the commas belong to it */
+  joined = cpp_join_tokens(arg->tok, NULL);
+  ASSERT_STR_EQUAL("f(1, 2), 3", joined);
+  alloc_free(joined);
+
+  /* the arguments of a call "m(1, 2)" for parameters a and b */
+  t = tokens_of(&pp, "m(1, 2) tail");
+  params = cpp_read_macro_params(&rest, tokens_of(&pp, "a, b)"), &va);
+  args = cpp_read_macro_args(&rest, t, params, NULL);
+  ASSERT_EQ(1, args != NULL && args->next != NULL);
+  ASSERT_STR_EQUAL("a", args->name);
+  ASSERT_STR_EQUAL("b", args->next->name);
+  joined = cpp_join_tokens(args->next->tok, NULL);
+  ASSERT_STR_EQUAL("2", joined);
+  alloc_free(joined);
+  ASSERT_EQ(1, cpp_equal(rest, ")"));
+
+  /* stringizing */
+  t = tokens_of(&pp, "# x");
+  s = cpp_stringize(&pp, t, tokens_of(&pp, "a + b"));
+  ASSERT_EQ(TK_STR, s->kind);
+  ASSERT_EQ(0, byte_diff(s->loc, 7, "\"a + b\""));
+
+  /* skipping conditional blocks: stops at the #else of the same level */
+  t = tokens_of(&pp, "x\n#if A\ny\n#endif\n#else\nz\n#endif\n");
+  s = cpp_skip_cond_incl(t);
+  ASSERT_EQ(1, cpp_equal(s->next, "else")); /* the nested #if ... #endif was skipped */
+
+  /* the include guard of a header */
+  t = tokens_of(&pp, "#ifndef G_H\n#define G_H\nint x;\n#endif\n");
+  joined = cpp_detect_include_guard(t);
+  ASSERT_EQ(1, joined != NULL);
+  ASSERT_STR_EQUAL("G_H", joined);
+  t = tokens_of(&pp, "int x;\n");
+  ASSERT_EQ(NULL, cpp_detect_include_guard(t));
+  cpp_free(&pp);
+}
 #define RUN_CPP_TESTS() \
+  RUN(test_cpp_macro_parsing_helpers); \
   RUN(test_cpp_hideset); \
   RUN(test_cpp_token_basics); \
   RUN(test_cpp_make_and_convert_tokens); \
