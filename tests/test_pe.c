@@ -182,7 +182,80 @@ TEST(test_pe_check_imports) {
   }
 }
 
+
+/*
+ * header accessors
+ */
+TEST(test_pe_headers) {
+  unsigned char x[IMG];
+  uint16 ns = 0;
+  uint32 nd = 0;
+  pe_section_header* s;
+
+  build(x);
+  ASSERT_EQ(PE_NT_SIGNATURE, pe_header_sig(x));
+  ASSERT_EQ(64, (unsigned char*)pe_header_nt(x) - x);
+  ASSERT_EQ(68, (unsigned char*)pe_header_coff(x) - x);
+  ASSERT_EQ(88, (unsigned char*)pe_header_opt(x) - x);
+  ASSERT_EQ(1, pe_header_nt32(x) != NULL);
+  ASSERT_EQ(1, pe_header_opt32(x) != NULL);
+  ASSERT_EQ(1, pe_header_nt64(x) == NULL); /* it is a PE32 file */
+  ASSERT_EQ(1, pe_header_opt64(x) == NULL);
+
+  s = pe_header_sections(x, &ns);
+  ASSERT_EQ(1, ns);
+  ASSERT_EQ(0, byte_diff(s->name, 5, ".data"));
+  ASSERT_EQ(1, pe_get_section(x, ".data") == s);
+  ASSERT_EQ(1, pe_get_section(x, ".nope") == NULL);
+
+  ASSERT_EQ(1, pe_get_datadir(x, &nd) != NULL);
+  ASSERT_EQ(PE_NUMBEROF_DIRECTORY_ENTRIES, nd);
+  ASSERT_EQ(1, pe_header_datadir(x) == pe_get_datadir(x, &nd));
+}
+
+/*
+ * conversions between relative virtual addresses and file offsets
+ */
+TEST(test_pe_rva) {
+  unsigned char x[IMG];
+
+  build(x);
+  ASSERT_EQ(0, pe_rva2section(x, 0x1000));
+  ASSERT_EQ(0, pe_rva2section(x, 0x11ff));
+  ASSERT_EQ(-1, pe_rva2section(x, 0x5000)); /* outside every section */
+  ASSERT_EQ(-1, pe_rva2section(x, 0x10));
+  ASSERT_EQ(512 + 0x100, pe_rva2offset(x, 0x1100));
+  ASSERT_EQ(-1, pe_rva2offset(x, 0x5000));
+  ASSERT_EQ(0x1000 + 0x100, pe_offset2rva(x, 512 + 0x100));
+  ASSERT_EQ(512 + 0x100, (unsigned char*)pe_rva2ptr(x, 0x1100) - x);
+  ASSERT_EQ(1, pe_rva2ptr(x, 0x5000) == NULL);
+}
+
+TEST(test_pe_datadir_name) {
+  ASSERT_STR_EQUAL("EXPORT", pe_datadir_name(0));
+  ASSERT_STR_EQUAL("IMPORT", pe_datadir_name(1));
+  ASSERT_STR_EQUAL("COMHEADER", pe_datadir_name(14));
+  ASSERT_EQ(1, pe_datadir_name(99) == NULL);
+}
+
+/*
+ * uint64 pe_thunk(void* pe, void* ptr, int64 index): import thunks of 32 and 64 bit files
+ * normalised to 64 bit (the ordinal flag moves to bit 63)
+ */
+TEST(test_pe_thunk) {
+  unsigned char x[IMG];
+  uint32 t32[2] = {0x80001234, 0x2000};
+
+  build(x);
+  ASSERT_EQ(0x8000000000001234ull, pe_thunk(x, t32, 0));
+  ASSERT_EQ(0x2000, pe_thunk(x, t32, 1));
+}
+
 #define RUN_PE_TESTS() \
+  RUN(test_pe_headers); \
+  RUN(test_pe_rva); \
+  RUN(test_pe_datadir_name); \
+  RUN(test_pe_thunk); \
   RUN(test_pe_check_valid); \
   RUN(test_pe_check_headers); \
   RUN(test_pe_check_sections); \

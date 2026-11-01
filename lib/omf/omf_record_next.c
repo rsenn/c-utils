@@ -125,5 +125,9 @@ omf_record_next(omf_record* rec, void* ptr) {
     /* OMF_LIBEND */
     case OMF_LIBEND: break;
   }
+  /* kinds that are not walked make no progress: end the iteration instead of
+   * returning the same element forever */
+  if(p == (unsigned char*)ptr)
+    p = (unsigned char*)omf_record_end(rec);
   return p;
 }

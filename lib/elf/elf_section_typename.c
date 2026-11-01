@@ -20,5 +20,8 @@ elf_section_typename(uint32 sh_type) {
                                       "GROUP",
                                       "SYMTAB_SHNDX",
                                       "NUM"};
+  /* a corrupt file can carry any type; the table used to be indexed unchecked */
+  if(sh_type >= sizeof(types) / sizeof(types[0]))
+    return "<unknown>";
   return types[sh_type];
 }

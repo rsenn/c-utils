@@ -205,7 +205,108 @@ TEST(test_elf_check_no_sections) {
   ASSERT_EQ(NULL, elf_check(x, sizeof(elf64_ehdr)));
 }
 
+
+/*
+ * accessors of the section headers and tables
+ */
+TEST(test_elf_sections) {
+  unsigned char x[IMG];
+  size_t sz = 0;
+  void* b = x;
+  range r;
+
+  build(x);
+  ASSERT_EQ(0x7f, elf_header_ident(b)[0]);
+  ASSERT_EQ('E', elf_header_ident(b)[1]);
+  ASSERT_EQ(256, (unsigned char*)elf_header_sections(b) - x);
+  r = elf_section_headers(b);
+  ASSERT_EQ(4 * sizeof(elf64_shdr), (char*)r.end - (char*)r.start);
+  ASSERT_STR_EQUAL(".shstrtab", elf_shstrtab(b) + 1);
+
+  ASSERT_STR_EQUAL("", elf_section_name(b, 0));
+  ASSERT_STR_EQUAL(".shstrtab", elf_section_name(b, 1));
+  ASSERT_STR_EQUAL(".symtab", elf_section_name(b, 3));
+  ASSERT_EQ(64, (unsigned char*)elf_section_offset(b, 1) - x);
+  ASSERT_EQ(6, elf_section_size(b, 2));
+  ASSERT_EQ(48, elf_section_size(b, 3));
+
+  ASSERT_EQ(3, elf_section_find(b, ".symtab"));
+  ASSERT_EQ(2, elf_section_find(b, ".strtab"));
+  ASSERT_EQ(-1, elf_section_find(b, ".nope"));
+  ASSERT_EQ(3, elf_section_index(b, ELF_SHT_SYMTAB));
+  ASSERT_EQ(1, elf_section_index(b, ELF_SHT_STRTAB)); /* the first of that type */
+
+  ASSERT_EQ(128, (unsigned char*)elf_get_section(b, ".strtab", &sz) - x);
+  ASSERT_EQ(6, sz);
+  r = elf_get_section_r(b, ".symtab");
+  ASSERT_EQ(48, (char*)r.end - (char*)r.start);
+  ASSERT_EQ(160, (unsigned char*)elf_get_symtab(b, &sz) - x);
+  ASSERT_EQ(48, sz);
+  r = elf_get_symtab_r(b);
+  ASSERT_EQ(48, (char*)r.end - (char*)r.start);
+  r = elf_section(b, x + 256 + 3 * sizeof(elf64_shdr)); /* a section header gives its data */
+  ASSERT_EQ(48, (char*)r.end - (char*)r.start);
+  ASSERT_EQ(4, elf_get_value(b, x, offsetof(elf32_ehdr, e_shnum), 2, offsetof(elf64_ehdr, e_shnum), 2));
+}
+
+TEST(test_elf_section_typename) {
+  ASSERT_STR_EQUAL("PROGBITS", elf_section_typename(ELF_SHT_PROGBITS));
+  ASSERT_STR_EQUAL("SYMTAB", elf_section_typename(ELF_SHT_SYMTAB));
+  ASSERT_STR_EQUAL("STRTAB", elf_section_typename(ELF_SHT_STRTAB));
+  /* a corrupt file can carry any number: this used to index the table unchecked */
+  ASSERT_STR_EQUAL("<unknown>", elf_section_typename(0xdeadbeef));
+}
+
+/*
+ * program headers and the conversions between file offsets and virtual addresses
+ */
+TEST(test_elf_segments) {
+  unsigned char x[IMG];
+  elf64_ehdr* h = (elf64_ehdr*)x;
+  elf64_phdr* p = (elf64_phdr*)(x + 512);
+  range file, ph;
+
+  build(x);
+  ph = elf_program_headers(x);
+  ASSERT_EQ(0, (char*)ph.end - (char*)ph.start); /* none yet */
+
+  h->e_phoff = 512;
+  h->e_phentsize = sizeof(elf64_phdr);
+  h->e_phnum = 1;
+  p->p_type = ELF_PT_LOAD;
+  p->p_offset = 0x40;
+  p->p_vaddr = 0x400040;
+  p->p_filesz = 0x100;
+  p->p_memsz = 0x100;
+  ph = elf_program_headers(x);
+  ASSERT_EQ(sizeof(elf64_phdr), (char*)ph.end - (char*)ph.start);
+
+  file.start = x;
+  file.end = x + IMG;
+  ASSERT_EQ(512, (unsigned char*)elf_find_segment_offset(file, 0x50) - x);
+  ASSERT_EQ(512, (unsigned char*)elf_find_segment_vaddr(file, 0x400050) - x);
+  ASSERT_EQ(1, elf_find_segment_offset(file, 0x9999) == NULL);
+  ASSERT_EQ(1, elf_find_segment_vaddr(file, 0x1) == NULL);
+  ASSERT_EQ(0x50, elf_address_to_offset(file, 0x400050));
+  ASSERT_EQ(0x400050, elf_offset_to_addr(file, 0x50));
+  ASSERT_EQ(-1, elf_address_to_offset(file, 0x1));
+  ASSERT_EQ(-1, elf_offset_to_addr(file, 0x9999));
+}
+
+TEST(test_elf_dynamic_none) {
+  unsigned char x[IMG];
+  range d;
+
+  build(x);
+  d = elf_dynamic_section(x); /* no .dynamic in this file */
+  ASSERT_EQ(1, d.start == d.end);
+}
+
 #define RUN_ELF_TESTS() \
+  RUN(test_elf_sections); \
+  RUN(test_elf_section_typename); \
+  RUN(test_elf_segments); \
+  RUN(test_elf_dynamic_none); \
   RUN(test_elf_check_valid); \
   RUN(test_elf_check_header); \
   RUN(test_elf_check_tables); \
