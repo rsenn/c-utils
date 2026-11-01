@@ -1572,5 +1572,5 @@ build define include library link import conf pair-headers sources`) and turns i
 command line arguments, in front of the real ones.
 
 Not yet: the other sections of the project file (`[module]`, `[program]`, `[switch]`, `[matrix]`, ...), the origin of each value in `--dump-project` (it prints the merged arguments now), the compiler options of a `.mcp`, all configurations of a
-MPLAB X project as a build matrix in one run, source inference by symbols.
+MPLAB X project as a build matrix in one run, a symbol closure that sees variables and macros (`--infer-sources` follows the called functions).
 
