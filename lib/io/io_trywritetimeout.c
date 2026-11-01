@@ -17,7 +17,8 @@ io_trywritetimeout(fd_type d, const char* buf, int64 len) {
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), d);
     taia_now(&x);
 
-    if(!taia_less(&x, &e->timeout)) {
+    /* only a descriptor that has a timeout can time out */
+    if(e && e->timeout.sec.x && !taia_less(&x, &e->timeout)) {
       errno = ETIMEDOUT;
       r = -2;
     }
