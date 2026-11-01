@@ -1154,3 +1154,389 @@ hosts must be bit identical.
 ### 11.6 Cache
 
 See 13.2.
+
+---
+
+## 9 (continued). Inferring firmware builds from the sources
+
+Sections 9.7 to 9.14 come from reading the five repositories of the author
+(all public, cloned 2026-11-01 for this specification):
+
+| repo | what it is | build today |
+| --- | --- | --- |
+| `pictest` | test programs for many PICs; mains in `src/`, config headers `src/config-<chip>.h`, submodule `lib` = libpicp, submodule `usb` = USB-Stack | top level `Makefile` + `build/{vars,xc8,sdcc,htc,mcc18,rates,common}.mk`, `gen-mk.sh` (xc8/htc/sdcc x make/ninja/nmake/mplab), MPLAB 8/X trees, Code::Blocks files |
+| `lc-meter` | LC meter firmware: mains `LC-meter.c`, `Cap-meter.c`, `Freq-meter.c` at the root, helpers in `src/`, libpicp as `lib/` | same `build/*.mk` family, plus **XC8 argument files** (`LC-meter-debug.xc8`: `--chip=… -Ilib -Isrc -D…`), MPLAB trees |
+| `libpicp` | the flat library (24 `.c` + `extra/`); not a project | `Makefile.{htc,sdcc,xc8}`, `gen-ninja-build.sh` |
+| `usb-stack` | USB device stack (`USB_Stack/USB/*.c`, `Hardware/`) and 8 example projects | **MPLAB X only**: `*.X/nbproject/configurations.xml` with 2 to 10 chip configurations each; examples share `Shared_Files/` through `sourceRootList` |
+| `usb-uc` | USB bootloader firmware, 11 chips; assembly variant | MPLAB X (`USB_uC.X`, 4 test projects, one MPASM project) |
+| `an-tronics` | hardware (Eagle/KiCad/Fritzing) and a host tool `calc-lc-tank.c` | `build/gerbers.mk` only; **no firmware**: the layout `hardware` (4.2) exists so that genmakefile ignores it correctly |
+
+What follows is the specification of "infer build parameters from the
+sources": which parameter comes from where, and what to do when it is not
+there.
+
+### 9.7 Parameter sources, in priority order
+
+| parameter | sources, highest first | observed in |
+| --- | --- | --- |
+| **chip(s)** | `--chip`; project/matrix; MPLAB X `conf`/`targetDevice`; `.xc8` argfile `--chip=`; `src/config-<chip>.h` file names (the set of chips the code *supports*); `#if defined(_16F876A)` ladders in config headers; `CHIPS` in `build/vars.mk` | pictest has 14 `config-*.h` (12f1840 to 18f25k50, 18f16q41); lc-meter's `CHIPS` differs per compiler; usb-stack examples 2 to 10 confs |
+| **toolchain and version** | `--toolchain`; project; MPLAB X `languageToolchain` + `languageToolchainVersion` (`XC8` `1.43`); `CCVER` of the make files (per program, `seg7test_CCVER = 9.83`/`9.80` by chip); first compiler found | `v1.43` default, `v2.36` for 18f16q41, SDCC 3.6/4.6 |
+| **clock** (`_XTAL_FREQ`, `XTAL`) | option; matrix; `#define`s in config headers (`XTAL_USED`, `NO_XTAL`, `_XTAL_FREQ` defaults); the board profile (9.12); default 20 MHz | 48 MHz forced by `USE_USB`; picstick has no crystal (`intosc48`) |
+| **baud** | option; matrix; `UART_BAUD`/`SOFTSER_BAUD`/`MIDI` constraints; default 38400 | `BAUD=31250` required for MIDI programs, 9600/19200/38400 sweeps |
+| **code offset** | option; matrix; MPLAB X `additional-options-code-offset`; bootloader project name (`_boot`, `bootloaders/`); default 0 | `0x0000 0x0800 0x1000 0x2000` |
+| **defines** | option; project; switches found by scan (5.4); MPLAB X `define-macros`; argfile `-D`; generated `PIC<CHIP>=1 __<chip>=1` | `USE_TIMER0=1`, `SPI_USE_HW=1`, `NO_PLL`, `EP*_BUFFER_BASE_ADDR` |
+| **include path** | option; project; `INCLUDE_DIRS`; MPLAB X `extra-include-directories`; argfile `-I`; roots of the project; **sibling checkouts** (9.11) | `-I. -Ilib -Isrc`, `../USB-Stack/USB_Stack/{USB,Hardware}` |
+| **sources of a program** | project `[program.X]`; MPLAB X `itemPath` list; make `X_SOURCES`; **inference** (9.8) | `rgbtest_SOURCES += usb.c …` under `USE_USB` |
+| **optimisation, warnings, runtime, linker options** | toolchain defaults per build type; MPLAB X `HI-TECH-COMP`/`HI-TECH-LINK` property lists (`optimization-level -Os`, `warning-level -3`, `code-model-rom`); argfile | `--opt=default,+asm,+debug,+speed,-space,9`, `--runtime=default,+init,+osccal,+download,+clib`, `-N127`, `--float=24 --double=24`, `--stack=compiled` |
+| **outputs** | toolchain: `.hex .cof .elf .cfg .map .sym` | `piccfg` writes `.cfg` |
+| **programmer / flash** | project `[flash]`; `README.ipecmd`, `pk3cmd.sh`, `program.sh` are *not read*; documented in the project file | pickit3, ipecmd, pk2cmd |
+
+Everything has a fallback; nothing blocks on a missing source. Every value in
+the end carries its **origin** (`--dump-project` shows it, 11.2): a build
+whose chip came from `config-` file names says so.
+
+### 9.8 Source inference by symbol closure
+
+*Problem.* The hand lists (`pictest_SOURCES = pictest.c lib/delay.c lib/lcd44780.c
+lib/ser.c …`) are what the author maintains and what genmakefile should make
+unnecessary. Mapping `#include "lib/foo.h"` to `lib/foo.c` is not enough, and
+measuring shows by how much (experiment of 2026-11-01, `pictest` at
+18f25k50 with the per-program `_DEFS`, 11 programs, 65 units listed by hand):
+
+| method | matches the hand list | misses | extras |
+| --- | --- | --- | --- |
+| include name mapping, unconditional (naive text scan) | 46 | 16 | 34 |
+| include mapping after preprocessing with the point's defines | 45 | 17 | 7 |
+| **symbol closure after preprocessing** (this section) | 30 *non-empty* | 30 *of which 25 compile to nothing* | 5 |
+
+Reading the last row: of the 30 listed units the closure does not select, 25
+produce **no code at all** at that point (`lib/uart.c` with `USE_UART` off,
+`lib/lcd44780.c` without `USE_HD44780_LCD`, `lib/adc.c`, `lib/delay.c`…): the
+hand list links empty objects, and leaving them out changes nothing. 5 are
+real: `buffer.c` (`buffer_*` is reached through a macro the simple scan did not
+see), `7segment.c`, `timer.c` for `pwmtest`, i.e. the first-cut identifier
+matcher had holes, not the idea. The 5 extras (`ds18b20.c`, `ledsense.c`,
+`shell.c`, `comparator.c`) are units that **define** a symbol the program text
+**mentions** (a declaration, a macro argument) without calling it: harmless
+for correctness, costing flash only if the linker does not discard them, which
+XC8/SDCC do for unreferenced functions. Conclusion: the idea is right and
+cheap, include mapping is not.
+
+*The algorithm* (the static-archive rule, which is the diet-libc rule applied
+to the user's own sources):
+
+1. Preprocess every unit under `lib` roots with the point's predefs and
+   defines (the scan, 5.1) -- once per *point*, cached by (unit hash, defines
+   hash).
+2. For each unit compute **D(u)** = external symbols it defines (functions and
+   variables at brace depth 0 that are not `static`; `_at`/`__at()` definitions
+   included; ISRs `void interrupt isr()`/`__interrupt` count as defined) and
+   **R(u)** = identifiers appearing in its preprocessed text that are not
+   locally declared.
+3. Start from the main unit. A unit `v` is **needed** when `D(v) ∩ R(u)` is
+   non-empty for any needed `u`. Iterate to a fixed point.
+4. A unit that defines something but is never referenced is **not linked**
+   (and reported with `-v` as `unused`).
+5. Units without a `D(u)` (empty at this point) are **skipped and reported**
+   as `empty`, never compiled, so objects are saved too.
+6. Ambiguity (two units define the same symbol, e.g. `lib/ser.c` and
+   `lib/softser.c` both provide `ser_*` by switch): both stay in the closure
+   when both are non-empty and the scan warns `duplicate symbol` -- the build
+   would fail at link time anyway; the switch decides which is non-empty.
+
+Identifier matching is by token, not by regex, using `lib/cpp`'s tokenizer;
+function-like macros are already expanded by the preprocessing so the
+`buffer_*` holes above close. Cost: the tokenizer processes each unit once per
+point; the whole of libpicp is 24 units.
+
+Additions that cannot be seen in code are given in the project file
+(`[program.X] sources = …`, `[switch.USE_USB] sources = …`); `exclude =`
+removes a unit the closure adds. A project may turn inference off
+(`infer = headers|closure|none`), `headers` being the weaker mapping that is
+useful on tools without a tokenizer budget.
+
+### 9.9 Chip-dependent configuration found in the sources
+
+`pictest/src/config-<chip>.h` is the one place that holds fuses
+(`#pragma config`) and clock selection; `src/config-bits.h` picks one by
+`#include "config-" CHIPNAME ".h"`-style ladders. The scan treats a header
+named `config-<token>.h` as a **chip configuration**: the set of `<token>`s is
+the *supported chip list* of the project (9.7 row 1), and the unit including
+it becomes chip-dependent. A chip whose config header is absent is reported
+as `unsupported` rather than built into a link error. `#pragma config`
+lines are recorded but not interpreted (the compiler does that); the report
+lists which fuses each chip configuration sets, useful in review.
+
+### 9.10 MPLAB X projects as input
+
+14 of the 20 firmware projects in the five repositories are MPLAB X
+projects (`*.X/nbproject/{project.xml,configurations.xml}`), with no
+hand-written makefile. Their configurations are rich and machine readable, so
+they are a **first-class input adapter** (`genmakefile --from-mplabx DIR`):
+
+| `configurations.xml` | becomes |
+| --- | --- |
+| `confs/conf@name` (`PIC18F25K50`) | one **point** per conf (chip axis); the conf name is also the output suffix |
+| `toolsSet/targetDevice` | chip (authoritative; **note**: in `usb-stack`'s CDC example the conf is `PIC16F1454` while `targetDevice` says `PIC18F25K50`; the adapter warns `conf name and device differ` and trusts `targetDevice`) |
+| `languageToolchain`, `languageToolchainVersion` | toolchain `xc8` and `CCVER` (searched under `/opt/microchip/xc8/v<ver>`, `C:/Program Files*/Microchip/xc8/v<ver>`; missing version falls back to the newest installed with a warning) |
+| `logicalFolder/itemPath` under `SourceFiles` | sources; `HeaderFiles` are dependencies |
+| `sourceRootList/Elem` (`../Shared_Files`, `.`) | source roots, resolved relative to the `.X` directory (this is how three CDC examples share `usb_app.c` and `usb_descriptors.c`) |
+| `HI-TECH-COMP` properties | compile flags: `optimization-level -Os`, `warning-level -3`, `define-macros`, `extra-include-directories`, `pack-struct`, `short-enums`, `operation-mode pro`, `asmlist`, `garbage-collect-*` mapped by the table in the toolchain descriptor (`[mplabx.map]`) |
+| `HI-TECH-LINK` properties | link flags: `code-model-rom`, `additional-options-code-offset`, `clear-bss`, `data-model-size-of-double`, `display-*` |
+| `packs` | recorded (DFP name/version), emitted as `--dfp=` when the toolchain is v2+ |
+| `compileType/linkerTool/linkerLibItems` | libraries |
+| `makeCustomization*` | pre/post steps as `[rule.pre]`/`[rule.post]` |
+
+The output is whatever the other backends write (gmake, ninja, nmake…), so
+the same project builds without the IDE, on a CI machine, for all
+configurations at once -- the `usb-stack` examples have 28 configurations
+in 8 projects. The *generated* `Makefile-<conf>.mk` that MPLAB X writes
+next to the XML is used only as a **cross-check** in the conformance suite
+(14.4): flags from the XML path and from the IDE's makefile must agree.
+
+Unknown property keys are carried over verbatim into a comment so nothing is
+dropped silently; unknown toolchain ids stop the import with a message.
+
+MPASM/gputils assembly projects (`usb-uc/Assembly Versions/…`) import with
+the `gputils` toolchain (`gpasm`, `gplink`, `.o`/`.hex`) -- same adapter,
+different descriptor, no C scan (an assembly scan reads `#include`/`include`
+and `INCLUDE` directives).
+
+### 9.11 Sibling checkouts and submodules
+
+`pictest/.gitmodules` names `lib` (libpicp), `usb` (USB-Stack), bootloader and
+wave-cpp-xc8 repositories; `USB_STACK_DIR := ../USB-Stack/USB_Stack` points
+at a *sibling directory*, and the checked-in `lib/` is empty without
+`git submodule update`. Rules:
+
+* roots may be **any path**, absolute or relative to the project; the output
+  keeps them relative to the output file (4.7);
+* `.gitmodules` is read: a root that is a declared submodule and is empty or
+  absent produces `submodule 'lib' (libpicp) is not checked out` with the
+  command to fix it, not "no sources found";
+* a **resolver list** gives a name several places to look
+  (`[roots] usb-stack = ./usb:../USB-Stack:$USB_STACK_DIR`), first existing wins;
+* included headers outside the project roots but inside a declared root count as
+  project headers (dependencies), those in the toolchain's directories as
+  system (5.3);
+* `genmakefile --fetch-deps` is a non-goal: it only reports.
+
+### 9.12 Boards
+
+A **board profile** answers the questions the chip cannot: crystal present
+or not, pin map, LEDs, which programmer. pictest keeps this as prose
+(`picstick.md`, hardware notes in `CLAUDE.md`). Profile (project file):
+
+```ini
+[board.picstick_25k50]
+chip      = 18f25k50
+xtal      = 48000000          ; no crystal populated: internal oscillator + PLL
+define    = XTAL_USED=NO_XTAL
+flash     = pickit3
+```
+
+`--board NAME` selects chip, clock, defines and `flash` in one go; the
+matrix can range over boards instead of chips (`boards = picstick_25k50
+generic_18f2550`). The rule "USB requires an exact 48 MHz clock" from
+`vars.mk` becomes a **constraint** (8.5): `if USE_USB then xtal = 48000000`,
+so `make USE_USB=1` selects it instead of silently building at the wrong clock.
+
+### 9.13 Compiler discovery and per-program compiler versions
+
+* Search: `$CC`; `PATH`; `/opt/microchip/xc8/v*/bin`; `C:/Program Files*/Microchip/xc8/v*`;
+  `/usr/bin/sdcc`, `C:/Program Files/SDCC`; wine prefixes when the toolchain
+  has `runner = wine`. Several versions installed: choose the one the
+  project asks for, else the highest not above `max-version`, and say so.
+* **Per-program version**: `seg7test` needs 9.80/9.83 (Hi-Tech C, by chip
+  family) while the rest uses 1.43. In the IR `CCVER` is a variable of the
+  *program node*, so one make file can drive two compilers; the descriptor
+  selects the command from `$(CCDIR)`.
+* Flag compatibility across versions is a descriptor section per major
+  (`[xc8.v1]`, `[xc8.v2]`, `[xc8.v4]`): XC8 v1 `--chip`, `--opt`, `--pass1`;
+  v2+ `-mcpu`, `-O`, `-xassembler`, `-mdfp`; pack handling differs. A project
+  that builds with 1.43 and 2.36 (pictest's `18f16q41`) selects by chip.
+
+### 9.14 What "well built firmware" means (acceptance)
+
+A build is *well built* when, besides compiling:
+
+1. the output set is complete: `.hex` for every program and point, plus `.cof`
+   (debug) and `.cfg` where the toolchain provides them;
+2. names follow the layout (8.4); two points never share an output;
+3. the **memory report** (`--summary=psect,mem,class,file`, SDCC `.mem`) is
+   captured to `<out>.map`/`.mem` and `make size` prints it; a configurable
+   budget (`[limits] rom = 95%`) fails the build when exceeded;
+4. debug builds carry symbols for the debugger (`-G`, `--debugger=pickit3`),
+   release builds define `NDEBUG`;
+5. a bootloader offset variant has the vector table at the right place
+   (`--ivt-loc`) and its hex has no records below the offset -- `make check-hex`
+   runs the awk filter in verify mode;
+6. rebuilding with nothing changed does nothing; changing a `config-*.h`
+   rebuilds only the units that include it;
+7. the reproducible flag (11.5) gives bit-identical `.hex` across runs, which
+   holds for XC8 and SDCC when no `__DATE__`/`__TIME__` is used (the scan
+   warns when a unit uses them).
+
+---
+
+## 12. Diagnostics and self-checks
+
+### 12.1 Report
+
+Every run ends with a summary (stderr, `-q` silences):
+
+```
+genmakefile: xc8-18f25k50 release_20mhz_38kbps  12 programs, 31 units
+  omitted: 2 (src/bell.c.disabled: ignored; src/ctmutest2.c: needs chip>=18f25k22)
+  inferred: 11 programs by symbol closure, 3 units empty at this point (skipped)
+  switches: USE_TIMER0 USE_TIMER1 USE_SER … (14, defaults off)
+  warnings: 3 (-v for details)
+```
+
+### 12.2 `--explain TARGET`
+
+Prints why a target exists and what it depends on, with the chain: "`obj/…/timer.p1`
+← `lib/timer.c` ← needed by `src/blinktest.c` (symbol `timer0_init`) ← program
+`blinktest` (main found at line 41)". This is the debugging tool for 9.8.
+
+### 12.3 `--doctor`
+
+Checks the environment for the selected toolchain and point: compiler found
+and version, make program present, wine usable, `pkg-config` present, probe
+programs build, write access to the output directory, descriptor syntax. Output
+is pass/fail lines with the fix.
+
+### 12.4 Lint of the project file
+
+Unknown keys are errors with suggestions (Levenshtein); a key that has no
+effect for the selected layout is a warning.
+
+---
+
+## 13. Platforms and performance
+
+### 13.1 Host platforms
+
+Linux, macOS, Windows native (MSVC, MinGW, Borland), Cygwin/MSYS2, Android
+(Termux). No dependency except the C library of the platform and the `lib/`
+modules; no fork on Windows (the per-unit child process of the scan is
+`process_create` of the `process` module, which abstracts `fork`/`CreateProcess`).
+*(today)*: `fork`, so Windows builds of genmakefile use the in-process scan.
+
+### 13.2 Cache
+
+`.genmakefile/cache/` (or `$GENMAKEFILE_CACHE`): per unit and point:
+key = hash(unit content, headers' content hashes from the previous scan,
+defines, predefs hash); value = the scan lines (5.1). A run first checks the
+header list recorded for each cached unit (stat + size + mtime, then hash on
+mismatch), so editing one header re-scans only the units that included it.
+Expected: whole c-utils tree no-change run < 1 s (today 7 s), pictest < 0.3 s.
+The cache is a plain directory of small files, safe to delete, never read from
+a different tool version (version in the key).
+
+### 13.3 Parallelism
+
+The scan is embarrassingly parallel (per unit); a pool of `-j N` workers
+(default CPU count) with results merged in sorted order, so output stays
+deterministic.
+
+### 13.4 Memory
+
+`lib/cpp` leaks tokens per unit (TODO `cpp-leaks`); the per-unit process boundary
+makes this harmless; the thread/pool variant needs the leak fixed or an arena
+per unit freed at the end (planned: `cpp_ctx` is already caller-owned,
+`cpp_free` releases all tokens).
+
+---
+
+## 14. Verification
+
+### 14.1 Layers
+
+| layer | what | needs a compiler? |
+| --- | --- | --- |
+| unit | descriptor parser, path rewriting, build-id formatting, matrix expansion, project file merge, capability selection, INI-edge cases | no |
+| golden | generate for fixture projects with every backend; compare to checked-in expected files | no |
+| scan | cpp scan of fixtures with known `D/H/L/Q/V/X` lines | no |
+| conformance | the reference projects (14.4) generate the same names/flags/sources as the hand-written builds | no (compare to `make -n`) |
+| smoke | build a toy project with each *available* toolchain (gcc, clang, tcc, sdcc if installed) and run it | yes, skipped when absent |
+
+### 14.2 Fixtures
+
+`tests/genmakefile/fixtures/<name>/` with the tree, `cmd` (arguments),
+`expected/<backend>/` files. Fixture set: `modular` (mini c-utils),
+`flat-lib` (mini libpicp), `src-include`, `monorepo`, `firmware-xc8`,
+`firmware-sdcc`, `mplabx-multi` (three confs), `vendor-tree` (zlib-like),
+`collision`, `missing-include`, `submodule-empty`. (Existing: the repository's
+`tests/genmakefile/testsuite.sh` is slow and drives real toolchains; it remains
+a smoke layer and is **never run by default**, per CLAUDE.md.)
+
+### 14.3 Determinism and idempotence tests
+
+Generate twice -> identical; generate on a copy of the tree in another
+directory with `--reproducible` -> identical except for configured roots;
+regenerate after `touch` of every file -> identical.
+
+### 14.4 Reference-project conformance (PIC)
+
+Using the five repositories as fixtures (pinned commit SHAs in the fixture
+file; trees checked out by a script, not vendored):
+
+| check | method |
+| --- | --- |
+| object and binary **names** | for all points of `pictest` and `lc-meter`: set of paths from `genmakefile` equals the set printed by `make -n` of the hand-written build (`OBJDIR`, `BUILDDIR`, `…_$(BUILD_ID).hex`) |
+| **defines** | multiset of `-D` per object equals |
+| **include paths** | equal after the xc8 `-I../` rewriting |
+| **source lists** | closure (9.8) vs `_SOURCES`: allowed differences are the empty units; counts reported |
+| **MPLAB X** | per `.X` project and conf: genmakefile flags equal flags in the IDE's `Makefile-<conf>.mk` |
+| **commands** | tokenised compile/link command per toolchain equals the hand-written one modulo ordering of independent flags (table of permitted differences in the fixture) |
+| **build** (optional, if XC8/SDCC installed) | build one program per toolchain, compare the `.hex` byte for byte with the one from the hand-written build |
+
+On this machine XC8 and SDCC are not installed, so the last row runs only on
+the author's machines; the others run anywhere.
+
+### 14.5 Property tests
+
+Random trees (generated modules with random include graphs and `#if` gates):
+the closure of 9.8 must equal the transitive closure computed by a slow
+reference; output is deterministic; every emitted rule's prerequisites exist.
+
+---
+
+## 15. Roadmap: from today's code to this specification
+
+Order by value to the author's use case; each step ends in a state where the
+tool is still usable and tests pass.
+
+| step | content | closes |
+| --- | --- | --- |
+| **0** | fix scan blockers: `cpp-scan-stray-endif`; scan diagnostics policy (5.10); `--explain` skeleton | BUGS |
+| **1** | **project file + `--dump-project`** (INI, 11.2) and origin tracking. Pure addition; command line keeps working | 11 |
+| **2** | **symbol closure inference** for the flat layout (9.8) behind `--infer=closure`; compare against `pictest` in the conformance harness (14.4 rows 1 to 4) | the author's main wish |
+| **3** | **XC8 and SDCC descriptors** as C tables first (the facts of TASKS 4/5), then their conversion to data (step 5) | TASKS 4, 5, 7 |
+| **4** | **MPLAB X importer** (9.10), one `conf` per point | usb-stack, usb-uc |
+| **5** | descriptor interpreter: move `compiler.c` tables to `.tc` files; add gcc/clang/msvc probing | 6, 5.2 |
+| **6** | IR + capability table (7.1) replacing per-make-type `if`s in `output.c`; `-MMD` depfiles | 7 |
+| **7** | requirements system and omission report (5.6); library hints (5.8) | HANDOFF 1 to 3 |
+| **8** | matrix driver (8.2), board profiles, constraints (8.5, 9.12) | TASKS 3 (extension) |
+| **9** | cache and parallel scan (13.2, 13.3) | speed |
+| **10** | install/dist/check/size targets (10), probes (9.5), packages (9.4) | production |
+| **11** | other toolchains (AVR, ARM, XC16/32, bcc56, z88dk) as descriptors only | breadth |
+
+Each step adds: tests (14), ChangeLog entry, `doc/genmakefile.md` update, and
+removes the corresponding `TODO` entry. Steps 1 to 4 are the minimum for "infer
+build parameters from the sources there and produce well built firmware"; the
+author's five repositories then build from `genmakefile` alone.
+
+### 15.1 Open questions for the author
+
+1. Is `HI-TECH`/Hi-Tech C 9.8x (picc, `seg7test_CCVER`) still a target, or is
+   XC8 1.43 the oldest to support?
+2. Should the MPLAB X importer also *write* MPLAB X projects (`mplab.c` does
+   today, partially) from the same description, so one source of truth feeds
+   both the IDE and make?
+3. Which flasher commands to model first (`pk3cmd`, `ipecmd`, `pk2cmd`)?
+4. Is Windows-only toolchain use under wine for Proteus debug builds (the
+   `glcdtest-*.mk` case in pictest's `CLAUDE.md`) a standing requirement? It needs
+   the `runner`/`system=mingw` combination of 9.6 to produce a `.cof` with full
+   debug symbols.
