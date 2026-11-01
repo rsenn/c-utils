@@ -29,29 +29,29 @@ typedef struct ioent io_entry;
 
 /* like open(s,O_RDONLY) */
 /* return 1 if ok, 0 on error */
-int io_readfile(fd_type* pfd, const char* s);
+int io_readfile(int64* d, const char* s);
 
 /* like open(s,O_WRONLY|O_CREAT|O_TRUNC,0600) */
 /* return 1 if ok, 0 on error */
 
-int io_createfile(fd_type* pfd, const char* s);
+int io_createfile(int64* d, const char* s);
 
 /* like open(s,O_RDWR) */
 /* return 1 if ok, 0 on error */
-int io_readwritefile(fd_type* pfd, const char* s);
+int io_readwritefile(int64* d, const char* s);
 
 /* like open(s,O_WRONLY|O_APPEND|O_CREAT,0600) */
 /* return 1 if ok, 0 on error */
-int io_appendfile(fd_type* pfd, const char* s);
+int io_appendfile(int64* d, const char* s);
 
 /* like pipe(d) */
 /* return 1 if ok, 0 on error */
 
-int io_pipe(fd_type* pfd);
+int io_pipe(int64* d);
 
 /* like socketpair() */
 /* return 1 if ok, 0 on error */
-int io_socketpair(fd_type* pfd);
+int io_socketpair(int64* d);
 
 /* non-blocking read(), -1 for EAGAIN and -3+errno for other errors */
 int64 io_tryread(fd_type d, char* buf, int64 len);

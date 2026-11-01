@@ -22,9 +22,9 @@
  * for lengths, use scan_asn1derlengthvalue. */
 
 size_t
-scan_asn1derlengthvalue(const char* src, size_t len, uint64* value) {
+scan_asn1derlengthvalue(const char* src, size_t len, unsigned long long* value) {
   unsigned int i, c = *src;
-  uint64 l;
+  unsigned long long l;
 
   if(len == 0 || len >= -(size_t)src)
     return 0;
@@ -63,11 +63,11 @@ scan_asn1derlengthvalue(const char* src, size_t len, uint64* value) {
 }
 
 size_t
-scan_asn1derlength(const char* src, size_t len, uint64* value) {
-  uint64 l;
+scan_asn1derlength(const char* src, size_t len, unsigned long long* value) {
+  unsigned long long l;
   size_t i = scan_asn1derlengthvalue(src, len, &l);
 
-  if(l > len - i)
+  if(!i || l > len - i)
     return 0; /* make sure data would fit into buffer */
   *value = l;
   return i;

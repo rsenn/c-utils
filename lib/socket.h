@@ -128,6 +128,12 @@ int socket_error(fd_type, int* error);
 #ifndef ETIMEDOUT
 #define ETIMEDOUT WSAETIMEDOUT
 #endif
+#ifndef EPROCLIM
+#define EPROCLIM WSAEPROCLIM
+#endif
+#ifndef EDISCON
+#define EDISCON WSAEDISCON
+#endif
 #endif
 
 int socket_v6only(int fd, int enable);

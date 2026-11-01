@@ -19,7 +19,7 @@ http_response_read(buffer* in, http_response* response) {
         char* x = buffer_PEEK(in);
 
         if((i = byte_chrs(x, n, "\r\n", 2)) < n) {
-          i = scan_xlonglong(x, &response->chunk_length);
+          i = scan_x64(x, &response->chunk_length);
 
           buffer_SKIP(in, i);
           buffer_SCAN(in, scan_eolskip);

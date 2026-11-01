@@ -74,7 +74,7 @@ http_read_header(buffer* in, stralloc* out, http_response* response) {
       response->transfer = HTTP_TRANSFER_BOUNDARY;
       // response->headers_len = 0;
     } else if(out->len - start >= 15 && !case_diffb(buf, 15, "Content-Length:")) {
-      scan_ulonglong(&buf[16], &response->content_length);
+      scan_u64(&buf[16], &response->content_length);
       response->transfer = HTTP_TRANSFER_LENGTH;
       // response->headers_len = 0;
     } else if(out->len - start >= 18 && !case_diffb(buf, 18, "Transfer-Encoding:") && str_contains(buf, "chunked")) {

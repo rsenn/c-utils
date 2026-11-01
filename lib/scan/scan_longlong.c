@@ -5,9 +5,9 @@
 #endif
 
 size_t
-scan_longlong(const char* src, int64* dest) {
+scan_longlong(const char* src, signed long long* dest) {
   size_t i, o;
-  uint64 l;
+  unsigned long long l;
   char c = src[0];
   unsigned int neg = c == '-';
   o = c == '-' || c == '+';

@@ -2,7 +2,7 @@
 
 size_t
 scan_human(const char* src, uint64* dest) {
-  size_t n = scan_ulonglong(src, dest);
+  size_t n = scan_u64(src, dest);
 
   switch(src[n]) {
     case 'G': *dest *= 1024;

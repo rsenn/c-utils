@@ -12,12 +12,32 @@ fmt_oct3(char* dest, unsigned char w) {
 }
 
 size_t
-fmt_escapecharc(char* dest, int chr) {
+fmt_escapecharc(char* dest, uint32 ch) {
   char c;
-  uint32 ch = chr;
 
-  if(ch > 0xff)
-    return 0;
+  if(ch > 0xff) { /* \uXXXX or \UXXXXXXXX, as in libowfat */
+    if(dest) {
+      unsigned int i;
+
+      dest[0] = '\\';
+      if(ch > 0xffff) {
+        dest[1] = 'U';
+        dest[2] = fmt_tohex((ch >> 28) & 0xf);
+        dest[3] = fmt_tohex((ch >> 24) & 0xf);
+        dest[4] = fmt_tohex((ch >> 20) & 0xf);
+        dest[5] = fmt_tohex((ch >> 16) & 0xf);
+        i = 6;
+      } else {
+        dest[1] = 'u';
+        i = 2;
+      }
+      dest[i] = fmt_tohex((ch >> 12) & 0xf);
+      dest[i + 1] = fmt_tohex((ch >> 8) & 0xf);
+      dest[i + 2] = fmt_tohex((ch >> 4) & 0xf);
+      dest[i + 3] = fmt_tohex(ch & 0xf);
+    }
+    return ch > 0xffff ? 10 : 6;
+  }
 
   switch(ch) {
     case '\a': c = 'a'; goto doescape;

@@ -360,7 +360,7 @@ main(int argc, char* argv[]) {
         size_t n = 0;
 
         if(sym == '@' && isdigit(*spec)) {
-          n = scan_xlonglong(spec, &addr);
+          n = scan_x64(spec, &addr);
           spec += n;
           continue;
         }
@@ -373,7 +373,7 @@ main(int argc, char* argv[]) {
 
         if((sym == '+' || sym == '*') && isdigit(*spec)) {
           int64 num;
-          n = scan_xlonglong(spec, &num);
+          n = scan_x64(spec, &num);
 
           if(n > 0) {
             if(sym == '+')

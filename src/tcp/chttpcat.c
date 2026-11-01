@@ -221,7 +221,7 @@ fetch(const char* url, int with_body) {
       break;
 
     if(case_starts(line.s, "content-length:"))
-      scan_ulonglong(line.s + 15 + scan_whitenskip(line.s + 15, line.len - 15), &length);
+      scan_u64(line.s + 15 + scan_whitenskip(line.s + 15, line.len - 15), &length);
     else if(case_starts(line.s, "transfer-encoding:") && case_starts(line.s + 18 + scan_whitenskip(line.s + 18, line.len - 18), "chunked"))
       chunked = 1;
     else if(case_starts(line.s, "location:")) {

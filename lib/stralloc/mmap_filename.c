@@ -80,14 +80,14 @@ mmap_filename(void* map, stralloc* sa) {
     char* p = line;
     uint64 start, end;
 
-    p += scan_xlonglong(p, &start);
+    p += scan_x64(p, &start);
 
     if(*p == '-') {
       char* e = line + n - 1;
       int i = 4;
 
       ++p;
-      p += scan_xlonglong(p, &end);
+      p += scan_x64(p, &end);
 
       while(i--) {
         p += scan_whitenskip(p, e - p);

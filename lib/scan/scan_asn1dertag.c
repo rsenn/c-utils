@@ -9,7 +9,7 @@
  *   0xc2 -> 0x81 0x42 */
 
 size_t
-scan_asn1dertag(const char* src, size_t len, uint64* length) {
+scan_asn1dertag(const char* src, size_t len, unsigned long long* length) {
   size_t n;
   uint64 l = 0;
 

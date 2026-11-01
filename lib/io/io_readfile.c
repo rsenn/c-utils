@@ -11,7 +11,7 @@
 #include <fcntl.h>
 
 int
-io_readfile(fd_type* d, const char* s) {
+io_readfile(int64* d, const char* s) {
   long fd = open(s, O_RDONLY);
 
   if(fd != -1) {

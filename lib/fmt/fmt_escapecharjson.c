@@ -2,6 +2,11 @@
 #include "../uint16.h"
 #include "../uint32.h"
 
+/* From libowfat (Felix von Leitner, GPL v2): the JSON escape of a character, always
+ * written as an escape: \b \n \r \" \\ \/ or \uXXXX, a surrogate pair for the
+ * characters above U+FFFF. Returns the number of bytes, 0 for a value that is no
+ * character; with dest 0 it only counts. fmt_escapecharjsonq lets printable
+ * characters through. */
 static void
 fmt_hex4(char* dest, uint16 w) {
   dest[3] = fmt_tohex(w & 0xf);
@@ -14,24 +19,8 @@ fmt_hex4(char* dest, uint16 w) {
 }
 
 size_t
-fmt_escapecharjson(char* dest, int c, int quote) {
+fmt_escapecharjson(char* dest, uint32 ch) {
   size_t n;
-  uint32 ch = c;
-
-  if(quote != '"' && quote != '\'')
-    quote = '"';
-
-  if((ch == '\'' || ch == '"') && ch != (uint32)(unsigned)quote) {
-    if(dest)
-      dest[0] = (char)ch;
-    return 1;
-  }
-
-  if(ch >= 0x20 && ch < 0x7f && ch != '\\' && ch != '/' && ch != (uint32)(unsigned)quote) {
-    if(dest)
-      dest[0] = (char)ch;
-    return 1;
-  }
 
   switch(ch) {
     case '\b': ch = 'b'; goto simple;
@@ -41,7 +30,6 @@ fmt_escapecharjson(char* dest, int c, int quote) {
     case '\\':
     case '/':
     simple:
-
       if(dest) {
         dest[0] = '\\';
         dest[1] = (char)ch;
@@ -51,7 +39,7 @@ fmt_escapecharjson(char* dest, int c, int quote) {
 
   if(ch > 0xffff) {
     if(ch > 0x10ffff)
-      return 0; // highest representable unicode codepoint
+      return 0; /* highest representable unicode codepoint */
 
     if(dest) {
       dest[0] = '\\';

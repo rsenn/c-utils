@@ -10,7 +10,7 @@ json_toint(jsonval val) {
   json_tostring(val, &sa);
   stralloc_nul(&sa);
 
-  if(!scan_longlong(sa.s, &ret))
+  if(!scan_i64(sa.s, &ret))
     ret = -1;
 
   stralloc_free(&sa);

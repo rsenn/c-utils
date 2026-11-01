@@ -42,7 +42,7 @@ http_recv(http* h, char* buf, size_t len) {
         if(!(n = line_end(in)))
           break;
 
-        if(!scan_xlonglong(buffer_PEEK(in), &size)) {
+        if(!scan_x64(buffer_PEEK(in), &size)) {
           errno = EPROTO;
           return -1;
         }

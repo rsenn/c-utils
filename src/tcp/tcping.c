@@ -222,7 +222,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 't': {
-        if(scan_ulonglong(unix_optarg, &timeout_sec) == 0) {
+        if(scan_u64(unix_optarg, &timeout_sec) == 0) {
           usage(argv[0]);
           return 108;
         }
@@ -232,7 +232,7 @@ main(int argc, char* argv[]) {
       case 'u': {
         timeout_sec = 0;
 
-        if(scan_ulonglong(unix_optarg, &timeout_usec) == 0)
+        if(scan_u64(unix_optarg, &timeout_usec) == 0)
           usage(argv[0]);
 
         break;

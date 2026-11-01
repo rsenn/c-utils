@@ -11,7 +11,7 @@ fmt_utf8(char* dest, uint32 n) {
     return 1;
   }
 
-  for(i = 0x3f, j = 1; i < 0x7fffffff; i = (i << 5) | 0x1f, ++j) {
+  for(i = 0x3f, j = 1; i <= 0x7fffffff; i = (i << 5) | 0x1f, ++j) {
     if(i >= n) {
       --j;
 
@@ -28,6 +28,8 @@ fmt_utf8(char* dest, uint32 n) {
 
       return j + 1;
     }
+    if(i == 0x7fffffff)
+      return 0;
   }
 
   /* we were asked to encode a value that cannot be encoded */

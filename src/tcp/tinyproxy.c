@@ -1347,7 +1347,7 @@ main(int argc, char* argv[]) {
   sockbuf_init(&remote);
 
   if((s = env_get("COLUMNS")))
-    scan_longlong(s, &max_length);
+    scan_i64(s, &max_length);
 
   taia_uint(&ttl, DNS_MAX_AGE);
 
@@ -1360,7 +1360,7 @@ main(int argc, char* argv[]) {
         return 0;
         break;
       case 'T':
-        scan_ulonglong(unix_optarg, &ttl.sec.x);
+        scan_u64(unix_optarg, &ttl.sec.x);
         ;
         break;
       case 'l': scan_ushort(unix_optarg, &server.port); break;
@@ -1371,9 +1371,9 @@ main(int argc, char* argv[]) {
       case 'O': cmd_out = unix_optarg; break;
       case 'f': foreground = true; break;
       case 's': use_syslog = true; break;
-      case 'm': scan_longlong(unix_optarg, &max_length); break;
+      case 'm': scan_i64(unix_optarg, &max_length); break;
       case 'n': fileBase = unix_optarg; break;
-      case 'B': scan_ulonglong(unix_optarg, &buf_size); break;
+      case 'B': scan_u64(unix_optarg, &buf_size); break;
       case 'L': line_buffer = true; break;
       case 'd': dump = true; break;
       case 'a': log.fd = open_append(unix_optarg); break;

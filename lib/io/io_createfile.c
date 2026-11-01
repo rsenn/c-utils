@@ -11,7 +11,7 @@
 #include <fcntl.h>
 
 int
-io_createfile(fd_type* d, const char* s) {
+io_createfile(int64* d, const char* s) {
   long fd = open(s,
                  O_WRONLY | O_CREAT | O_TRUNC
 #if !WINDOWS_NATIVE

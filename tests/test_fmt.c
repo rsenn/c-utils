@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/fmt.h"
+#include "../lib/byte.h"
 #include "../lib/str.h"
 
 /* fmt_escapecharhtml is defined in lib/fmt/fmt_escapecharxml.c (GNU alias)
@@ -390,7 +391,7 @@ TEST(test_fmt_repeat) {
 }
 
 /*
- * size_t fmt_escapecharc(char* dest, int ch);
+ * size_t fmt_escapecharc(char* dest, uint32 ch);
  */
 TEST(test_fmt_escapecharc) {
   char buf[8];
@@ -487,18 +488,18 @@ TEST(test_fmt_escapechardoublequotedshell) {
 }
 
 /*
- * size_t fmt_escapecharjson(char* dest, int ch, int quote);
+ * size_t fmt_escapecharjsonq(char* dest, int ch, int quote);
  */
-TEST(test_fmt_escapecharjson) {
+TEST(test_fmt_escapecharjsonq) {
   char buf[8];
 
-  buf[fmt_escapecharjson(buf, 'A', '"')] = 0;
+  buf[fmt_escapecharjsonq(buf, 'A', '"')] = 0;
   ASSERT_STR_EQUAL("A", buf);
 
-  buf[fmt_escapecharjson(buf, '\n', '"')] = 0;
+  buf[fmt_escapecharjsonq(buf, '\n', '"')] = 0;
   ASSERT_STR_EQUAL("\\n", buf);
 
-  buf[fmt_escapecharjson(buf, '"', '"')] = 0;
+  buf[fmt_escapecharjsonq(buf, '"', '"')] = 0;
   ASSERT_STR_EQUAL("\\\"", buf);
 }
 
@@ -543,7 +544,72 @@ TEST(test_fmt_escapecharquotedprintable) {
   ASSERT_STR_EQUAL("=41", buf);
 }
 
+/*
+ * size_t fmt_escapecharjson(char* dest, uint32 ch);   (libowfat)
+ */
+TEST(test_fmt_escapecharjson) {
+  char buf[32];
+
+  /* it always escapes: even a letter is written as \\uXXXX */
+  ASSERT_EQ(6, fmt_escapecharjson(buf, 'f'));
+  ASSERT_EQ(0, byte_diff(buf, 6, "\\u0066"));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '\b'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\b"));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '\n'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\n"));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '\r'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\r"));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '"'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\\""));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '\\'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\\\"));
+  ASSERT_EQ(2, fmt_escapecharjson(buf, '/'));
+  ASSERT_EQ(0, byte_diff(buf, 2, "\\/"));
+
+  /* a character above U+FFFF is a pair of surrogates */
+  ASSERT_EQ(12, fmt_escapecharjson(buf, 0x1d11e));
+  ASSERT_EQ(0, byte_diff(buf, 12, "\\ud834\\udd1e"));
+  ASSERT_EQ(0, fmt_escapecharjson(buf, 0x110000));
+
+  /* with no destination it counts */
+  ASSERT_EQ(6, fmt_escapecharjson(NULL, 'x'));
+  ASSERT_EQ(12, fmt_escapecharjson(NULL, 0x1d11e));
+}
+
+
+/* libowfat compat: protocol buffers, varints, netstrings */
+TEST(test_fmt_pb_netstring) {
+  char b[64];
+
+  ASSERT_EQ(1, fmt_varint(b, 0));
+  ASSERT_EQ(0, b[0]);
+  ASSERT_EQ(2, fmt_varint(b, 150));
+  ASSERT_EQ((char)0x96, b[0]);
+  ASSERT_EQ(1, b[1]);
+  ASSERT_EQ(2, fmt_varint(NULL, 300));
+  ASSERT_EQ(2, fmt_pb_type0_int(b, 300));
+  ASSERT_EQ(1, fmt_pb_type0_sint(b, -1));
+  ASSERT_EQ(1, b[0]); /* zigzag(-1) == 1 */
+  ASSERT_EQ(1, fmt_pb_tag(b, 1, 0));
+  ASSERT_EQ(8, b[0]);
+  ASSERT_EQ(8, fmt_pb_type1_fixed64(b, 0x0102030405060708ul));
+  ASSERT_EQ(8, b[0]);
+  ASSERT_EQ(4, fmt_pb_type5_fixed32(b, 0x01020304));
+  ASSERT_EQ(4, b[0]);
+  ASSERT_EQ(4, fmt_pb_type5_float(b, 1.0f));
+  ASSERT_EQ(4, fmt_pb_float(b, 1, 1.0f) - 1);
+  ASSERT_EQ(5, fmt_pb_string(b, 1, "abc", 3));
+  ASSERT_EQ(4, fmt_pb_type2_string(b, "abc", 3));
+  ASSERT_EQ(0, byte_diff(b, 4, "\3abc"));
+
+  ASSERT_EQ(6, fmt_netstring(b, "abc", 3)); /* 3:abc, */
+  ASSERT_EQ(0, byte_diff(b, 6, "3:abc,"));
+  ASSERT_EQ(3, fmt_copybytes(b, "xyz", 3));
+  ASSERT_EQ('y', b[1]);
+}
+
 #define RUN_FMT_TESTS() \
+  RUN(test_fmt_pb_netstring); \
   RUN(test_fmt_long); \
   RUN(test_fmt_ulong); \
   RUN(test_fmt_xlong); \
@@ -577,6 +643,7 @@ TEST(test_fmt_escapecharquotedprintable) {
   RUN(test_fmt_escapecharshell); \
   RUN(test_fmt_escapecharquotedshell); \
   RUN(test_fmt_escapechardoublequotedshell); \
+  RUN(test_fmt_escapecharjsonq); \
   RUN(test_fmt_escapecharjson); \
   RUN(test_fmt_xmlescape); \
   RUN(test_fmt_escapecharhtml); \

@@ -15,7 +15,7 @@ int wsa_socketpair(int, int, int, fd_type[2]);
 #endif
 
 int
-io_socketpair(fd_type* d) {
+io_socketpair(int64* d) {
   fd_type fds[2];
   __winsock_init();
 #ifdef AF_UNIX

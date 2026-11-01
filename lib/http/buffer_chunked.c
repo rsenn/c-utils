@@ -36,7 +36,7 @@ buffer_chunked_op(fd_type fd, void* data, size_t n, buffer* b) {
         return -1;
       }
 
-      if(!scan_xlonglong(line, &len)) {
+      if(!scan_x64(line, &len)) {
         errno = EINVAL;
         return -1;
       }

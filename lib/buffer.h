@@ -43,8 +43,10 @@ typedef struct buffer {
 #define BUFFER_INSIZE 65535
 #define BUFFER_OUTSIZE 32768
 
-void buffer_init(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
-void buffer_init_free(buffer*, buffer_op_proto*, fd_type fd, char* y, size_t ylen);
+/* op is read(2) or write(2) or a function of the same kind: (fd, buf, len); one that
+ * takes the buffer as fourth argument works too */
+void buffer_init(buffer*, buffer_op_ptr op, fd_type fd, char* y, size_t ylen);
+void buffer_init_free(buffer*, buffer_op_ptr op, fd_type fd, char* y, size_t ylen);
 void buffer_free(buffer*);
 void buffer_munmap(buffer*);
 int buffer_mmapread(buffer*, const char* filename);
@@ -112,10 +114,13 @@ int buffer_skip_until(buffer*, const char*, size_t);
 
 /* this predicate is given the string as currently read from the buffer
  * and is supposed to return 1 if the token is complete,  0 if not. */
-typedef int (*string_predicate)(const char*, size_t, void*);
+/* the predicate is given the text read so far and returns 1 when the token is complete */
+typedef int (*string_predicate)(const char*, size_t);
+typedef int (*string_predicate_arg)(const char*, size_t, void*);
 
 /* like buffer_get_token but the token ends when your predicate says so */
-ssize_t buffer_get_token_pred(buffer*, char*, size_t, string_predicate, void*);
+ssize_t buffer_get_token_pred(buffer*, char*, size_t, string_predicate);
+ssize_t buffer_get_token_pred_arg(buffer*, char*, size_t, string_predicate_arg, void*);
 
 char* buffer_peek(buffer*);
 int buffer_peekc(buffer*, char*);
@@ -197,13 +202,16 @@ int buffer_get_new_token_sa(buffer*, stralloc* sa, const char* charset, size_t s
 /* same as buffer_getline_sa but empty sa first */
 int buffer_getnewline_sa(buffer*, stralloc* sa);
 
-typedef int (*sa_predicate)(stralloc* sa, void*);
+typedef int (*sa_predicate)(stralloc* sa);
+typedef int (*sa_predicate_arg)(stralloc* sa, void*);
 
 /* like buffer_get_token_sa but the token ends when your predicate says so
  */
-int buffer_get_token_sa_pred(buffer*, stralloc* sa, sa_predicate p, void*);
+int buffer_get_token_sa_pred(buffer*, stralloc* sa, sa_predicate p);
+int buffer_get_token_sa_pred_arg(buffer*, stralloc* sa, sa_predicate_arg p, void*);
 /* same,  but clear sa first */
-int buffer_get_new_token_sa_pred(buffer*, stralloc* sa, sa_predicate p, void*);
+int buffer_get_new_token_sa_pred(buffer*, stralloc* sa, sa_predicate p);
+int buffer_get_new_token_sa_pred_arg(buffer*, stralloc* sa, sa_predicate_arg p, void*);
 
 /* make a buffer from a stralloc.
  * Do not change the stralloc after this! */
