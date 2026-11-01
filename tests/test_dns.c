@@ -6,6 +6,7 @@
 #include "../lib/env.h"
 #include "../lib/fmt.h"
 #include <stdio.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -333,11 +334,141 @@ TEST(test_dns_packet_parsers) {
   stralloc_free(&out);
 }
 
+/*
+ * dns_ip6_packet, dns_domain_todot_inline, dns_domain_todot_utf8_cat, dns_random_init
+ */
+TEST(test_dns_ip6_todot_variants) {
+  static const unsigned char pkt[] = {0x12, 0x34, 0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0, 1, 'a', 4, 't', 'e', 's', 't', 0, 0, 28, 0, 1,
+                                      0xc0, 12, 0, 28, 0, 1, 0, 0, 0, 60, 0, 16,
+                                      0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  stralloc out;
+  char name[64];
+  char seed[128];
+
+  stralloc_init(&out);
+  ASSERT_EQ(0, dns_ip6_packet(&out, (const char*)pkt, sizeof pkt));
+  ASSERT_EQ(16, out.len);
+  ASSERT_EQ(0, byte_diff(out.s, 16, "\x20\x01\x0d\xb8\0\0\0\0\0\0\0\0\0\0\0\1"));
+  ASSERT_EQ(-1, dns_ip6_packet(&out, (const char*)pkt, 30)); /* truncated */
+
+  /* the in place conversion turns the wire format of a name into text at the same address */
+  byte_copy(name, 17, "\3www\7example\3org\0");
+  ASSERT_EQ(16, dns_domain_todot_inline(name)); /* every length byte becomes a dot: ".www.example.org" */
+  ASSERT_EQ(0, byte_diff(name, 16, ".www.example.org"));
+
+  stralloc_zero(&out);
+  ASSERT_EQ(1, dns_domain_todot_utf8_cat(&out, "\3www\7example\3org\0"));
+  ASSERT_EQ(1, str_contains(out.s ? (stralloc_nul(&out), out.s) : "", "www.example.org"));
+  stralloc_free(&out);
+
+  byte_zero(seed, sizeof seed);
+  dns_random_init(seed);
+  ASSERT_EQ(1, dns_random(1000) < 1000);
+}
+
+/*
+ * dns_resolvconfip, dns_resolvconfrewrite, dns_ip4_qualify(_rules), dns_ip6_qualify, dns_name6,
+ * dns_resolve, dns_transmit_start/io/get/free, against the loopback resolver
+ */
+TEST(test_dns_lowlevel_loopback) {
+  int pid = 0, st;
+  unsigned short port = dns_server(&pid);
+  stralloc out, fqdn, in, rules;
+  char servers[256], ip6[16];
+  char* q = NULL;
+  const char* rw = "/tmp/c-utils-dnsrewrite.tmp";
+  int fd, k;
+
+  ASSERT_EQ(1, port != 0);
+  dns_point_at(port);
+  stralloc_init(&out);
+  stralloc_init(&fqdn);
+  stralloc_init(&in);
+  stralloc_init(&rules);
+
+  /* the server list comes from DNSCACHEIP: one IPv4 address, in the v4-mapped form */
+  ASSERT_EQ(0, dns_resolvconfip(servers));
+  ASSERT_EQ(0, byte_diff(servers, 16, "\0\0\0\0\0\0\0\0\0\0\377\377\177\0\0\1"));
+  ASSERT_EQ(0, servers[16]);
+  ASSERT_EQ(port, dns_port);
+
+  /* rewrite rules from a file */
+  fd = open(rw, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+  write(fd, "?:+.test\n", 9);
+  close(fd);
+  setenv("DNSREWRITEFILE", rw, 1);
+  ASSERT_EQ(0, dns_resolvconfrewrite(&rules));
+  ASSERT_EQ(1, rules.len > 0);
+
+  stralloc_copys(&in, "host");
+  ASSERT_EQ(0, dns_ip4_qualify(&out, &fqdn, &in));
+  ASSERT_EQ(4, out.len);
+  ASSERT_EQ(1, fqdn.len >= 4);
+  ASSERT_EQ(0, dns_ip4_qualify_rules(&out, &fqdn, &in, &rules));
+  ASSERT_EQ(4, out.len);
+  ASSERT_EQ(0, dns_ip6_qualify(&out, &fqdn, &in));
+  ASSERT_EQ(1, out.len >= 16);
+  ASSERT_EQ(0, dns_ip6_qualify_rules(&out, &fqdn, &in, &rules));
+  ASSERT_EQ(1, out.len >= 16);
+
+  byte_zero(ip6, 16);
+  ip6[15] = 1;
+  ASSERT_EQ(0, dns_name6(&out, ip6));
+  ASSERT_EQ(1, byte_finds(out.s, out.len, "ptr") < out.len);
+
+  /* the single steps of a query */
+  dns_domain_fromdot(&q, "host.test", 9);
+  ASSERT_EQ(0, dns_resolve(q, DNS_T_A));
+  ASSERT_EQ(1, dns_resolve_tx.packetlen > 12);
+  dns_transmit_free(&dns_resolve_tx);
+  ASSERT_EQ(NULL, dns_resolve_tx.packet);
+
+  {
+    struct dns_transmit tx;
+    struct taia deadline, stamp;
+    iopause_fd x[1];
+    int r = 0;
+
+    byte_zero(&tx, sizeof tx);
+    ASSERT_EQ(0, dns_transmit_start(&tx, servers, 1, q, DNS_T_A, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"));
+    for(k = 0; k < 200 && r == 0; ++k) {
+      taia_now(&stamp);
+      taia_uint(&deadline, 5);
+      taia_add(&deadline, &deadline, &stamp);
+      dns_transmit_io(&tx, x, &deadline);
+      iopause(x, 1, &deadline, &stamp);
+      r = dns_transmit_get(&tx, x, &stamp);
+      ASSERT_EQ(1, r != -1);
+    }
+    ASSERT_EQ(1, r);
+    ASSERT_EQ(0, dns_ip4_packet(&out, tx.packet, tx.packetlen));
+    ASSERT_EQ(4, out.len);
+    dns_transmit_free(&tx);
+  }
+
+  dns_domain_free(&q);
+  unlink(rw);
+  unsetenv("DNSREWRITEFILE");
+  stralloc_free(&out);
+  stralloc_free(&fqdn);
+  stralloc_free(&in);
+  stralloc_free(&rules);
+  kill(pid, SIGKILL);
+  waitpid(pid, &st, 0);
+  unsetenv("DNSCACHEIP");
+  unsetenv("DNSCACHEPORT");
+  dns_resolvconfip_reset();
+  dns_family = 0;
+  dns_timeout_ms = 0;
+}
+
 #define RUN_DNS_TESTS() \
   RUN(test_dns_domain); \
   RUN(test_dns_packet); \
   RUN(test_dns_small_helpers); \
   RUN(test_dns_packet_parsers); \
-  RUN(test_dns_queries_loopback)
+  RUN(test_dns_queries_loopback); \
+  RUN(test_dns_ip6_todot_variants); \
+  RUN(test_dns_lowlevel_loopback)
 
 TESTS(dns) { RUN_DNS_TESTS(); }
