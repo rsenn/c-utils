@@ -8,6 +8,8 @@
 #include "../lib/io.h"
 #include "../lib/ndelay.h"
 #include <unistd.h>
+#include <signal.h>
+#include <sys/prctl.h>
 #include <sys/wait.h>
 #include <sys/socket.h>
 
@@ -287,6 +289,8 @@ serve_once(const char* reply, size_t replylen, int* pid_out) {
   socket_local4(s, ip, &port);
   pid = fork();
   if(pid == 0) {
+    prctl(PR_SET_PDEATHSIG, SIGKILL); /* never outlive the test */
+    alarm(60);
     char peer[4];
     uint16 pp;
     char req[2048];
