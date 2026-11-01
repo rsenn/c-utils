@@ -377,9 +377,20 @@ them with -v when porting a foreign project. Details in
   section: project file first, then the importers, then source inference.
 
 - unit-test-gaps:
-  About 400 library functions still have no test that names them. The
-  largest groups are dns, http, io, unix, terminal, tls, gpio, and the
-  internals of hmap, cbmap, set, hashmap, stralloc and buffer. Network and
-  OpenSSL dependent functions need a loopback fixture. About 35 placeholder
-  tests are still empty; list them with grep -n "TEST(.*) {}".
+  Of the public library functions, about 190 are still not named by any
+  test; most of them run when a larger function is tested, but have no
+  check of their own. All placeholder tests are filled.
+
+  The groups that are left:
+  cpp: the parsing helpers behind cpp_preprocess (macro arguments, include
+  search, conditional skipping, line markers, const expressions)
+  cbmap, bmap: allocator wrappers, debug allocators, iterator macros
+  xml: the xml_pfind_* entry points, which the finders call
+  http: the dump functions and the single steps of a request
+  unix, socket, terminal: the Windows only code, which needs a Windows host
+  io, buffer, stralloc: internals such as the stubborn readers
+
+  tests/genmakefile is a separate suite and not run by the unit tests.
+  Network and TLS functions are covered with servers on the loopback
+  interface; keep new ones that way.
 

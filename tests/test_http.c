@@ -7,6 +7,8 @@
 #include "../lib/socket.h"
 #include "../lib/io.h"
 #include "../lib/ndelay.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 #include <sys/prctl.h>
@@ -278,7 +280,7 @@ TEST(test_http_helpers) {
  * http_response_free and friends, against a server on the loopback interface
  */
 static unsigned short
-serve_once(const char* reply, size_t replylen, int* pid_out) {
+serve_once(const char* reply, size_t replylen, int* pid_out, const char* reqfile) {
   int s = socket_tcp4();
   char ip[4] = {127, 0, 0, 1};
   uint16 port = 0;
@@ -302,16 +304,48 @@ serve_once(const char* reply, size_t replylen, int* pid_out) {
     if(c >= 0)
       ndelay_off(c);
 
-    while(c >= 0 && got < sizeof(req)) {
-      ssize_t r = read(c, req + got, sizeof(req) - got);
-      if(r <= 0)
-        break;
-      got += (size_t)r;
-      if(got >= 4 && byte_diff(req + got - 4, 4, "\r\n\r\n") == 0)
-        break;
+    {
+      size_t want = 0; /* once the header is complete: its length and the announced body */
+
+      while(c >= 0 && got < sizeof(req)) {
+        ssize_t r = read(c, req + got, sizeof(req) - got);
+        if(r <= 0)
+          break;
+        got += (size_t)r;
+        if(!want) {
+          size_t he = 0, k;
+
+          for(k = 0; k + 4 <= got; ++k)
+            if(byte_diff(req + k, 4, "\r\n\r\n") == 0) {
+              he = k + 4;
+              break;
+            }
+          if(he) {
+            size_t cl = 0;
+
+            for(k = 0; k + 16 <= he; ++k)
+              if(byte_diff(req + k, 16, "Content-Length: ") == 0) {
+                cl = (size_t)atoi(req + k + 16);
+                break;
+              }
+            want = he + cl;
+          }
+        }
+        if(want && got >= want)
+          break;
+      }
     }
     if(c >= 0) {
       char junk[256];
+
+      if(reqfile) {
+        FILE* f = fopen(reqfile, "w");
+
+        if(f) {
+          fwrite(req, 1, got, f);
+          fclose(f);
+        }
+      }
 
       write(c, reply, replylen);
       shutdown(c, SHUT_WR);
@@ -332,7 +366,7 @@ TEST(test_http_get_loopback) {
   http h;
   char url[64];
   int pid = 0, i, st;
-  unsigned short port = serve_once(reply, sizeof(reply) - 1, &pid);
+  unsigned short port = serve_once(reply, sizeof(reply) - 1, &pid, NULL);
   size_t n = 0;
   char* v;
 
@@ -384,6 +418,66 @@ TEST(test_http_get_loopback) {
   waitpid(pid, &st, 0);
 }
 
+/*
+ * http_post, http_header, http_body, http_sendreq: what the server sees
+ */
+TEST(test_http_post_loopback) {
+  static const char reply[] = "HTTP/1.1 201 Created\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok";
+  const char* reqfile = "/tmp/c-utils-http-req.txt";
+  http h;
+  char url[64];
+  int pid = 0, i, st;
+  unsigned short port = serve_once(reply, sizeof(reply) - 1, &pid, reqfile);
+  char seen[1024];
+  size_t n = 0;
+  FILE* f;
+
+  ASSERT_EQ(1, port != 0);
+  unlink(reqfile);
+  url[0] = '\0';
+  str_copy(url, "http://127.0.0.1:");
+  url[str_len(url) + fmt_ulong(url + str_len(url), port)] = '\0';
+  str_copy(url + str_len(url), "/submit");
+
+  http_init(&h, 0, 0);
+  h.stream = 1;
+  ASSERT_EQ(1, http_post(&h, url) != 0);
+  ASSERT_NE(0, http_header(&h, "X-Test", "1"));
+  ASSERT_NE(0, http_body(&h, "abc", 3));
+  io_onlywantwrite(h.sock);
+
+  for(i = 0; i < 200; ++i) {
+    fd_type fd;
+
+    io_wait();
+    while((fd = io_canwrite()) != -1)
+      if(fd == h.sock)
+        http_canwrite(&h, &io_onlywantread, &io_onlywantwrite);
+    while((fd = io_canread()) != -1)
+      if(fd == h.sock)
+        http_canread(&h, &io_onlywantread, &io_onlywantwrite);
+    if(h.response && h.response->code > 0)
+      break;
+  }
+  ASSERT_EQ(1, h.response != NULL);
+  ASSERT_EQ(201, h.response->code);
+
+  http_close(&h);
+  http_free(&h);
+  waitpid(pid, &st, 0);
+
+  f = fopen(reqfile, "r");
+  ASSERT_EQ(1, f != NULL);
+  n = fread(seen, 1, sizeof(seen) - 1, f);
+  fclose(f);
+  seen[n] = 0;
+  ASSERT_EQ(1, str_start(seen, "POST /submit HTTP/1."));
+  ASSERT_EQ(1, str_contains(seen, "X-Test: 1\r\n"));
+  ASSERT_EQ(1, str_contains(seen, "Content-Length: 3\r\n"));
+  ASSERT_EQ(1, n >= 3 && byte_diff(seen + n - 3, 3, "abc") == 0);
+  unlink(reqfile);
+}
+
 #define RUN_HTTP_TESTS() \
   RUN(test_buffer_chunked); \
   RUN(test_buffer_chunked_truncated); \
@@ -395,6 +489,7 @@ TEST(test_http_get_loopback) {
   RUN(test_http_recv_truncated); \
   RUN(test_http_recv_until_close); \
   RUN(test_http_helpers); \
-  RUN(test_http_get_loopback)
+  RUN(test_http_get_loopback); \
+  RUN(test_http_post_loopback)
 
 TESTS(http) { RUN_HTTP_TESTS(); }
