@@ -1562,6 +1562,8 @@ What of this specification is in the program (see also `TODO`,
   example; the scripts are `tests/genmakefile/pair-headers.sh` and
   `tests/genmakefile/import-mplabx.sh`.
 
-Not yet: the project file, the MPLAB 8 `.mcp` importer, all configurations of a
+`--import-mplabx` also reads MPLAB 8 `.mcp` files (device and file list).
+
+Not yet: the project file, the compiler options of a `.mcp`, all configurations of a
 MPLAB X project as a build matrix, source inference by symbols.
 

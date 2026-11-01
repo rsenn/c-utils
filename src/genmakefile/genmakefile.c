@@ -1850,7 +1850,7 @@ import_mplabx(int* argcp, char** argv) {
   strarray out;
   char** nv;
   size_t k, pos = 0;
-  int have_chip = 0;
+  int have_chip = 0, is_mcp = 0, in_files = 0;
 
   for(i = 1; i < *argcp; ++i)
     if(str_equal(argv[i], "--import-mplabx") && i + 1 < *argcp) {
@@ -1868,7 +1868,9 @@ import_mplabx(int* argcp, char** argv) {
     return argv;
   }
 
-  /* the project directory is the parent of nbproject/ */
+  is_mcp = str_end(argv[at + 1], ".mcp");
+
+  /* the project directory is the parent of nbproject/ (MPLAB 8: the one of the .mcp) */
   stralloc_init(&dir);
   stralloc_copys(&dir, argv[at + 1]);
   stralloc_nul(&dir);
@@ -1876,12 +1878,16 @@ import_mplabx(int* argcp, char** argv) {
     size_t e = str_rchr(dir.s, '/');
 
     if(dir.s[e])
-      dir.s[e] = '\0'; /* .../nbproject */
-    e = str_rchr(dir.s, '/');
-    if(dir.s[e])
-      dir.s[e] = '\0';
+      dir.s[e] = '\0'; /* .../nbproject, or the directory of the .mcp */
     else
       dir.s[0] = '\0';
+    if(!is_mcp && dir.s[0]) {
+      e = str_rchr(dir.s, '/');
+      if(dir.s[e])
+        dir.s[e] = '\0';
+      else
+        dir.s[0] = '\0';
+    }
   }
   if(!dir.s[0]) {
     stralloc_copys(&dir, ".");
@@ -1909,7 +1915,52 @@ import_mplabx(int* argcp, char** argv) {
     pos += eol + 1;
     l = line.s + scan_whitenskip(line.s, line.len);
 
-    if(!have_chip && str_start(l, "<targetDevice>")) {
+    if(is_mcp) {
+      /* MPLAB 8: device=PIC18F25K50 and, in [FILE_INFO], file_000=dir\\name.c */
+      if(l[0] == '[') {
+        in_files = str_start(l, "[FILE_INFO]");
+      } else if(!have_chip && str_start(l, "device=")) {
+        stralloc chip;
+        size_t j;
+
+        stralloc_init(&chip);
+        stralloc_copys(&chip, "--chip=");
+        for(j = 7; l[j] && l[j] != '\r'; ++j)
+          stralloc_catc(&chip, (l[j] >= 'A' && l[j] <= 'Z') ? l[j] + 32 : l[j]);
+        stralloc_nul(&chip);
+        if(!str_diffn(chip.s + 7, "pic", 3)) {
+          byte_copy(chip.s + 7, chip.len - 10, chip.s + 10);
+          chip.len -= 3;
+          stralloc_nul(&chip);
+        }
+        strarray_push(&out, chip.s);
+        stralloc_free(&chip);
+        have_chip = 1;
+      } else if(in_files && str_start(l, "file_")) {
+        const char* v = l + str_chr(l, '=');
+        size_t n;
+
+        if(*v == '=') {
+          stralloc path;
+          size_t j;
+
+          ++v;
+          n = str_chr(v, '\r');
+          if(n > 2 && v[n - 2] == '.' && v[n - 1] == 'c') {
+            stralloc_init(&path);
+            if(str_diff(dir.s, ".")) {
+              stralloc_cats(&path, dir.s);
+              stralloc_catc(&path, '/');
+            }
+            for(j = 0; j < n; ++j)
+              stralloc_catc(&path, v[j] == '\\' ? '/' : v[j]);
+            stralloc_nul(&path);
+            strarray_push(&out, path.s);
+            stralloc_free(&path);
+          }
+        }
+      }
+    } else if(!have_chip && str_start(l, "<targetDevice>")) {
       const char* v = l + 14;
       size_t n = str_find(v, "</");
       stralloc chip;
