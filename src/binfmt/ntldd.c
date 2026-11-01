@@ -471,6 +471,12 @@ try_map_and_load(char* name, char* path, pe_loaded_image* loaded_image, int requ
 
   dhdr = (pe_dos_header*)mmap_read(sa.s, &sz);
 
+  /* a file that is no consistent PE image is no library to follow */
+  if(dhdr && pe_check(dhdr, sz)) {
+    mmap_unmap((char*)dhdr, sz);
+    dhdr = NULL;
+  }
+
   loaded_image->size_of_image = sz;
 
   if(dhdr) {

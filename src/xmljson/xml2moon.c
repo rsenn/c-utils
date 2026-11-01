@@ -147,13 +147,26 @@ main(int argc, char* argv[]) {
   size_t i = 0;
 
   if(!argv[1]) {
-    argv[1] = "C:\\Users\\roman\\Desktop\\dirlist\\pelist.cbp";
+    buffer_putsflush(buffer_2, "Usage: xml2moon FILE.xhtml\n");
+    return 2;
   }
 
-  buffer_mmapprivate(&input, argv[1]);
+  if(buffer_mmapprivate(&input, argv[1]) != 0) {
+    buffer_putm_internal(buffer_2, argv[1], ": cannot read the file\n", NULL);
+    buffer_flush(buffer_2);
+    return 1;
+  }
+
   buffer_skip_until(&input, "\r\n", 2);
 
   doc = xml_read_tree(&input);
+
+  if(doc == NULL || doc->children == NULL) {
+    buffer_putm_internal(buffer_2, argv[1], ": no XML in the file\n", NULL);
+    buffer_flush(buffer_2);
+    return 1;
+  }
+
   xml_print_tree(doc->children, buffer_1);
 
   /*

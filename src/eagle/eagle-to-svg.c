@@ -154,10 +154,21 @@ main(int argc, char* argv[]) {
     output_fd = open_trunc(output_file);
 
   buffer_write_fd(&output, output_fd);
-  buffer_mmapprivate(&input, input_file);
+  if(buffer_mmapprivate(&input, input_file) != 0) {
+    buffer_putm_internal(buffer_2, input_file, ": cannot read the file\n", NULL);
+    buffer_flush(buffer_2);
+    return 1;
+  }
+
   buffer_skip_until(&input, "\r\n", 2);
 
   doc = xml_read_tree(&input);
+
+  if(doc == NULL) {
+    buffer_putm_internal(buffer_2, input_file, ": no XML in the file\n", NULL);
+    buffer_flush(buffer_2);
+    return 1;
+  }
 
   nodeset = xml_find_all_1(doc, (xml_pred_t*)&xml_match_name, "layer");
 

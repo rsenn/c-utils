@@ -582,6 +582,8 @@ pe_section_header* pe_header_sections(void*, uint16* nsections);
 pe_data_directory* pe_get_datadir(void*, uint32* num);
 const char* pe_datadir_name(int);
 char* pe_dllname(uint8*);
+/** NULL if the image is consistent, otherwise a text that tells what is wrong; call it before the other pe_* */
+const char* pe_check(const void* base, size_t size);
 
 #define PE_FIELD_OFFSET(type, field) ((size_t)(uint8*)&(((type*)0)->field))
 #define PE_FIELD_SIZE(type, field) sizeof(((type*)0)->field)

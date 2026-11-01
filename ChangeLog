@@ -41,6 +41,34 @@
   dlist_find, slist_foreach_safe and slink_foreach_safe never ended,
   dlist_swap broke the list for neighbours, dlist_foreach_down_safe did not
   compile; dlist.h declares find, find_delete, swap, move_head, move_tail
+- elf, pe: elf_check and pe_check (a text that says what is wrong, or NULL)
+  look at a whole image before anything walks it: headers, tables, sections,
+  string tables, symbol and dynamic names, export names, import tables. elflist,
+  elf64list, elfwrsec, pelist, pemkwingui, impgen and ntldd call them first, so
+  corrupt, truncated and non-ELF/PE files give an error message instead of a
+  crash (elflist, elf64list, pelist and four more crashed on every such file)
+- buffer: buffer_mmapprivate, buffer_mmapread and their _fd forms leave an
+  empty, valid buffer when they fail, as the callers (nine tools) never looked at
+  the result and read an uninitialized one; buffer_lzma wrote each round of
+  its output over the last and never ended on an error, which corrupted every
+  .xz/.lzma file bigger than the buffer and hung ccat on bad input
+- array, byte, str: array_allocate grows by half instead of a fixed 4 kB step;
+  byte_copy, byte_copyr, byte_zero, byte_fill, byte_chr, str_len and str_chr
+  use the C library where the result is the same
+- ini, xml, hashmap: ini_get, ini_section and ini_keys accept the NULL section
+  of a file that held none (exe-wrap died on it); xml_print and the finders accept
+  NULL; json refuses documents nested deeper than 512 levels
+- cpp: reading an identifier made no progress on a byte that is not UTF-8
+  (cpre never ended on binary input)
+- tools: xml2moon needs its argument (it had a path of the author's machine),
+  xmlpp, xml2moon, eagle-init-brd, eagle-to-svg, eagle-gen-cmds, eagle-to-circuit
+  and opensearch-dump report a file that cannot be read or holds no XML;
+  omflist forgot the 0 that ends the arguments of errmsg_warnsys
+- docs: doc/review.md, the assessment of every module and program, and
+  proposals for the direction of the project; doc/genmakefile-spec.md
+- tests: hmap, elf, pe (valgrind finds no invalid access in any of them);
+  removed the stray tests/faillog-* files, tests/test_path.exe and the
+  expired test key and certificate http.key, http.crt
 - tests: utf8, range, slist, dlist, cb, cbmap, set (and more cases for json,
   http, sse); valgrind reports no invalid access over all of them
 - doc/http.md: the guide to the HTTP client, its streaming parts and the

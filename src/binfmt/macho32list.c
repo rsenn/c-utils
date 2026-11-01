@@ -24,6 +24,11 @@ main(int argc, char** argv) {
 
   content = mmap_private(argv[1], &length);
 
+  if(content == NULL || length < sizeof(macho_mach_header)) {
+    printf("%s: cannot read a Mach-O header\n", argv[1]);
+    return 1;
+  }
+
   {
     macho_mach_header* header;
 
@@ -41,7 +46,13 @@ main(int argc, char** argv) {
   for(i = 0; i < n_commands; i++) {
     macho_load_command* load;
 
+    if(offset + sizeof(macho_load_command) > length)
+      break;
+
     load = (macho_load_command*)(content + offset);
+
+    if(load->cmdsize < sizeof(macho_load_command) || offset + load->cmdsize > length)
+      break;
 
     switch(load->cmd) {
       case MACHO_LC_SEGMENT: {

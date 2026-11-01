@@ -240,6 +240,11 @@ main(int argc, char* argv[]) {
 
   doc = xml_read_tree(&infile);
 
+  if(doc == NULL) {
+    errmsg_warn("no XML in the input", 0);
+    return 1;
+  }
+
   xml_print(doc, output, xmlpp_fmt);
   // xml_read_callback(&r,
   // xml_read_function);

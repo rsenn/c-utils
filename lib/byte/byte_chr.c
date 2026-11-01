@@ -1,22 +1,11 @@
 #include "../byte.h"
+#include <string.h>
 
 /* byte_chr returns the smallest integer i between 0 and len - 1
  * inclusive such that one[i] equals needle, or len if not found. */
 size_t
 byte_chr(const void* haystack, size_t len, char needle) {
-  char c = needle;
-  const char* s = (const char*)haystack;
-  const char* t = s + len;
+  const char* p = len ? (const char*)memchr(haystack, (unsigned char)needle, len) : NULL;
 
-  for(;;) {
-    if(s == t)
-      break;
-
-    if(*s == c)
-      break;
-
-    ++s;
-  }
-
-  return s - (const char*)haystack;
+  return p ? (size_t)(p - (const char*)haystack) : len;
 }

@@ -1692,7 +1692,12 @@ main(int argc, char* argv[]) {
     }
 
     base = str_basename(argv[unix_optind]);
-    buffer_mmapprivate(&input, argv[unix_optind]);
+    if(buffer_mmapprivate(&input, argv[unix_optind]) != 0) {
+      buffer_putm_internal(buffer_2, argv[unix_optind], ": cannot read the file", NULL);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+
     buffer_skip_until(&input, "\r\n", 2);
 
     doc = xml_read_tree(&input);

@@ -7,7 +7,15 @@ void buffer_munmap(buffer*);
 int
 buffer_mmapprivate(buffer* b, const char* filename) {
   if(!(b->x = mmap_private(filename, &b->n)))
+  {
+    /* a buffer that holds nothing, so that a caller who does not look at the result reads an empty file */
+    b->x = NULL;
+    b->p = b->n = b->a = 0;
+    b->fd = -1;
+    b->op = &buffer_dummyreadmmap;
+    b->deinit = 0;
     return -1;
+  }
 
   b->p = 0;
   b->a = b->n;

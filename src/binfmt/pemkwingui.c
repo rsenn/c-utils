@@ -1,6 +1,7 @@
 #include "../../lib/buffer.h"
 #include "../../lib/pe.h"
 #include "../../lib/mmap.h"
+#include "../../lib/errmsg.h"
 #include "../../lib/str.h"
 #include "../../lib/byte.h"
 #include "../../lib/fmt.h"
@@ -66,7 +67,21 @@ process32(void* base) {
 int
 pewrsec(const char* file) {
   pe_file_t* header = base = mmap_shared(file, &size);
-  int ret = PE_TYPE(base) == PE_MAGIC_PE64 ? process64(base) : process32(base);
+  const char* emsg;
+  int ret;
+
+  if(base == NULL) {
+    errmsg_warnsys(file ? file : "(no file)", ": ", 0);
+    return 127;
+  }
+
+  if((emsg = pe_check(base, size))) {
+    errmsg_warn(file, ": ", emsg, 0);
+    mmap_unmap(base, size);
+    return 1;
+  }
+
+  ret = PE_TYPE(base) == PE_MAGIC_PE64 ? process64(base) : process32(base);
 
   mmap_unmap(base, size);
 

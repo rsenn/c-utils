@@ -66,6 +66,11 @@ array_allocate(array* x, uint64 membersize, int64 pos) {
     if(__unlikely(wanted >= (uint64)x->allocated)) {
       /* round up a little */
 
+      /* grow by half again at least, so that n appends cost O(n) copying and
+       * not O(n * n / 4096) as with a fixed step */
+      if(x->allocated > 0 && wanted < (uint64)x->allocated + (uint64)x->allocated / 2)
+        wanted = (uint64)x->allocated + (uint64)x->allocated / 2;
+
       if(membersize < 8)
         wanted = (wanted + 127) & (int64)(-128); /* round up to multiple of 128 */
       else

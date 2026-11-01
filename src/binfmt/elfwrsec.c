@@ -1,6 +1,7 @@
 #include "../../lib/buffer.h"
 #include "../../lib/elf.h"
 #include "../../lib/mmap.h"
+#include "../../lib/errmsg.h"
 #include "../../lib/str.h"
 #include "../../lib/byte.h"
 #include "../../lib/fmt.h"
@@ -138,7 +139,20 @@ elfwrsec(const char* file) {
   int ret;
   elf64_ehdr* header;
 
+  const char* emsg;
+
   header = base = mmap_shared(file, &size);
+
+  if(base == NULL) {
+    errmsg_warnsys(file ? file : "(no file)", ": ", 0);
+    return 127;
+  }
+
+  if((emsg = elf_check(base, size))) {
+    errmsg_warn(file, ": ", emsg, 0);
+    mmap_unmap(base, size);
+    return 1;
+  }
 
   ret = (header->e_ident[ELF_EI_CLASS] == ELF_ELFCLASS64 ? process64(base) : process32(base));
 

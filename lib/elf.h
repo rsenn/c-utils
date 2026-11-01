@@ -1301,6 +1301,8 @@ typedef uint32 elf32_conflict;
 
 #define __ELF_NATIVE_CLASS __WORDSIZE
 
+/** NULL if the image is consistent, otherwise a text that tells what is wrong; call it before the other elf_* */
+const char* elf_check(const void* base, size_t size);
 range elf_dynamic_section(void*);
 range elf_get_section_r(void*, const char* name);
 void* elf_get_section(void*, const char* name, size_t* szp);

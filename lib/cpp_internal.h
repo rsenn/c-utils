@@ -782,19 +782,20 @@ static inline size_t
 cpp_read_ident(char* start) {
   char* p = start;
   wchar_t c;
+  size_t l;
 
-  p += u8_to_wc(&c, p);
-
-  if(!cpp_is_ident1(c))
+  /* u8_to_wc gives 0 for bytes that are no UTF-8: they are no part of a name,
+   * and must not be stepped over by 0 bytes for ever */
+  if((l = u8_to_wc(&c, p)) == 0 || !cpp_is_ident1(c))
     return 0;
 
-  for(; *p;) {
-    char* q = p + u8_to_wc(&c, p);
+  p += l;
 
-    if(!cpp_is_ident2(c))
+  for(; *p;) {
+    if((l = u8_to_wc(&c, p)) == 0 || !cpp_is_ident2(c))
       break;
 
-    p = q;
+    p += l;
   }
 
   return p - start;

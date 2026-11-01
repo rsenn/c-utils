@@ -167,7 +167,7 @@ main(int argc, char** argv) {
 
       omf_close(&omf);
     } else {
-      errmsg_warnsys("ERROR opening '", argv[unix_optind], "': ");
+      errmsg_warnsys("ERROR opening '", argv[unix_optind], "': ", 0);
       return 127;
     }
   }

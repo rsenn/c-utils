@@ -623,6 +623,16 @@ main(int argc, char** argv) {
 
     map.end = map.start + filesize;
 
+    {
+      const char* emsg = elf_check(map.start, filesize);
+
+      if(emsg) {
+        errmsg_warn(filename, ": ", emsg, 0);
+        mmap_unmap(map.start, filesize);
+        return 1;
+      }
+    }
+
     // word_size = ELF_BITS(map.start);
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "map start: ");
