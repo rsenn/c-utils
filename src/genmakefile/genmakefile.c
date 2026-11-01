@@ -455,6 +455,7 @@ usage(char* argv0) {
                        "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
                        "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
                        "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
+                       "      --dump-project        print the arguments --project and --import-mplabx stand for, one to a line, and stop\n"
                        "      --project FILE        arguments from the [project] section of an INI file (toolchain, make, chip, xtal, baud,\n"
                        "                            build, define, include, link, library, import, conf, pair-headers, sources)\n"
                        "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
@@ -2519,6 +2520,23 @@ main(int argc, char* argv[]) {
   strlist_init(&cmdline, ' ');
   argv = import_project(&argc, argv);
   argv = import_mplabx(&argc, argv);
+  {
+    /* --dump-project: what --project and --import-mplabx made of the arguments, one to a line */
+    int di, dump = 0;
+
+    for(di = 1; di < argc; ++di)
+      if(str_equal(argv[di], "--dump-project"))
+        dump = 1;
+    if(dump) {
+      for(di = 1; di < argc; ++di)
+        if(!str_equal(argv[di], "--dump-project")) {
+          buffer_puts(buffer_1, argv[di]);
+          buffer_putc(buffer_1, '\n');
+        }
+      buffer_flush(buffer_1);
+      return 0;
+    }
+  }
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   strlist_init(&dirs.this, pathsep_make);

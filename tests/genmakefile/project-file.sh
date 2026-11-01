@@ -32,4 +32,6 @@ grep -q '/adc\.p1' Makefile || { echo "FAIL: pair-headers via the project file";
 # the command line comes last and wins
 "$G" --project genmakefile.ini --chip 18f25k50 -o M2 >/dev/null 2>&1
 grep -q '^CHIP = 18f25k50' M2 || { echo "FAIL: command line does not win"; exit 1; }
+"$G" --project genmakefile.ini --dump-project >dump.txt 2>&1
+grep -qx -- '--chip' dump.txt && grep -qx '18f2550' dump.txt && grep -qx -- '-DUSE_ADC=1' dump.txt || { echo "FAIL: --dump-project"; exit 1; }
 echo "project-file: ok"
