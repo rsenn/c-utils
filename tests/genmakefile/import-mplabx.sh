@@ -44,4 +44,10 @@ grep -q '^CHIP = 18f25k50' Makefile || { echo "FAIL: chip of the first configura
 grep -q 'USE_UART=1' Makefile && grep -q 'BAUD=9600' Makefile || { echo "FAIL: defines"; exit 1; }
 grep -q 'uart.p1' Makefile && grep -q 'main.p1' Makefile || { echo "FAIL: sources"; exit 1; }
 grep -q '16f1455' Makefile && { echo "FAIL: second configuration used"; exit 1; }
+cd "$d" || exit 1
+mkdir -p Q/src
+printf 'int main(void){return 0;}\n' >Q/src/main.c
+printf '[HEADER]\ndevice=PIC16F1455\n[FILE_INFO]\nfile_000=src\\main.c\nfile_001=src\\p.h\n[TOOL_SETTINGS]\n' >Q/p.mcp
+"$G" -t xc8 -m gmake --import-mplabx Q/p.mcp -o Q/Makefile >/dev/null 2>&1 || { echo "FAIL: genmakefile (.mcp)"; exit 1; }
+grep -q '^CHIP = 16f1455' Q/Makefile && grep -q 'main.p1' Q/Makefile || { echo "FAIL: .mcp chip or sources"; exit 1; }
 echo "import-mplabx: ok"

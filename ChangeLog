@@ -101,6 +101,7 @@
 - genmakefile: --import-mplabx FILE reads a MPLAB X nbproject/configurations.xml
   (chip, -D, -I and the .c files of its first configuration), tried on USB-uC
   and the USB-Stack HID mouse example (tests/genmakefile/import-mplabx.sh).
+- genmakefile: --import-mplabx also reads MPLAB 8 .mcp project files.
 - fixed: genmakefile could not read a source given with an absolute path.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
