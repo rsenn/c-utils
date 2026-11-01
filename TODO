@@ -372,3 +372,10 @@ them with -v when porting a foreign project. Details in
   point at: every directory layout, every make and project format, the
   features. It is a target, not a description of the current program.
 
+  Only section 1, the reassessment of the four planning documents, is
+  written. Sections 2 to 15 are still open: goals, concepts, directory
+  layout catalog, discovery pipeline, toolchain descriptors, backends,
+  build matrix, configuration and probes, targets and install, command
+  line and project file, platforms, performance, conformance tests and the
+  roadmap.
+
