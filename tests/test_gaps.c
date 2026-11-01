@@ -41,6 +41,11 @@
 #include "../lib/dns.h"
 #include "../lib/io.h"
 #include "../lib/charbuf.h"
+#include "../lib/json.h"
+#include "../lib/env.h"
+#include "../lib/textbuf.h"
+#include "../lib/iob_internal.h"
+#include "../lib/socket.h"
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
@@ -1008,6 +1013,99 @@ TEST(test_sig_pusha_and_dumps) {
   dns_debug_hex("hex", "\1\2", 2);
   dns_trace("<", 0, "\177\0\0\1", 4, "\0\0", 2);
 }
+static void
+noop_cleanup(struct iob_entry* x) {
+  (void)x;
+}
+
+static int
+cmp_str(const char** a, const char** b) {
+  return str_diff(*a, *b);
+}
+
+/*
+ * json_parse_string, json_property_get, env_unset_internal, strarray_sort (compare), textbuf_read,
+ * iob_addbuf_internal, socket_udp4b/6b, socket_send4_flag, buffer_dummyreadbuf
+ */
+TEST(test_assorted_leftovers) {
+  charbuf cb;
+  jsonval v, name, got, obj;
+  strarray arr;
+  textbuf* tb;
+  buffer src, wrapped;
+  char tmp[16];
+  io_batch* batch;
+  int u, rcv;
+  char ip[4] = {127, 0, 0, 1}, from[4], rb[8];
+  uint16 port = 0, fp = 0;
+
+  /* a JSON string token */
+  charbuf_froms(&cb, "\"he\\u0041llo\" tail", 24);
+  ASSERT_EQ(1, json_parse_string(&v, &cb));
+  ASSERT_EQ(JSON_STRING, v.type);
+  ASSERT_STR_EQUAL("heAllo", json_string_cstr(&v));
+  charbuf_free(&cb);
+
+  /* a property by name, the length of an array and of a string */
+  obj = json_object();
+  json_property_set_str(&obj, "k", json_int(5));
+  name = json_string("k");
+  got = json_property_get(obj, name);
+  ASSERT_EQ(JSON_INT, got.type);
+  ASSERT_EQ(5, json_toint(got));
+  ASSERT_EQ(JSON_UNDEFINED, json_property_get(obj, json_string("zz")).type);
+  name = json_string("length");
+  got = json_property_get(json_string("abcd"), name);
+  ASSERT_EQ(4, json_toint(got));
+
+  /* env */
+  env_put("C_UTILS_TEST_VAR=1");
+  ASSERT_EQ(1, env_get("C_UTILS_TEST_VAR") != NULL);
+  ASSERT_EQ(1, env_unset_internal("C_UTILS_TEST_VAR"));
+  ASSERT_EQ(NULL, env_get("C_UTILS_TEST_VAR"));
+
+  /* sort with the comparison function */
+  strarray_init(&arr);
+  strarray_push(&arr, "pear");
+  strarray_push(&arr, "apple");
+  strarray_push(&arr, "fig");
+  strarray_sort(&arr, cmp_str);
+  ASSERT_STR_EQUAL("apple", strarray_at(&arr, 0));
+  ASSERT_STR_EQUAL("pear", strarray_at(&arr, 2));
+  strarray_sort(&arr, NULL); /* the built in comparison */
+  ASSERT_STR_EQUAL("fig", strarray_at(&arr, 1));
+  strarray_free(&arr);
+
+  /* textbuf counts lines and columns of what is read through it */
+  buffer_frombuf(&src, "ab\ncd", 5);
+  textbuf_init(&wrapped, &src, 16);
+  tb = is_textbuf(&wrapped);
+  ASSERT_EQ(1, tb != NULL);
+  ASSERT_EQ(5, buffer_get(&wrapped, tmp, 5));
+  ASSERT_EQ(1, textbuf_line(&wrapped) >= 1);
+  textbuf_free(&wrapped);
+
+  /* an iob entry with a cleanup function */
+  batch = iob_new(2);
+  ASSERT_EQ(1, iob_addbuf_internal(batch, "xyz", 3, noop_cleanup) != 0);
+  ASSERT_EQ(3, iob_bytesleft(batch));
+  iob_free(batch);
+
+  /* udp sockets: blocking variants and a send with flags */
+  u = socket_udp4b();
+  rcv = socket_udp4();
+  ASSERT_EQ(1, u >= 0 && rcv >= 0);
+  ASSERT_EQ(0, socket_bind4(rcv, ip, 0));
+  socket_local4(rcv, from, &port);
+  ASSERT_EQ(3, socket_send4_flag(u, "udp", 3, ip, port, 0));
+  ASSERT_EQ(3, socket_recv4(rcv, rb, sizeof rb, from, &fp));
+  ASSERT_EQ(0, byte_diff(rb, 3, "udp"));
+  socket_close(u);
+  socket_close(rcv);
+  u = socket_udp6b();
+  if(u >= 0)
+    socket_close(u);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -1033,6 +1131,7 @@ TEST(test_sig_pusha_and_dumps) {
   RUN(test_buffer_stubborn_dump_fmtcall); \
   RUN(test_va_list_forms); \
   RUN(test_cdb_successor_tokenizer_rewind); \
-  RUN(test_sig_pusha_and_dumps)
+  RUN(test_sig_pusha_and_dumps); \
+  RUN(test_assorted_leftovers)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
