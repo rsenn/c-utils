@@ -33,7 +33,6 @@ typedef struct ssl_ctx_st tls_ctx_t;
 
 int tls_accept(fd_type fd);
 
-const bio_method_t* tls_bio_method(void);
 tls_bio_t* tls_bio_socket(fd_type fd);
 tls_t* tls_by_fd(fd_type fd);
 tls_t* tls_client(fd_type fd);
@@ -47,7 +46,6 @@ void tls_free(fd_type fd);
 fd_type tls_get_fd(tls_t* tls);
 int tls_init(const char* key_file, const char* cert_file);
 void tls_io(fd_type fd);
-const bio_method_t* tls_method(void);
 ssize_t tls_read(fd_type fd, void* data, size_t len);
 tls_t* tls_server(fd_type fd);
 int tls_servername(fd_type fd, const char* name);

@@ -78,6 +78,7 @@ TESTS(gaps);
 TESTS(terminal);
 TESTS(dns);
 TESTS(gpio);
+TESTS(tls);
 TESTS(http);
 TESTS(sse);
 
@@ -152,6 +153,7 @@ START() {
   EXEC(terminal);
   EXEC(dns);
   EXEC(gpio);
+  EXEC(tls);
   EXEC(http);
   EXEC(sse);
 }
