@@ -9,7 +9,7 @@ range_strinbuf(const void* buf, size_t len, const void* stringstart) {
 
   if(!range_ptrinbuf(buf, len, x = (const char*)stringstart))
     return 0;
-  y = x + len;
+  y = (const char*)buf + len;
 
   for(; x < y && *x; ++x)
     ;
