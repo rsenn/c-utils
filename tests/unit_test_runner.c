@@ -53,6 +53,7 @@ TESTS(utf8);
 TESTS(dlist);
 TESTS(cbmap);
 TESTS(set);
+TESTS(cpp);
 TESTS(coff);
 TESTS(omf);
 TESTS(bmap);
@@ -122,6 +123,7 @@ START() {
   EXEC(dlist);
   EXEC(cbmap);
   EXEC(set);
+  EXEC(cpp);
   EXEC(coff);
   EXEC(omf);
   EXEC(bmap);
