@@ -1,8 +1,10 @@
+#include "../lib/stralloc.h"
 #include "unit_test.h"
 #include "../lib/hmap.h"
 #include "../lib/str.h"
 #include "../lib/byte.h"
 #include "../lib/stralloc.h"
+#include "../lib/buffer.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -370,6 +372,36 @@ TEST(test_hmap_free_data) {
   hmap_destroy(&db);
 }
 
+/*
+ * int hmap_set_chars(HMAP_DB**, const char*, const char*);
+ * void hmap_dump(HMAP_DB*, buffer*);
+ */
+TEST(test_hmap_set_chars_dump) {
+  HMAP_DB* db = NULL;
+  stralloc sa;
+  buffer b;
+
+  stralloc_init(&sa);
+  hmap_init(4, &db);
+  ASSERT_GE(hmap_set_chars(&db, "name", "value"), 0);
+  ASSERT_STR_EQUAL("value", hmap_get(db, "name", 4));
+  ASSERT_GE(hmap_set_chars(&db, "n2", "v2"), 0);
+  ASSERT_EQ(2, hmap_size(db));
+
+  buffer_tosa(&b, &sa);
+  hmap_dump(db, &b);
+  buffer_flush(&b);
+  ASSERT_EQ(1, sa.len > 0);
+  stralloc_nul(&sa);
+  ASSERT_EQ(1, str_find(sa.s, "name") < sa.len);
+  ASSERT_EQ(1, str_find(sa.s, "\"value\"") < sa.len);
+  ASSERT_EQ(1, str_find(sa.s, "\"v2\"") < sa.len);
+  ASSERT_EQ(1, str_find(sa.s, "name") < str_find(sa.s, "n2")); /* insertion order */
+
+  stralloc_free(&sa);
+  hmap_destroy(&db);
+}
+
 #define RUN_HMAP_TESTS() \
   RUN(test_hmap_init_destroy); \
   RUN(test_hmap_add_search); \
@@ -381,6 +413,7 @@ TEST(test_hmap_free_data) {
   RUN(test_hmap_binary_keys); \
   RUN(test_hmap_truncate); \
   RUN(test_hmap_set_stralloc); \
-  RUN(test_hmap_free_data)
+  RUN(test_hmap_free_data); \
+  RUN(test_hmap_set_chars_dump)
 
 TESTS(hmap) { RUN_HMAP_TESTS(); }
