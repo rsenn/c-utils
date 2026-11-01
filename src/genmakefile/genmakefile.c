@@ -1115,6 +1115,98 @@ find_included(const char* from, const char* name, stralloc* out) {
   return 0;
 }
 
+/* The value of a macro for --pair-headers: 1 if defined (its value in *val, 1 when it has none), 0 if not,
+ * -1 if it cannot be known (a name of the compiler or the system: the branch is taken). */
+static int
+pair_macro(strarray* defs, const char* name, size_t n, long* val) {
+  size_t i;
+
+  for(i = 0; i < strarray_size(defs); ++i) {
+    const char* d = strarray_at(defs, i);
+    size_t e = str_chr(d, '=');
+
+    if(e == n && !byte_diff(d, n, name)) {
+      *val = d[e] ? atol(d + e + 1) : 1;
+      return 1;
+    }
+  }
+  if(n > 1 && name[0] == '_' && (name[1] == '_' || (name[1] >= 'A' && name[1] <= 'Z')))
+    return -1;
+  return 0;
+}
+
+/* The condition of #if/#ifdef/#ifndef/#elif for --pair-headers: 1, 0 or -1 (not known: taken). */
+static int
+pair_condition(strarray* defs, const char* dir, size_t dn, const char* arg, size_t an) {
+  int neg = 0, r;
+  long v = 0;
+  size_t i = 0, j;
+
+  while(an && (arg[an - 1] == ' ' || arg[an - 1] == '\t' || arg[an - 1] == '\r'))
+    --an;
+  while(i < an && (arg[i] == ' ' || arg[i] == '\t'))
+    ++i;
+  arg += i;
+  an -= i;
+
+  if(dn == 5 && !byte_diff(dir, 5, "ifdef")) {
+    size_t m = str_chrs(arg, " \t/", 3) < an ? str_chrs(arg, " \t/", 3) : an;
+
+    return pair_macro(defs, arg, m, &v);
+  }
+  if(dn == 6 && !byte_diff(dir, 6, "ifndef")) {
+    size_t m = str_chrs(arg, " \t/", 3) < an ? str_chrs(arg, " \t/", 3) : an;
+
+    r = pair_macro(defs, arg, m, &v);
+    return r < 0 ? -1 : !r;
+  }
+
+  /* #if / #elif: 0, 1, NAME, !NAME, defined(NAME), !defined(NAME), defined NAME */
+  if(an && arg[0] == '!') {
+    neg = 1;
+    ++arg;
+    --an;
+    while(an && (arg[0] == ' ' || arg[0] == '\t')) {
+      ++arg;
+      --an;
+    }
+  }
+  if(an >= 7 && !byte_diff(arg, 7, "defined")) {
+    arg += 7;
+    an -= 7;
+    while(an && (arg[0] == ' ' || arg[0] == '\t' || arg[0] == '(')) {
+      ++arg;
+      --an;
+    }
+    for(j = 0; j < an && (isalnum((unsigned char)arg[j]) || arg[j] == '_'); ++j)
+      ;
+    if(j == an || arg[j] == ')' || arg[j] == ' ' || arg[j] == '\t') {
+      /* nothing but the name may follow, else the expression is too complex */
+      size_t t = j;
+
+      while(t < an && (arg[t] == ')' || arg[t] == ' ' || arg[t] == '\t'))
+        ++t;
+      if(t != an)
+        return -1;
+      r = pair_macro(defs, arg, j, &v);
+      return r < 0 ? -1 : (neg ? !r : r);
+    }
+    return -1;
+  }
+  for(j = 0; j < an && (isalnum((unsigned char)arg[j]) || arg[j] == '_'); ++j)
+    ;
+  if(j != an)
+    return -1; /* an expression */
+  if(an == 1 && (arg[0] == '0' || arg[0] == '1'))
+    return neg ? arg[0] == '0' : arg[0] == '1';
+  r = pair_macro(defs, arg, an, &v);
+  if(r < 0)
+    return -1;
+  if(!r)
+    return neg ? 1 : 0; /* an undefined name is 0 */
+  return neg ? !v : !!v;
+}
+
 /**
  * @brief      With --pair-headers: for every quoted #include "x.h" that is
  *             found, the file x.c next to it is a source of the program too
@@ -1128,6 +1220,8 @@ pair_header_sources(strarray* sources) {
   for(i = 0; i < strarray_size(sources); ++i) {
     stralloc text, path, cand;
     size_t pos = 0;
+    strarray defs;
+    int active[64], taken[64], depth;
 
     stralloc_init(&text);
     if(openreadclose(strarray_at(sources, i), &text, 4096) <= 0) {
@@ -1136,6 +1230,14 @@ pair_header_sources(strarray* sources) {
     }
     stralloc_init(&path);
     stralloc_init(&cand);
+    {
+      size_t di;
+
+      strarray_init(&defs);
+      for(di = 0; di < strarray_size(&project_defs); ++di)
+        strarray_push(&defs, strarray_at(&project_defs, di));
+    }
+    depth = 0;
     while(pos < text.len) {
       size_t eol = byte_chr(text.s + pos, text.len - pos, '\n');
       const char* line = text.s + pos;
@@ -1148,6 +1250,67 @@ pair_header_sources(strarray* sources) {
         ++k;
         while(k < n && (line[k] == ' ' || line[k] == '\t'))
           ++k;
+        {
+          /* conditional compilation: only what is active counts */
+          size_t dl = 0, ai;
+          int all = 1, c;
+
+          while(k + dl < n && isalpha((unsigned char)line[k + dl]))
+            ++dl;
+          ai = k + dl;
+          if((dl == 2 && !byte_diff(line + k, 2, "if")) || (dl == 5 && !byte_diff(line + k, 5, "ifdef")) ||
+             (dl == 6 && !byte_diff(line + k, 6, "ifndef"))) {
+            c = pair_condition(&defs, line + k, dl, line + ai, n - ai);
+            if(depth < 63) {
+              ++depth;
+              active[depth] = c != 0;
+              taken[depth] = c != 0;
+            }
+            continue;
+          } else if(dl == 4 && !byte_diff(line + k, 4, "elif") && depth > 0) {
+            c = taken[depth] ? 0 : pair_condition(&defs, line + k, dl, line + ai, n - ai);
+            active[depth] = c != 0;
+            if(c)
+              taken[depth] = 1;
+            continue;
+          } else if(dl == 4 && !byte_diff(line + k, 4, "else") && depth > 0) {
+            active[depth] = !taken[depth];
+            taken[depth] = 1;
+            continue;
+          } else if(dl == 5 && !byte_diff(line + k, 5, "endif") && depth > 0) {
+            --depth;
+            continue;
+          }
+          for(c = 1; c <= depth; ++c)
+            if(!active[c])
+              all = 0;
+          if(!all)
+            continue;
+          if(dl == 6 && !byte_diff(line + k, 6, "define")) {
+            size_t b = ai, e;
+
+            while(b < n && (line[b] == ' ' || line[b] == '\t'))
+              ++b;
+            e = b;
+            while(e < n && (isalnum((unsigned char)line[e]) || line[e] == '_'))
+              ++e;
+            if(e > b) {
+              stralloc d;
+              size_t v = e;
+
+              while(v < n && (line[v] == ' ' || line[v] == '\t'))
+                ++v;
+              stralloc_init(&d);
+              stralloc_copyb(&d, line + b, e - b);
+              stralloc_catc(&d, '=');
+              stralloc_catb(&d, line + v, n - v);
+              stralloc_nul(&d);
+              strarray_push(&defs, d.s);
+              stralloc_free(&d);
+            }
+            continue;
+          }
+        }
         if(n - k > 7 && !byte_diff(line + k, 7, "include")) {
           size_t q;
 
@@ -1192,6 +1355,7 @@ pair_header_sources(strarray* sources) {
         }
       }
     }
+    strarray_free(&defs);
     stralloc_free(&text);
     stralloc_free(&path);
     stralloc_free(&cand);
