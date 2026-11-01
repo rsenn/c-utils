@@ -32,5 +32,6 @@ buffer_write_fd(buffer* b, fd_type fd) {
 
   b->op = (buffer_op_proto*)(void*)&write;
   b->deinit = &buffer_free;
+  b->cookie = 0;
   return 0;
 }

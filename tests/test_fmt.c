@@ -2,6 +2,7 @@
 #include "../lib/fmt.h"
 #include "../lib/byte.h"
 #include "../lib/str.h"
+#include "../lib/tai.h"
 
 /* fmt_escapecharhtml is defined in lib/fmt/fmt_escapecharxml.c (GNU alias)
  * or lib/fmt/fmt_escapecharhtml.c, but never declared in fmt.h. See BUGS. */
@@ -608,7 +609,46 @@ TEST(test_fmt_pb_netstring) {
   ASSERT_EQ('y', b[1]);
 }
 
+
+/*
+ * protocol buffer field writers: tag + payload; NULL measures
+ */
+TEST(test_fmt_pb_fields) {
+  char b[32];
+  double d = 1.5;
+
+  ASSERT_EQ(2, fmt_pb_int(b, 1, 150) - 1); /* tag(1) + varint(150) is 3 bytes */
+  ASSERT_EQ(3, fmt_pb_int(b, 1, 150));
+  ASSERT_EQ(8, b[0]);                      /* field 1, type 0 */
+  ASSERT_EQ((char)0x96, b[1]);
+  ASSERT_EQ(1, b[2]);
+
+  ASSERT_EQ(2, fmt_pb_sint(b, 2, -1));
+  ASSERT_EQ(0x10, b[0]);                   /* field 2, type 0 */
+  ASSERT_EQ(1, b[1]);                      /* zigzag(-1) */
+
+  ASSERT_EQ(9, fmt_pb_double(b, 3, d));    /* tag + 8 bytes, type 1 */
+  ASSERT_EQ(0x19, b[0]);
+  ASSERT_EQ(3, fmt_pb_int(NULL, 1, 150));
+}
+
+/*
+ * size_t fmt_tai(char*, const struct tai*);  ISO 8601 of a TAI second count
+ */
+TEST(test_fmt_tai) {
+  struct tai t;
+  char b[32];
+
+  /* TAI seconds are written as if they were Unix seconds: no leap second
+   * correction, so the epoch (TAI 10 s ahead of UTC) reads 00:00:10 */
+  tai_unix(&t, 0);
+  ASSERT_EQ(20, fmt_tai(b, &t));
+  ASSERT_EQ(0, byte_diff(b, 20, "1970-01-01T00:00:10Z"));
+}
+
 #define RUN_FMT_TESTS() \
+  RUN(test_fmt_pb_fields); \
+  RUN(test_fmt_tai); \
   RUN(test_fmt_pb_netstring); \
   RUN(test_fmt_long); \
   RUN(test_fmt_ulong); \

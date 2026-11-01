@@ -25,6 +25,7 @@ buffer_mmapshared_fd(buffer* b, fd_type fd) {
     b->fd = -1;
     b->op = &buffer_dummyreadmmap;
     b->deinit = 0;
+    b->cookie = 0;
     return -1;
   }
 
@@ -32,5 +33,6 @@ buffer_mmapshared_fd(buffer* b, fd_type fd) {
   b->a = b->n;
   b->op = &buffer_dummyreadmmap;
   b->deinit = &buffer_munmap;
+  b->cookie = 0;
   return 0;
 }

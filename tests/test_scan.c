@@ -322,7 +322,111 @@ TEST(test_scan_compat_extra) {
   }
 }
 
+
+/*
+ * size_t scan_longn / scan_xlongn / scan_8longn (bounded versions)
+ */
+TEST(test_scan_bounded) {
+  long l;
+  unsigned long u;
+
+  ASSERT_EQ(3, scan_longn("-1234", 3, &l));
+  ASSERT_EQ(-12, l);
+  ASSERT_EQ(2, scan_xlongn("ffff", 2, &u));
+  ASSERT_EQ(0xff, u);
+  ASSERT_EQ(2, scan_8longn("7777", 2, &u));
+  ASSERT_EQ(077, u);
+  ASSERT_EQ(0, scan_longn("12", 0, &l));
+}
+
+/*
+ * size_t scan_charsetnrskip / scan_noncharsetnrskip count from the END
+ */
+TEST(test_scan_rskip) {
+  ASSERT_EQ(3, scan_charsetnrskip("abcaaa", "a", 6));
+  ASSERT_EQ(0, scan_charsetnrskip("abcb", "a", 4));
+  ASSERT_EQ(3, scan_noncharsetnrskip("aXbcd", "X", 5));
+  ASSERT_EQ(0, scan_noncharsetnrskip("abX", "X", 3));
+}
+
+/*
+ * size_t scan_ansiskip(const char*, size_t);
+ */
+TEST(test_scan_ansiskip) {
+  ASSERT_EQ(4, scan_ansiskip("\x1b[1mX", 5));      /* ESC [ 1 m */
+  ASSERT_EQ(7, scan_ansiskip("\x1b[31;1mX", 9));
+  ASSERT_EQ(0, scan_ansiskip("abc", 3));
+  ASSERT_EQ(0, scan_ansiskip("\x1b[1", 3));         /* cut off */
+  ASSERT_EQ(0, scan_ansiskip("", 0));
+  ASSERT_EQ(4, scan_ansiskip("\x1b[A~", 4)); /* key sequence with ~ */
+}
+
+/*
+ * size_t scan_xmlescape(const char* src, char* dest);
+ */
+TEST(test_scan_xmlescape) {
+  char c = 0;
+
+  ASSERT_EQ(5, scan_xmlescape("&amp;x", &c));
+  ASSERT_EQ('&', c);
+  ASSERT_EQ(4, scan_xmlescape("&lt;", &c));
+  ASSERT_EQ('<', c);
+  ASSERT_EQ(6, scan_xmlescape("&quot;", &c));
+  ASSERT_EQ('"', c);
+  ASSERT_EQ(5, scan_xmlescape("&#65;", &c));
+  ASSERT_EQ('A', c);
+  ASSERT_EQ(6, scan_xmlescape("&#x41;", &c));
+  ASSERT_EQ('A', c);
+  ASSERT_EQ(1, scan_xmlescape("plain", &c)); /* not an escape: one character is copied */
+  ASSERT_EQ('p', c);
+  ASSERT_EQ(1, scan_xmlescape("&foo;", &c)); /* unknown entity: the & is copied */
+  ASSERT_EQ('&', c);
+  ASSERT_EQ(1, scan_xmlescape("&#65", &c));  /* missing semicolon */
+}
+
+/*
+ * size_t scan_utf8_sem: scan_utf8 plus rejection of surrogates/non-characters
+ */
+TEST(test_scan_utf8_sem) {
+  uint32 n;
+
+  ASSERT_EQ(2, scan_utf8_sem("\xc3\xa9", 2, &n));
+  ASSERT_EQ(0xe9, n);
+  ASSERT_EQ(0, scan_utf8_sem("\xed\xa0\x80", 3, &n)); /* surrogate */
+  ASSERT_EQ(0, scan_utf8_sem("\xef\xbf\xbe", 3, &n)); /* U+FFFE */
+  ASSERT_EQ(0, scan_utf8_sem("\xef\xb7\x90", 3, &n)); /* U+FDD0 */
+}
+
+/*
+ * protocol buffer tags and signed varints round trip with fmt_pb_*
+ */
+TEST(test_scan_pb_roundtrip) {
+  char b[16];
+  size_t field = 0;
+  unsigned char type = 0;
+  signed long long s = 0;
+  size_t n;
+
+  n = fmt_pb_tag(b, 21, 2);
+  ASSERT_EQ(n, scan_pb_tag(b, n, &field, &type));
+  ASSERT_EQ(21, field);
+  ASSERT_EQ(2, type);
+
+  n = fmt_pb_type0_sint(b, -12345);
+  ASSERT_EQ(n, scan_pb_type0_sint(b, n, &s));
+  ASSERT_EQ(-12345, s);
+  n = fmt_pb_type0_sint(b, 12345);
+  ASSERT_EQ(n, scan_pb_type0_sint(b, n, &s));
+  ASSERT_EQ(12345, s);
+}
+
 #define RUN_SCAN_TESTS() \
+  RUN(test_scan_bounded); \
+  RUN(test_scan_rskip); \
+  RUN(test_scan_ansiskip); \
+  RUN(test_scan_xmlescape); \
+  RUN(test_scan_utf8_sem); \
+  RUN(test_scan_pb_roundtrip); \
   RUN(test_scan_compat_extra); \
   RUN(test_scan_ulong); \
   RUN(test_scan_xlong); \

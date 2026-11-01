@@ -32,5 +32,7 @@ str_versdiff(const char* s1, const char* s2) {
     b = b * 10 + s2[j] - '0';
     ++j;
   }
+  if(a == b) /* same number written differently (01 and 1): compare the rest */
+    return str_versdiff(s1 + i, s2 + j);
   return a < b ? -1 : 1;
 }
