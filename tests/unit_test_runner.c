@@ -53,6 +53,7 @@ TESTS(utf8);
 TESTS(dlist);
 TESTS(cbmap);
 TESTS(set);
+TESTS(sig);
 TESTS(ucs);
 TESTS(textbuf);
 TESTS(charbuf);
@@ -116,6 +117,7 @@ START() {
   EXEC(dlist);
   EXEC(cbmap);
   EXEC(set);
+  EXEC(sig);
   EXEC(ucs);
   EXEC(textbuf);
   EXEC(charbuf);

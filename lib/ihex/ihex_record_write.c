@@ -12,6 +12,9 @@ ihex_record_write(ihex_record* ihr, buffer* b) {
   for(i = 0; i < ihr->length; i++)
     buffer_putxlong0u(b, ihr->data[i], 2);
 
+  /* always the checksum of what is written: a record made by ihex_record_insert and
+   * filled in afterwards had the stale value of its creation */
+  ihr->checksum = ihex_record_checksum(ihr);
   buffer_putxlong0u(b, ihr->checksum, 2);
   buffer_putnlflush(b);
 }

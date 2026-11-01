@@ -77,6 +77,7 @@ size_t ihex_copy_to(ihex_file*, uint32 base, uint8* image, uint8* map, size_t si
 
 /* returns the number of records with a wrong checksum */
 size_t ihex_verify(ihex_file*);
+size_t ihex_strip_below(ihex_file*, uint32 addr);
 
 /* writes x[n] for address addr as data records, adds extended addresses */
 void ihex_write_data(buffer*, uint16* hi16, uint32 addr, const uint8* x, size_t n, unsigned reclen);
