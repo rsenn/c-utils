@@ -29,8 +29,10 @@ cbmap_get(cbmap_t map, void* key, size_t key_len, void** value, size_t* value_le
 
   if(data->key_len == key_len) {
     if(KEY_COMPARE(data->key, key, key_len) == 0) {
-      *value = (void*)data->value;
-      *value_len = data->value_len;
+      if(value)
+        *value = (void*)data->value;
+      if(value_len)
+        *value_len = data->value_len;
       return FOUND;
     }
   }

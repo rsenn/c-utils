@@ -171,7 +171,7 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_SIZE hmap_size
 #define MAP_ZERO(map) ((map) = 0)
 #define MAP_ISNULL(map) ((map) == 0)
-#define MAP_NEW(map) hmap_init(1024, &(map))
+#define MAP_NEW(map) hmap_init(8, &(map))
 #define MAP_DESTROY(map) hmap_destroy(&(map))
 #define MAP_FOREACH(map, iter) hmap_foreach(map, iter)
 

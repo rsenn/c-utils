@@ -54,7 +54,7 @@ output_var(buffer* b, MAP_T* vars, const char* name, int serial, build_tool_t to
   set_iterator_t it;
   MAP_PAIR_T t = 0;
 
-  set_init(&refvars, 0);
+  set_init(&refvars);
 
   if(MAP_SEARCH(*vars, name, str_len(name) + 1, &t)) {
     var = MAP_ITER_VALUE(t);
@@ -217,7 +217,7 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
   }
 
   stralloc_zero(&sa);
-  stralloc_catset(&sa, &rule->output, " \\\n");
+  set_join(&rule->output, " \\\n", &sa);
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(debug_buf, "RULE OUTPUT: ");
@@ -425,7 +425,14 @@ output_ninja_target(buffer* b, target* rule, char psa) {
     const char* out_dir = str_equal(rule_name, "link") ? dirs.bin.sa.s : dirs.obj.sa.s;
 
     stralloc_init(&path);
-    set_at_sa(&rule->output, 0, &path);
+    {
+      size_t n;
+      const char* x = set_first(&rule->output, &n);
+
+      if(x)
+        stralloc_copyb(&path, x, n);
+      stralloc_nul(&path);
+    }
 
     stralloc_replaces(&path, out_dir, "$objdir");
 

@@ -1,30 +1,27 @@
 #include "../set.h"
 #include <stdlib.h>
 
+/* Releases all memory of the set. It is empty afterwards, like a new SET(),
+ * and can be used again. */
 void
-set_free_array(set_t* set) {
-  bucket_t* next = NULL;
-  uint32 i, n = set->len;
+set_free(set_t* set) {
+  uint32 i;
 
-  for(i = 0; i < n; i++) {
-    next = set->array[i].next;
+  if(!set || !set->array)
+    return;
+
+  for(i = 0; i < set->len; i++) {
+    bucket_t *n = set->array[i].next, *next;
+
     free(set->array[i].value);
 
-    while(next) {
-      set->array[i].next = next->next;
-      free(next->value);
-      free(next);
-      next = set->array[i].next;
+    for(; n; n = next) {
+      next = n->next;
+      free(n->value);
+      free(n);
     }
   }
 
   free(set->array);
-}
-
-void
-set_free(set_t* set) {
-  if(!set)
-    return;
-
-  set_free_array(set);
+  set_init(set);
 }

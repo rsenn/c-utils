@@ -216,9 +216,9 @@ output_cmake_rule(buffer* b, target* rule) {
       set_t deps, libs, srcs;
       set_iterator_t it;
 
-      set_init(&libs, 0);
-      set_init(&deps, 0);
-      set_init(&srcs, 0);
+      set_init(&libs);
+      set_init(&deps);
+      set_init(&srcs);
       buffer_puts(b, lib ? "add_library(\n  " : "add_executable(\n  ");
 
       if(lib || link) {
@@ -397,7 +397,7 @@ output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* inc
     buffer_putnlflush(buffer_2);
   }
 
-  set_init(&libraries, 0);
+  set_init(&libraries);
 
   MAP_FOREACH(*rule_map, t) {
     target* rule = MAP_ITER_VALUE(t);

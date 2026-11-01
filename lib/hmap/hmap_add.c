@@ -1,84 +1,44 @@
-#include "../uint32.h"
-#include "../byte.h"
-#include "../alloc.h"
 #include "../hmap_internal.h"
+#include <stdlib.h>
 
+/* Adds an entry; the value that follows data_type is an int, an unsigned int,
+ * a long, an unsigned long or a double for the numeric types, a char* and its
+ * size_t length for HMAP_DATA_TYPE_CHARS (copied, with a NUL added), a void*
+ * for HMAP_DATA_TYPE_CUSTOM (kept as it is). Returns the number of the bucket
+ * (0 or more), HMAP_TUPLE_ALREADY_EXIST if the key is in the map, or an error
+ * code. */
 int
 hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...) {
-  TUPLE *new_tuple = NULL, *ptr_tuple = NULL, *root_tuple = NULL;
-  int r = 0;
-  size_t d_len = 0;
-  char* data = NULL;
+  TUPLE* t;
+  uint32 hash;
   va_list args;
+  int r;
 
-  int32 index = hmap_hash(key, k_len) % (*hmap_db)->bucket_size;
+  (void)dup_flag;
 
   VALIDATE_DB(*hmap_db, key, k_len);
 
-  va_start(args, data_type);
-  r = hmap_search(*hmap_db, key, k_len, &ptr_tuple);
+  hash = hmap_hash(key, k_len);
 
-  if(r == HMAP_SUCCESS) {
+  if(hmap_lookup(*hmap_db, key, k_len, hash))
     return HMAP_TUPLE_ALREADY_EXIST;
-  }
 
-  if(r == HMAP_TUPLE_NOT_FOUND) { /* there are avialable record to store */
+  if((t = hmap_tuple_new(key, k_len, hash)) == NULL)
+    return HMAP_ALLOCATED_ERROR;
 
-    root_tuple = ((*hmap_db)->tuple + index);
+  va_start(args, data_type);
+  r = hmap_set_data(t, data_type, &args);
+  va_end(args);
 
-    if(root_tuple == NULL) {
-      return HMAP_TUPUL_EMPTY;
-    }
-
-    if(root_tuple->key_len == 0) { /* Reuse record */
-      new_tuple = root_tuple;
-
-      HMAP_DUMP("Primary :> ", 0, 0);
-      HMAP_SET_DATA();
-
-      byte_copy(new_tuple->key, k_len, key);
-      new_tuple->key[k_len] = 0;
-      new_tuple->key_len = k_len;
-      new_tuple->index = index;
-      new_tuple->type = HMAP_TUPLE_PRIMARY;
-      new_tuple->data_type = data_type;
-
-      if(root_tuple->hash_next == NULL && root_tuple->hash_prev == NULL) {
-        root_tuple->hash_next = root_tuple->hash_prev = root_tuple;
-      } else {
-        HDB_HASH_APPEND(root_tuple, root_tuple);
-      }
-      HDB_LIST_APPEND((*hmap_db)->list_tuple, root_tuple);
-
-    } else {
-      new_tuple = (TUPLE*)alloc(sizeof(TUPLE)); /* Create new recordeto store data */
-      byte_zero(new_tuple, sizeof(TUPLE));
-
-      if(new_tuple == NULL) {
-        return HMAP_ALLOCATED_ERROR;
-      }
-      HMAP_DUMP("Secondary :> ", 0, 0);
-      HMAP_SET_DATA();
-
-      byte_copy(new_tuple->key, k_len, key);
-      new_tuple->key[k_len] = 0;
-      new_tuple->key_len = k_len;
-      new_tuple->index = index;
-      new_tuple->hash_next = new_tuple->hash_prev = NULL;
-      new_tuple->next = new_tuple->prev = NULL;
-      new_tuple->type = HMAP_TUPLE_SECONDARY;
-      new_tuple->data_type = data_type;
-
-      (*hmap_db)->secondary_tuple_count++;
-      HDB_LIST_APPEND((*hmap_db)->list_tuple, new_tuple);
-      HDB_HASH_APPEND(root_tuple, new_tuple);
-    }
-
-  } else {
+  if(r != HMAP_SUCCESS) {
+    free(t);
     return r;
   }
 
-  (*hmap_db)->tuple_count++;
+  if((r = hmap_link(*hmap_db, t)) < 0) {
+    hmap_free_data(t);
+    free(t);
+  }
 
-  return index;
+  return r;
 }

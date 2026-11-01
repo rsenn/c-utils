@@ -934,7 +934,7 @@ input_process_rules(target* all) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
     size_t dlen;
-    char* dep = set_at_n(&rule->prereq, -1, &dlen);
+    char* dep = set_last(&rule->prereq, &dlen);
     bool link = dep ? is_object_b(dep, dlen) : 0;
     bool compile = !link && is_object(name);
 
@@ -1106,7 +1106,7 @@ input_process_rules(target* all) {
     const char* name = MAP_ITER_KEY(t);
     target* rule = MAP_ITER_VALUE(t);
     size_t dlen;
-    char* dep = set_at_n(&rule->prereq, 0, &dlen);
+    char* dep = set_first(&rule->prereq, &dlen);
     bool link = dep ? is_object_b(dep, dlen) : false;
     bool compile = !link && is_object(name);
 

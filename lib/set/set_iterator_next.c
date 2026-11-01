@@ -1,46 +1,13 @@
 #include "../set.h"
-#include <stdlib.h>
-#include <assert.h>
 
+/* Moves the iterator to the next value. Returns 1, or 0 when there is none
+ * (the iterator is then at the end and its value is NULL). */
 int
 set_iterator_next(set_iterator_t* it) {
-  const bucket_t* b;
-  uint32 index;
-
-  if(!(b = it->current))
-    return 0;
-
-  // check if there are overflowed buckets in our current position in the
-  // array
-
-  if(b->next) {
-    it->current = b->next;
-    return 1;
+  if(it->current) {
+    it->current = it->current->list_next;
+    ++it->index;
   }
 
-  // no more buckets in our current index, so increment index
-  // and seach for non-empty bucket
-  index = it->index + 1;
-
-  if(index >= it->set->len) {
-    it->current = NULL;
-    return 3;
-  }
-
-  b = &(it->set->array[index]);
-
-  while(!b->value) {
-    ++index;
-
-    if(index >= it->set->len) {
-      it->current = NULL;
-      return 3;
-    }
-    b = &(it->set->array[index]);
-  }
-
-  it->current = b;
-  it->index = index;
-
-  return 1;
+  return it->current != NULL;
 }

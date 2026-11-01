@@ -1,24 +1,18 @@
 #include "../hmap_internal.h"
+#include <stdlib.h>
 
+/* Makes an empty map. bucket_size is the size the table starts with (it
+ * grows by itself), the table is only made when the first entry comes, so an
+ * empty map costs next to nothing. */
 int
 hmap_init(int bucket_size, HMAP_DB** hmap_db) {
-  HMAP_DB* new_hmap_db = (HMAP_DB*)calloc(1, sizeof(HMAP_DB));
+  HMAP_DB* db = (HMAP_DB*)calloc(1, sizeof(HMAP_DB));
 
-  if(new_hmap_db == NULL) {
+  if(db == NULL)
     return HMAP_CREATE_DB_ERROR;
-  }
 
-  new_hmap_db->bucket_size = bucket_size;
-  new_hmap_db->tuple_count = 0;
-  new_hmap_db->list_tuple = NULL;
-  new_hmap_db->tuple = (TUPLE*)calloc(bucket_size, sizeof(TUPLE));
+  db->bucket_size = bucket_size > 0 ? bucket_size : 8;
 
-  if(new_hmap_db->tuple == NULL) {
-    free(new_hmap_db);
-    return HMAP_CREATE_TUPUL_ERROR;
-  }
-
-  *hmap_db = new_hmap_db;
-
+  *hmap_db = db;
   return HMAP_SUCCESS;
 }

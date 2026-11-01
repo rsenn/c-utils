@@ -7,13 +7,14 @@
 #define HMAP_H 1
 
 #include "typedefs.h"
+#include "uint32.h"
+#include "stralloc.h"
+#include "buffer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define MAP_BUCKET 1024
-#define MAX_SIZE_KEY 1024
 
 enum hmap_error_enum {
   HMAP_SUCCESS = 0,
@@ -32,7 +33,6 @@ enum hmap_error_enum {
   HMAP_ALL
 };
 
-enum hmap_tuple_type { HMAP_TUPLE_PRIMARY = 0, HMAP_TUPLE_SECONDARY };
 
 typedef enum hmap_data_type {
   HMAP_DATA_TYPE_INT = 0,
@@ -45,19 +45,15 @@ typedef enum hmap_data_type {
   HMAP_DATA_TYPE_TUPLE,
 } HMAP_DATA_TYPE;
 
+/* One entry of a map. Read its fields, never write them. */
 typedef struct tuple {
-  struct tuple* next;
+  struct tuple* next; /* the next entry in the order of insertion; circular */
   struct tuple* prev;
-  struct tuple* hash_next;
-  struct tuple* hash_prev;
-
-  char key[MAX_SIZE_KEY];
+  struct tuple* hash_next; /* the next entry of the same bucket */
+  char* key;               /* copy of the key, ends in a NUL byte, in the memory of the entry */
   size_t key_len;
-  int type;
-  int index;
+  uint32 hash;
   size_t data_len;
-  void* data;
-
   int data_type;
   union {
     int val_int;
@@ -72,24 +68,21 @@ typedef struct tuple {
   } vals;
 } TUPLE;
 
+/* A map: entries are found by hash and kept in the order of insertion. The
+ * table is made when the first entry comes and doubles when there are more
+ * entries than buckets, so adding, finding and deleting take constant time. */
 typedef struct hmap_db {
   int tuple_count;
-  int secondary_tuple_count;
   int bucket_size;
-  TUPLE* tuple;
+  TUPLE** table;
   TUPLE* list_tuple;
 } HMAP_DB;
 
-int hmap_add_tuple_with_data(HMAP_DB** hmap_db, const void* key, size_t k_len, void* data);
 int hmap_add(HMAP_DB** hmap_db, const void* key, size_t k_len, int dup_flag, int data_type, ...);
 int hmap_delete(HMAP_DB** hmap_db, const void* key, size_t k_len);
 int hmap_destroy(HMAP_DB** hmap_db);
 int hmap_free_data(TUPLE* tuple);
 int hmap_init(int bucket_size, HMAP_DB** hmap_db);
-int hmap_is_locate(HMAP_DB* hmap_db, void* key, size_t k_len);
-int hmap_print_list(HMAP_DB* my_hmap_db);
-int hmap_print_table(HMAP_DB* my_hmap_db);
-int hmap_print_tree(HMAP_DB* my_hmap_db);
 int hmap_search(HMAP_DB* hmap_db, const void* key, size_t k_len, TUPLE** data);
 int hmap_set_chars(HMAP_DB** hmap_db, const char* key, const char* data);
 TUPLE* hmap_set(HMAP_DB**, const void*, size_t k_len, void* data, size_t d_len);
@@ -138,8 +131,6 @@ hmap_iterator_dereference(TUPLE** it) {
 #define hmap_iterator_decrement(it) ((it) = &(*(it))->prev)
 #define hmap_iterator_dereference(it_ptr) (*(it_ptr))
 
-#define hmap_iterator_distance(it1, it2) hmap_distance(&(it1), &(it2))
-int hmap_distance(TUPLE** it1, TUPLE** it2);
 
 #define hmap_iterator_equal(it1, it2) ((it1) == (it2))
 /*#define hmap_iterator_equal(it1, it2) ( ((it1) == NULL && (it2)->next ==
@@ -150,13 +141,9 @@ int hmap_distance(TUPLE** it1, TUPLE** it2);
 //#define hmap_iterator_is_last(hmap_db,it)  ((hmap_db)->list_tuple ==
 //(*(it))->next)
 
-#ifdef STRALLOC_H
 int hmap_set_stralloc(HMAP_DB** hmap_db, const stralloc* key, const stralloc* data);
-#endif
 
-#ifdef BUFFER_H
 void hmap_dump(HMAP_DB* my_hmap_db, buffer*);
-#endif
 
 #ifdef __cplusplus
 }
