@@ -1,0 +1,57 @@
+; SDCC for PIC.  Seen: pictest/build/sdcc.mk, libpicp/Makefile.sdcc,
+; compiler.c.  Versions seen: 3.6.0 (default), 4.6.0.
+[toolchain]
+name       = sdcc
+kind       = firmware
+c-standard = c99
+discover   = sdcc ; /usr/bin/sdcc ; C:/Program Files/SDCC/bin/sdcc.exe
+needs      = gputils
+
+[names]
+object     = .o
+library    = lib%.a
+program    = %.hex
+outputs    = hex cod
+byproducts = .cod .lst .asm .adb .map
+
+[family]
+pic14 = 10f 12f 16f
+pic16 = 18f
+; 12f1840 is forced to pic14 in sdcc.mk even though the test would not say so
+
+[commands]
+cc = $(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+ld = $(CC) $(LDFLAGS) $(CFLAGS) -o $@ $^ $(LIBS)
+ar = sdar r $@ $^
+
+[flags]
+port.pic14 = -mpic14
+port.pic16 = -mpic16
+chip       = -p$(CHIP)
+nonfree    = --use-non-free
+speed      = --opt-code-speed
+size       = --opt-code-size
+float      = --float-reent
+debug      = --debug                       ; compile AND link
+define     = -D__$(CHIP)=1 -DSDCC=1 -D__SDCC=1
+libs.pic14 = -llibm.lib
+libs.pic16 = -llibm18f.lib
+ihx        = --out-fmt-ihx
+
+[rule.lkr]
+when     = $(CODE_OFFSET)
+target   = $(OBJDIR)/$(CHIP)_at$(CODE_OFFSET).lkr
+depends  = $(GPUTILS_PREFIX)/share/gputils/lkr/$(CHIP)_g.lkr
+; GPUTILS_PREFIX = dirname(dirname(which gplink))
+command  = sed 's/CODEPAGE   NAME=page       START=0x0 /CODEPAGE   NAME=page       START=$(CODE_OFFSET) /' $< > $@
+ldflags  = -Wl-s -Wl$(LKR) --ivt-loc=$(CODE_OFFSET+8)
+
+[rule.hexfilter]
+; sdcc's crt0 writes a reset GOTO at 0x0000 regardless; drop hex data
+; records below the offset
+when     = $(CODE_OFFSET)
+target   = $@
+command  = hexstrip --below $(CODE_OFFSET) $@      ; gawk version in doc/genmakefile-toolchains.md 4.2
+
+[notes]
+code-loc = ignored by the pic16 port

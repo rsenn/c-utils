@@ -1,0 +1,76 @@
+; Microchip XC8 v1.x (HI-TECH heritage).  Seen: pictest/build/xc8.mk,
+; MPLAB X Makefile-<conf>.mk (v1.43, v1.45), lc-meter/*.xc8
+[toolchain]
+name        = xc8-v1
+kind        = firmware
+c-standard  = c99
+discover    = /opt/microchip/xc8/v*/bin/xc8 ; C:/Program Files*/Microchip/xc8/v*/bin/xc8.exe
+version-dir = v%                           ; directory is "v1.43"
+
+[names]
+object   = .p1
+library  = %.lpp
+program  = %.hex
+outputs  = hex cof elf map bin cfg
+byproducts = .as .lst .sym .rlf .sdb .pre .hxl funclist
+
+[family]
+; first letters of the chip name decide
+pic16    = 10f 12f 16f
+pic18    = 18f
+
+[predef.table]
+all   = __XC=1 __XC8=1 __XC__=1 __XC8__=1 __PICC__=1 __PICCPRO__=1 HI_TECH_C=1
+pic16 = PIC16=1
+pic18 = PIC18=1
+chip  = PIC$(CHIP_UPPER)=1 __$(CHIP)=1
+
+[preprocess]
+; scripts/xc8.sh runs a separate Wave based preprocessor first (reason
+; undocumented in the repository; ask the author)
+first   = optional
+command = cpp-xc8 -D__PICCPRO__=1 -D__PICC__=1 -D__XC__=1 -D__XC8__=1 -p1 --disambiguate=0 --c++11 -S $(INCDIR)
+
+[commands]
+compile-cwd = objdir                       ; every -I becomes -I../..., source gets ../
+cc  = $(CC) --pass1 $(CFLAGS) $(CPPFLAGS) --outdir=$(OBJSUBDIR) $<
+ld  = $(CC) $(CFLAGS) $(LDFLAGS) -m$(MAPFILE) -o$@ $^
+ar  = $(CC) $(CFLAGS) $(LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist -o$@.elf $^
+; the link command carries the compile flags (chip, opt, debug)
+
+[flags]
+chip      = --chip=$(CHIP)
+quiet     = -q
+mode      = --mode=pro
+float     = --float=24 --double=32        ; usb projects use 24/24
+warn      = --warn=3
+ident     = -N127                          ; -N255 in MPLAB X
+asmlist   = --asmlist
+debug     = -G --opt=default,+asm,+asmfile,-speed,-space,+debug -D__DEBUG=1 -D_DEBUG=1
+release   = --opt=default,+asm,+asmfile,+speed,-space,-debug,9 -DNDEBUG=1 -D__NDEBUG=1
+minsizerel= --opt=default,+asm,-asmfile,-speed,+space,+debug,3 -DNDEBUG=1 -D__NDEBUG=1
+debugger  = --debugger=$(DEBUGGER)         ; icd2 pickit3 none
+diag-gcc  = --warnformat="%f:%l: warning: (%n) %s" --msgformat="%f:%l: advisory: (%n) %s" --errformat="%f:%l: error: (%n) %s"
+codeoffset= --codeoffset=$(CODE_OFFSET)    ; link only, only when non zero
+runtime   = --runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib
+stack     = --stack=compiled                ; MPLAB X: compiled:auto:auto (pic16) / :auto:auto:auto (pic18)
+summary   = --summary=default,-psect,-class,+mem,-hex,-file
+output.18f= --output=-mcof,+elf --output="default,-inhx032"
+output.16f= --output=-mcof,+elf
+outdir    = --outdir=%
+define    = -D%
+include   = -I%
+
+[rule.cfg]
+target  = $(BINDIR)/$(PROGRAM)_$(BUILD_ID).cfg
+depends = $(BINDIR)/$(PROGRAM)_$(BUILD_ID).hex
+command = piccfg $< > $@
+
+[rewrite]
+define-dedupe = error                       ; duplicate -D<name> is fatal in XC8
+
+[flash]
+pickit3 = pk3cmd.sh
+ipecmd  = ipecmd.sh
+picpgm  = picpgm -if JDM -p PIC$(CHIP_UPPER) -e -p $(HEXFILE)
+picprog = picprog --jdm --device=pic$(CHIP) --input-hexfile=$(HEXFILE) --erase --burn

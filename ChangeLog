@@ -1,5 +1,13 @@
 2026-11-01:
 
+- genmakefile: removed the discontinued HI-TECH C compiler type (htc, picc,
+  picc18); XC8 v1.x, XC8 v2+, SDCC and the others stay. The MPLAB 8 output
+  knows the xc8 and sdcc suites only.
+- doc: added doc/genmakefile-toolchains.md (flags, quirks and option maps of
+  XC8 v1/v2, SDCC, MCC18, gputils, MPLAB X and MPLAB 8, read from the build
+  systems of the PIC repositories); the genmakefile specification is complete
+  with firmware inference, MPLAB X import, verification plan and roadmap;
+  draft descriptors in src/genmakefile/toolchains/.
 - libowfat compatibility: checked every prototype of libowfat 0.32 against
   lib/*.h and ran a differential test of 94 fmt, scan, str, byte, case and
   uintN functions against the real libowfat (tests/libowfat-compat, see

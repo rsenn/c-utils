@@ -56,24 +56,19 @@ get_suite() {
   if(!case_diffs(tools.compiler, "xc8") || str_start(tools.compiler, "xc8"))
     return 0;
 
-  if(!case_diffs(tools.compiler, "htc") || str_start(tools.compiler, "htc"))
-    return 1;
-
   if(!case_diffs(tools.compiler, "sdcc") || str_start(tools.compiler, "sdcc"))
-    return 2;
+    return 1;
 
   return 0;
 }
 
 static const char* compiler_suites[] = {
     "38171385-97B2-4EC5-BF2C-C2C027BA5B04", //!< xc8 guid
-    "507D93FD-16F1-4270-980F-0C7C0207E6D3", //!< htc guid
     "DBB37D42-EAE0-43C3-A936-355514C2170D"  //!< sdcc guid
 };
 
 static const char* compiler_settings[] = {
     "F42384DA-C7ED-4A02-880F-0F5E88735CE2", //!< xc8 guid
-    "3FF1D5F2-E530-4850-9F70-F61D55BD1AC9", //!< htc guid
     "43F7CD89-1294-495E-9525-F268225EB77A"  //!< sdcc guid
 };
 

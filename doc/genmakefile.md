@@ -122,7 +122,7 @@ the binary directory (`-k`, by default the build directory itself).
 
 | option | meaning |
 |---|---|
-| `-t, --compiler-type TYPE` | compiler: `gcc`, `clang`, `tcc`, `msvc`, `icl`, `bcc55`, `bcc`, `lcc`, `occ`, `dmc`, `pocc`, `zapcc`, `htc`, `xc8`, `sdcc`; guessed from `-o` or `-d` when absent |
+| `-t, --compiler-type TYPE` | compiler: `gcc`, `clang`, `tcc`, `msvc`, `icl`, `bcc55`, `bcc`, `lcc`, `occ`, `dmc`, `pocc`, `zapcc`, `xc8`, `sdcc`; guessed from `-o` or `-d` when absent |
 | `-m, --make-type TYPE` | program that runs the file: `gmake`, `make`, `nmake`, `borland`, `omake`, `pomake`, `ninja`, `shell`, `batch`, `mplab`, `mplabx`, `cmake`; derived from the compiler when absent |
 | `-a, --arch MACHINE` | target machine, for example `x86_64` or `i386` |
 | `-s, --system OS` | target operating system |

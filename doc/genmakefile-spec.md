@@ -714,8 +714,8 @@ partly). Guess is printed. `--list-toolchains` shows names and sources
 | --- | --- |
 | native C | gcc clang tcc icc msvc clang-cl dmc lcc pocc occ zapcc |
 | Borland/Embarcadero | bcc55 bcc56 bcc102 (bcc32c) |
-| Microchip | xc8 (v1, v2, v4) xc16 xc32 mplab-xc (aliases) |
-| PIC/8-bit open | sdcc (pic14 pic16 mcs51 stm8 z80) gputils-gcc |
+| Microchip | xc8 v1 (`xc8-v1`), xc8 v2+ (`xc8-v2`), mcc18 (data only), xc16 xc32 |
+| PIC/8-bit open | sdcc (pic14 pic16 mcs51 stm8 z80), gputils (MPASM) |
 | AVR | avr-gcc |
 | ARM | arm-none-eabi-gcc clang-arm armcc |
 | libc variants | gcc+musl gcc+diet gcc+uclibc (same family, `[libc]` section) |
@@ -932,7 +932,12 @@ A single point: all values from the command line, same code path.
 | link | `-l` | `--runtime`, `--codeoffset`, linker script |
 | tests | run | simulator or none |
 
-All handled by descriptor kinds (6), not by a firmware mode.
+All handled by descriptor kinds (6), not by a firmware mode. The knowledge
+collected from the author's build systems is in `doc/genmakefile-toolchains.md`;
+draft descriptors are in `src/genmakefile/toolchains/`.
+
+**Policy (author, 2026-11-01): every supported compiler stays supported and is to
+be improved; only HI-TECH C (`picc`/`picc18`, discontinued, now XC8) was dropped.**
 
 ### 9.2 PIC projects (the authors reference case)
 
@@ -1347,8 +1352,8 @@ so `make USE_USB=1` selects it instead of silently building at the wrong clock.
   `/usr/bin/sdcc`, `C:/Program Files/SDCC`; wine prefixes when the toolchain
   has `runner = wine`. Several versions installed: choose the one the
   project asks for, else the highest not above `max-version`, and say so.
-* **Per-program version**: `seg7test` needs 9.80/9.83 (Hi-Tech C, by chip
-  family) while the rest uses 1.43. In the IR `CCVER` is a variable of the
+* **Per-program version**: `seg7test` asks for 9.80/9.83 (HI-TECH C, dropped
+  2026-11-01) while the rest uses 1.43. In the IR `CCVER` is a variable of the
   *program node*, so one make file can drive two compilers; the descriptor
   selects the command from `$(CCDIR)`.
 * Flag compatibility across versions is a descriptor section per major
@@ -1530,8 +1535,9 @@ author's five repositories then build from `genmakefile` alone.
 
 ### 15.1 Open questions for the author
 
-1. Is `HI-TECH`/Hi-Tech C 9.8x (picc, `seg7test_CCVER`) still a target, or is
-   XC8 1.43 the oldest to support?
+1. ~~Is HI-TECH C still a target?~~ **Answered 2026-11-01: dropped** (discontinued, now
+   XC8). Removed from the code; XC8 v1.x stays. `seg7test_CCVER = 9.8x` in pictest
+   is therefore unsupported and is reported as `unsupported toolchain` by the importer.
 2. Should the MPLAB X importer also *write* MPLAB X projects (`mplab.c` does
    today, partially) from the same description, so one source of truth feeds
    both the IDE and make?

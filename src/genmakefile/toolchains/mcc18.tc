@@ -1,0 +1,23 @@
+; MPLAB C18 (legacy, PIC18 only).  Seen: pictest/build/mcc18.mk.  Maintained
+; as data only.
+[toolchain]
+name     = mcc18
+kind     = firmware
+discover = /opt/microchip/mcc18/bin/mcc18 ; registry HKCU\Software\Microchip\MPLAB IDE\Tool Locations T_MCC18.PIC18
+
+[names]
+object     = .o
+library    = %.lib
+program    = %.hex
+outputs    = hex cof map
+byproducts = .s .lst .sym .hxl .rlf .sdb .pre
+
+[commands]
+cc = $(CC) $(CFLAGS) $(CPPFLAGS) -c $<
+ld = mplink $(LDFLAGS) -o$@ $^
+ar = mplib
+
+[flags]
+debug   = -g
+define  = -D__$(CHIP)=1
+include = -I$(CCDIR)/include
