@@ -1,0 +1,78 @@
+#include "../fmt.h"
+#include "../uint16.h"
+#include "../uint32.h"
+
+static void
+fmt_hex4(char* dest, uint16 w) {
+  dest[3] = fmt_tohex(w & 0xf);
+  w >>= 4;
+  dest[2] = fmt_tohex(w & 0xf);
+  w >>= 4;
+  dest[1] = fmt_tohex(w & 0xf);
+  w >>= 4;
+  dest[0] = fmt_tohex(w & 0xf);
+}
+
+/* The character as it is written inside a JSON string that is quoted with
+ * quote (a double or a single quote): printable ASCII as it is, the quote,
+ * the backslash, the slash and the control characters escaped, anything else as
+ * \uXXXX (a pair for characters above U+FFFF). Returns the number of bytes,
+ * 0 for a value that is no character. fmt_escapecharjson always escapes. */
+size_t
+fmt_escapecharjsonq(char* dest, int c, int quote) {
+  size_t n;
+  uint32 ch = c;
+
+  if(quote != '"' && quote != '\'')
+    quote = '"';
+
+  if((ch == '\'' || ch == '"') && ch != (uint32)(unsigned)quote) {
+    if(dest)
+      dest[0] = (char)ch;
+    return 1;
+  }
+
+  if(ch >= 0x20 && ch < 0x7f && ch != '\\' && ch != '/' && ch != (uint32)(unsigned)quote) {
+    if(dest)
+      dest[0] = (char)ch;
+    return 1;
+  }
+
+  switch(ch) {
+    case '\b': ch = 'b'; goto simple;
+    case '\n': ch = 'n'; goto simple;
+    case '\r': ch = 'r'; goto simple;
+    case '"':
+    case '\\':
+    case '/':
+    simple:
+
+      if(dest) {
+        dest[0] = '\\';
+        dest[1] = (char)ch;
+      }
+      return 2;
+  }
+
+  if(ch > 0xffff) {
+    if(ch > 0x10ffff)
+      return 0; // highest representable unicode codepoint
+
+    if(dest) {
+      dest[0] = '\\';
+      dest[1] = 'u';
+      fmt_hex4(dest + 2, (uint16)(0xd800 | (((ch - 0x10000) >> 10) & 0x3ff)));
+      dest += 6;
+    }
+    ch = (ch & 0x3ff) | 0xdc00;
+    n = 6;
+  } else
+    n = 0;
+
+  if(dest) {
+    dest[0] = '\\';
+    dest[1] = 'u';
+    fmt_hex4(dest + 2, (uint16)ch);
+  }
+  return n + 6;
+}

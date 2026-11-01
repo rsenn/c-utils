@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/scan.h"
+#include "../lib/fmt.h"
 
 /*
  * size_t scan_ulong(const char* src, unsigned long* dest);
@@ -49,14 +50,16 @@ TEST(test_scan_long) {
 }
 
 /*
- * size_t scan_longlong(const char* src, int64* dest);
- * size_t scan_ulonglong(const char* src, uint64* dest);
- * size_t scan_xlonglong(const char* src, uint64* dest);
+ * size_t scan_longlong(const char* src, signed long long* dest);
+ * size_t scan_ulonglong(const char* src, unsigned long long* dest);
+ * size_t scan_xlonglong(const char* src, unsigned long long* dest);
  * size_t scan_octal(const char* src, uint64* dest);
  */
 TEST(test_scan_longlong_variants) {
-  int64 sd;
-  uint64 ud;
+  signed long long sd;
+  unsigned long long ud;
+  int64 s64;
+  uint64 u64;
 
   ASSERT_EQ(4, scan_longlong("-987x", &sd));
   ASSERT_EQ(-987, sd);
@@ -67,8 +70,18 @@ TEST(test_scan_longlong_variants) {
   ASSERT_EQ(4, scan_xlonglong("1a2fZ", &ud));
   ASSERT_EQ(0x1a2f, ud);
 
-  ASSERT_EQ(3, scan_octal("017Z", &ud));
-  ASSERT_EQ(017, ud);
+  /* the siblings for int64 and uint64 (long on 64 bit Linux) */
+  ASSERT_EQ(4, scan_i64("-987x", &s64));
+  ASSERT_EQ(-987, s64);
+  ASSERT_EQ(3, scan_u64("987x", &u64));
+  ASSERT_EQ(987, u64);
+  ASSERT_EQ(4, scan_x64("1a2fZ", &u64));
+  ASSERT_EQ(0x1a2f, u64);
+  ASSERT_EQ(0, scan_u64("x", &u64));
+  ASSERT_EQ(0x1a2f, u64);
+
+  ASSERT_EQ(3, scan_octal("017Z", &u64));
+  ASSERT_EQ(017, u64);
 }
 
 /*
@@ -235,10 +248,10 @@ TEST(test_scan_human) {
 }
 
 /*
- * size_t scan_varint(const char* in, size_t len, uint64* n);
+ * size_t scan_varint(const char* in, size_t len, unsigned long long* n);
  */
 TEST(test_scan_varint) {
-  uint64 n;
+  unsigned long long n;
   char buf[2] = {(char)0x96, (char)0x01}; /* 150 in protobuf varint */
 
   ASSERT_EQ(2, scan_varint(buf, 2, &n));
@@ -246,11 +259,11 @@ TEST(test_scan_varint) {
 }
 
 /*
- * size_t scan_asn1derlength(const char* in, size_t len, uint64* n);
- * size_t scan_asn1dertag(const char* in, size_t len, uint64* n);
+ * size_t scan_asn1derlength(const char* in, size_t len, unsigned long long* n);
+ * size_t scan_asn1dertag(const char* in, size_t len, unsigned long long* n);
  */
 TEST(test_scan_asn1) {
-  uint64 n;
+  unsigned long long n;
   /* length byte 0x05 says "5 bytes of content follow"; scan_asn1derlength
    * also verifies that much data is actually present in the buffer. */
   char lenbuf[6] = {0x05, 0, 0, 0, 0, 0};
@@ -263,7 +276,54 @@ TEST(test_scan_asn1) {
   ASSERT_EQ(2, n);
 }
 
+
+/* libowfat compat additions */
+TEST(test_scan_compat_extra) {
+  unsigned long long u;
+  struct timespec ts;
+  char* s;
+  size_t sl;
+  const char* cs;
+  double d;
+  float f;
+  uint64 b64;
+  uint32 b32;
+
+  ASSERT_EQ(4, scan_8longlong("1234", &u));
+  ASSERT_EQ(01234, u);
+  ASSERT_EQ(7, scan_8longlong("12345678", &u));
+  ASSERT_EQ(0, scan_8longlong("-4", &u));
+
+  ASSERT_EQ(20, scan_iso8601("2014-05-27T19:22:16Z", &ts));
+  ASSERT_EQ(1401218536, ts.tv_sec);
+
+  ASSERT_EQ(6, scan_netstring("3:abc,", 6, &s, &sl));
+  ASSERT_EQ(3, sl);
+  ASSERT_EQ('a', s[0]);
+  ASSERT_EQ(0, scan_netstring("3:abc", 5, &s, &sl));
+
+  ASSERT_EQ(2, scan_pb_type2_stringlen("\3abc", 4, &cs, &sl) + 1);
+  ASSERT_EQ(3, sl);
+
+  {
+    char buf[8];
+    fmt_pb_type1_double(buf, 2.5);
+    ASSERT_EQ(8, scan_pb_type1_double(buf, 8, &d));
+    ASSERT_EQ(1, d == 2.5);
+    fmt_pb_type5_float(buf, 0.5f);
+    ASSERT_EQ(4, scan_pb_type5_float(buf, 4, &f));
+    ASSERT_EQ(1, f == 0.5f);
+    fmt_pb_type1_fixed64(buf, 0x1122334455667788ul);
+    ASSERT_EQ(8, scan_pb_type1_fixed64(buf, 8, &b64));
+    ASSERT_EQ(0x1122334455667788ul, b64);
+    fmt_pb_type5_fixed32(buf, 0x11223344);
+    ASSERT_EQ(4, scan_pb_type5_fixed32(buf, 4, &b32));
+    ASSERT_EQ(0x11223344, b32);
+  }
+}
+
 #define RUN_SCAN_TESTS() \
+  RUN(test_scan_compat_extra); \
   RUN(test_scan_ulong); \
   RUN(test_scan_xlong); \
   RUN(test_scan_8long); \

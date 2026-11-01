@@ -394,7 +394,7 @@ main(int argc, char* argv[]) {
         fmt_call = (fmt_function*)(void*)&fmt_escapecharc;
         stralloc_copys(&quote_chars, "\"\n\\");
         break;
-      case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjson; break;
+      case 'J': fmt_call = (fmt_function*)(void*)&fmt_escapecharjsonq; break;
       case 'P': fmt_call = (fmt_function*)(void*)&fmt_escapecharquotedprintable; break;
       case 'S': fmt_call = (fmt_function*)(void*)&fmt_escapecharshell; break;
       case 'Q':

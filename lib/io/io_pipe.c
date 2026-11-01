@@ -10,7 +10,7 @@
 #include <fcntl.h>
 
 int
-io_pipe(fd_type* d) {
+io_pipe(int64* d) {
 #if WINDOWS_NATIVE
 
   SECURITY_ATTRIBUTES security_attributes;

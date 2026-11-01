@@ -48,9 +48,9 @@ int
 parse_offset(const char* arg, uint64* dest) {
   int ret = 0;
   if(str_start(arg, "0x"))
-    ret = scan_xlonglong(arg + 2, dest) > 0;
+    ret = scan_x64(arg + 2, dest) > 0;
   if(!ret)
-    ret = scan_ulonglong(arg, dest) > 0;
+    ret = scan_u64(arg, dest) > 0;
 
   return ret;
 }

@@ -97,7 +97,7 @@ TEST(test_iob_reset) {
  * int64 iob_write(fd_type sfd, io_batch* b, io_write_callback cb);
  */
 TEST(test_iob_write) {
-  fd_type fds[2];
+  int64 fds[2];
   io_batch* b = iob_new(0);
   char rbuf[32];
 

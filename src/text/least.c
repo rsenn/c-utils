@@ -857,7 +857,7 @@ get_number(void) {
 
   if(command_buf.len) {
     stralloc_nul(&command_buf);
-    scan_longlong(command_buf.s, &x);
+    scan_i64(command_buf.s, &x);
     stralloc_zero(&command_buf);
   }
   return x;

@@ -6,12 +6,12 @@
 #include <string.h>
 
 /*
- * int io_pipe(fd_type* pfd);
+ * int io_pipe(int64* d);
  * int64 io_tryread(fd_type d, char* buf, int64 len);
  * int64 io_trywrite(fd_type d, const char* buf, int64 len);
  */
 TEST(test_io_pipe_tryread_trywrite) {
-  fd_type fds[2];
+  int64 fds[2];
   char buf[16];
 
   ASSERT_NE(0, io_pipe(fds));
@@ -24,10 +24,10 @@ TEST(test_io_pipe_tryread_trywrite) {
 }
 
 /*
- * int io_socketpair(fd_type* pfd);
+ * int io_socketpair(int64* d);
  */
 TEST(test_io_socketpair) {
-  fd_type fds[2];
+  int64 fds[2];
   char buf[16];
 
   ASSERT_NE(0, io_socketpair(fds));
@@ -44,7 +44,7 @@ TEST(test_io_socketpair) {
  * int64 io_waitwrite(fd_type d, const char* buf, int64 len);
  */
 TEST(test_io_waitread_waitwrite) {
-  fd_type fds[2];
+  int64 fds[2];
   char buf[16];
 
   ASSERT_NE(0, io_pipe(fds));
@@ -64,7 +64,7 @@ TEST(test_io_waitread_waitwrite) {
  * int64 io_canread(void);
  */
 TEST(test_io_wantread_flow) {
-  fd_type fds[2];
+  int64 fds[2];
 
   ASSERT_NE(0, io_pipe(fds));
 
@@ -89,7 +89,7 @@ TEST(test_io_wantread_flow) {
  * int64 io_canwrite(void);
  */
 TEST(test_io_wantwrite_flow) {
-  fd_type fds[2];
+  int64 fds[2];
 
   ASSERT_NE(0, io_pipe(fds));
 
@@ -111,7 +111,7 @@ TEST(test_io_wantwrite_flow) {
  * void io_block(fd_type d);
  */
 TEST(test_io_nonblock_block) {
-  fd_type fds[2];
+  int64 fds[2];
 
   ASSERT_NE(0, io_pipe(fds));
 
@@ -133,7 +133,7 @@ TEST(test_io_nonblock_block) {
  * void io_closeonexec(fd_type d);
  */
 TEST(test_io_closeonexec) {
-  fd_type fds[2];
+  int64 fds[2];
 
   ASSERT_NE(0, io_pipe(fds));
 
@@ -151,7 +151,7 @@ TEST(test_io_closeonexec) {
  * void* io_getcookie(fd_type d);
  */
 TEST(test_io_cookie) {
-  fd_type fds[2];
+  int64 fds[2];
   int value = 42;
 
   ASSERT_NE(0, io_pipe(fds));
@@ -169,7 +169,7 @@ TEST(test_io_cookie) {
  * int64 io_timeouted(void);
  */
 TEST(test_io_timeout) {
-  fd_type fds[2];
+  int64 fds[2];
   tai6464 past;
 
   ASSERT_NE(0, io_pipe(fds));
@@ -189,7 +189,7 @@ TEST(test_io_timeout) {
  * void io_eagain_write(fd_type d);
  */
 TEST(test_io_eagain) {
-  fd_type fds[2];
+  int64 fds[2];
 
   ASSERT_NE(0, io_pipe(fds));
 
@@ -209,13 +209,13 @@ TEST(test_io_eagain) {
 }
 
 /*
- * int io_readfile(fd_type* pfd, const char* s);
- * int io_createfile(fd_type* pfd, const char* s);
- * int io_appendfile(fd_type* pfd, const char* s);
- * int io_readwritefile(fd_type* pfd, const char* s);
+ * int io_readfile(int64* d, const char* s);
+ * int io_createfile(int64* d, const char* s);
+ * int io_appendfile(int64* d, const char* s);
+ * int io_readwritefile(int64* d, const char* s);
  */
 TEST(test_io_file_open_variants) {
-  fd_type fd;
+  int64 fd;
   char path[] = "/tmp/c-utils-test-io-XXXXXX";
   int tmpfd = mkstemp(path);
   char buf[16];
@@ -249,7 +249,7 @@ TEST(test_io_file_open_variants) {
  * int64 io_receivefd(fd_type sock);
  */
 TEST(test_io_passfd_receivefd) {
-  fd_type sv[2], p[2];
+  int64 sv[2], p[2];
   int64 fd;
   char buf[8];
 

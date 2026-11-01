@@ -21,10 +21,12 @@ set(MODSUBDIRS
     buffer
     byte
     case
+    cdb
     cb
     cbmap
     charbuf
     coff
+    critbit
     cpp
     debug
     dir

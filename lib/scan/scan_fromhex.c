@@ -2,18 +2,15 @@
 
 int
 scan_fromhex(int c) {
-  if(c >= 'a' && c <= 'z')
-    c -= 'a' - 'A';
+  unsigned char u = (unsigned char)c;
 
-  c -= '0';
-
-  if(c <= 9)
-    return c;
-
-  c -= 'A' - '0';
-
-  if(c >= 0 && c < 6)
-    return c + 10;
+  u = (unsigned char)(u - '0');
+  if(u <= 9)
+    return u;
+  u = (unsigned char)(u & ~0x20);
+  u = (unsigned char)(u - ('A' - '0'));
+  if(u < 6)
+    return u + 10;
 
   return -1;
 

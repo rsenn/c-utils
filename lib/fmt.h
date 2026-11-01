@@ -182,14 +182,35 @@ size_t fmt_hexbs(void* out, const void* d, size_t len);
 
 size_t fmt_xmlescape(char* dest, int ch);
 
-size_t fmt_escapecharc(char* dest, int ch);
+size_t fmt_escapecharc(char* dest, uint32 ch);
 size_t fmt_escapecharcx(char* dest, int chr);
 
 size_t fmt_escapecharshell(char* dest, int ch);
 size_t fmt_escapecharquotedshell(char*, int ch);
 size_t fmt_escapechardoublequotedshell(char* dest, int ch);
 
-size_t fmt_escapecharjson(char* dest, int ch, int quote);
+size_t fmt_escapecharjson(char* dest, uint32 ch);
+size_t fmt_escapecharjsonq(char* dest, int ch, int quote);
+size_t fmt_varint(char* dest, unsigned long long l);
+size_t fmt_pb_tag(char* dest, size_t fieldno, unsigned char type);
+size_t fmt_pb_type0_int(char* dest, unsigned long long l);
+size_t fmt_pb_type0_sint(char* dest, signed long long l);
+size_t fmt_pb_type1_double(char* dest, double d);
+size_t fmt_pb_type1_fixed64(char* dest, uint64 l);
+size_t fmt_pb_type2_string(char* dest, const char* s, size_t l);
+size_t fmt_pb_type5_float(char* dest, float f);
+size_t fmt_pb_type5_fixed32(char* dest, uint32 l);
+size_t fmt_pb_int(char* dest, size_t fieldno, unsigned long long l);
+size_t fmt_pb_sint(char* dest, size_t fieldno, signed long long l);
+size_t fmt_pb_double(char* dest, size_t fieldno, double d);
+size_t fmt_pb_float(char* dest, size_t fieldno, float f);
+size_t fmt_pb_string(char* dest, size_t fieldno, const char* s, size_t l);
+size_t fmt_netstring(char* dest, const char* src, size_t len);
+size_t fmt_escapecharhtml(char* dest, uint32 ch);
+static inline size_t fmt_copybytes(char* dest, const char* src, size_t n) {
+  if (dest) { size_t i; for (i = 0; i < n; ++i) dest[i] = src[i]; }
+  return n;
+}
 
 #ifdef TAI_H
 size_t fmt_tai(char* dest, const struct tai* ta);

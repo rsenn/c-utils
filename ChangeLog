@@ -1,5 +1,28 @@
 2026-11-01:
 
+- libowfat compatibility: checked every prototype of libowfat 0.32 against
+  lib/*.h and ran a differential test of 94 fmt, scan, str, byte, case and
+  uintN functions against the real libowfat (tests/libowfat-compat, see
+  doc/libowfat-compat.md). Fixed the places where a program written for
+  libowfat no longer compiled or behaved differently: buffer_get_token_pred
+  and the stralloc token predicates, buffer_init taking a function pointer
+  type, io_pipe, io_socketpair and friends writing int64 descriptors, the
+  scan_*longlong family taking unsigned long long pointers (scan_u64,
+  scan_x64, scan_i64 are the uint64 versions), fmt_escapecharjson,
+  rangecheck.h assign(dest, src), scan_varint (truncated values above 32
+  bits and accepted non-minimal encodings), scan_asn1derlength (read an
+  uninitialised length), scan_fromhex (returned garbage for non-hex
+  characters), str_diff (compared signed bytes), fmt_str, fmt_httpdate,
+  fmt_iso8601 and fmt_escapecharxml (wrote a terminating NUL byte beyond the
+  returned length), fmt_utf8 (refused values above 0x3ffffff) and
+  fmt_escapecharc (refused characters above 0xff).
+- cdb, critbit: added the constant database (cdb.h, cdb_make.h) and the
+  crit-bit tree of libowfat (critbit.h) as modules; added the libowfat
+  functions fmt_netstring, fmt_varint, fmt_pb_*, scan_netstring, scan_pb_*,
+  scan_iso8601, scan_8longlong, fmt_copybytes, fmt_escapecharhtml,
+  mmap_readat, EDISCON and EPROCLIM, the headers compiletimeassert.h,
+  isset.h, va_narg.h, readclose.h, openreadclose.h and atomic.h (the
+  CAS.h functions under a name that cannot clash with cas.h).
 - set: redesigned around what the programs use. A set starts empty with no
   memory (SET(), set_init), grows by itself, never aborts when the memory runs
   out (set_add and set_insert say SET_ERROR), and iterates, combines and joins
