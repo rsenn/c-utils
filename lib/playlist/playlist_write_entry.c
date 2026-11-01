@@ -46,7 +46,7 @@ playlist_write_entry(buffer* b, playlist* pl, playlist_entry* e) {
 
       buffer_puts(b, "    <track>\n      <location>");
 
-      if(str_diffn(&e->path.s[i], "://", 3))
+      if(i + 3 > e->path.len || byte_diff(&e->path.s[i], 3, "://"))
         buffer_puts(b, "file://");
 
       buffer_putsa(b, &e->path);

@@ -1,50 +1,55 @@
 #include "../buffer.h"
-#include "../playlist.h"
+#include "../playlist_internal.h"
 #include "../scan.h"
 #include "../str.h"
-#include <ctype.h>
 
+/* One line per call: #EXTM3U and other comments are skipped, #EXTINF:len,title
+ * sets title and length of the entry that the next path line completes. */
 static int
 m3u_reader(playlist* pl) {
-  int ret;
-  static playlist_entry entry;
-  buffer* inbuf = pl->ptr;
+  struct playlist_state* st = pl->ptr;
   stralloc line;
+  int ret;
+
   stralloc_init(&line);
-
-  if((ret = buffer_getline_sa(inbuf, &line))) {
-    while(line.len > 1 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
+  if((ret = buffer_getline_sa(st->in, &line)) > 0) {
+    while(line.len > 0 && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == '\n'))
       line.len--;
-    stralloc_0(&line);
-    line.len -= 1;
+    stralloc_nul(&line);
 
-    if(!str_diffn(line.s, "#EXTM3U", 7)) {
-    } else if(!str_diffn(line.s, "#EXTINF", 7)) {
-      unsigned long len;
+    if(line.len == 0) {
+      /* blank line */
+    } else if(!str_diffn(line.s, "#EXTINF:", 8)) {
+      unsigned long len = 0;
       size_t index = 8;
-      index += scan_ulong(&line.s[index], &len);
-      entry.length = len;
-      index++;
-      stralloc_copys(&entry.title, &line.s[index]);
-      stralloc_0(&entry.title);
-      entry.title.len -= 1;
-    } else if(!str_diffn(line.s, "#EXTVLCOPT", 10)) {
-    } else {
-      stralloc_copy(&entry.path, &line);
-      stralloc_0(&entry.path);
-      entry.path.len -= 1;
+      int neg = line.s[index] == '-';
 
-      if(pl->callback) {
-        pl->callback(pl, &entry.title, &entry.path, entry.length);
-      }
+      if(neg)
+        ++index;
+      index += scan_ulong(&line.s[index], &len);
+      st->entry.length = neg ? 0 : (uint32)len; /* -1 means unknown */
+      if(line.s[index] == ',')
+        ++index;
+      stralloc_copys(&st->entry.title, &line.s[index]);
+    } else if(line.s[0] == '#') {
+      /* #EXTM3U, #EXTVLCOPT, any other comment */
+    } else {
+      stralloc_copyb(&st->entry.path, line.s, line.len);
+      ++pl->count;
+      if(pl->callback)
+        pl->callback(pl, &st->entry.title, &st->entry.path, st->entry.length);
+      playlist_entry_clear(&st->entry);
     }
   }
-  return ret;
+  stralloc_free(&line);
+  return ret > 0 ? 1 : 0;
 }
 
 void
 playlist_m3u(playlist* pls, buffer* b) {
-  pls->ptr = b;
   pls->type = M3U;
-  pls->reader = (int (*)(playlist*))m3u_reader;
+  if(playlist_state_new(pls, b)) {
+    pls->type = M3U;
+    pls->reader = m3u_reader;
+  }
 }
