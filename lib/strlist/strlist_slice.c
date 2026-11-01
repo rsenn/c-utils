@@ -1,34 +1,27 @@
-#include "../byte.h"
 #include "../strlist.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
+/* appends to out the elements start..end-1 of in, Python style: negative
+ * indexes count from the end, indexes beyond the list are clipped, an empty
+ * range appends nothing */
 void
 strlist_slice(strlist* out, const strlist* in, int start, int end) {
-  int64 i, j;
-  const char* x = in->sa.s;
-  size_t c = strlist_count(in);
+  long c = (long)strlist_count(in), i;
 
   if(start < 0)
-    start = c - ((-start) % c);
-
-  if((i = strlist_pos(in, start)) == -1)
-    return;
-
+    start += c;
   if(end < 0)
-    end = c - ((-end) % c);
+    end += c;
+  if(start < 0)
+    start = 0;
+  if(end > c)
+    end = (int)c;
+  for(i = start; i < end; ++i) {
+    size_t n;
+    const char* x = strlist_at_n(in, (size_t)i, &n);
 
-  if(end == c)
-    j = in->sa.len;
-  else if((j = strlist_pos(in, end)) == -1)
-    return;
-
-  while(i < j) {
-    size_t len = byte_chr(&x[i], j - i, in->sep);
-
-    strlist_pushb(out, &x[i], len);
-
-    i += len;
-
-    if(i < j)
-      i++;
+    if(x)
+      strlist_pushb(out, x, n);
   }
 }

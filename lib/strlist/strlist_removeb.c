@@ -1,17 +1,12 @@
 #include "../strlist.h"
+#include "../byte.h"
+#include "../stralloc.h"
 
+/* removes the first element that equals the n bytes at x; 1 if one was
+ * removed (removing the last element used to leave an empty one behind) */
 int
 strlist_removeb(strlist* l, const char* x, size_t n) {
   int64 i = strlist_index_of_b(l, x, n);
 
-  if(i != -1) {
-    if(i + n < l->sa.len)
-
-      if(l->sa.s[i + n] == l->sep)
-        ++n;
-
-    stralloc_remove(&l->sa, i, n);
-    return 1;
-  }
-  return 0;
+  return i != -1 && strlist_erase_element(l, (size_t)i, n);
 }

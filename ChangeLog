@@ -1,5 +1,40 @@
 2026-11-01:
 
+- tests: 718 unit tests (from 642), valgrind clean. New: charbuf, ucs,
+  textbuf, atomic, cdb, critbit, textcode codecs, stralloc, strarray, strlist
+  and the buffer file/mmap/gzip functions; 76 empty placeholder tests were
+  filled with real checks (37 remain, listed by `grep -n "TEST(.*) {}"`).
+- fixed (found by those tests): stralloc_trunc left the capacity field wrong so
+  the next append overflowed the heap; stralloc_free kept len and a;
+  stralloc_copywcb and catwcb counted wrongly and cut multi-byte characters;
+  stralloc_shrink failed on an empty string; stralloc_expand did nothing off
+  Windows (now expands $NAME and ${NAME}); stralloc_scan looped forever on a
+  scan function that consumes nothing; fmt_uuencoded measured too little and
+  read past its input; fmt_base64url measured one byte too much;
+  fmt_stripwhitespace crashed on a NULL destination and kept a trailing blank;
+  fmt_tofrom_array failed on an empty target; ucs_from_latin1_char mapped every
+  character from 0x80 to U+0000 and str_utf8_latin1 never ended on invalid
+  UTF-8; scan_ansiskip read beyond its limit; str_versdiff said 1 for equal
+  numbers; charbuf_pred_skip lost its count at the end of input;
+  strarray_unshift and unshiftn stored the caller's pointers and strarray_free
+  then freed them (tinyproxy, exe-wrap); strarray_splice, union, intersection,
+  transform and copy were wrong or crashed; strarray_glob returned glob's
+  error code as a match count and lib/glob.h shadowed the system header,
+  corrupting the stack; strlist_pos measured every element like the first,
+  which broke strlist_slice; strlist_removeb, remove_at, pop, sub, remove_all
+  and splice left empty elements behind or did nothing; buffer constructors
+  left cookie uninitialised (is_textbuf read garbage); buffer_munmap and
+  buffer_free left a length behind; buffer_mmapshared_fd now owns its
+  descriptor like buffer_mmapread_fd.
+- API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
+  xml_set_attribute_long and socket_v6loopback to the name of the function they
+  define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
+  fmt_to_sa2 family, which were declared and never defined; removed
+  declarations nobody implemented (fmt_base85, scan_base85, array_shift,
+  array_chop, io_queueforread, io_queueforwrite, io_starteventloopthread,
+  json_parse_null_or_undefined, cpp_define_gnu_macros, the variadic
+  xml_find_pred and xml_find_all) and the unused headers linked_list.h, tree.h
+  and memory.h.
 - genmakefile: removed the discontinued HI-TECH C compiler type (htc, picc,
   picc18); XC8 v1.x, XC8 v2+, SDCC and the others stay. The MPLAB 8 output
   knows the xc8 and sdcc suites only.
