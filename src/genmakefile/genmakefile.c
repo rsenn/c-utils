@@ -45,7 +45,7 @@ const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
 int verbose = 0, dump_level = 0;
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0, cmd_libs_explicit = 0;
-static int pair_headers = 0;
+static int pair_headers = 0, infer_symbols = 0;
 commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
@@ -460,6 +460,8 @@ usage(char* argv0) {
                        "                            build, define, include, link, library, import, conf, pair-headers, sources)\n"
                        "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
                        "      --mplabx-conf NAME    with --import-mplabx: the configuration NAME instead of the first\n"
+                       "      --infer-sources       a function that a source calls and does not define is looked for in the .c files next to\n"
+                       "                            the sources and in the -I directories; the file that defines it is a source too\n"
                        "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
                        "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
                        "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
@@ -994,6 +996,7 @@ consume_positional_args(int argc, char** argv, strarray* args) {
  *             if a given path doesn't exist
  */
 static void pair_header_sources(strarray* sources);
+static void infer_sources(strarray* sources);
 
 static int
 discover_sources(strarray* args, strarray* sources) {
@@ -1027,6 +1030,8 @@ discover_sources(strarray* args, strarray* sources) {
 
     if(pair_headers)
       pair_header_sources(sources);
+    if(infer_symbols)
+      infer_sources(sources);
 
     strarray_sort(sources, &sources_sort_callback);
   }
@@ -1208,6 +1213,287 @@ pair_condition(strarray* defs, const char* dir, size_t dn, const char* arg, size
   if(!r)
     return neg ? 1 : 0; /* an undefined name is 0 */
   return neg ? !v : !!v;
+}
+
+/**
+ * @brief      The lines of a source that are active with the -D options:
+ *             the others (an #if that is off) are left out. #define lines are
+ *             kept and counted for the conditions that follow.
+ */
+static void
+active_text(const stralloc* text, stralloc* out) {
+  strarray defs;
+  int active[64], taken[64], depth = 0;
+  size_t pos = 0, di;
+
+  strarray_init(&defs);
+  for(di = 0; di < strarray_size(&project_defs); ++di)
+    strarray_push(&defs, strarray_at(&project_defs, di));
+  stralloc_zero(out);
+
+  while(pos < text->len) {
+    size_t eol = byte_chr(text->s + pos, text->len - pos, '\n');
+    const char* line = text->s + pos;
+    size_t n = eol, k = 0, dl = 0, ai;
+    int all = 1, c, directive = 0;
+
+    pos += eol + 1;
+    while(k < n && (line[k] == ' ' || line[k] == '\t'))
+      ++k;
+    if(k < n && line[k] == '#') {
+      directive = 1;
+      ++k;
+      while(k < n && (line[k] == ' ' || line[k] == '\t'))
+        ++k;
+      while(k + dl < n && isalpha((unsigned char)line[k + dl]))
+        ++dl;
+      ai = k + dl;
+      if((dl == 2 && !byte_diff(line + k, 2, "if")) || (dl == 5 && !byte_diff(line + k, 5, "ifdef")) ||
+         (dl == 6 && !byte_diff(line + k, 6, "ifndef"))) {
+        c = pair_condition(&defs, line + k, dl, line + ai, n - ai);
+        if(depth < 63) {
+          ++depth;
+          active[depth] = c != 0;
+          taken[depth] = c != 0;
+        }
+        continue;
+      } else if(dl == 4 && !byte_diff(line + k, 4, "elif") && depth > 0) {
+        c = taken[depth] ? 0 : pair_condition(&defs, line + k, dl, line + ai, n - ai);
+        active[depth] = c != 0;
+        if(c)
+          taken[depth] = 1;
+        continue;
+      } else if(dl == 4 && !byte_diff(line + k, 4, "else") && depth > 0) {
+        active[depth] = !taken[depth];
+        taken[depth] = 1;
+        continue;
+      } else if(dl == 5 && !byte_diff(line + k, 5, "endif") && depth > 0) {
+        --depth;
+        continue;
+      }
+    }
+    for(c = 1; c <= depth; ++c)
+      if(!active[c])
+        all = 0;
+    if(!all)
+      continue;
+    if(directive && dl == 6 && !byte_diff(line + k, 6, "define")) {
+      size_t b = ai, e;
+
+      while(b < n && (line[b] == ' ' || line[b] == '\t'))
+        ++b;
+      e = b;
+      while(e < n && (isalnum((unsigned char)line[e]) || line[e] == '_'))
+        ++e;
+      if(e > b) {
+        stralloc d;
+        size_t v = e;
+
+        while(v < n && (line[v] == ' ' || line[v] == '\t'))
+          ++v;
+        stralloc_init(&d);
+        stralloc_copyb(&d, line + b, e - b);
+        stralloc_catc(&d, '=');
+        stralloc_catb(&d, line + v, n - v);
+        stralloc_nul(&d);
+        strarray_push(&defs, d.s);
+        stralloc_free(&d);
+      }
+    }
+    stralloc_catb(out, line, n);
+    stralloc_catc(out, '\n');
+  }
+  strarray_free(&defs);
+}
+
+static int
+is_idc(int c) {
+  return isalnum(c) || c == '_';
+}
+
+/* does the text define a function of this name: "name(" behind a type, and a "{" after the closing
+ * parenthesis (a call ends in ";" or ")", a prototype in ";") */
+static int
+defines_function(const stralloc* t, const char* name, size_t nl) {
+  size_t p;
+
+  for(p = 0; p + nl < t->len; ++p) {
+    size_t q, depth = 0;
+
+    if(t->s[p] != name[0] || byte_diff(t->s + p, nl, name) || t->s[p + nl] != '(')
+      continue;
+    if(p > 0 && is_idc((unsigned char)t->s[p - 1]))
+      continue;
+    for(q = p + nl; q < t->len; ++q) {
+      if(t->s[q] == '(')
+        ++depth;
+      else if(t->s[q] == ')' && --depth == 0) {
+        ++q;
+        break;
+      }
+    }
+    while(q < t->len && (t->s[q] == ' ' || t->s[q] == '\t' || t->s[q] == '\n' || t->s[q] == '\r'))
+      ++q;
+    if(q < t->len && t->s[q] == '{')
+      return 1;
+  }
+  return 0;
+}
+
+/* the names that are called in the text (name followed by "("), without keywords */
+static void
+called_names(const stralloc* t, strarray* names) {
+  static const char* const kw[] = {"if", "while", "for", "switch", "return", "sizeof", "defined", "else", 0};
+  size_t i = 0;
+
+  while(i < t->len) {
+    if((isalpha((unsigned char)t->s[i]) || t->s[i] == '_') && (i == 0 || !is_idc((unsigned char)t->s[i - 1]))) {
+      size_t e = i, k;
+      int skip = 0;
+
+      while(e < t->len && is_idc((unsigned char)t->s[e]))
+        ++e;
+      k = e;
+      while(k < t->len && (t->s[k] == ' ' || t->s[k] == '\t'))
+        ++k;
+      if(k < t->len && t->s[k] == '(') {
+        size_t j;
+
+        for(j = 0; kw[j]; ++j)
+          if(str_len(kw[j]) == e - i && !byte_diff(t->s + i, e - i, kw[j]))
+            skip = 1;
+        if(!skip) {
+          stralloc nm;
+
+          stralloc_init(&nm);
+          stralloc_copyb(&nm, t->s + i, e - i);
+          stralloc_nul(&nm);
+          strarray_push(names, nm.s);
+          stralloc_free(&nm);
+        }
+      }
+      i = e;
+    } else
+      ++i;
+  }
+}
+
+/**
+ * @brief      With --infer-sources: a function that a source calls and does not
+ *             define is looked for in the .c files next to the sources and in
+ *             the -I directories; the file that defines it is a source too.
+ *             The text counts as far as it is active with the -D options.
+ */
+static void
+infer_sources(strarray* sources) {
+  strarray cands;
+  size_t i, c;
+  const char* inc;
+
+  strarray_init(&cands);
+  {
+    /* candidate files: the .c files of the directories of the sources and of the -I directories */
+    strarray dirs_seen;
+
+    strarray_init(&dirs_seen);
+    for(i = 0; i < strarray_size(sources); ++i) {
+      stralloc d;
+      char* dn;
+
+      stralloc_init(&d);
+      stralloc_copys(&d, strarray_at(sources, i));
+      stralloc_nul(&d);
+      dn = path_dirname_sa(&d);
+      strarray_push(&dirs_seen, dn && *dn ? dn : ".");
+      stralloc_free(&d);
+    }
+    strlist_foreach_s(&include_dirs, inc) strarray_push(&dirs_seen, inc);
+    for(i = 0; i < strarray_size(&dirs_seen); ++i) {
+      const char* dir = strarray_at(&dirs_seen, i);
+      size_t j;
+      int dup = 0;
+      struct dir_s rd;
+      const char* name;
+
+      for(j = 0; j < i; ++j)
+        if(str_equal(strarray_at(&dirs_seen, j), dir))
+          dup = 1;
+      if(dup || dir_open(&rd, dir))
+        continue;
+      while((name = dir_read(&rd))) {
+        size_t nl = str_len(name);
+
+        if(nl > 2 && name[nl - 2] == '.' && name[nl - 1] == 'c' && !str_contains(name, "/")) {
+          stralloc f;
+
+          stralloc_init(&f);
+          if(str_diff(dir, ".")) {
+            stralloc_cats(&f, dir);
+            stralloc_catc(&f, '/');
+          }
+          stralloc_cats(&f, name);
+          stralloc_nul(&f);
+          strarray_push(&cands, f.s);
+          stralloc_free(&f);
+        }
+      }
+      dir_close(&rd);
+    }
+    strarray_free(&dirs_seen);
+  }
+
+  for(i = 0; i < strarray_size(sources); ++i) {
+    stralloc raw, text;
+    strarray calls;
+    size_t k;
+
+    stralloc_init(&raw);
+    stralloc_init(&text);
+    if(openreadclose(strarray_at(sources, i), &raw, 4096) <= 0) {
+      stralloc_free(&raw);
+      stralloc_free(&text);
+      continue;
+    }
+    active_text(&raw, &text);
+    strarray_init(&calls);
+    called_names(&text, &calls);
+    for(k = 0; k < strarray_size(&calls); ++k) {
+      const char* nm = strarray_at(&calls, k);
+      size_t nl = str_len(nm);
+
+      if(defines_function(&text, nm, nl))
+        continue;
+      for(c = 0; c < strarray_size(&cands); ++c) {
+        const char* cf = strarray_at(&cands, c);
+        size_t j;
+        int have = 0;
+        stralloc craw, ctext;
+
+        for(j = 0; j < strarray_size(sources); ++j)
+          if(str_equal(strarray_at(sources, j), cf))
+            have = 1;
+        if(have)
+          continue;
+        stralloc_init(&craw);
+        stralloc_init(&ctext);
+        if(openreadclose(cf, &craw, 4096) > 0) {
+          active_text(&craw, &ctext);
+          /* a file with a main() is a program of its own */
+          if(defines_function(&ctext, nm, nl) && !defines_function(&ctext, "main", 4)) {
+            LOG(1, "inferred from the call of ", nm);
+            sources_add(cf);
+            strarray_push(sources, cf);
+          }
+        }
+        stralloc_free(&craw);
+        stralloc_free(&ctext);
+      }
+    }
+    strarray_free(&calls);
+    stralloc_free(&raw);
+    stralloc_free(&text);
+  }
+  strarray_free(&cands);
 }
 
 /**
@@ -2428,6 +2714,7 @@ main(int argc, char* argv[]) {
       {"name", 0, 0, 'n'},
       {"install", 0, 0, 'i'},
       {"pair-headers", 0, &pair_headers, 1},
+      {"infer-sources", 0, &infer_symbols, 1},
       {"no-pair-headers", 0, &pair_headers, 0},
       {"include-path", 0, 0, 'I'},
       {"library-path", 0, 0, 'L'},
