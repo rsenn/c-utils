@@ -92,6 +92,7 @@ size_t path_rootlen(const char*, size_t);
 
 /* c-utils conveniences on top of the core; not part of the shared library */
 int path_canon_sa(stralloc* sa);
+int path_canonicalize(const char* path, stralloc* sa, int symbolic); /* absolute, without . and .. and (symbolic != 0) with links resolved */
 char* path_dirname(const char*, size_t, stralloc* dir);
 char* path_dirname_s(const char*, stralloc*);
 char* path_dirname_sa(stralloc* dir);

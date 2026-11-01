@@ -52,6 +52,7 @@ int mmap_filename(void* map, stralloc* sa);
 #endif
 
 char* mmap_anon(size_t size);
+ssize_t fd_filesize(fd_type fd); /* size of the file behind fd, -1 on error; the file position is kept */
 char* mmap_rw_fd(fd_type, size_t*);
 
 #ifdef __cplusplus

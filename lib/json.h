@@ -129,6 +129,7 @@ jsonval* json_property_set_int(jsonval*, int64, jsonval value);
 jsonval* json_property_set_str(jsonval*, const char*, jsonval value);
 
 int64 json_toint(jsonval);
+double json_todouble(jsonval); /* DBL_MAX when the value is not a number */
 void json_tosa(jsonval, stralloc*, json_print_fn* p);
 const char* json_tostring(jsonval, stralloc*);
 

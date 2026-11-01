@@ -45,6 +45,7 @@ size_t str_len(const char* in);
 size_t str_chr(const char* haystack, char needle) __pure__;
 size_t str_chrs(const char* in, const char needles[], size_t nn) __pure__;
 size_t str_str(const char* haystack, const char* needle) __pure__;
+int str_versdiff(const char* s1, const char* s2) __pure__; /* like str_diff, runs of digits compare as numbers */
 
 /* str_rchr returns the index of the last occurance of needle or \0 in
  * haystack

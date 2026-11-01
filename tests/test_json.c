@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/json.h"
+#include "../lib/byte.h"
 #include "../lib/charbuf.h"
 #include "../lib/stralloc.h"
 #include "../lib/str.h"
@@ -258,7 +259,149 @@ TEST(test_ndjson_feed) {
   ndjson_free(&nd);
 }
 
+
+static jsonval*
+parse(const char* s) {
+  return json_parse_text(s, str_len(s));
+}
+
+/*
+ * json_length, json_toint, json_todouble, json_isnull, json_property_get_str, json_array_at, json_array_items
+ */
+TEST(test_json_values) {
+  static const char t[] = "{\"n\":42,\"d\":2.5,\"s\":\"hi\",\"b\":true,\"z\":null,\"a\":[1,2,3],\"o\":{\"k\":\"v\"}}";
+  jsonval* v = parse(t);
+  jsonval n, d, s, b, z, u, a;
+  jsonitem* it;
+  size_t count = 0;
+
+  ASSERT_EQ(1, v != NULL);
+  ASSERT_EQ(JSON_OBJECT, v->type);
+  ASSERT_EQ(7, json_length(*v));
+
+  n = json_property_get_str(*v, "n");
+  ASSERT_EQ(JSON_INT, n.type);
+  ASSERT_EQ(42, json_toint(n));
+  d = json_property_get_str(*v, "d");
+  ASSERT_EQ(JSON_DOUBLE, d.type);
+  ASSERT_EQ(1, json_todouble(d) == 2.5);
+  ASSERT_EQ(2, json_toint(d)); /* truncated */
+  s = json_property_get_str(*v, "s");
+  ASSERT_EQ(JSON_STRING, s.type);
+  ASSERT_EQ(2, json_length(s));
+  ASSERT_STR_EQUAL("hi", json_string_cstr(&s));
+  b = json_property_get_str(*v, "b");
+  ASSERT_EQ(JSON_BOOL, b.type);
+  ASSERT_EQ(1, b.boolv);
+  z = json_property_get_str(*v, "z");
+  ASSERT_EQ(1, json_isnull(z));
+  u = json_property_get_str(*v, "nope");
+  ASSERT_EQ(JSON_UNDEFINED, u.type);
+  ASSERT_EQ(0, json_isnull(u));
+
+  a = json_property_get_str(*v, "a");
+  ASSERT_EQ(JSON_ARRAY, a.type);
+  ASSERT_EQ(3, json_length(a));
+  it = json_array_at(a, 1);
+  ASSERT_EQ(2, json_toint(it->value));
+  ASSERT_EQ(1, json_array_at(a, 9) == NULL);
+  for(it = json_array_items(a); it; it = it->next)
+    ++count;
+  ASSERT_EQ(3, count);
+  ASSERT_EQ(1, json_toint(json_property_get_int(a, 0)));
+  json_free(v);
+}
+
+TEST(test_json_build) {
+  jsonval* arr = json_newnode(JSON_ARRAY);
+  jsonval iv, o, key;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  iv.type = JSON_INT;
+  iv.intv = 7;
+  json_array_push(arr, iv);
+  json_array_push(arr, iv);
+  ASSERT_EQ(2, json_length(*arr));
+  json_tosa(*arr, &sa, json_compact_printer);
+  ASSERT_EQ(1, sa.len == 5 && byte_equal(sa.s, 5, "[7,7]"));
+
+  o = json_object();
+  ASSERT_EQ(JSON_OBJECT, o.type);
+  ASSERT_EQ(0, json_length(o));
+  byte_zero(&key, sizeof key);
+  key.type = JSON_STRING;
+  stralloc_copys(&key.stringv, "kk");
+  json_property_set(&o, key, iv);
+  json_property_set_str(&o, "two", iv);
+  ASSERT_EQ(2, json_length(o));
+  ASSERT_EQ(7, json_toint(json_property_get_str(o, "two")));
+  stralloc_zero(&sa);
+  json_tosa(o, &sa, json_compact_printer);
+  ASSERT_EQ(1, sa.len == 16 && byte_equal(sa.s, 16, "{\"kk\":7,\"two\":7}"));
+  stralloc_free(&sa);
+  json_free(arr);
+}
+
+/*
+ * numbers: a number that ends the input is not dropped (it was) and signs/exponents work
+ */
+TEST(test_json_numbers) {
+  jsonval* v;
+
+  v = parse("42");
+  ASSERT_EQ(JSON_INT, v->type);
+  ASSERT_EQ(42, v->intv);
+  v = parse("-0.5e2");
+  ASSERT_EQ(JSON_DOUBLE, v->type);
+  ASSERT_EQ(1, v->doublev == -50.0);
+  v = parse("1E3");
+  ASSERT_EQ(1, v->doublev == 1000.0);
+  v = parse("[1e-2, 2.5E+1]");
+  ASSERT_EQ(2, json_length(*v));
+  ASSERT_EQ(1, json_array_at(*v, 0)->value.doublev == 0.01);
+  ASSERT_EQ(1, json_array_at(*v, 1)->value.doublev == 25.0);
+}
+
+TEST(test_json_literals_and_errors) {
+  static const char* const bad[] = {"{", "[1,]", "{\"a\":}", "nul", "\"unterminated", "01", "1e", "{'a':1}"};
+  size_t i;
+  jsonval* v;
+
+  ASSERT_EQ(JSON_BOOL, parse("true")->type);
+  ASSERT_EQ(JSON_NULL, parse("null")->type);
+  ASSERT_EQ(JSON_ARRAY, parse("  [ 1 , 2 ]  ")->type);
+  v = parse("\"\\u00e9\\n\"");
+  ASSERT_EQ(JSON_STRING, v->type);
+  ASSERT_EQ(3, json_length(*v)); /* e acute is two bytes in UTF-8, then the newline */
+  for(i = 0; i < sizeof bad / sizeof bad[0]; ++i)
+    ASSERT_EQ(1, parse(bad[i]) == NULL);
+}
+
+TEST(test_json_print_buffer) {
+  jsonval* v = parse("{\"a\":[1,true]}");
+  buffer b;
+  char mem[128], got[64];
+  int fd[2];
+  ssize_t n;
+
+  ASSERT_EQ(0, pipe(fd));
+  buffer_init(&b, (buffer_op_ptr)write, fd[1], mem, sizeof mem);
+  json_print(*v, &b, json_compact_printer); /* flushes at the end */
+  close(fd[1]);
+  n = read(fd[0], got, sizeof got);
+  close(fd[0]);
+  ASSERT_EQ(14, n);
+  ASSERT_EQ(0, byte_diff(got, 14, "{\"a\":[1,true]}"));
+  json_free(v);
+}
+
 #define RUN_JSON_TESTS() \
+  RUN(test_json_values); \
+  RUN(test_json_build); \
+  RUN(test_json_numbers); \
+  RUN(test_json_literals_and_errors); \
+  RUN(test_json_print_buffer); \
   RUN(test_json_read_print); \
   RUN(test_json_string_escapes); \
   RUN(test_json_tostring); \
