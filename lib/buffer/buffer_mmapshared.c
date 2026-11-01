@@ -24,6 +24,7 @@ buffer_mmapshared(buffer* b, const char* filename) {
     return -1;
   }
   ret = buffer_mmapshared_fd(b, fd);
-  close(fd); /* buffer_mmapshared_fd keeps its own duplicate */
+  if(ret) /* on success the buffer owns fd */
+    close(fd);
   return ret;
 }

@@ -25,6 +25,8 @@ buffer_munmap(buffer* b) {
 #endif
 
   b->x = NULL;
+  b->p = 0;
+  b->n = 0; /* the buffer reads as empty afterwards instead of pointing at unmapped memory */
   b->a = 0;
   b->deinit = NULL;
 }

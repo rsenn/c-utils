@@ -5,8 +5,39 @@
 #include "../lib/uint64.h"
 #include "unit_test.h"
 #include "../lib/buffer.h"
+#include <errno.h>
+#include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+
+#include <fcntl.h>
+#include <unistd.h>
+#include "../lib/open.h"
+#include "../lib/tai.h"
+
+#define TESTFILE "/tmp/test_buffer_unit.dat"
+
+static void
+write_testfile(const char* s) {
+  int fd = open_trunc(TESTFILE);
+
+  if(fd != -1) {
+    if(write(fd, s, str_len(s)) < 0)
+      fd = fd;
+    close(fd);
+  }
+}
+
+static size_t
+read_testfile(char* buf, size_t max) {
+  int fd = open_read(TESTFILE);
+  ssize_t n = fd == -1 ? 0 : read(fd, buf, max);
+
+  if(fd != -1)
+    close(fd);
+  return n < 0 ? 0 : (size_t)n;
+}
 
 /* Discards whatever buffer_flush() writes; used so OUTBUF's op is
    never a NULL pointer (buffer_stubborn() does not guard against
@@ -66,27 +97,78 @@ TEST(test_buffer_free) {
 /*
  * void buffer_munmap(buffer*);
  */
-TEST(test_buffer_munmap) {}
+TEST(test_buffer_munmap) {
+  buffer b;
+
+  write_testfile("hello file");
+  ASSERT_EQ(0, buffer_mmapread(&b, TESTFILE));
+  ASSERT_EQ(10, b.n);
+  buffer_munmap(&b);
+  ASSERT_EQ(1, b.x == NULL);
+  ASSERT_EQ(0, b.n); /* reads as empty, not as a dangling mapping */
+}
 
 /*
  * int buffer_mmapread(buffer*, const char* filename);
  */
-TEST(test_buffer_mmapread) {}
+TEST(test_buffer_mmapread) {
+  buffer b;
+  char out[16];
+
+  write_testfile("hello file");
+  ASSERT_EQ(0, buffer_mmapread(&b, TESTFILE));
+  ASSERT_EQ(10, b.n);
+  ASSERT_EQ(5, buffer_get(&b, out, 5));
+  ASSERT_EQ(0, byte_diff(out, 5, "hello"));
+  buffer_close(&b);
+  ASSERT_EQ(-1, buffer_mmapread(&b, "/nonexistent/dir/file"));
+  ASSERT_EQ(0, b.n); /* a failed map leaves an empty buffer */
+}
 
 /*
  * int buffer_mmapread_fd(buffer*, fd_type fd);
  */
-TEST(test_buffer_mmapread_fd) {}
+TEST(test_buffer_mmapread_fd) {
+  buffer b;
+  int fd;
+
+  write_testfile("hello file");
+  fd = open_read(TESTFILE);
+  ASSERT_EQ(0, buffer_mmapread_fd(&b, fd));
+  ASSERT_EQ(10, b.n);
+  ASSERT_EQ(0, byte_diff(b.x, 10, "hello file"));
+  buffer_close(&b); /* the buffer owns fd after a successful call */
+}
 
 /*
  * int buffer_mmapprivate(buffer*, const char* filename);
  */
-TEST(test_buffer_mmapprivate) {}
+TEST(test_buffer_mmapprivate) {
+  buffer b;
+  char t[16];
+
+  write_testfile("hello");
+  ASSERT_EQ(0, buffer_mmapprivate(&b, TESTFILE));
+  b.x[0] = 'J'; /* copy on write: the file does not change */
+  ASSERT_EQ('J', b.x[0]);
+  buffer_close(&b);
+  ASSERT_EQ(5, read_testfile(t, 16));
+  ASSERT_EQ('h', t[0]);
+}
 
 /*
  * int buffer_mmapprivate_fd(buffer*, fd_type fd);
  */
-TEST(test_buffer_mmapprivate_fd) {}
+TEST(test_buffer_mmapprivate_fd) {
+  buffer b;
+  int fd;
+
+  write_testfile("hello");
+  fd = open_read(TESTFILE);
+  ASSERT_EQ(0, buffer_mmapprivate_fd(&b, fd));
+  ASSERT_EQ(5, b.n);
+  buffer_close(&b); /* the buffer owns fd after a successful call */
+}
 
 /*
  * int buffer_mmapshared(buffer*, const char* filename);
@@ -96,22 +178,69 @@ TEST(test_buffer_mmapprivate_fd) {}
  * which each have one; only buffer_mmapshared_fd exists. Would fail to
  * link. See BUGS.
  */
-TEST(test_buffer_mmapshared) {}
+TEST(test_buffer_mmapshared) {
+  buffer b;
+  char t[16];
+
+  write_testfile("hello");
+  ASSERT_EQ(0, buffer_mmapshared(&b, TESTFILE));
+  ASSERT_EQ(5, b.n);
+  b.x[0] = 'J'; /* shared: the change reaches the file */
+  buffer_close(&b);
+  ASSERT_EQ(5, read_testfile(t, 16));
+  ASSERT_EQ('J', t[0]);
+  ASSERT_EQ(-1, buffer_mmapshared(&b, "/nonexistent/dir/file"));
+}
 
 /*
  * int buffer_mmapshared_fd(buffer*, fd_type fd);
  */
-TEST(test_buffer_mmapshared_fd) {}
+TEST(test_buffer_mmapshared_fd) {
+  buffer b;
+  int fd;
+  char t[16];
+
+  write_testfile("hello");
+  fd = open_rw(TESTFILE);
+  ASSERT_EQ(0, buffer_mmapshared_fd(&b, fd));
+  b.x[1] = 'E';
+  buffer_close(&b); /* the buffer owns fd after a successful call */
+  read_testfile(t, 16);
+  ASSERT_EQ('E', t[1]);
+}
 
 /*
  * void buffer_close(buffer* b);
  */
-TEST(test_buffer_close) {}
+TEST(test_buffer_close) {
+  buffer b;
+  int fd;
+
+  write_testfile("x");
+  fd = open_read(TESTFILE);
+  ASSERT_EQ(0, buffer_mmapread_fd(&b, fd));
+  ASSERT_NE(-1, fcntl(fd, F_GETFD));
+  buffer_close(&b); /* closes the descriptor the buffer owns */
+  ASSERT_EQ(-1, fcntl(fd, F_GETFD));
+}
 
 /*
  * int buffer_read_fd(buffer*, fd_type fd);
  */
-TEST(test_buffer_read_fd) {}
+TEST(test_buffer_read_fd) {
+  buffer b;
+  char out[16];
+  int fd;
+
+  write_testfile("hello file");
+  fd = open_read(TESTFILE);
+  ASSERT_EQ(0, buffer_read_fd(&b, fd));
+  ASSERT_EQ(10, buffer_get(&b, out, 16));
+  ASSERT_EQ(0, byte_diff(out, 10, "hello file"));
+  ASSERT_EQ(0, buffer_get(&b, out, 16));
+  buffer_free(&b);
+  close(fd);
+}
 
 /*
  * int buffer_flush(buffer* b);
@@ -148,7 +277,17 @@ TEST(test_buffer_putalign) {
 /*
  * ssize_t buffer_putflush(buffer*, const char* x, size_t len);
  */
-TEST(test_buffer_putflush) {}
+TEST(test_buffer_putflush) {
+  buffer b;
+  char mem[32], t[16];
+  int fd = open_trunc(TESTFILE);
+
+  buffer_init(&b, (buffer_op_ptr)write, fd, mem, sizeof mem);
+  ASSERT_EQ(0, buffer_putflush(&b, "pf\n", 3));
+  ASSERT_EQ(0, b.p);
+  close(fd);
+  ASSERT_EQ(3, read_testfile(t, 16));
+}
 
 /*
  * int buffer_puts(buffer*, const char* x);
@@ -174,7 +313,17 @@ TEST(test_buffer_putsalign) {
 /*
  * ssize_t buffer_putsflush(buffer*, const char* x);
  */
-TEST(test_buffer_putsflush) {}
+TEST(test_buffer_putsflush) {
+  buffer b;
+  char mem[32], t[16];
+  int fd = open_trunc(TESTFILE);
+
+  buffer_init(&b, (buffer_op_ptr)write, fd, mem, sizeof mem);
+  ASSERT_EQ(0, buffer_putsflush(&b, "psf"));
+  ASSERT_EQ(0, b.p);
+  close(fd);
+  ASSERT_EQ(3, read_testfile(t, 16));
+}
 
 /*
  * int buffer_putm_internal(buffer* b, ...);
@@ -190,7 +339,17 @@ TEST(test_buffer_putm_internal) {
 /*
  * int buffer_putm_internal_flush(buffer* b, ...);
  */
-TEST(test_buffer_putm_internal_flush) {}
+TEST(test_buffer_putm_internal_flush) {
+  buffer b;
+  char mem[32], t[16];
+  int fd = open_trunc(TESTFILE);
+
+  buffer_init(&b, (buffer_op_ptr)write, fd, mem, sizeof mem);
+  ASSERT_EQ(0, buffer_putm_internal_flush(&b, "a", "b", "c", (char*)0));
+  close(fd);
+  ASSERT_EQ(3, read_testfile(t, 16));
+  ASSERT_EQ(0, byte_diff(t, 3, "abc"));
+}
 
 /*
  * int buffer_putspace(buffer*);
@@ -206,7 +365,18 @@ TEST(test_buffer_putspace) {
 /*
  * int buffer_putnlflush(buffer*);
  */
-TEST(test_buffer_putnlflush) {}
+TEST(test_buffer_putnlflush) {
+  buffer b;
+  char mem[32], t[16];
+  int fd = open_trunc(TESTFILE);
+
+  buffer_init(&b, (buffer_op_ptr)write, fd, mem, sizeof mem);
+  buffer_puts(&b, "line");
+  ASSERT_EQ(0, buffer_putnlflush(&b));
+  close(fd);
+  ASSERT_EQ(5, read_testfile(t, 16));
+  ASSERT_EQ('\n', t[4]);
+}
 
 /*
  * ssize_t buffer_get(buffer*, char*, size_t);
@@ -466,12 +636,31 @@ TEST(test_buffer_putlong) {
 /*
  * int buffer_putdouble(buffer*, double, int);
  */
-TEST(test_buffer_putdouble) {}
+TEST(test_buffer_putdouble) {
+  buffer b;
+  char mem[64];
+
+  buffer_init(&b, (buffer_op_ptr)0, -1, mem, sizeof mem);
+  ASSERT_EQ(0, buffer_putdouble(&b, 3.14159, 2));
+  ASSERT_EQ(0, byte_diff(mem, b.p, "3.14"));
+  b.p = 0;
+  buffer_putdouble(&b, -0.5, 3);
+  ASSERT_EQ(0, byte_diff(mem, b.p, "-0.5"));
+}
 
 /*
  * int buffer_puterror(buffer*);
  */
-TEST(test_buffer_puterror) {}
+TEST(test_buffer_puterror) {
+  buffer b;
+  char mem[128];
+
+  buffer_init(&b, (buffer_op_ptr)0, -1, mem, sizeof mem);
+  errno = ENOENT;
+  buffer_puterror(&b);
+  ASSERT_EQ(1, b.p > 0);
+  ASSERT_EQ(0, byte_diff(mem, b.p, strerror(ENOENT)));
+}
 
 /*
  * int buffer_puterror2(buffer*, int);
@@ -503,7 +692,20 @@ TEST(test_buffer_putsa) {
 /*
  * int buffer_putsaflush(buffer*, const stralloc* sa);
  */
-TEST(test_buffer_putsaflush) {}
+TEST(test_buffer_putsaflush) {
+  buffer b;
+  char mem[32], t[16];
+  stralloc sa;
+  int fd = open_trunc(TESTFILE);
+
+  stralloc_init(&sa);
+  stralloc_copys(&sa, "sa data");
+  buffer_init(&b, (buffer_op_ptr)write, fd, mem, sizeof mem);
+  ASSERT_EQ(0, buffer_putsaflush(&b, &sa));
+  close(fd);
+  ASSERT_EQ(7, read_testfile(t, 16));
+  stralloc_free(&sa);
+}
 
 /*
  * int buffer_get_token_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
@@ -684,7 +886,15 @@ TEST(test_buffer_fromarray) {
 /*
  * void buffer_dump(buffer* out, buffer* b);
  */
-TEST(test_buffer_dump) {}
+TEST(test_buffer_dump) {
+  buffer in, out;
+  char mem[256];
+
+  buffer_frombuf(&in, "ab\x01 z", 5);
+  buffer_init(&out, (buffer_op_ptr)discard_write, -1, mem, sizeof mem);
+  buffer_dump(&out, &in); /* ends with a flush, which the discarding writer swallows */
+  ASSERT_EQ(0, out.p);
+}
 
 /*
  * int buffer_putc(buffer*, char c);
@@ -798,12 +1008,23 @@ TEST(test_buffer_feed) {
 /*
  * ssize_t buffer_freshen(buffer* b);
  */
-TEST(test_buffer_freshen) {}
+TEST(test_buffer_freshen) {
+  buffer in;
+
+  buffer_frombuf(&in, "abc def", 7);
+  ASSERT_EQ(7, buffer_freshen(&in));
+}
 
 /*
  * ssize_t buffer_prefetch(buffer*, size_t n);
  */
-TEST(test_buffer_prefetch) {}
+TEST(test_buffer_prefetch) {
+  buffer in;
+
+  buffer_frombuf(&in, "abc def", 7);
+  ASSERT_EQ(7, buffer_prefetch(&in, 3));
+  ASSERT_EQ(0, in.p); /* nothing consumed */
+}
 
 /*
  * int buffer_appendfile(buffer* b, const char* fn);
@@ -811,10 +1032,53 @@ TEST(test_buffer_prefetch) {}
  * int buffer_truncfile(buffer* b, const char* fn);
  * int buffer_writefile(buffer* b, const char* fn);
  */
-TEST(test_buffer_appendfile) {}
-TEST(test_buffer_readfile) {}
-TEST(test_buffer_truncfile) {}
-TEST(test_buffer_writefile) {}
+TEST(test_buffer_appendfile) {
+  buffer b;
+  char t[16];
+
+  write_testfile("AB");
+  ASSERT_EQ(0, buffer_appendfile(&b, TESTFILE));
+  buffer_puts(&b, "CD");
+  buffer_flush(&b);
+  buffer_free(&b);
+  ASSERT_EQ(4, read_testfile(t, 16));
+  ASSERT_EQ(0, byte_diff(t, 4, "ABCD"));
+}
+TEST(test_buffer_readfile) {
+  buffer b;
+  char out[16];
+
+  write_testfile("file data");
+  ASSERT_EQ(0, buffer_readfile(&b, TESTFILE));
+  ASSERT_EQ(9, buffer_get(&b, out, 16));
+  ASSERT_EQ(0, byte_diff(out, 9, "file data"));
+  buffer_free(&b);
+  ASSERT_EQ(-1, buffer_readfile(&b, "/nonexistent/dir/file"));
+}
+TEST(test_buffer_truncfile) {
+  buffer b;
+  char t[16];
+
+  write_testfile("long old content");
+  ASSERT_EQ(0, buffer_truncfile(&b, TESTFILE));
+  buffer_puts(&b, "new");
+  buffer_flush(&b);
+  buffer_free(&b);
+  ASSERT_EQ(3, read_testfile(t, 16));
+  ASSERT_EQ(0, byte_diff(t, 3, "new"));
+}
+TEST(test_buffer_writefile) {
+  buffer b;
+  char t[16];
+
+  write_testfile("ABCD");
+  ASSERT_EQ(0, buffer_writefile(&b, TESTFILE)); /* no truncation: overwrites from the start */
+  buffer_puts(&b, "Z");
+  buffer_flush(&b);
+  buffer_free(&b);
+  ASSERT_EQ(4, read_testfile(t, 16));
+  ASSERT_EQ(0, byte_diff(t, 4, "ZBCD"));
+}
 
 /*
  * int buffer_lzma(buffer*, buffer*, int compress);
@@ -982,10 +1246,65 @@ TEST(test_buffer_inflate) {
  * int buffer_bzip(buffer*, const char* filename, int level);
  * int buffer_bzip_fd(buffer*, fd_type fd, int level);
  */
-TEST(test_buffer_gunzip) {}
-TEST(test_buffer_gunzip_fd) {}
-TEST(test_buffer_gzip) {}
-TEST(test_buffer_gzip_fd) {}
+TEST(test_buffer_gunzip) {
+  buffer b;
+  char out[32];
+
+  /* zlib's gzread passes data that is not gzip through unchanged */
+  write_testfile("plain text, not gzip");
+  ASSERT_EQ(0, buffer_gunzip(&b, TESTFILE));
+  ASSERT_EQ(20, buffer_get(&b, out, 32));
+  ASSERT_EQ(0, byte_diff(out, 20, "plain text, not gzip"));
+  buffer_close(&b);
+}
+TEST(test_buffer_gunzip_fd) {
+  buffer b;
+  int fd;
+  char out[64];
+
+  ASSERT_EQ(0, buffer_gzip(&b, TESTFILE ".gz", 9));
+  buffer_puts(&b, "via fd");
+  buffer_flush(&b);
+  buffer_close(&b);
+  fd = open_read(TESTFILE ".gz");
+  ASSERT_EQ(0, buffer_gunzip_fd(&b, fd));
+  ASSERT_EQ(6, buffer_get(&b, out, 64));
+  ASSERT_EQ(0, byte_diff(out, 6, "via fd"));
+  buffer_close(&b);
+  close(fd);
+  unlink(TESTFILE ".gz");
+}
+TEST(test_buffer_gzip) {
+  buffer b;
+  char out[64];
+  ssize_t n;
+
+  ASSERT_EQ(0, buffer_gzip(&b, TESTFILE ".gz", 6));
+  buffer_puts(&b, "compress me compress me compress me");
+  buffer_flush(&b);
+  buffer_close(&b);
+  ASSERT_EQ(0, buffer_gunzip(&b, TESTFILE ".gz"));
+  n = buffer_get(&b, out, 64);
+  ASSERT_EQ(35, n);
+  ASSERT_EQ(0, byte_diff(out, 35, "compress me compress me compress me"));
+  buffer_close(&b);
+  unlink(TESTFILE ".gz");
+}
+TEST(test_buffer_gzip_fd) {
+  buffer b;
+  int fd = open_trunc(TESTFILE ".gz");
+  char out[64];
+
+  ASSERT_EQ(0, buffer_gzip_fd(&b, fd, 1));
+  buffer_puts(&b, "level one");
+  buffer_flush(&b);
+  buffer_close(&b);
+  close(fd);
+  ASSERT_EQ(0, buffer_gunzip(&b, TESTFILE ".gz"));
+  ASSERT_EQ(9, buffer_get(&b, out, 64));
+  buffer_close(&b);
+  unlink(TESTFILE ".gz");
+}
 TEST(test_buffer_bunzip) {}
 TEST(test_buffer_bunzip_fd) {}
 TEST(test_buffer_bzip) {}
@@ -1006,7 +1325,19 @@ TEST(test_buffer_get_until) {
 /*
  * int buffer_write_fd(buffer*, fd_type fd);
  */
-TEST(test_buffer_write_fd) {}
+TEST(test_buffer_write_fd) {
+  buffer b;
+  char t[16];
+  int fd = open_trunc(TESTFILE);
+
+  ASSERT_EQ(0, buffer_write_fd(&b, fd));
+  buffer_puts(&b, "written");
+  ASSERT_EQ(0, buffer_flush(&b));
+  buffer_free(&b);
+  close(fd);
+  ASSERT_EQ(7, read_testfile(t, 16));
+  ASSERT_EQ(0, byte_diff(t, 7, "written"));
+}
 
 /*
  * int buffer_putlonglong(buffer*, int64 l);
@@ -1053,7 +1384,17 @@ TEST(test_buffer_putulonglongpad) {
 /*
  * int buffer_puttai(buffer*, const struct tai*);
  */
-TEST(test_buffer_puttai) {}
+TEST(test_buffer_puttai) {
+  buffer b;
+  char mem[64];
+  struct tai t;
+
+  buffer_init(&b, (buffer_op_ptr)0, -1, mem, sizeof mem);
+  tai_unix(&t, 0);
+  buffer_puttai(&b, &t);
+  ASSERT_EQ(20, b.p);
+  ASSERT_EQ(0, byte_diff(mem, 20, "1970-01-01T00:00:10Z")); /* TAI, 10 s ahead */
+}
 
 /*
  * int buffer_copy(buffer* out, buffer* in);
