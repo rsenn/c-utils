@@ -11,6 +11,9 @@ wc_to_u8(char* u8, wchar_t w) {
     000uuuuu zzzzyyyy yyxxxxxx  11110uuu 10uuzzzz 10yyyyyy 10xxxxxx
   */
 
+  if(w < 0 || w > 0x10ffff)
+    return 0;
+
   if(!(w & ~0x7f)) {
     *u8++ = w & 0x7f;
     *u8++ = '\0';
@@ -32,7 +35,7 @@ wc_to_u8(char* u8, wchar_t w) {
     return 3;
   }
 
-  if(!(w & ~0x1fffff)) {
+  {
     *u8++ = ((w >> 18) & 0x07) | 0xf0;
     *u8++ = ((w >> 12) & 0x3f) | 0x80;
     *u8++ = ((w >> 6) & 0x3f) | 0x80;

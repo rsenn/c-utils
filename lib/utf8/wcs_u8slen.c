@@ -6,16 +6,16 @@ wcs_u8slen(const wchar_t* in) {
   wchar_t w;
 
   while((w = *in++)) {
-    if(!(w & ~0x7f))
+    if(w < 0 || w > 0x10ffff)
+      len += 6;
+    else if(!(w & ~0x7f))
       len += 1;
     else if(!(w & ~0x7ff))
       len += 2;
     else if(!(w & ~0xffff))
       len += 3;
-    else if(!(w & ~0x1fffff))
+    else
       len += 4;
-    else /* error: add width of null character entity &#x00; */
-      len += 6;
   }
 
   return len;

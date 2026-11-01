@@ -17,7 +17,7 @@ hashmap_rehash(hashmap* map) {
     if(map->buckets[i].key && map->buckets[i].key != HASHMAP_TOMBSTONE)
       nkeys++;
 
-  cap = map->capacity;
+  cap = map->capacity ? map->capacity : 16;
 
   while((nkeys * 100) / cap >= HASHMAP_LOW_WATERMARK)
     cap = cap * 2;

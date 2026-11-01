@@ -1,42 +1,55 @@
 #include "../dlist.h"
 
+/* swaps the places of two nodes of the list */
 void
-dlist_swap(dlist* l, node* p1, node* p2) {
-  node l1, l2;
+dlist_swap(dlist* l, node* a, node* b) {
+  node *ap, *an, *bp, *bn;
 
-  /* Return if its twice the same node */
-
-  if(p1 == p2)
+  if(a == b)
     return;
 
-  l1 = *p1;
-  l2 = *p2;
+  /* neighbours: a is the one in front */
+  if(b->next == a) {
+    node* t = a;
 
-  if(l2.next)
-    l2.next->prev = p1;
+    a = b;
+    b = t;
+  }
+
+  ap = a->prev;
+  an = a->next;
+  bp = b->prev;
+  bn = b->next;
+
+  if(an == b) {
+    b->prev = ap;
+    b->next = a;
+    a->prev = b;
+    a->next = bn;
+  } else {
+    a->prev = bp;
+    a->next = bn;
+    b->prev = ap;
+    b->next = an;
+
+    if(an)
+      an->prev = b;
+    else
+      l->tail = b;
+
+    if(bp)
+      bp->next = a;
+    else
+      l->head = a;
+  }
+
+  if(ap)
+    ap->next = b;
   else
-    l->tail = p1;
+    l->head = b;
 
-  if(l2.prev)
-    l2.prev->next = p1;
+  if(bn)
+    bn->prev = a;
   else
-    l->head = p1;
-
-  if(l1.next)
-    l1.next->prev = p2;
-  else
-    l->tail = p2;
-
-  if(l1.prev)
-    l1.prev->next = p2;
-  else
-    l->head = p2;
-
-  l2.next = p1->next;
-  l2.prev = p1->prev;
-  l1.next = p2->next;
-  l1.prev = p2->prev;
-
-  *p1 = l1;
-  *p2 = l2;
+    l->tail = a;
 }

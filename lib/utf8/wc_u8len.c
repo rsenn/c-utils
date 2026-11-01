@@ -2,6 +2,10 @@
 
 size_t
 wc_u8len(const wchar_t w) {
+  /* Unicode ends at U+10FFFF */
+  if(w < 0 || w > 0x10ffff)
+    return 0;
+
   if(!(w & ~0x7f))
     return 1;
 
@@ -11,8 +15,5 @@ wc_u8len(const wchar_t w) {
   if(!(w & ~0xffff))
     return 3;
 
-  if(!(w & ~0x1fffff))
-    return 4;
-
-  return 0; /* error */
+  return 4;
 }
