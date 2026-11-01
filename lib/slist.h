@@ -29,7 +29,7 @@ slist_add(slink** list, slink* link) {
   *list = link;
 }
 
-slink** dlist_find(slink**, int (*pred)(slink*));
+slink** slist_find(slink**, int (*pred)(slink*));
 void slist_add_after(slink**, slink* p, slink* after);
 void slist_add_before(slink**, slink* p, slink* before);
 slink* slist_find_delete(slink**, int (*pred)(slink*));
@@ -48,9 +48,9 @@ int slist_unshiftb(slink** list, const void* x, size_t len);
 #define slink_foreach(link, n) for((n) = (void*)(link); *(void**)(n); (n) = (void*)((slink*)(n))->next)
 #define slist_foreach(list, n) for((n) = (void*)slist_begin((slink*)(list)); (n); (n) = (void*)slist_next((slink*)n))
 #define slist_foreach_safe(list, n, next) \
-  for((n) = slist_begin(list); (((n) && ((next) = slist_next((n)))), 1); (n) = (next))
+  for((n) = slist_begin(list); (n) && (((next) = slist_next((n))), 1); (n) = (next))
 #define slink_foreach_safe(list, n, next) \
-  for((n) = &(list); ((*(n) && ((next) = (void*)slink_next((struct slink**)(n)))), 1); (n) = (next))
+  for((n) = &(list); *(n) && (((next) = (void*)slink_next((struct slink**)(n))), 1); (n) = (next))
 
 #define _slist_begin(st) ((struct slink**)&(st))
 #define _slist_next(st) (((struct slink*)(st))->next)

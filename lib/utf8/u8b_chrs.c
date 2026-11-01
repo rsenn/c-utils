@@ -1,23 +1,35 @@
 #include "../utf8.h"
-#include <string.h>
 
+/* the bytes of the sequence that starts at p, 1 for a byte that is no start */
+static size_t
+step(const char* p) {
+  size_t n = u8_len(p, 1);
+
+  return n ? n : 1;
+}
+
+/* Position of the first character in the n bytes at u8 that is one of the
+ * needles, or n if there is none. */
 size_t
 u8b_chrs(const char* u8, size_t n, const char needles[], size_t nn) {
-  size_t i;
+  size_t i, j, k;
+
   for(i = 0; i < n;) {
-    size_t j;
-    const size_t len = u8_len(&u8[i], 1);
-
     for(j = 0; j < nn;) {
-      const size_t nlen = u8_len(&needles[j], 1);
+      const size_t nlen = j + step(&needles[j]) <= nn ? step(&needles[j]) : nn - j;
 
-      if(!memcmp(&u8[i], &needles[j], nlen))
-        return i;
+      if(i + nlen <= n) {
+        for(k = 0; k < nlen && u8[i + k] == needles[j + k]; k++) {
+        }
+
+        if(k == nlen)
+          return i;
+      }
 
       j += nlen;
     }
 
-    i += len;
+    i += step(&u8[i]);
   }
 
   return n;

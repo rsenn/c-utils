@@ -51,7 +51,7 @@ typedef hashentry* MAP_PAIR_T;
 #define MAP_INSERT(map, key, klen, data) hashmap_put2(&(map), (void*)(key), klen, (void*)(data))
 #define MAP_INSERT2(map, key, klen, data, dlen) hashmap_insert(&(map), (void*)(key), klen, (void*)(data), dlen)
 
-static linked_list_node*
+static inline void
 hashmap_insert(MAP_T* map, void* key, size_t klen, void* data, size_t dlen) {
   char *k, *v;
   klen = (klen > 0 && ((char*)key)[klen - 1] == '\0') ? klen : klen + 1;

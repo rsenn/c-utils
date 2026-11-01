@@ -25,7 +25,7 @@ getchar_utf8(buffer* b, int* ptr) {
   int ret = buffer_get(b, &c, 1);
 
   if(ret == 1)
-    *ptr = c;
+    *ptr = (unsigned char)c;
   return ret;
 }
 

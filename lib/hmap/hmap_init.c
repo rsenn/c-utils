@@ -14,6 +14,7 @@ hmap_init(int bucket_size, HMAP_DB** hmap_db) {
   new_hmap_db->tuple = (TUPLE*)calloc(bucket_size, sizeof(TUPLE));
 
   if(new_hmap_db->tuple == NULL) {
+    free(new_hmap_db);
     return HMAP_CREATE_TUPUL_ERROR;
   }
 

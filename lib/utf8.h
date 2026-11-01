@@ -10,6 +10,7 @@
 
 // #include <stdlib.h>
 #include <stddef.h>
+#include "stralloc.h"
 // #include <sys/types.h>
 // #include <wchar.h>
 
@@ -35,9 +36,7 @@ size_t wc_to_u8(char*, wchar_t);
 size_t wc_u8len(const wchar_t);
 int wc_charwidth(wchar_t);
 
-#ifdef HAVE_STRALLOC_H
 size_t wcs_to_u8sa(stralloc*, const wchar_t*);
-#endif
 
 #ifdef __cplusplus
 }
