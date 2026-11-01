@@ -84,6 +84,7 @@
   and the USB-Stack HID mouse example (tests/genmakefile/import-mplabx.sh).
 - genmakefile: --import-mplabx also reads MPLAB 8 .mcp project files.
 - fixed: genmakefile could not read a source given with an absolute path.
+- API: 39 files that held several public functions were split, one function to a file (88 are left, see tests/check-onefunc.py); buffer_dummyreadbuf, buffer_dummyread_fromstr and strarray_sort_compare are declared.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

@@ -2,13 +2,6 @@
 #include "../byte.h"
 #include <time.h>
 
-unsigned int
-fmt_2digits(char* dest, int i) {
-  dest[0] = (char)((i / 10) + '0');
-  dest[1] = (char)((i % 10) + '0');
-  return 2;
-}
-
 size_t
 fmt_iso8601(char* dest, time_t t) {
   struct tm* x = gmtime(&t);

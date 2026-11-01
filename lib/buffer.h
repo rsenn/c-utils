@@ -283,6 +283,10 @@ ssize_t buffer_prefetch(buffer*, size_t n);
 
 /* the do-nothing read operation: always 0, end of input */
 ssize_t buffer_dummyread(fd_type, void*, size_t, buffer*);
+/* the read operation of buffer_frombuf: the data is in the buffer already, 0 */
+ssize_t buffer_dummyreadbuf(fd_type, void*, size_t, buffer*);
+/* the same for buffer_fromstr */
+ssize_t buffer_dummyread_fromstr();
 /* calls op until all n bytes at x are written, repeating interrupted calls; 0 or -1 */
 int buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* x, size_t n, void* b);
 /* one read through op, repeated when interrupted */

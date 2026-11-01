@@ -86,6 +86,8 @@ int64 strarray_index_of_sa(strarray*, const stralloc* sa);
 #endif
 
 void strarray_sort(strarray*, int (*)(const char**, const char**));
+/* the comparison strarray_sort uses when none is given: strcmp of the strings */
+int strarray_sort_compare(const char** a, const char** b);
 
 int strarray_appends(strarray* arr, const char* s);
 int strarray_prepends(strarray* arr, const char* s);

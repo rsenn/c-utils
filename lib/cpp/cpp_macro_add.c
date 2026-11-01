@@ -25,15 +25,3 @@ cpp_macro_add(cpp_ctx* pp, char* name, bool is_objlike, cpp_token* body) {
 
   return m;
 }
-
-void
-cpp_undefine(cpp_ctx* pp, char* name) {
-  /*cpp_macro* m = hashmap_get(&pp->macros, name);
-
-  if(m) {
-    alloc_free(m->name);
-    alloc_free(m);
-  }*/
-
-  hashmap_delete(&pp->macros, name);
-}
