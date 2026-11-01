@@ -9,7 +9,7 @@ cpp_skip_line(cpp_token* tok) {
 
   cpp_warn_tok(tok, "extra token");
 
-  while(tok->at_bol)
+  while(!tok->at_bol && tok->kind != TK_EOF)
     tok = tok->next;
 
   return tok;

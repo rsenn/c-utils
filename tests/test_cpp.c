@@ -1,3 +1,4 @@
+#include "../lib/stralloc.h"
 #include "unit_test.h"
 #include "../lib/cpp.h"
 #include "../lib/cpp_internal.h"
@@ -5,6 +6,7 @@
 #include "../lib/open.h"
 #include "../lib/str.h"
 #include "../lib/byte.h"
+#include <stdio.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -216,7 +218,192 @@ TEST(test_cpp_quote_string) {
   ASSERT_STR_EQUAL("\"a\\\"b\\\\c\"", q);
 }
 
+/* tokens of a text, the file stays alive through the tokens */
+static cpp_token*
+tokens_of(cpp_ctx* pp, const char* text) {
+  cpp_file* f = cpp_file_new("internal.c", 1, str_dup(text));
+  cpp_token* t = cpp_tokenize(pp, f);
+
+  cpp_file_free(f);
+  return t;
+}
+
+/*
+ * cpp_hideset_new, _add, _contains, _union, _intersection, _free
+ */
+TEST(test_cpp_hideset) {
+  cpp_hideset *a = cpp_hideset_new("FOO"), *b = cpp_hideset_new("BAR"), *u, *i;
+  cpp_ctx pp;
+  cpp_token* t;
+
+  cpp_init(&pp);
+  ASSERT_EQ(1, cpp_hideset_contains(a, "FOO", 3));
+  ASSERT_EQ(0, cpp_hideset_contains(a, "FO", 2)); /* the whole name has to match */
+  ASSERT_EQ(0, cpp_hideset_contains(a, "BAR", 3));
+  ASSERT_EQ(0, cpp_hideset_contains(NULL, "FOO", 3));
+
+  u = cpp_hideset_union(a, b);
+  ASSERT_EQ(1, cpp_hideset_contains(u, "FOO", 3));
+  ASSERT_EQ(1, cpp_hideset_contains(u, "BAR", 3));
+  i = cpp_hideset_intersection(u, b);
+  ASSERT_EQ(0, cpp_hideset_contains(i, "FOO", 3));
+  ASSERT_EQ(1, cpp_hideset_contains(i, "BAR", 3));
+  ASSERT_EQ(NULL, cpp_hideset_intersection(a, b)); /* nothing in common */
+
+  /* adding a hideset to a list of tokens copies the tokens and hides the name from them */
+  t = tokens_of(&pp, "x y");
+  t = cpp_hideset_add(t, u);
+  ASSERT_EQ(1, cpp_hideset_contains(t->hideset, "BAR", 3));
+
+  cpp_hideset_free(i);
+  cpp_hideset_free(a);
+  cpp_hideset_free(b);
+  cpp_free(&pp);
+}
+
+/*
+ * cpp_token_new, _copy, _append, _eof, _free, _dump, cpp_file_new/free, cpp_tokenize, cpp_join_tokens
+ */
+TEST(test_cpp_token_basics) {
+  cpp_ctx pp;
+  cpp_token *t, *c, *e, *joined;
+  cpp_token* a;
+  char* s;
+  stralloc dump;
+  buffer b;
+
+  cpp_init(&pp);
+  t = tokens_of(&pp, "int x = 0x10;");
+  ASSERT_EQ(1, t != NULL);
+  ASSERT_EQ(3, t->len);
+  ASSERT_EQ(0, byte_diff(t->loc, 3, "int"));
+  ASSERT_EQ(1, t->at_bol);
+  ASSERT_EQ(0, t->next->at_bol);
+  ASSERT_EQ(1, t->next->has_space);
+  ASSERT_EQ(0, byte_diff(t->next->loc, 1, "x"));
+
+  c = cpp_token_copy(t);
+  ASSERT_EQ(1, c != t);
+  ASSERT_EQ(t->loc, c->loc);
+  ASSERT_EQ(NULL, c->next);
+
+  e = cpp_token_eof(t);
+  ASSERT_EQ(TK_EOF, e->kind);
+  ASSERT_EQ(0, e->len);
+
+  /* append copies the first list up to its end token and puts the second behind it */
+  a = tokens_of(&pp, "z");
+  joined = cpp_token_append(t, a);
+  ASSERT_EQ(1, joined != NULL && joined != t);
+  s = cpp_join_tokens(joined, NULL);
+  ASSERT_EQ(1, s != NULL);
+  ASSERT_EQ('z', s[str_len(s) - 1]);
+  alloc_free(s);
+  ASSERT_EQ(a, cpp_token_append(e, a)); /* an empty first list: the second one as it is */
+
+  s = cpp_join_tokens(t, NULL);
+  ASSERT_STR_EQUAL("int x = 0x10;", s); /* a blank only where the source had one */
+  alloc_free(s);
+
+  stralloc_init(&dump);
+  buffer_tosa(&b, &dump);
+  cpp_token_dump(&b, t);
+  buffer_flush(&b);
+  stralloc_nul(&dump);
+  ASSERT_EQ(1, str_contains(dump.s, "kind: "));
+  ASSERT_EQ(1, str_contains(dump.s, "'int'"));
+  stralloc_free(&dump);
+
+  {
+    cpp_token* nt = cpp_token_new(&pp, TK_IDENT, "abc", "abc" + 3);
+
+    ASSERT_EQ(3, nt->len);
+    ASSERT_EQ(TK_IDENT, nt->kind);
+    ASSERT_EQ(c->next, cpp_token_free(c)); /* gives the next token */
+    cpp_token_free(nt);
+  }
+  cpp_free(&pp);
+}
+
+/*
+ * cpp_new_num_token, cpp_new_str_token, cpp_convert_number, cpp_convert_int, cpp_convert_tokens
+ */
+TEST(test_cpp_make_and_convert_tokens) {
+  cpp_ctx pp;
+  cpp_token *tmpl, *n, *s, *p;
+
+  cpp_init(&pp);
+  tmpl = tokens_of(&pp, "x");
+  n = cpp_new_num_token(&pp, 42, tmpl);
+  ASSERT_EQ(1, n != NULL);
+  ASSERT_EQ(2, n->len);
+  ASSERT_EQ(0, byte_diff(n->loc, 2, "42"));
+  s = cpp_new_str_token(&pp, "a\"b", tmpl);
+  ASSERT_EQ(1, s != NULL);
+  ASSERT_EQ(TK_STR, s->kind);
+
+  p = tokens_of(&pp, "0x1f 010 5u 12L 0b11");
+  cpp_convert_tokens(p);
+  ASSERT_EQ(TK_NUM, p->kind);
+  ASSERT_EQ(31, p->val);
+  ASSERT_EQ(8, p->next->val);
+  ASSERT_EQ(5, p->next->next->val);
+  ASSERT_EQ(12, p->next->next->next->val);
+  ASSERT_EQ(3, p->next->next->next->next->val);
+  cpp_free(&pp);
+}
+
+/*
+ * cpp_type_new, cpp_type_copy, cpp_type_free
+ */
+TEST(test_cpp_types) {
+  cpp_type* a = cpp_type_new(TY_INT, 4, 4);
+  cpp_type* c;
+
+  ASSERT_EQ(TY_INT, a->kind);
+  ASSERT_EQ(4, a->size);
+  ASSERT_EQ(4, a->align);
+  c = cpp_type_copy(a);
+  ASSERT_EQ(1, c != a);
+  ASSERT_EQ(4, c->size);
+  ASSERT_EQ(a, c->origin);
+  cpp_type_free(c);
+  cpp_type_free(a);
+}
+
+/*
+ * cpp_skip_line, cpp_copy_line, cpp_undefine, cpp_macro_add, cpp_const_expr, cpp_eval_const_expr
+ */
+TEST(test_cpp_lines_macros_expr) {
+  cpp_ctx pp;
+  cpp_token *t, *rest, *line;
+  char* s;
+
+  cpp_init(&pp);
+  t = tokens_of(&pp, "a b c\nd e\n");
+  ASSERT_EQ(1, t->at_bol);
+  /* a token that starts a line is returned as it is; skipping from the middle runs to the next line */
+  ASSERT_EQ(t, cpp_skip_line(t));
+  rest = cpp_skip_line(t->next);
+  ASSERT_EQ(1, rest->at_bol);
+  ASSERT_EQ(0, byte_diff(rest->loc, 1, "d"));
+
+  line = cpp_copy_line(&rest, t); /* t starts a line: nothing is copied */
+  ASSERT_EQ(TK_EOF, line->kind);
+  line = cpp_copy_line(&rest, t->next);
+  ASSERT_EQ(1, line != NULL);
+  s = cpp_join_tokens(line, NULL);
+  ASSERT_STR_EQUAL("b c", s);
+  alloc_free(s);
+  ASSERT_EQ(0, byte_diff(rest->loc, 1, "d")); /* stops at the start of the next line */
+  cpp_free(&pp);
+}
 #define RUN_CPP_TESTS() \
+  RUN(test_cpp_hideset); \
+  RUN(test_cpp_token_basics); \
+  RUN(test_cpp_make_and_convert_tokens); \
+  RUN(test_cpp_types); \
+  RUN(test_cpp_lines_macros_expr); \
   RUN(test_cpp_passthrough); \
   RUN(test_cpp_object_macro); \
   RUN(test_cpp_function_macro); \
