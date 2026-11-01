@@ -251,7 +251,37 @@ TEST(test_pe_thunk) {
   ASSERT_EQ(0x2000, pe_thunk(x, t32, 1));
 }
 
+/*
+ * pe_get_value, pe_dllname
+ */
+TEST(test_pe_get_value_dllname) {
+  unsigned char x[IMG];
+  uint8 field[16] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0};
+
+  build(x);
+  /* a PE32 image reads the 32 bit layout: the offset and size of the first pair are used */
+  ASSERT_EQ(0x44332211u, pe_get_value(x, field, 0, 4, 0, 8));
+  ASSERT_EQ(0x2211u, pe_get_value(x, field, 0, 2, 0, 8));
+  ASSERT_EQ(0x22u, pe_get_value(x, field, 1, 1, 0, 8));
+  ASSERT_EQ(0x8877665544332211ull, pe_get_value(x, field, 0, 8, 0, 4));
+
+  /* only a DLL has an export directory with a name */
+  ASSERT_EQ(NULL, pe_dllname(x));
+  nt_of(x)->coff_header.characteristics |= PE_FILE_DLL;
+  {
+    pe_data_directory* dd = &pe_header_datadir(x)[PE_DIRECTORY_ENTRY_EXPORT];
+    pe_export_directory* ex;
+
+    dd->virtual_address = 0x1000;
+    dd->size = 0x100;
+    ex = (pe_export_directory*)(x + 512);
+    ex->name = 0x1000 + 0x100;
+    ASSERT_STR_EQUAL("dll.dll", pe_dllname(x));
+  }
+}
+
 #define RUN_PE_TESTS() \
+  RUN(test_pe_get_value_dllname); \
   RUN(test_pe_headers); \
   RUN(test_pe_rva); \
   RUN(test_pe_datadir_name); \
