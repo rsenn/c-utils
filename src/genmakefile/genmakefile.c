@@ -455,6 +455,8 @@ usage(char* argv0) {
                        "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
                        "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
                        "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
+                       "      --project FILE        arguments from the [project] section of an INI file (toolchain, make, chip, xtal, baud,\n"
+                       "                            build, define, include, link, library, import, conf, pair-headers, sources)\n"
                        "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
                        "      --mplabx-conf NAME    with --import-mplabx: the configuration NAME instead of the first\n"
                        "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
@@ -1999,6 +2001,159 @@ parse_target_options(
  * @return     0 on success
  */
 /**
+ * @brief      --project FILE: replace the option with the arguments that the
+ *             [project] section of an INI file stands for. Keys: toolchain
+ *             (-t), make (-m), chip, xtal, baud, build (debug, release,
+ *             minsizerel, relwithdebinfo), define, include, library, link,
+ *             import (--import-mplabx), conf (--mplabx-conf), pair-headers
+ *             (yes), sources. define, include, link and sources take a list
+ *             separated by blanks and may be repeated. Arguments given on
+ *             the command line come after, so they win.
+ */
+static char**
+import_project(int* argcp, char** argv) {
+  int i, at = -1;
+  stralloc text;
+  strarray out;
+  char** nv;
+  size_t k, pos = 0;
+  int in_project = 0;
+
+  for(i = 1; i < *argcp; ++i)
+    if(str_equal(argv[i], "--project") && i + 1 < *argcp) {
+      at = i;
+      break;
+    }
+  if(at < 0)
+    return argv;
+
+  stralloc_init(&text);
+  if(openreadclose(argv[at + 1], &text, 4096) <= 0) {
+    buffer_putm_internal(buffer_2, "ERROR: cannot read ", argv[at + 1], newline, NULL);
+    buffer_flush(buffer_2);
+    stralloc_free(&text);
+    return argv;
+  }
+
+  strarray_init(&out);
+  strarray_push(&out, argv[0]);
+
+  while(pos < text.len) {
+    size_t eol = byte_chr(text.s + pos, text.len - pos, '\n');
+    stralloc line;
+    char *l, *eq;
+    size_t kl;
+
+    stralloc_init(&line);
+    stralloc_copyb(&line, text.s + pos, eol);
+    stralloc_nul(&line);
+    pos += eol + 1;
+    l = line.s + scan_whitenskip(line.s, line.len);
+    while(line.len && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == ' ')) {
+      line.s[--line.len] = '\0';
+    }
+
+    if(*l == '[') {
+      in_project = str_start(l, "[project]");
+    } else if(in_project && *l && *l != ';' && *l != '#' && (eq = l + str_chr(l, '=')) && *eq == '=') {
+      char* v = eq + 1;
+      stralloc key, val;
+
+      kl = (size_t)(eq - l);
+      while(kl && (l[kl - 1] == ' ' || l[kl - 1] == '\t'))
+        --kl;
+      while(*v == ' ' || *v == '\t')
+        ++v;
+      stralloc_init(&key);
+      stralloc_copyb(&key, l, kl);
+      stralloc_nul(&key);
+      stralloc_init(&val);
+      stralloc_copys(&val, v);
+      stralloc_nul(&val);
+
+      if(!str_diff(key.s, "toolchain") || !str_diff(key.s, "make") || !str_diff(key.s, "chip") ||
+         !str_diff(key.s, "xtal") || !str_diff(key.s, "baud") || !str_diff(key.s, "import") || !str_diff(key.s, "conf")) {
+        stralloc opt;
+
+        stralloc_init(&opt);
+        if(!str_diff(key.s, "toolchain"))
+          stralloc_copys(&opt, "-t");
+        else if(!str_diff(key.s, "make"))
+          stralloc_copys(&opt, "-m");
+        else if(!str_diff(key.s, "import"))
+          stralloc_copys(&opt, "--import-mplabx");
+        else if(!str_diff(key.s, "conf"))
+          stralloc_copys(&opt, "--mplabx-conf");
+        else {
+          stralloc_copys(&opt, "--");
+          stralloc_cats(&opt, key.s);
+        }
+        stralloc_nul(&opt);
+        strarray_push(&out, opt.s);
+        strarray_push(&out, val.s);
+        stralloc_free(&opt);
+      } else if(!str_diff(key.s, "build")) {
+        stralloc opt;
+
+        stralloc_init(&opt);
+        stralloc_copys(&opt, "--");
+        stralloc_cats(&opt, val.s);
+        stralloc_nul(&opt);
+        strarray_push(&out, opt.s);
+        stralloc_free(&opt);
+      } else if(!str_diff(key.s, "pair-headers")) {
+        if(!str_diff(val.s, "yes") || !str_diff(val.s, "1") || !str_diff(val.s, "true"))
+          strarray_push(&out, "--pair-headers");
+      } else if(!str_diff(key.s, "define") || !str_diff(key.s, "include") || !str_diff(key.s, "link") ||
+                !str_diff(key.s, "library") || !str_diff(key.s, "sources")) {
+        size_t a = 0;
+        const char* prefix = !str_diff(key.s, "define")    ? "-D"
+                             : !str_diff(key.s, "include") ? "-I"
+                             : !str_diff(key.s, "link")    ? "-l"
+                             : !str_diff(key.s, "library") ? "-L"
+                                                           : "";
+
+        while(a < val.len) {
+          size_t e = str_chrs(val.s + a, " \t", 2);
+
+          if(e) {
+            stralloc opt;
+
+            stralloc_init(&opt);
+            stralloc_cats(&opt, prefix);
+            stralloc_catb(&opt, val.s + a, e);
+            stralloc_nul(&opt);
+            strarray_push(&out, opt.s);
+            stralloc_free(&opt);
+          }
+          a += e + 1;
+        }
+      }
+      stralloc_free(&key);
+      stralloc_free(&val);
+    }
+    stralloc_free(&line);
+  }
+  stralloc_free(&text);
+
+  for(i = 1; i < *argcp; ++i) {
+    if(i == at) {
+      ++i;
+      continue;
+    }
+    strarray_push(&out, argv[i]);
+  }
+
+  *argcp = (int)strarray_size(&out);
+  nv = (char**)alloc((*argcp + 1) * sizeof(char*));
+  for(k = 0; k < (size_t)*argcp; ++k)
+    nv[k] = str_dup(strarray_at(&out, k));
+  nv[*argcp] = 0;
+  strarray_free(&out);
+  return nv;
+}
+
+/**
  * @brief      --import-mplabx FILE: replace the option with the arguments
  *             that a MPLAB X project (nbproject/configurations.xml) stands
  *             for: --chip of its first configuration, -D and -I of its
@@ -2362,6 +2517,7 @@ main(int argc, char* argv[]) {
 
   strlist_init(&vpath, ' ');
   strlist_init(&cmdline, ' ');
+  argv = import_project(&argc, argv);
   argv = import_mplabx(&argc, argv);
   strlist_fromv(&cmdline, (const char**)argv, argc);
 

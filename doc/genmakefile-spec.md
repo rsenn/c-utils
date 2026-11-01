@@ -1567,6 +1567,10 @@ What of this specification is in the program (see also `TODO`,
 `--mplabx-conf NAME` selects one configuration. `an-tronics` (a single C program) builds with
 `-t gcc` (checked with make).
 
-Not yet: the project file, the compiler options of a `.mcp`, all configurations of a
+`--project FILE` reads the `[project]` section of 11.2 (keys `toolchain make chip xtal baud
+build define include library link import conf pair-headers sources`) and turns it into
+command line arguments, in front of the real ones.
+
+Not yet: the other sections of the project file (`[module]`, `[program]`, `[switch]`, `[matrix]`, ...), `--dump-project`, the compiler options of a `.mcp`, all configurations of a
 MPLAB X project as a build matrix in one run, source inference by symbols.
 
