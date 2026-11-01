@@ -1,9 +1,13 @@
+#include "../lib/stralloc.h"
 #include "unit_test.h"
 #include "../lib/stralloc.h"
 #include "../lib/byte.h"
 #include "../lib/scan.h"
 #include "../lib/str.h"
+#include "../lib/buffer.h"
+#include "../lib/open.h"
 #include <stdlib.h>
+#include <unistd.h>
 #include <wchar.h>
 
 
@@ -889,6 +893,112 @@ TEST(test_stralloc_scan_stops) {
   stralloc_free(&out);
 }
 
+/*
+ * stralloc_diff, stralloc_equal, stralloc_equals, stralloc_alloc
+ */
+TEST(test_stralloc_diff_equal_alloc) {
+  stralloc a, b, c;
+
+  stralloc_init(&a);
+  stralloc_init(&b);
+  stralloc_init(&c);
+  stralloc_copys(&a, "abc");
+  stralloc_copys(&b, "abd");
+  stralloc_copys(&c, "abc");
+
+  ASSERT_EQ(1, stralloc_diff(&a, &b) < 0);
+  ASSERT_EQ(1, stralloc_diff(&b, &a) > 0);
+  ASSERT_EQ(0, stralloc_diff(&a, &c));
+  ASSERT_EQ(1, stralloc_equal(&a, &c));
+  ASSERT_EQ(0, stralloc_equal(&a, &b));
+  ASSERT_EQ(1, stralloc_equals(&a, "abc"));
+  ASSERT_EQ(0, stralloc_equals(&a, "abcd"));
+  stralloc_free(&a);
+  stralloc_free(&b);
+  stralloc_free(&c);
+
+  /* stralloc_alloc turns a stralloc that only points to a string into an owned copy */
+  {
+    stralloc v;
+    static char lit[] = "borrowed";
+
+    byte_zero(&v, sizeof v);
+    v.s = lit;
+    stralloc_alloc(&v);
+    ASSERT_EQ(8, v.len);
+    ASSERT_EQ(1, v.s != lit);
+    ASSERT_EQ(0, byte_diff(v.s, 8, "borrowed"));
+    ASSERT_EQ(1, v.a >= 9);
+    stralloc_free(&v);
+  }
+}
+
+/*
+ * int buffer_getln(buffer*, stralloc*, int* gotit, int termchar);
+ */
+TEST(test_buffer_getln) {
+  stralloc src, line;
+  buffer b;
+  int got = -1;
+
+  stralloc_init(&src);
+  stralloc_init(&line);
+  stralloc_copys(&src, "one\ntwo\nlast");
+  buffer_fromsa(&b, &src);
+
+  ASSERT_EQ(0, buffer_getln(&b, &line, &got, '\n'));
+  ASSERT_EQ(1, got);
+  ASSERT_EQ(4, line.len);
+  ASSERT_EQ(0, byte_diff(line.s, 4, "one\n"));
+  ASSERT_EQ(0, buffer_getln(&b, &line, &got, '\n'));
+  ASSERT_EQ(1, got);
+  ASSERT_EQ(0, byte_diff(line.s, 4, "two\n"));
+  /* the last line has no terminator: gotit is 0 and the text is there */
+  ASSERT_EQ(0, buffer_getln(&b, &line, &got, '\n'));
+  ASSERT_EQ(0, got);
+  ASSERT_EQ(4, line.len);
+  ASSERT_EQ(0, byte_diff(line.s, 4, "last"));
+  /* end of file: nothing left */
+  ASSERT_EQ(0, buffer_getln(&b, &line, &got, '\n'));
+  ASSERT_EQ(0, got);
+  ASSERT_EQ(0, line.len);
+
+  stralloc_free(&line);
+  stralloc_free(&src);
+}
+
+/*
+ * ssize_t readclose(fd, sa, bufsize), readclose_append, int openreadclose(fn, sa, bufsize)
+ */
+TEST(test_readclose_openreadclose) {
+  const char* fn = "/tmp/c-utils-readclose.tmp";
+  stralloc sa;
+  int fd;
+
+  stralloc_init(&sa);
+  fd = open_trunc(fn);
+  ASSERT_EQ(1, fd >= 0);
+  write(fd, "hello, world", 12);
+  close(fd);
+
+  ASSERT_EQ(1, openreadclose(fn, &sa, 4));
+  ASSERT_EQ(12, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 12, "hello, world"));
+
+  fd = open_read(fn);
+  ASSERT_EQ(0, readclose(fd, &sa, 1)); /* 0 at end of file; replaces */
+  ASSERT_EQ(12, sa.len);
+
+  fd = open_read(fn);
+  ASSERT_EQ(0, readclose_append(fd, &sa, 100)); /* appends */
+  ASSERT_EQ(24, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s + 12, 12, "hello, world"));
+
+  ASSERT_EQ(0, openreadclose("/nonexistent-dir/none", &sa, 8)); /* missing file: 0 */
+  stralloc_free(&sa);
+  unlink(fn);
+}
+
 #define RUN_STRALLOC_TESTS() \
   RUN(test_stralloc_numbers); \
   RUN(test_stralloc_append); \
@@ -948,6 +1058,9 @@ TEST(test_stralloc_scan_stops) {
   RUN(test_stralloc_removesuffixb); \
   RUN(test_stralloc_contains); \
   RUN(test_stralloc_replaces); \
-  RUN(test_stralloc_replace);
+  RUN(test_stralloc_replace); \
+  RUN(test_stralloc_diff_equal_alloc); \
+  RUN(test_buffer_getln); \
+  RUN(test_readclose_openreadclose);
 
 TESTS(stralloc) { RUN_STRALLOC_TESTS(); }

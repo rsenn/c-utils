@@ -1,6 +1,6 @@
 2026-11-01:
 
-- tests: 798 unit tests (from 642), valgrind clean. New: charbuf, ucs,
+- tests: 801 unit tests (from 642), valgrind clean. New: charbuf, ucs,
   textbuf, atomic, cdb, critbit, textcode codecs, stralloc, strarray, strlist
   and the buffer file/mmap/gzip functions; 76 empty placeholder tests were
   filled with real checks (37 remain, listed by `grep -n "TEST(.*) {}"`).
