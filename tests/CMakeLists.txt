@@ -8,7 +8,7 @@ link_directories(${CMAKE_BINARY_DIR})
 if(OVERRIDE_DEPS)
   link_libraries(${OVERRIDE_DEPS})
 else(OVERRIDE_DEPS)
-  link_libraries(cpp ini sse utf8 range slist dlist cb cbmap cdb charbuf critbit ucs textbuf set elf pe uri textcode binfmt rdir xml tokenizer json charbuf ihex http hmap hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32 fmt iob io iom
+  link_libraries(cpp ini sse utf8 range slist dlist cb cbmap cdb charbuf critbit sig ucs textbuf set elf pe uri textcode binfmt rdir xml tokenizer json charbuf ihex http hmap hashmap iarray strlist errmsg path stralloc mmap str taia tai buffer open uint32 fmt iob io iom
                   scan unix socket env dir safemult wait uint64 uint16 seek ndelay process byte stralloc)
 endif(OVERRIDE_DEPS)
 
