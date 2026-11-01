@@ -31,6 +31,9 @@
 #include "../lib/process.h"
 #include "../lib/uri.h"
 #include "../lib/uint32.h"
+#include "../lib/memalign.h"
+#include "../lib/hmap.h"
+#include "../lib/hmap_internal.h"
 #include <stdarg.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -654,6 +657,80 @@ TEST(test_path_process_misc) {
   stralloc_free(&dump);
 }
 
+/*
+ * memalign_alloc, memalign_alloc_aligned, memalign_free
+ */
+TEST(test_memalign) {
+  size_t boundaries[] = {16, 64, 256, 4096}, i;
+  void* p;
+
+  for(i = 0; i < sizeof boundaries / sizeof boundaries[0]; ++i) {
+    p = memalign_alloc(boundaries[i], 100);
+    ASSERT_EQ(1, p != NULL);
+    ASSERT_EQ(0, (size_t)p % boundaries[i]);
+    memset(p, 0xa5, 100); /* the whole block is usable */
+    memalign_free(p);
+  }
+  p = memalign_alloc_aligned(33);
+  ASSERT_EQ(1, p != NULL);
+  ASSERT_EQ(0, (size_t)p % 32);
+  memalign_free(p);
+  memalign_free(NULL);
+}
+
+/*
+ * hmap_hash, hmap_tuple_new, hmap_link, hmap_lookup, hmap_set_data (internal)
+ */
+static int
+set_data(TUPLE* t, int type, ...) {
+  va_list ap;
+  int r;
+
+  va_start(ap, type);
+  r = hmap_set_data(t, type, &ap);
+  va_end(ap);
+  return r;
+}
+
+TEST(test_hmap_internals) {
+  HMAP_DB* db = NULL;
+  TUPLE *t, *u;
+  uint32 h1, h2;
+  int bucket;
+
+  h1 = hmap_hash("alpha", 5);
+  h2 = hmap_hash("alphb", 5);
+  ASSERT_EQ(h1, hmap_hash("alpha", 5));
+  ASSERT_NE(h1, h2);
+
+  hmap_init(4, &db);
+  t = hmap_tuple_new("alpha", 5, h1);
+  ASSERT_EQ(1, t != NULL);
+  ASSERT_EQ(5, t->key_len);
+  ASSERT_EQ(h1, t->hash);
+  ASSERT_EQ(NULL, hmap_lookup(db, "alpha", 5, h1)); /* not in the map yet */
+
+  ASSERT_EQ(HMAP_SUCCESS, set_data(t, HMAP_DATA_TYPE_INT, 42));
+  ASSERT_EQ(42, t->vals.val_int);
+  ASSERT_EQ(HMAP_SUCCESS, set_data(t, HMAP_DATA_TYPE_CHARS, "text", (size_t)4));
+  ASSERT_STR_EQUAL("text", t->vals.val_chars);
+  ASSERT_EQ(4, t->data_len);
+  free(t->vals.val_chars);
+  ASSERT_EQ(HMAP_SUCCESS, set_data(t, HMAP_DATA_TYPE_DOUBLE, 1.5));
+  ASSERT_EQ(1, t->vals.val_double == 1.5);
+  ASSERT_EQ(HMAP_DATA_TYPE_INVALID, set_data(t, 9999));
+
+  bucket = hmap_link(db, t);
+  ASSERT_EQ(1, bucket >= 0 && bucket < db->bucket_size);
+  ASSERT_EQ(1, hmap_size(db));
+  ASSERT_EQ(t, hmap_lookup(db, "alpha", 5, h1));
+  u = hmap_tuple_new("alphb", 5, h2);
+  hmap_link(db, u);
+  ASSERT_EQ(u, hmap_lookup(db, "alphb", 5, h2));
+  ASSERT_EQ(t, hmap_lookup(db, "alpha", 5, h1)); /* the first one is still found */
+  ASSERT_EQ(NULL, hmap_lookup(db, "alphc", 5, hmap_hash("alphc", 5)));
+  hmap_destroy(&db);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -672,6 +749,8 @@ TEST(test_path_process_misc) {
   RUN(test_textcode_variants); \
   RUN(test_errmsg_internal_write); \
   RUN(test_cb_strarray_strlist_more); \
-  RUN(test_path_process_misc)
+  RUN(test_path_process_misc); \
+  RUN(test_memalign); \
+  RUN(test_hmap_internals)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
