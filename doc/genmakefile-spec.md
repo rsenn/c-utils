@@ -1564,6 +1564,9 @@ What of this specification is in the program (see also `TODO`,
 
 `--import-mplabx` also reads MPLAB 8 `.mcp` files (device and file list).
 
+`--mplabx-conf NAME` selects one configuration. `an-tronics` (a single C program) builds with
+`-t gcc` (checked with make).
+
 Not yet: the project file, the compiler options of a `.mcp`, all configurations of a
-MPLAB X project as a build matrix, source inference by symbols.
+MPLAB X project as a build matrix in one run, source inference by symbols.
 
