@@ -1,4 +1,6 @@
 #include "../lib/stralloc.h"
+#include "../lib/alloc.h"
+#include "../lib/strarray.h"
 #include "unit_test.h"
 #include "../lib/cpp.h"
 #include "../lib/cpp_internal.h"
@@ -477,7 +479,160 @@ TEST(test_cpp_macro_parsing_helpers) {
   ASSERT_EQ(NULL, cpp_detect_include_guard(t));
   cpp_free(&pp);
 }
+/*
+ * cpp_read_file, cpp_define, cpp_macro_add, cpp_undefine, cpp_expand, cpp_print_macro,
+ * cpp_paste, cpp_const_expr, cpp_eval_const_expr, cpp_read_const_expr
+ */
+TEST(test_cpp_macros_and_expressions) {
+  cpp_ctx pp;
+  cpp_token *t, *rest, *e, *p;
+  cpp_macro* m;
+  char* text;
+  char* joined;
+  stralloc sa;
+  buffer b;
+
+  put_file(SRC, "line one\nline two\n");
+  text = cpp_read_file(SRC);
+  ASSERT_EQ(1, text != NULL);
+  ASSERT_STR_EQUAL("line one\nline two\n", text);
+  alloc_free(text);
+  unlink(SRC);
+  ASSERT_EQ(NULL, cpp_read_file("/nonexistent-dir/nothing.c"));
+
+  cpp_init(&pp);
+  cpp_define(&pp, "TWO", "2");
+  cpp_define(&pp, "ADD(a, b)", "((a) + (b))");
+  t = tokens_of(&pp, "TWO");
+  m = cpp_macro_find(&pp, t);
+  ASSERT_EQ(1, m != NULL && m->is_objlike);
+
+  /* expansion of an object-like and of a function-like macro */
+  ASSERT_EQ(1, cpp_expand(&pp, &rest, t));
+  joined = cpp_join_tokens(rest, NULL);
+  ASSERT_STR_EQUAL("2", joined);
+  alloc_free(joined);
+
+  t = tokens_of(&pp, "ADD(1, 2) x");
+  ASSERT_EQ(1, cpp_expand(&pp, &rest, t));
+  joined = cpp_join_tokens(rest, NULL);
+  ASSERT_STR_EQUAL("((1) + (2)) x", joined);
+  alloc_free(joined);
+  ASSERT_EQ(0, cpp_expand(&pp, &rest, tokens_of(&pp, "unknown")));
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  cpp_print_macro(&b, cpp_macro_find(&pp, tokens_of(&pp, "ADD")));
+  buffer_flush(&b);
+  stralloc_nul(&sa);
+  ASSERT_EQ(1, str_start(sa.s, "#define ADD(a, b)"));
+  stralloc_free(&sa);
+
+  cpp_undefine(&pp, "TWO");
+  ASSERT_EQ(NULL, cpp_macro_find(&pp, tokens_of(&pp, "TWO")));
+  m = cpp_macro_add(&pp, "ONE", 1, cpp_token_eof(tokens_of(&pp, "1")));
+  ASSERT_EQ(1, m != NULL);
+  ASSERT_EQ(m, cpp_macro_find(&pp, tokens_of(&pp, "ONE")));
+
+  /* pasting two tokens into one */
+  p = cpp_paste(&pp, tokens_of(&pp, "foo"), tokens_of(&pp, "bar"));
+  ASSERT_EQ(6, p->len);
+  ASSERT_EQ(0, byte_diff(p->loc, 6, "foobar"));
+
+  /* constant expressions: the line after #if, "defined" becomes 0 or 1 */
+  t = tokens_of(&pp, "#if 1 + 2 * 3 == 7 && defined(ADD)\nx\n");
+  e = cpp_read_const_expr(&pp, &rest, t->next->next);
+  joined = cpp_join_tokens(e, NULL);
+  ASSERT_EQ(1, str_contains(joined, "1 + 2 * 3 == 7"));
+  ASSERT_EQ(1, str_contains(joined, "&& 1")); /* defined(ADD) is 1 */
+  alloc_free(joined);
+  ASSERT_EQ(0, byte_diff(rest->loc, 1, "x"));
+
+  t = tokens_of(&pp, "#if 1 + 2 * 3 == 7 && defined(ADD)\nx\n");
+  ASSERT_EQ(1, cpp_eval_const_expr(&pp, &rest, t->next));
+  t = tokens_of(&pp, "#if (3 > 4) || 0\nx\n");
+  ASSERT_EQ(0, cpp_eval_const_expr(&pp, &rest, t->next));
+  cpp_free(&pp);
+}
+static cpp_token*
+answer_handler(cpp_ctx* pp, cpp_token* tmpl) {
+  return cpp_new_num_token(pp, 42, tmpl);
+}
+
+/*
+ * cpp_read_include_filename, cpp_search_include_paths, cpp_search_include_next, cpp_add_builtin,
+ * cpp_is_truth_operand, cpp_subst
+ */
+TEST(test_cpp_include_builtin_subst) {
+  cpp_ctx pp;
+  cpp_token *t, *rest, *e;
+  cpp_macro* m;
+  cpp_macro_param* params;
+  cpp_macro_arg* args;
+  bool dq = false;
+  char* name;
+  char* found;
+  char* va = NULL;
+  char* joined;
+  cpp_token* tail;
+
+  cpp_init(&pp);
+
+  t = tokens_of(&pp, "#include \"foo.h\"\nnext");
+  name = cpp_read_include_filename(&pp, &rest, t->next->next, &dq);
+  ASSERT_STR_EQUAL("foo.h", name);
+  ASSERT_EQ(1, dq);
+  ASSERT_EQ(0, byte_diff(rest->loc, 4, "next"));
+  alloc_free(name);
+
+  t = tokens_of(&pp, "#include <sys/foo.h>\nnext");
+  name = cpp_read_include_filename(&pp, &rest, t->next->next, &dq);
+  ASSERT_STR_EQUAL("sys/foo.h", name);
+  ASSERT_EQ(0, dq);
+  alloc_free(name);
+
+  /* include search: a file in a directory of the path, found once and then cached */
+  put_file(HDR, "int x;\n");
+  strarray_push(&pp.inc_paths, "/tmp");
+  found = cpp_search_include_paths(&pp, "test_cpp_unit.h");
+  ASSERT_EQ(1, found != NULL);
+  ASSERT_EQ(1, str_end(found, "test_cpp_unit.h"));
+  ASSERT_EQ(found, cpp_search_include_paths(&pp, "test_cpp_unit.h")); /* from the cache */
+  ASSERT_EQ(NULL, cpp_search_include_paths(&pp, "no-such-header.h"));
+  ASSERT_STR_EQUAL("/abs/x.h", cpp_search_include_paths(&pp, "/abs/x.h")); /* absolute names are taken as they are */
+  pp.inc_next_idx = 0;
+  ASSERT_EQ(1, cpp_search_include_next(&pp, "test_cpp_unit.h") != NULL);
+  pp.inc_next_idx = 1; /* behind the only directory of the path */
+  ASSERT_EQ(NULL, cpp_search_include_next(&pp, "test_cpp_unit.h"));
+  unlink(HDR);
+
+  /* a built-in macro runs a function */
+  m = cpp_add_builtin(&pp, "__ANSWER__", answer_handler);
+  ASSERT_EQ(1, m != NULL && m->handler == answer_handler);
+  t = tokens_of(&pp, "__ANSWER__ x");
+  ASSERT_EQ(1, cpp_expand(&pp, &rest, t));
+  joined = cpp_join_tokens(rest, NULL);
+  ASSERT_EQ(1, str_start(joined, "42"));
+  alloc_free(joined);
+
+  /* the operand of a logical operator (an operand of ! && || or in parentheses) */
+  t = tokens_of(&pp, "! A && B");
+  ASSERT_EQ(1, cpp_is_truth_operand(t, t->next));
+  ASSERT_EQ(0, cpp_is_truth_operand(NULL, tokens_of(&pp, "A + 1")));
+
+  /* substituting arguments in a body: "a * a" with a = (1 + 2) */
+  t = tokens_of(&pp, "a, b) a * a");
+  params = cpp_read_macro_params(&tail, t, &va);
+  args = cpp_read_macro_args(&rest, tokens_of(&pp, "m(1 + 2, 3)"), params, NULL);
+  e = cpp_subst(&pp, tail, args);
+  joined = cpp_join_tokens(e, NULL);
+  ASSERT_STR_EQUAL("1 + 2 * 1 + 2", joined);
+  alloc_free(joined);
+  cpp_free(&pp);
+}
 #define RUN_CPP_TESTS() \
+  RUN(test_cpp_include_builtin_subst); \
+  RUN(test_cpp_macros_and_expressions); \
   RUN(test_cpp_macro_parsing_helpers); \
   RUN(test_cpp_hideset); \
   RUN(test_cpp_token_basics); \
