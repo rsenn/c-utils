@@ -22,7 +22,6 @@ char* path_clean_b(const char*, size_t* len);
 const char* path_mmap_read(const char*, size_t* n, char psm);
 void path_normalize_sa(const char*, stralloc* out);
 void path_normalize_sa_b(const char*, size_t len, stralloc* out);
-char* path_dirname_alloc(const char*);
 int add_path_b(set_t*, const char*, size_t len);
 int add_path_sa(set_t*, stralloc*);
 int add_path(set_t*, const char*);

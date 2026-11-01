@@ -86,7 +86,6 @@ void buffer_putnl(buffer*, int);
 
 int main_present(const char*);
 void var_subst(const stralloc*, stralloc*, const char*, const char*, int);
-char* path_dirname_alloc(const char*);
 void rule_list(const strlist*, array*);
 int input_command_line(const char*, size_t);
 void print_rule_deps(buffer* b, target* t);

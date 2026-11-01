@@ -91,21 +91,7 @@ path_output(const char* in, stralloc* out, const char* ext, char psa) {
   return path_output2(str_basename(in), out, ext, psa);
 }
 
-/**
- * @brief      Returns a linker output path anchored under dirs.bin
- *             (dirs.obj by default, unless -k/--bindir was given)
- *
- * @param[in]  in    Input path
- * @param      out   Output path
- * @param[in]  ext   Extension
- * @param[in]  psa    Path separator for arguments
- *
- * @return     Path string
- */
-char*
-path_output2_bin(const char* in, stralloc* out, const char* ext, char psa) {
-  return path_output2_dir(in, out, ext, psa, &dirs.bin.sa);
-}
+
 
 /**
  * @brief      Returns a linker output path anchored under dirs.bin
@@ -300,24 +286,6 @@ path_normalize_sa_b(const char* x, size_t len, stralloc* out) {
 
   stralloc_nul(out);
   stralloc_free(&tmp);
-}
-
-/**
- * @brief      Gets directory name from a file path (allocated).
- *
- * @param      p     Path string
- *
- * @return     Directory string
- */
-char*
-path_dirname_alloc(const char* p) {
-  size_t len = str_len(p);
-  size_t pos = str_rchrs(p, PATHSEP_S_MIXED, sizeof(PATHSEP_S_MIXED) - 1);
-
-  if(pos < len)
-    return str_ndup(p, pos);
-
-  return str_dup(".");
 }
 
 /**
