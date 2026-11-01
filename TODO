@@ -377,7 +377,7 @@ them with -v when porting a foreign project. Details in
   section: project file first, then the importers, then source inference.
 
 - unit-test-gaps:
-  Of the public library functions, about 190 are still not named by any
+  Of the public library functions, about 130 are still not named by any
   test; most of them run when a larger function is tested, but have no
   check of their own. All placeholder tests are filled.
 
