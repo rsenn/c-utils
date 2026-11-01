@@ -31,8 +31,8 @@
 #include "compiler.h"
 
 static const char* compiler_types[] = {
-    "8cc", "bcc",    "clang",  "digitalmars", "dmc", "gcc",  "gnu", "gp", "htc",  "icl", "lcc",   "llvm", "msvc",
-    "occ", "orange", "pelles", "picc",        "po",  "sdcc", "tcc", "vc", "vs20", "xc8", "zapcc", 0,
+    "8cc", "bcc",    "clang",  "digitalmars", "dmc", "gcc",  "gnu", "gp", "icl", "lcc",   "llvm", "msvc",
+    "occ", "orange", "pelles", "po",  "sdcc", "tcc", "vc", "vs20", "xc8", "zapcc", 0,
 };
 
 int ilink_by_hand; /* the link command names the linker itself: $(ILINK) */
@@ -837,68 +837,9 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  } else if(str_start(compiler, "htc")) {
-    var_unset("CXX");
-    var_set("LIB", "libr");
-    cfg.mach.arch = PIC;
-    exts.bin = ".cof";
-    exts.obj = ".p1";
-    exts.lib = ".a";
-
-    // var_set("CFLAGS", "--mode=pro");
-    var_push("CFLAGS", "-N127");
-    // var_push("CFLAGS", "-V");
-    var_push("CPPFLAGS", "-DHI_TECH_C=1");
-    var_set("TARGET", cfg.mach.bits == _14 ? "pic16" : "pic18");
-    // var_push("CPPFLAGS", cfg.mach.bits == _14 ?
-    //"-DPIC16=1" : "-DPIC18=1");
-    var_set("CC", cfg.mach.bits == _14 ? "picc" : "picc18");
-    var_set("LINK", cfg.mach.bits == _14 ? "picc" : "picc18");
-
-    if(cfg.chip.len == 0)
-      stralloc_copys(&cfg.chip, "16f876a");
-
-    /*stralloc_nul(&cfg.chip);
-    var_set("CHIP", cfg.chip.s);*/
-
-    if(!var_isset("MACH")) {
-      if(cfg.mach.bits == _14)
-        var_set("MACH", "pic14");
-      else
-        var_set("MACH", "pic16");
-    }
-
-    if(cfg.build_type == BUILD_TYPE_MINSIZEREL)
-      var_push("CFLAGS", "--opt=space");
-    else if(cfg.build_type != BUILD_TYPE_DEBUG)
-      var_push("CFLAGS", "--opt=speed");
-    else
-      var_push("CFLAGS", "--opt=all");
-
-    if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO) {
-      var_push("CFLAGS", "-g");
-      var_push("CFLAGS", "--debugger=pickit3");
-    }
-
-    var_push("CFLAGS", "--double=32");
-    // var_push("CFLAGS", "--warn=-3");
-    var_push("CFLAGS", "-q");
-    var_push("CFLAGS", "--chip=$(CHIP)");
-    var_push("LDFLAGS", "--output=mcof");
-    var_push("CFLAGS", "--runtime=default,-keep,+download");
-    var_push("CFLAGS", "--summary=default");
-    /*var_push("CFLAGS", "--errformat=\"%f:%l:%c error [%n]: %s\"");
-    var_push("CFLAGS", "--warnformat=\"%f:%l:%c warning [%n]: %s\"");*/
-    var_push("LDFLAGS", "--asmlist");
-    // var_push("CPPFLAGS", "-D__$(CHIP)=1");
-    set_command(&commands.lib, "$(LIB) $@", "$^");
-    stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8-cc")) {
     /* modern (v2.00+), LLVM-based XC8 driver -- gcc-like CLI, entirely
-     * different from the legacy (v1.x, HI-TECH-derived) "xc8"/"picc"
+     * different from the legacy (v1.x, HI-TECH-derived) "xc8"
      * compiler-type below, which "xc8-cc" would otherwise also match
      * via str_start(compiler, "xc8"), hence this branch comes first. */
     var_unset("CXX");
@@ -908,7 +849,7 @@ set_compiler_type(const char* compiler) {
     exts.bin = ".elf";
     /* despite the gcc-like CLI, "-c ... -o foo.o" still writes foo.p1 --
      * an intermediate/object file with a fixed extension, same as the
-     * legacy xc8/picc driver -- not a true .o; xc8-cc ignores the
+     * legacy xc8 driver -- not a true .o; xc8-cc ignores the
      * extension given via -o for -c and always appends .p1 itself. */
     exts.obj = ".p1";
     exts.lib = ".a";
@@ -947,7 +888,7 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
     stralloc_copys(&commands.link,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-  } else if(str_start(compiler, "xc8") || str_start(compiler, "picc")) {
+  } else if(str_start(compiler, "xc8")) {
     // no_libs = 1;
     var_unset("CXX");
     var_set("CC", "xc8");

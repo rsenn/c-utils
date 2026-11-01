@@ -1,0 +1,50 @@
+; Microchip XC8 v2.x and later (xc8-cc).  Seen: MPLAB X Makefile-<conf>.mk
+; (v2.31, v2.46) of usb-stack and usb-uc; compiler.c branch xc8-cc.
+[toolchain]
+name        = xc8-v2
+extends     = 
+kind        = firmware
+c-standard  = c99
+discover    = /opt/microchip/xc8/v*/bin/xc8-cc ; C:/Program Files*/Microchip/xc8/v*/bin/xc8-cc.exe
+
+[names]
+object   = .p1                             ; even for -o foo.o
+library  = lib%.a
+program  = %.hex
+outputs  = hex elf cof map
+byproducts = .lst .d memoryfile.xml
+
+[commands]
+cc  = $(CC) -mcpu=$(CHIP) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+ld  = $(CC) -mcpu=$(CHIP) $(CFLAGS) $(LDFLAGS) -o $@ $^   ; same flags at link
+ar  = xc8-ar rcs $@ $^
+
+[flags]
+dfp        = -mdfp=$(DFP_DIR)/xc8          ; required; ~/.mchp_packs/Microchip/<PACK>/<ver>
+std        = -std=c99
+debug      = -gdwarf-3 -D__DEBUG=1
+release    = -Os
+minsizerel = -Os
+float32    = -fno-short-double -fno-short-float
+warn       = -mwarn=-3
+asmlist    = -Wa,-a
+asm-cpp    = -xassembler-with-cpp
+asmfile    = -fasmfile
+summary    = -msummary=-psect,-class,+mem,-hex,-file
+map        = -Wl,-Map=%
+memory     = -Wl,--memorysummary,%
+datainit   = -Wl,--data-init
+addrqual   = -maddrqual=ignore
+codeoffset = -mcodeoffset=%
+emi.18f    = -memi=wordwrite
+hex.18f    = -ginhx032
+hex.16f    = -ginhx32
+stack.18f  = -mstack=compiled:auto:auto:auto
+stack.16f  = -mstack=compiled:auto:auto
+startup.16f= -mno-keep-startup -mno-osccal -mno-resetbits -mno-save-resetbits -mno-download -mno-stackcall
+startup.18f= -mno-keep-startup -mno-download -mdefault-config-bits
+deps       = -MMD                          ; ?
+
+[quirk]
+ninja-dollar = $$DFP_DIR                   ; ninja must not expand it; the shell does
+ide-define   = XPRJ_%=%                    ; MPLAB X adds it; the importer drops it

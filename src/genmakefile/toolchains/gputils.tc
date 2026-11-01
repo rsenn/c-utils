@@ -1,0 +1,18 @@
+; gputils (MPASM compatible).  Seen: usb-uc/Assembly Versions/.../Makefile-default.mk
+[toolchain]
+name = gputils
+kind = firmware
+languages = asm
+
+[names]
+object  = .o
+program = %.hex
+outputs = hex cod lst
+
+[commands]
+as = gpasm -p$(CHIP) -c -o $@ $<          ; ? MPLAB X calls gpasm -p<chip> file.asm -o out.hex
+ld = gplink -m -s $(LKR) -o $@ $^         ; ?
+
+[scan]
+include = include "%" ; #include "%"
+header-dir = /usr/share/gputils/header

@@ -494,8 +494,6 @@ usage(char* argv0) {
                        "     dmc         Digital Mars C++\n"
                        "     pocc        Pelles-C\n"
                        "     zapcc[-cl]  ZapCC\n"
-                       "     zapcc[-cl]  ZapCC\n"
-                       "     htc         Hi-Tech C for PIC or PIC18\n"
                        "     xc8         Microchip C Compiler for 8-bit PIC\n"
                        "     sdcc        Small Device C Compiler\n"
                        "\n"
