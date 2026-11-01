@@ -16,4 +16,7 @@ bmap_deinit_(bmap_base_t* m) {
   }
 
   free(m->buckets);
+  m->buckets = NULL; /* a second deinit, or a reuse after it, finds an empty map */
+  m->nbuckets = 0;
+  m->nnodes = 0;
 }
