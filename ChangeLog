@@ -43,7 +43,7 @@
   descriptor that had fired; byte_camelize read one byte beyond a trailing
   dash; buffer_put_quoted dropped control characters into bare octal digits
   (now backslash and three digits). Declarations and tests for the last
-  placeholders: 845 unit tests, none of them empty except where a function
+  placeholders: 851 unit tests, none of them empty except where a function
   needs a feature this build lacks.
 - fixed: range_strinbuf, range_str2inbuf and range_str4inbuf measured the
   string against the start of the string instead of the end of the buffer, so
@@ -65,6 +65,7 @@
 - fixed: io_tryreadtimeout and io_trywritetimeout reported a timeout (-2) for every descriptor that had none set, and crashed on an unregistered one.
 - tests: dns (names, packets, helpers, and every query type against a resolver on the loopback interface).
 - fixed: fmt_ip6if (and fmt_ip6ifc) measured one byte too little when the address has a scope and the destination is NULL.
+- API: strarray_emplaceb is declared in strarray.h.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
