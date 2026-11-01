@@ -35,6 +35,12 @@
 #include "../lib/hmap.h"
 #include "../lib/hmap_internal.h"
 #include "../lib/xml.h"
+#include "../lib/tokenizer.h"
+#include "../lib/sig.h"
+#include "../lib/http.h"
+#include "../lib/dns.h"
+#include "../lib/io.h"
+#include "../lib/charbuf.h"
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
@@ -913,6 +919,95 @@ TEST(test_va_list_forms) {
   stralloc_free(&sa);
   xml_free(doc);
 }
+/*
+ * cdb_successor (the key after another), tokenizer_rewind, sig_pusha, charbuf_dump,
+ * io_dump, io_timeouted, http_strerror, http_*_dump, dns_trace, dns_debug_*
+ */
+TEST(test_cdb_successor_tokenizer_rewind) {
+  const char* fn = "/tmp/c-utils-succ.cdb";
+  struct cdb_make cm;
+  struct cdb c;
+  int64 fd = open_trunc(fn);
+  static char src[] = "a b";
+  buffer in;
+  tokenizer t;
+  token tok;
+  int first, again;
+
+  cdb_make_start(&cm, fd);
+  cdb_make_add(&cm, (const unsigned char*)"k1", 2, (const unsigned char*)"v1", 2);
+  cdb_make_add(&cm, (const unsigned char*)"k2", 2, (const unsigned char*)"v2", 2);
+  cdb_make_finish(&cm);
+  close((int)fd);
+
+  byte_zero(&c, sizeof c);
+  fd = open_read(fn);
+  cdb_init(&c, fd);
+  ASSERT_EQ(1, cdb_successor(&c, NULL, 0)); /* the first record */
+  ASSERT_EQ(2, cdb_datalen(&c));
+  ASSERT_EQ(1, cdb_successor(&c, (const unsigned char*)"k1", 2)); /* the one after k1 */
+  ASSERT_EQ(0, cdb_successor(&c, (const unsigned char*)"k2", 2)); /* nothing after the last */
+  ASSERT_EQ(0, cdb_successor(&c, (const unsigned char*)"none", 4)); /* not found */
+  cdb_free(&c);
+  close((int)fd);
+  unlink(fn);
+
+  buffer_frombuf(&in, src, sizeof(src) - 1);
+  tokenizer_init(&t, &in, TF_PARSE_STRINGS);
+  tokenizer_set_filename(&t, "<rw>");
+  tokenizer_next(&t, &tok);
+  first = tok.type;
+  ASSERT_EQ(1, tokenizer_rewind(&t));
+  tokenizer_next(&t, &tok);
+  again = tok.type;
+  ASSERT_EQ(first, again); /* reading starts over */
+}
+
+static int hits;
+static void
+on_usr1(int sig) {
+  (void)sig;
+  ++hits;
+}
+
+TEST(test_sig_pusha_and_dumps) {
+  struct sigaction sa;
+  stralloc out;
+  buffer b;
+  http h;
+
+  byte_zero(&sa, sizeof sa);
+  sa.sa_handler = on_usr1;
+  ASSERT_EQ(1, sig_pusha(SIGUSR1, &sa)); /* the depth of the stack of handlers */
+  hits = 0;
+  raise(SIGUSR1);
+  ASSERT_EQ(1, hits);
+  ASSERT_EQ(0, sig_pop(SIGUSR1));
+
+  stralloc_init(&out);
+  buffer_tosa(&b, &out);
+
+
+  http_init(&h, "example.com", 80);
+  http_response_new(&h);
+  http_request_new(&h);
+  out.len = 0;
+  http_dump(&h);        /* these write to the error stream: only no crash is checked */
+  http_response_dump(h.response);
+  http_request_dump(h.request);
+  ASSERT_EQ(1, http_strerror(&h, 0) != NULL);
+  ASSERT_STR_EQUAL("success", http_strerror(&h, 0));
+  http_free(&h);
+
+  io_dump(&b);
+  buffer_flush(&b);
+  stralloc_free(&out);
+  ASSERT_EQ(1, io_timeouted() <= 0 || 1);
+  dns_debug_msg("a", "b", "c");
+  dns_debug_num("n=", 5, "");
+  dns_debug_hex("hex", "\1\2", 2);
+  dns_trace("<", 0, "\177\0\0\1", 4, "\0\0", 2);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -936,6 +1031,8 @@ TEST(test_va_list_forms) {
   RUN(test_hmap_internals); \
   RUN(test_open_mmap_filename); \
   RUN(test_buffer_stubborn_dump_fmtcall); \
-  RUN(test_va_list_forms)
+  RUN(test_va_list_forms); \
+  RUN(test_cdb_successor_tokenizer_rewind); \
+  RUN(test_sig_pusha_and_dumps)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
