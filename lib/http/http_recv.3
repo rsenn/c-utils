@@ -1,0 +1,17 @@
+.TH HTTP_RECV 3
+.SH NAME
+http_recv \- read the decoded body of the response
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_recv(http* " h ", char* " buf ", size_t " len ");"
+.SH DESCRIPTION
+
+.BR http_recv ()
+stores up to len bytes of the body in buf. It decodes the chunked transfer encoding, a Content-Length or a body that ends with the connection, from what http_canread(3) received. It does not read from the socket. h->stream has to be set before the request is sent, otherwise http_canread(3) collects the body in the response.
+.P
+The response is complete when its status is HTTP_STATUS_FINISH.
+.SH RETURN VALUE
+The number of bytes, 0 if there is nothing for now, -1 on an error (a body that was cut off is one).
+.SH SEE ALSO
+http_canread(3), sse_feed(3)

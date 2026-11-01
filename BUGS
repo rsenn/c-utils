@@ -566,3 +566,21 @@
   unit comes out with no dependencies. The preprocessor of `lib/cpp` probably
   needs a newline appended in `cpp_tokenize_file`.
 
+- `http_canread` takes body bytes into the response: unless `h->stream` is
+  set, `lib/http/http_canread.c` copies what the input buffer holds into
+  `response->data` after the headers, and at the end of the headers it takes
+  one byte of the body with it (`ret` is 1 there). A caller that reads the
+  body with `http_read` loses it. `h->stream` and `http_recv` avoid it, the
+  old path was left as it is for `src/media/mediathek-list.c`.
+
+- `buffer_flush` loses data on a non-blocking socket: it sets `b->p` to 0
+  before writing and `buffer_stubborn` does not keep what a failed write left,
+  so after `EAGAIN` the unwritten rest is gone. `http_sendreq` still sends
+  the request headers this way, which is fine while they fit in the socket
+  buffer; the body goes straight to the socket in `http_body_flush`.
+
+- `tls_context` does not verify the server: `lib/tls/tls_init.c` sets
+  `SSL_VERIFY_NONE`, so `copenai` and `cgemini` send an API key to whoever
+  answers, a man in the middle included. The certificate chain and the name
+  against `h->host` need to be checked for a client.
+

@@ -50,6 +50,7 @@ void tls_io(fd_type fd);
 const bio_method_t* tls_method(void);
 ssize_t tls_read(fd_type fd, void* data, size_t len);
 tls_t* tls_server(fd_type fd);
+int tls_servername(fd_type fd, const char* name);
 const char* tls_strerror(fd_type fd);
 int tls_verify(int ok, tls_cert_t* cert);
 int tls_want(fd_type fd, void (*wantread)(fd_type), void (*wantwrite)(fd_type));

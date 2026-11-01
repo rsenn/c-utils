@@ -1,0 +1,15 @@
+.TH JSON_VALID 3
+.SH NAME
+json_valid \- check a JSON text
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "int json_valid(const char* " x ", size_t " n ");"
+.SH DESCRIPTION
+
+.BR json_valid ()
+tells if the n bytes at x are exactly one JSON value as RFC 8259 defines it. The reader json_read_tree(3) takes much more and does not tell when it gave up.
+.SH RETURN VALUE
+1 if valid, 0 if not.
+.SH SEE ALSO
+json_parse_text(3)

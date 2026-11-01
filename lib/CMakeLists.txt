@@ -62,6 +62,7 @@ set(MODSUBDIRS
     sig
     slist
     socket
+    sse
     str
     stralloc
     strarray
@@ -172,6 +173,7 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(rdir PRIVATE dir)
   target_link_libraries(scan PRIVATE byte str)
   target_link_libraries(socket PRIVATE io iarray byte fmt ndelay scan uint16 ${LIBMSWSOCK})
+  target_link_libraries(sse PRIVATE stralloc byte scan)
   target_link_libraries(str PRIVATE byte)
   target_link_libraries(stralloc PRIVATE buffer alloc open byte fmt str)
   target_link_libraries(strarray PRIVATE array unix)

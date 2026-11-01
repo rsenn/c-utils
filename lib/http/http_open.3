@@ -1,0 +1,20 @@
+.TH HTTP_OPEN 3
+.SH NAME
+http_open \- start an HTTP request with any method
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_open(http* " h ", http_req_t " type ", const char* " location ");"
+.SH DESCRIPTION
+.BR http_open ()
+starts a request of the method
+.I type
+(GET, POST, PUT, DELETE, PATCH or HEAD) to
+.IR location ,
+an URL or a path on the host of the last request. It resolves the host and
+connects. Headers and a body can be added with http_header(3), http_body(3)
+and http_chunk(3) until the event loop sends the request.
+.SH RETURN VALUE
+1 on success, 0 on failure.
+.SH SEE ALSO
+http_get(3), http_post(3)

@@ -42,6 +42,8 @@ tls_new(tls_ctx_t* ctx, fd_type fd) {
     i->bio = tls_bio_socket(fd);
 
     SSL_set_bio(ssl, i->bio, i->bio);
+    /* a write that is retried may come from a buffer that has grown or moved */
+    SSL_set_mode(ssl, SSL_MODE_ENABLE_PARTIAL_WRITE | SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
   }
 
   return ssl;

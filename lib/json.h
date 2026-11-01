@@ -103,6 +103,26 @@ void json_recurse(jsonval*, void (*)(), void*);
 
 jsonval json_property_get(jsonval, jsonval);
 jsonval json_property_get_str(jsonval, const char*);
+jsonval json_property_path(jsonval, const char* path);
+
+/* strict RFC 8259 check of a text that has to be exactly one value */
+int json_valid(const char* x, size_t n);
+jsonval* json_parse_text(const char* x, size_t n);
+
+/* Newline delimited JSON (application/x-ndjson, JSON Lines), the way many
+ * servers stream the tokens of a model: one value per line, fed in any
+ * pieces. */
+typedef void ndjson_callback(jsonval* value, void* user);
+
+typedef struct {
+  stralloc line;
+  unsigned long lines;  /* the values that were handed out */
+  unsigned long errors; /* the lines that were not valid JSON, they are skipped */
+} ndjson;
+
+void ndjson_init(ndjson* nd);
+void ndjson_free(ndjson* nd);
+size_t ndjson_feed(ndjson* nd, const char* x, size_t n, ndjson_callback* cb, void* user);
 jsonval json_property_get_int(jsonval, int64);
 
 jsonval* json_property_set(jsonval*, jsonval, jsonval value);

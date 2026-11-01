@@ -1,0 +1,15 @@
+.TH HTTP_HEADER 3
+.SH NAME
+http_header \- add a header to the request
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_header(http* " h ", const char* " name ", const char* " value ");"
+.SH DESCRIPTION
+
+.BR http_header ()
+adds the line "name: value" to the request that was started last. Host, Connection, the length of the body and, unless it is given here, Accept are added when the request is sent.
+.SH RETURN VALUE
+1 on success, 0 on failure.
+.SH SEE ALSO
+http_open(3)

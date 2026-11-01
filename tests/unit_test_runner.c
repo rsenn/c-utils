@@ -52,6 +52,7 @@ TESTS(tokenizer);
 TESTS(json);
 TESTS(ihex);
 TESTS(http);
+TESTS(sse);
 
 START() {
   EXEC(stralloc);
@@ -98,4 +99,5 @@ START() {
   EXEC(json);
   EXEC(ihex);
   EXEC(http);
+  EXEC(sse);
 }

@@ -1,0 +1,15 @@
+.TH JSON_PARSE_TEXT 3
+.SH NAME
+json_parse_text \- parse a JSON text
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "jsonval* json_parse_text(const char* " x ", size_t " n ");"
+.SH DESCRIPTION
+
+.BR json_parse_text ()
+reads the value in the n bytes at x if json_valid(3) accepts them. Strings are stored as the text they stand for: escapes are decoded, \\uXXXX escapes (surrogate pairs too) and UTF-8 give UTF-8, and json_print writes them back.
+.SH RETURN VALUE
+The tree, to be released with json_free(3), or 0.
+.SH SEE ALSO
+json_valid(3), json_property_path(3)

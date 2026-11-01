@@ -1,0 +1,15 @@
+.TH HTTP_POST 3
+.SH NAME
+http_post \- start an HTTP POST request
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_post(http* " h ", const char* " location ");"
+.SH DESCRIPTION
+
+.BR http_post ()
+is http_open(3) with the method POST. Without http_body(3) or http_chunk(3) the body is empty.
+.SH RETURN VALUE
+1 on success, 0 on failure.
+.SH SEE ALSO
+http_open(3), http_chunk(3)

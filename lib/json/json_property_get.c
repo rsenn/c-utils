@@ -14,7 +14,10 @@ json_property_get(jsonval obj, jsonval name) {
     stralloc_init(&key);
     json_tostring(name, &key);
     stralloc_nul(&key);
-    ret = *(jsonval*)MAP_GET(obj.dictv, key.s, key.len);
+    jsonval* found = MAP_GET(obj.dictv, key.s, key.len);
+
+    if(found)
+      ret = *found;
     stralloc_free(&key);
   } else if(obj.type == JSON_ARRAY) {
     struct slink* p;

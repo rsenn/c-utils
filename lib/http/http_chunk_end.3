@@ -1,0 +1,15 @@
+.TH HTTP_CHUNK_END 3
+.SH NAME
+http_chunk_end \- end the chunked body
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_chunk_end(http* " h ");"
+.SH DESCRIPTION
+
+.BR http_chunk_end ()
+queues the last chunk, which ends the body.
+.SH RETURN VALUE
+1 on success, 0 on failure.
+.SH SEE ALSO
+http_chunk(3)

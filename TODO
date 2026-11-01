@@ -330,3 +330,25 @@ preprocessor scan and add them to the libraries of the program, and show
 them with -v when porting a foreign project. Details in
 .ai-context/genmakefile-idea-pragma-comment-lib.md.
 
+- gemini-json-array-stream:
+  Without alt=sse the streamGenerateContent method of Gemini answers with
+  one JSON array that is written piece by piece, an element at a time. It
+  is neither SSE nor NDJSON, so cgemini asks for alt=sse and cannot read
+  that form.
+
+  A reader that hands out the elements of a top level array as they
+  complete would serve it. It could live next to ndjson_feed in the json
+  module.
+
+- http-keepalive-streams:
+  The streaming clients open a connection for every request and send
+  Connection: close. A conversation of many turns pays the TCP and TLS
+  handshake each time. http_recv knows where a response ends, so a reuse
+  of the connection for the next request is possible when keepalive is set.
+
+- http-tls-in-body-flush:
+  http_body_flush writes the queued body with http_socket_write, which
+  retries a TLS write after a want-write error. This was tested with plain
+  sockets only, against a local server. A run against a real TLS server
+  with a body larger than the socket buffer is still to be done.
+

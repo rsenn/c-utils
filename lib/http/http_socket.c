@@ -35,6 +35,12 @@ http_socket(http* h, int nonblock) {
     if((h->ssl = tls_client(h->sock)) == 0)
       return -1;
 
+    /* a server with many names needs to be told which one is wanted */
+    if(h->host.len) {
+      stralloc_nul(&h->host);
+      tls_servername(h->sock, h->host.s);
+    }
+
     tls_io(h->sock);
   }
 
@@ -83,10 +89,6 @@ http_socket_read(fd_type fd, void* buf, size_t len, buffer* b) {
     if(ret < 0)
       err = errno;
 
-    if(ret == -1) {
-      buffer_puts(buffer_2, "failed recv()");
-      buffer_putnlflush(buffer_2);
-    }
   }
 
 #ifdef DEBUG_OUTPUT
