@@ -36,8 +36,9 @@ path_exists(const char* p) {
   int r;
 #if !(NO_ACCESS || defined(__ANDROID__))
   if(access(p, 0) == 0)
-#endif
     return 1;
+#endif
+  /* (with NO_ACCESS the return was unconditional: every path "existed") */
   r = lstat(p, &st);
 
   if(r == 0)

@@ -2,6 +2,9 @@
 #include "../lib/buffer.h"
 #include "../lib/byte.h"
 #include "../lib/path.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include "../lib/str.h"
 #include "../lib/stralloc.h"
 
 /*
@@ -198,31 +201,74 @@ TEST(test_path_dirname) {
  * int path_fnmatch(const char* pattern, unsigned int plen, const char* string, unsigned int slen, int flags);
  */
 
-TEST(test_path_fnmatch) {}
+TEST(test_path_fnmatch) {
+  ASSERT_EQ(0, path_fnmatch("*.c", 3, "a.c", 3, 0));
+  ASSERT_EQ(PATH_FNM_NOMATCH, path_fnmatch("*.c", 3, "a.h", 3, 0));
+  ASSERT_EQ(0, path_fnmatch("a?c", 3, "abc", 3, 0));
+  ASSERT_EQ(PATH_FNM_NOMATCH, path_fnmatch("*", 1, "a/b", 3, PATH_FNM_PATHNAME)); /* * does not cross a slash */
+  ASSERT_EQ(0, path_fnmatch("*", 1, "a/b", 3, 0));
+  ASSERT_EQ(PATH_FNM_NOMATCH, path_fnmatch("*", 1, ".hidden", 7, PATH_FNM_PERIOD)); /* leading period only matched explicitly */
+  ASSERT_EQ(0, path_fnmatch(".*", 2, ".hidden", 7, PATH_FNM_PERIOD));
+}
 
 /*
  * void path_getcwd(stralloc* sa);
  */
 
-TEST(test_path_getcwd) {}
+TEST(test_path_getcwd) {
+  stralloc sa;
+  char* cwd;
+
+  stralloc_init(&sa);
+  ASSERT_EQ(1, path_getcwd(&sa) > 0);
+  ASSERT_EQ(1, sa.len > 0 && sa.s[0] == PATHSEP_C);
+  stralloc_nul(&sa);
+  cwd = getcwd(NULL, 0);
+  ASSERT_STR_EQUAL(cwd, sa.s);
+  free(cwd);
+  stralloc_free(&sa);
+}
 
 /*
  * char* path_gethome(int uid);
  */
 
-TEST(test_path_gethome) {}
+TEST(test_path_gethome) {
+  char* h = path_gethome(0); /* uid 0 */
+
+  ASSERT_EQ(1, h != NULL);
+  ASSERT_EQ(1, h[0] == '/');
+}
 
 /*
  * int path_readlink(const char* path, stralloc* sa);
  */
 
-TEST(test_path_readlink) {}
+TEST(test_path_readlink) {
+  stralloc sa;
+
+  stralloc_init(&sa);
+  unlink("/tmp/test_path_unit.lnk");
+  ASSERT_EQ(0, symlink("/etc", "/tmp/test_path_unit.lnk"));
+  ASSERT_EQ(4, path_readlink("/tmp/test_path_unit.lnk", &sa));
+  ASSERT_EQ(1, sa.len == 4 && byte_equal(sa.s, 4, "/etc"));
+  ASSERT_EQ(1, path_readlink("/etc", &sa) <= 0); /* not a link */
+  unlink("/tmp/test_path_unit.lnk");
+  stralloc_free(&sa);
+}
 
 /*
  * int path_exists(const char* p);
  */
 
-TEST(test_path_exists) {}
+TEST(test_path_exists) {
+  ASSERT_EQ(1, path_exists("/etc"));
+  ASSERT_EQ(0, path_exists("/this/path/does/not/exist"));
+  ASSERT_EQ(1, path_is_directory("/etc"));
+  ASSERT_EQ(0, path_is_directory("/etc/passwd"));
+  ASSERT_EQ(0, path_is_directory("/this/path/does/not/exist"));
+  ASSERT_EQ(1, path_access("/etc", R_OK) != 0);
+}
 
 /*
  * size_t path_rel(char* out, size_t cap, const char* p, size_t pn, const char* base, size_t bn);
@@ -289,7 +335,142 @@ TEST(test_path_extoff) {
   ASSERT_EQ(2, path_extoff("..", 2));
 }
 
+
+static int
+is_exec(const char* p, void* arg) {
+  (void)arg;
+  return access(p, X_OK) == 0;
+}
+
+static int
+sa_is(const stralloc* sa, const char* s) {
+  return sa->len == str_len(s) && byte_equal(sa->s, sa->len, s);
+}
+
+TEST(test_path_cat_canon) {
+  char out[64];
+  size_t n;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  n = path_cat(out, sizeof out, "/usr", 4, "lib", 3);
+  ASSERT_EQ(8, n);
+  ASSERT_EQ(0, byte_diff(out, 8, "/usr/lib"));
+  ASSERT_EQ(1, path_cat_sa(&sa, "a/", 2, "/b", 2));
+  ASSERT_EQ(1, sa_is(&sa, "/b")); /* an absolute second part wins */
+
+  n = path_canon(out, sizeof out, "/a/./b/../c//d/", 14);
+  ASSERT_EQ(0, byte_diff(out, n, "/a/c/d"));
+  n = path_canon(out, sizeof out, "../x/./y", 8);
+  ASSERT_EQ(0, byte_diff(out, n, "../x/y"));
+  stralloc_copys(&sa, "/a/b/../c");
+  ASSERT_EQ(1, path_canon_sa(&sa) != 0);
+  ASSERT_EQ(1, sa_is(&sa, "/a/c"));
+  stralloc_free(&sa);
+}
+
+TEST(test_path_abs_rel) {
+  char out[64];
+  size_t n;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  n = path_abs(out, sizeof out, "x/y", 3, "/home/u", 7);
+  ASSERT_EQ(0, byte_diff(out, n, "/home/u/x/y"));
+  n = path_abs(out, sizeof out, "/etc", 4, "/home/u", 7);
+  ASSERT_EQ(0, byte_diff(out, n, "/etc"));
+  n = path_rel(out, sizeof out, "/a/b/c", 6, "/a/d", 4);
+  ASSERT_EQ(0, byte_diff(out, n, "../b/c"));
+  ASSERT_EQ(1, path_rel_sa(&sa, "/a/b", 4, "/a/b", 4) != 0);
+  ASSERT_EQ(1, sa_is(&sa, "."));
+  stralloc_zero(&sa);
+  ASSERT_EQ(1, path_abs_sa(&sa, "/already/absolute", 17) != 0);
+  ASSERT_EQ(1, sa_is(&sa, "/already/absolute"));
+  stralloc_free(&sa);
+}
+
+TEST(test_path_parts) {
+  size_t bl = 0, bl2 = 0;
+  const char* b;
+  stralloc d;
+  char* r;
+
+  stralloc_init(&d);
+  b = path_basename("/usr/lib/libx.so", 16, &bl);
+  ASSERT_EQ(7, bl);
+  ASSERT_EQ(0, byte_diff(b, 7, "libx.so"));
+  ASSERT_STR_EQUAL("libx.so", path_basename_s("/usr/lib/libx.so"));
+  ASSERT_EQ(7, path_extoff("a/b.tar.gz", 10));
+  ASSERT_EQ(5, path_extoff("noext", 5)); /* no extension: the length */
+
+  ASSERT_EQ(1, path_isname("file", 4));
+  ASSERT_EQ(0, path_isname("a/b", 3));
+  ASSERT_EQ(1, path_isabs("/x", 2));
+  ASSERT_EQ(0, path_isabs("x", 1));
+  ASSERT_EQ(1, path_isrel("x", 1));
+  ASSERT_EQ(4, path_dirlen("/a/b/c", 6));
+  ASSERT_EQ(4, path_parentlen("/a/b/c", 6));
+  ASSERT_EQ(1, path_rootlen("/a/b", 4));
+  ASSERT_EQ(4, path_common("/a/b/c", 6, "/a/b/d", 6, &bl2));
+
+  r = path_dirname("/a/b/c.txt", 10, &d);
+  ASSERT_STR_EQUAL("/a/b", r);
+  stralloc_copys(&d, "/x/y");
+  ASSERT_STR_EQUAL("/x", path_dirname_sa(&d));
+  stralloc_zero(&d);
+  ASSERT_STR_EQUAL("/p/q", path_dirname_s("/p/q/r", &d));
+  ASSERT_STR_EQUAL("a/b", path_join("a", "b"));
+  stralloc_free(&d);
+}
+
+TEST(test_path_list_search) {
+  const char* l = "/bin:/usr/bin:/sbin";
+  const char* e;
+  size_t pos, el, count = 0;
+  char out[64];
+  stralloc sa;
+
+  stralloc_init(&sa);
+  ASSERT_EQ(4, path_listlen("/bin:/usr/bin", 13));
+  ASSERT_EQ(5, path_listnext("/bin:/usr/bin", 13, 0));
+  PATH_LIST_FOREACH(l, 19, e, el, pos) {
+    ++count;
+    if(count == 2) {
+      ASSERT_EQ(8, el);
+      ASSERT_EQ(0, byte_diff(e, el, "/usr/bin"));
+    }
+  }
+  ASSERT_EQ(3, count);
+
+  el = path_search(out, sizeof out, "/this/path/does/not/exist:/bin:/usr/bin", 40, "sh", 2, is_exec, NULL);
+  ASSERT_EQ(7, el);
+  ASSERT_EQ(0, byte_diff(out, 7, "/bin/sh"));
+  ASSERT_EQ(1, path_lookup(&sa, "/bin:/usr/bin", "sh"));
+  ASSERT_EQ(1, sa_is(&sa, "/bin/sh"));
+  stralloc_zero(&sa);
+  ASSERT_EQ(0, path_lookup(&sa, "/bin:/usr/bin", "no-such-command-xyz"));
+  /* path_find looks for a directory ENTRY with that name in ONE directory */
+  ASSERT_EQ(1, path_find("/etc", "passwd", &sa));
+  ASSERT_EQ(1, sa_is(&sa, "/etc/passwd"));
+  ASSERT_EQ(0, path_find("/etc", "no-such-entry-xyz", &sa));
+  stralloc_free(&sa);
+}
+
+TEST(test_path_resolve_dots) {
+  stralloc sa;
+
+  stralloc_init(&sa);
+  ASSERT_EQ(1, path_resolve("/etc/../etc/./", 14, &sa, 0, "/", 1) != 0);
+  ASSERT_EQ(1, sa_is(&sa, "/etc"));
+  stralloc_free(&sa);
+}
+
 #define RUN_PATH_TESTS() \
+  RUN(test_path_cat_canon); \
+  RUN(test_path_abs_rel); \
+  RUN(test_path_parts); \
+  RUN(test_path_list_search); \
+  RUN(test_path_resolve_dots); \
   RUN(test_path_basename); \
   RUN(test_path_rootlen); \
   RUN(test_path_cat); \
