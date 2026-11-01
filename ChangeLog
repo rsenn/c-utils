@@ -43,7 +43,7 @@
   descriptor that had fired; byte_camelize read one byte beyond a trailing
   dash; buffer_put_quoted dropped control characters into bare octal digits
   (now backslash and three digits). Declarations and tests for the last
-  placeholders: 818 unit tests, none of them empty except where a function
+  placeholders: 823 unit tests, none of them empty except where a function
   needs a feature this build lacks.
 - fixed: range_strinbuf, range_str2inbuf and range_str4inbuf measured the
   string against the start of the string instead of the end of the buffer, so
@@ -52,6 +52,16 @@
 - tests: the terminal module is covered (sequences, keys, a pseudo terminal for raw mode and size).
 - fixed: http_get_header looped past the end of the headers (the remaining length grew instead of shrinking); removed the stub http_get_header_n.
 - fixed: json_property_get_int could not read what json_property_set_int stored in an object. Removed json_read_callback, a function that did nothing (json_read_tree never needed it).
+- fixed: the xml find functions disagreed about their arguments -- find_pred
+  converted all three to lists, find_all only the first, find_parent two --
+  and xml_find_with_attrs_l, xml_find_all_attrs and xml_find_parent_attr
+  passed lists where strings were expected; xml_find_pred_n read
+  uninitialised pointers when fewer than four arguments came; all of them now
+  take '|' separated strings (shared xml_pargs_make/xml_pargs_free);
+  xml_scan_attrvalue read uninitialised variables for unquoted values;
+  xml_scan_tag and xml_scan_attrname looked beyond their length;
+  buffer_close read the buffer after its deinit had freed it (xml_scanner).
+  xml_has_attr is declared in xml.h.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

@@ -2,7 +2,6 @@
 #include "../strlist.h"
 #include "../xml.h"
 
-int xml_has_attr(xmlnode* node, const void*, const strlist*);
 
 int
 xml_match_name(xmlnode* node, strlist* names, const char* attr, const char* value) {

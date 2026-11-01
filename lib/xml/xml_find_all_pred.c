@@ -1,7 +1,7 @@
 #include "../array.h"
 #include "../byte.h"
 #include "../strlist.h"
-#include "../xml.h"
+#include "../xml_internal.h"
 #include <stdarg.h>
 
 static int
@@ -31,16 +31,12 @@ xmlnodeset
 xml_pfind_all(xmlnode* node, xml_pred_t* pred, const void* ptr[4]) {
   xmlnodeset ret;
   array a;
-  strlist names;
-  array_init(&a);
-  strlist_init(&names, '\0');
+  strlist lists[3];
 
-  if(ptr[0]) {
-    strlist_froms(&names, (const char*)ptr[0], '|');
-    byte_zero(&a, sizeof(array));
-    ptr[0] = (const void*)&names;
-  }
+  byte_zero(&a, sizeof(array));
+  xml_pargs_make(ptr, lists);
   xml_find_all_predicate(node, &a, pred, ptr);
+  xml_pargs_free(lists);
   ret.nodes = (xmlnode**)array_start(&a);
   ret.size = array_length(&a, sizeof(xmlnode*));
   return ret;

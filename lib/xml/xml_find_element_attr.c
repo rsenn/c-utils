@@ -2,7 +2,6 @@
 #include "../xml.h"
 #include "../str.h"
 
-int xml_has_attr(xmlnode* node, const void*, const strlist*);
 
 typedef int(pred_fn_t)(xmlnode*, const void*, const void*, const void*);
 /* The first element named tag whose attribute attr has the given value, looked for in
@@ -28,16 +27,27 @@ xml_find_element_attr(xmlnode* node, const char* tag, const char* attr, const ch
   return NULL;
 }
 
+/* the first element, in document order, that has one of the attributes in attrs */
 xmlnode*
 xml_find_with_attrs_l(xmlnode* node, const strlist* attrs) {
-  return xml_find_pred_1(node, (xml_pred_t*)(void*)&xml_has_attr, attrs);
+  for(; node; node = node->next) {
+    xmlnode* r;
+
+    if(node->type == XML_ELEMENT && xml_has_attr(node, NULL, attrs))
+      return node;
+    if(node->children && (r = xml_find_with_attrs_l(node->children, attrs)))
+      return r;
+  }
+  return NULL;
 }
 
+/* attrs is a list of attribute names separated by '|' */
 xmlnode*
 xml_find_with_attrs(xmlnode* node, const char* attrs) {
   xmlnode* r;
   strlist attrlist;
-  strlist_init(&attrlist, '|');
+
+  strlist_init(&attrlist, '\0');
   strlist_froms(&attrlist, attrs, '|');
   r = xml_find_with_attrs_l(node, &attrlist);
   strlist_free(&attrlist);
@@ -46,14 +56,5 @@ xml_find_with_attrs(xmlnode* node, const char* attrs) {
 
 xmlnodeset
 xml_find_all_attrs(xmlnode* node, const char* attrs) {
-  xmlnodeset r;
-  strlist attrlist;
-  xmlnodeset_clear(&r);
-  strlist_init(&attrlist, '|');
-  // strlist_froms(&attrlist, attrs, '|');
-  stralloc_copys(&attrlist.sa, attrs);
-
-  r = xml_find_all_2(node, (xml_pred_t*)(void*)&xml_has_attr, NULL, &attrlist);
-  strlist_free(&attrlist);
-  return r;
+  return xml_find_all_2(node, (xml_pred_t*)(void*)&xml_has_attr, NULL, attrs);
 }

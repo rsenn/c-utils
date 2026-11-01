@@ -1,4 +1,4 @@
-#include "../xml.h"
+#include "../xml_internal.h"
 #include "../strlist.h"
 #include <stdarg.h>
 
@@ -24,35 +24,11 @@ xml_find_predicate(xmlnode* node, xml_pred_t* pred, const void* vptr[]) {
 xmlnode*
 xml_pfind_pred(xmlnode* node, xml_pred_t* pred, const void* ptr[]) {
   xmlnode* ret;
-  strlist names, attrs, values;
-  strlist_init(&names, '\0');
-  strlist_init(&attrs, '\0');
-  strlist_init(&values, '\0');
+  strlist lists[3];
 
-  if(ptr[0]) {
-    strlist_froms(&names, (const char*)ptr[0], '|');
-    ptr[0] = (const void*)&names;
-  }
-
-  if(ptr[1]) {
-    strlist_froms(&attrs, (const char*)ptr[1], '|');
-    ptr[1] = (const void*)&attrs;
-  }
-
-  if(ptr[2]) {
-    strlist_froms(&values, (const char*)ptr[2], '|');
-    ptr[2] = (const void*)&values;
-  }
+  xml_pargs_make(ptr, lists);
   ret = xml_find_predicate(node, pred, ptr);
-
-  if(names.sa.a)
-    strlist_free(&names);
-
-  if(attrs.sa.a)
-    strlist_free(&attrs);
-
-  if(values.sa.a)
-    strlist_free(&values);
+  xml_pargs_free(lists);
   return ret;
 }
 
@@ -90,8 +66,13 @@ xml_vfind_pred_n(xmlnode* node, xml_pred_t* pred, int n, va_list args) {
   const void* vptr[4];
   int i;
 
+  vptr[0] = vptr[1] = vptr[2] = vptr[3] = NULL;
+
   for(i = 0; i < n; ++i) {
-    vptr[i] = va_arg(args, const void*);
+    const void* arg = va_arg(args, const void*);
+
+    if(i < 4) /* the predicate gets at most four arguments */
+      vptr[i] = arg;
   }
   return xml_pfind_pred(node, pred, vptr);
 }

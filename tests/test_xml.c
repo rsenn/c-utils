@@ -1,4 +1,7 @@
+#include "../lib/stralloc.h"
 #include "unit_test.h"
+#include "../lib/stralloc.h"
+#include "../lib/alloc.h"
 #include "../lib/strlist.h"
 #include "../lib/xml.h"
 #include "../lib/str.h"
@@ -303,7 +306,250 @@ TEST(test_xml_attrnode_textnode) {
   xml_delete(tb);
 }
 
+/*
+ * xml_scan_comment, xml_scan_tag, xml_scan_attrname, xml_scan_attrvalue
+ */
+TEST(test_xml_scan_pieces) {
+  size_t tl = 99;
+
+  ASSERT_EQ(11, xml_scan_comment("<!-- hi -->x", 12));
+  ASSERT_EQ(0, xml_scan_comment("<p>", 3));
+  ASSERT_EQ(6, xml_scan_comment("<!-- x", 6)); /* not closed: all of it */
+
+  /* the token is the name with its '<' or "</", the result includes the '>' */
+  ASSERT_EQ(4, xml_scan_tag("<ab>", 4, &tl));
+  ASSERT_EQ(3, tl);
+  ASSERT_EQ(5, xml_scan_tag("</ab>", 5, &tl));
+  ASSERT_EQ(4, tl);
+  ASSERT_EQ(4, xml_scan_tag("<ab c=1>", 8, &tl)); /* stops in front of the attributes */
+  ASSERT_EQ(3, tl);
+  ASSERT_EQ(5, xml_scan_tag("<br/>", 5, &tl));
+  ASSERT_EQ(4, tl);
+  ASSERT_EQ(2, xml_scan_tag("ab", 2, &tl)); /* never looks beyond len */
+  ASSERT_EQ(2, tl);
+
+  ASSERT_EQ(5, xml_scan_attrname("href=\"x\"", 8, &tl)); /* the '=' is consumed, not part of the token */
+  ASSERT_EQ(4, tl);
+  ASSERT_EQ(1, xml_scan_attrname("a", 1, &tl));
+  ASSERT_EQ(1, tl);
+  tl = 99;
+  ASSERT_EQ(0, xml_scan_attrname("=x", 2, &tl)); /* no name */
+  ASSERT_EQ(0, xml_scan_attrname("", 0, &tl));
+
+  ASSERT_EQ(6, xml_scan_attrvalue("\"abc\" d", 7, &tl)); /* quotes in the token, the blank after it skipped */
+  ASSERT_EQ(5, tl);
+  ASSERT_EQ(6, xml_scan_attrvalue("'a\\'b'", 6, &tl));
+  ASSERT_EQ(6, tl); /* an escaped quote does not end it */
+  ASSERT_EQ(3, xml_scan_attrvalue("abc>", 4, &tl)); /* unquoted */
+  ASSERT_EQ(3, tl);
+  ASSERT_EQ(2, xml_scan_attrvalue("x y", 3, &tl));
+  ASSERT_EQ(1, tl);
+  ASSERT_EQ(0, xml_scan_attrvalue(">", 1, &tl));
+  ASSERT_EQ(0, tl);
+  ASSERT_EQ(3, xml_scan_attrvalue("\"ab", 3, &tl)); /* not closed: the rest */
+  ASSERT_EQ(3, tl);
+  ASSERT_EQ(0, xml_scan_attrvalue("", 0, &tl));
+  ASSERT_EQ(0, tl);
+}
+
+/* a tree to search in: <r><a id="1"/><b><a id="2"/></b><c/></r> */
+static xmlnode*
+sample_tree(void) {
+  static const char text[] = "<r><a id=\"1\"/><b><a id=\"2\"/></b><c/></r>";
+  static buffer in;
+
+  buffer_frombuf(&in, text, sizeof(text) - 1);
+  return xml_read_tree(&in);
+}
+
+/*
+ * xml_find_pred_1/2/3/n, xml_find_all_1/2/3, xml_pfind_pred, xml_pfind_all, xml_find_parent_pred_1
+ */
+TEST(test_xml_find_pred_all) {
+  /* the arguments of the find functions are lists separated by '|'; the predicates get them as strlists */
+  xml_pred_t* by_name = (xml_pred_t*)(void*)&xml_match_name;
+  xml_pred_t* has_attr = (xml_pred_t*)(void*)&xml_has_attr;
+  xmlnode *doc = sample_tree(), *n;
+  xmlnodeset set;
+
+  ASSERT_EQ(1, doc != NULL);
+  n = xml_find_pred_1(doc, by_name, "a");
+  ASSERT_EQ(1, n != NULL);
+  ASSERT_STR_EQUAL("1", xml_get_attribute(n, "id")); /* the first in document order */
+  n = xml_find_pred_1(doc, by_name, "c|b");
+  ASSERT_STR_EQUAL("b", n->name); /* either name */
+  ASSERT_EQ(1, xml_find_pred_3(doc, by_name, "c", NULL, NULL) != NULL);
+  ASSERT_EQ(1, xml_find_pred_n(doc, by_name, 1, "b") != NULL);
+  ASSERT_EQ(NULL, xml_find_pred_1(doc, by_name, "zzz"));
+  n = xml_find_pred_2(doc, has_attr, NULL, "id");
+  ASSERT_EQ(1, n != NULL);
+  ASSERT_STR_EQUAL("a", n->name);
+
+  set = xml_find_all_1(doc, by_name, "a");
+  ASSERT_EQ(2, xmlnodeset_size(&set));
+  ASSERT_STR_EQUAL("1", xml_get_attribute(set.nodes[0], "id"));
+  ASSERT_STR_EQUAL("2", xml_get_attribute(set.nodes[1], "id"));
+  alloc_free(set.nodes);
+  set = xml_find_all_2(doc, has_attr, NULL, "id");
+  ASSERT_EQ(2, xmlnodeset_size(&set));
+  alloc_free(set.nodes);
+  set = xml_find_all_3(doc, by_name, "zzz", NULL, NULL);
+  ASSERT_EQ(1, xmlnodeset_empty(&set));
+  alloc_free(set.nodes);
+
+  /* from the second a, the parent search finds b */
+  set = xml_find_all_1(doc, by_name, "a");
+  ASSERT_STR_EQUAL("b", xml_find_parent_pred_1(set.nodes[1], by_name, "b")->name);
+  alloc_free(set.nodes);
+  xml_free(doc);
+}
+
+/*
+ * xml_insert, xml_walk, xml_set_attribute, xml_child_element, xml_element_attrs, xml_debug,
+ * xml_print_nodeset, xml_print_attributes
+ */
+static int
+count_visit(xmlnode* n, xmlnode* root) {
+  static int visited;
+  (void)root;
+  (void)n;
+  return ++visited < 0;
+}
+
+static int walked;
+static int
+walk_count(xmlnode* n, xmlnode* root) {
+  (void)n;
+  (void)root;
+  ++walked;
+  return 0;
+}
+
+TEST(test_xml_tree_edit) {
+  xmlnode *doc = sample_tree(), *root, *e, *kid;
+  stralloc sa;
+  buffer b;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+
+  root = doc->children;
+  ASSERT_STR_EQUAL("r", root->name);
+
+  walked = 0;
+  xml_walk(doc, walk_count);
+  ASSERT_EQ(1, walked >= 6); /* the document, r, a, b, a, c (and the closing tags if read as nodes) */
+  (void)count_visit;
+
+  e = xml_element_attrs("n", "k", "v", 0);
+  ASSERT_STR_EQUAL("n", e->name);
+  ASSERT_STR_EQUAL("v", xml_get_attribute(e, "k"));
+  xml_set_attribute(e, "k", "w");
+  ASSERT_STR_EQUAL("w", xml_get_attribute(e, "k"));
+  xml_set_attribute(e, "j", "x");
+  ASSERT_STR_EQUAL("x", xml_get_attribute(e, "j"));
+
+  kid = xml_child_element("kid", e);
+  ASSERT_EQ(e, kid->parent);
+  ASSERT_EQ(kid, e->children);
+
+  {
+    xmlnode* head = NULL;
+    xmlnode* x1 = xml_element("x1");
+    xmlnode* x2 = xml_element("x2");
+
+    xml_insert(&head, x1);
+    xml_insert(&head, x2); /* inserted in front */
+    ASSERT_EQ(x2, head);
+    ASSERT_EQ(x1, head->next);
+    xml_free(x2); /* frees the chain */
+  }
+
+  xml_debug(e, &b);
+  buffer_flush(&b);
+  ASSERT_EQ(1, sa.len > 0);
+  stralloc_nul(&sa);
+  ASSERT_EQ(1, str_contains(sa.s, "element[n]"));
+  ASSERT_EQ(1, str_contains(sa.s, "element[kid]"));
+
+  stralloc_free(&sa);
+  xml_free(e);
+  xml_free(doc);
+}
+
+TEST(test_xml_print_nodeset_attributes) {
+  xmlnode* doc = sample_tree();
+  xmlnodeset set = xml_find_all_1(doc, (xml_pred_t*)(void*)&xml_match_name, "a");
+  stralloc sa;
+  buffer b;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  xml_print_nodeset(&set, &b);
+  buffer_flush(&b);
+  stralloc_nul(&sa);
+  ASSERT_EQ(1, str_contains(sa.s, "xmlnodeset[0]"));
+  ASSERT_EQ(1, str_contains(sa.s, "xmlnodeset[1]"));
+  ASSERT_EQ(1, str_contains(sa.s, "id=\"2\""));
+
+  sa.len = 0;
+  buffer_tosa(&b, &sa);
+  xml_print_attributes(set.nodes[0]->attributes, &b, ";", ":", "'");
+  buffer_flush(&b);
+  stralloc_nul(&sa);
+  ASSERT_STR_EQUAL("id:'1'", sa.s);
+
+  alloc_free(set.nodes);
+  stralloc_free(&sa);
+  xml_free(doc);
+}
+
+/*
+ * xml_reader, xml_read_callback, xml_scanner, xml_scanner_sa
+ */
+static int
+cb_count(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
+  (void)r;
+  (void)name;
+  (void)value;
+  (void)attrs;
+  if(id == XML_ELEMENT)
+    ++*(int*)r->data;
+  return 1;
+}
+
+TEST(test_xml_reader_callback_scanner) {
+  static const char text[] = "<r><a/><b>t</b></r>";
+  buffer in;
+  xmlreader r;
+  int elements = 0;
+  xmlscanner sc;
+  stralloc sa;
+
+  buffer_frombuf(&in, text, sizeof(text) - 1);
+  xml_reader(&r, &in);
+  r.data = &elements;
+  xml_read_callback(&r, cb_count);
+  ASSERT_EQ(1, elements >= 3);
+
+  stralloc_init(&sa);
+  stralloc_copyb(&sa, text, sizeof(text) - 1);
+  xml_scanner_sa(&sc, &sa);
+  ASSERT_EQ(1, sc.b != NULL);
+  ASSERT_EQ(sa.len, sc.b->n);
+  buffer_close(sc.b);
+  xml_scanner(&sc, text, sizeof(text) - 1);
+  ASSERT_EQ(sizeof(text) - 1, sc.b->n);
+  buffer_close(sc.b);
+  stralloc_free(&sa);
+}
+
 #define RUN_XML_TESTS() \
+  RUN(test_xml_find_pred_all); \
+  RUN(test_xml_tree_edit); \
+  RUN(test_xml_print_nodeset_attributes); \
+  RUN(test_xml_reader_callback_scanner); \
+  RUN(test_xml_scan_pieces); \
   RUN(test_xml_navigate_attributes); \
   RUN(test_xml_find_element_attr_text); \
   RUN(test_xml_modify); \

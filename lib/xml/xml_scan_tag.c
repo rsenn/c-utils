@@ -15,7 +15,7 @@ xml_scan_tag(const char* x, size_t len, size_t* toklen) {
     i++;
   j = i + scan_whitenskip(x + i, len - i);
 
-  if(x[j] == '>')
+  if(j < len && x[j] == '>')
     j++;
   *toklen = i;
   return j;
