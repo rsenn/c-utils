@@ -75,6 +75,7 @@ TESTS(range);
 TESTS(json);
 TESTS(ihex);
 TESTS(gaps);
+TESTS(terminal);
 TESTS(http);
 TESTS(sse);
 
@@ -146,6 +147,7 @@ START() {
   EXEC(json);
   EXEC(ihex);
   EXEC(gaps);
+  EXEC(terminal);
   EXEC(http);
   EXEC(sse);
 }
