@@ -145,3 +145,376 @@ section below:
 * diagnostics policy (TODO `genmakefile-scan-diagnostics`: hundreds of lines
   of preprocessor noise hide `-v`).
 
+
+---
+
+## 2. Goals, non-goals, principles
+
+### 2.1 What "usable in production" means
+
+The author's use cases, in the order they must work:
+
+1. **PIC firmware** (pictest, lc-meter, libpicp): XC8 and SDCC, many chips,
+   crystal/baud/bootloader-offset matrix, `.hex/.cof/.elf/.cfg` outputs, the
+   exact directory layout of the hand written `Makefile` + `build/*.mk`.
+2. **This repository** (c-utils): about 100 tools over 90 modules, built with
+   gcc/clang (gmake, ninja), MSVC (nmake), Borland 5.5/10.2 under wine, tcc,
+   dietlibc/musl static, Android NDK.
+3. **Third party trees** dropped in as-is (zlib, bzip2, brotli): a flat
+   library with an install rule.
+4. **Porting**: point it at a foreign tree and learn what it needs.
+
+A tool is *production grade* when, for these, all of the following hold:
+
+| property | test |
+| --- | --- |
+| **correct** | the generated build produces the same artifacts as the reference build (names, flags, defines, sources) -- section 14.4 |
+| **incremental** | touching one header rebuilds exactly the objects that include it, under every backend |
+| **deterministic** | same inputs give the same bytes; no hash-order, no timestamps, no absolute host paths unless asked |
+| **self-diagnosing** | every omission, guess and fallback is reported with a reason; nothing is silently dropped |
+| **fast** | a no-change regeneration of this repository takes under 1 s (cache, 13.2) |
+| **single file** | one static binary, no runtime data files required (descriptors are compiled in, overridable) |
+| **tested** | a conformance suite runs without any vendor compiler (14) |
+
+### 2.2 Non-goals
+
+* Not a build *system* with its own executor. It emits files for existing
+  ones. Running them is the job of make/ninja/MPLAB.
+* Not a package manager. It consumes `pkg-config`, environment variables and
+  explicit paths.
+* Not a configure script. It probes (9.4) to replace `config.h`, but does not
+  attempt autoconf's breadth.
+* Does not fix the sources. Where a source cannot build for a target it says
+  so (5.6, 5.9).
+
+### 2.3 Principles
+
+1. **Describe, do not script.** What a compiler/make/layout is lives in
+   *data*; code interprets data.
+2. **Ask the tool first.** Predefined macros, include paths, versions: run the
+   compiler when it is available; fall back to tables for compilers that
+   cannot be asked (bcc32, xc8 without license) or hosts that lack them.
+3. **Generate for another machine.** The host that runs genmakefile need not
+   have the compiler, make or the target OS.
+4. **One pipeline.** Discovery, analysis, graph, emission. Input adapters
+   (build log, CMake dir) feed the same graph.
+5. **Capability, not type switches.** Backends and toolchains declare what
+   they can do; the generator picks a strategy from the declaration.
+6. **Loud omissions.** A unit, program or library that is left out gets a
+   line in the report with a reason and the option that would force it.
+7. **Match the house style.** One function per file, no stdio/stdlib/string
+   in program code (CLAUDE.md) -- the tool is built from `lib/` modules.
+
+---
+
+## 3. Architecture
+
+```
+ inputs                 pipeline                                 outputs
+ ------                 --------                                 -------
+ directories  ─┐                                              ┌─ gmake / make
+ project file ─┤  1 discover ─ 2 analyse ─ 3 resolve ─ 4 graph ┤─ ninja
+ build log  ───┤  (layout)   (cpp scan,   (toolchain,  (IR)    ├─ nmake / borland
+ CMake dir  ───┘              probes)      matrix)             ├─ shell / batch
+                                                                ├─ MPLAB X / cmake
+                                         cache (13.2) ─────────└─ compile_commands.json
+```
+
+### 3.1 Stages
+
+1. **Discover** (section 4): walk the roots, classify files by *role*
+   (program source, library source, header, generated, ignored), group them
+   into modules and programs according to the layout in effect.
+2. **Analyse** (section 5): per translation unit, run the preprocessor with
+   the target's predefs and flags; record headers reached, modules named,
+   queried switches, library hints, missing includes, `main()` presence.
+   Results are cached by content hash.
+3. **Resolve** (sections 6, 8): select the toolchain descriptor, expand the
+   build matrix, bind switches/packages/chip data to a *build point*.
+4. **Graph** (section 7.1): build the intermediate representation: typed
+   nodes (source, object, archive, program, generated file, phony) with
+   typed edges and attached command templates.
+5. **Emit** (section 7): a backend writes the graph in its syntax, using the
+   capability table to choose strategies.
+
+*(today)*: stages 1+2 are `collect()`/`scan_unit()` in `project.c` for
+`bcc55`/`bcc102` and `discover_sources()` in `sourcedir.c` for the rest;
+stage 3 is `compiler.c`; stages 4+5 are `rule.c`/`output.c`. Unification
+means stages 1 and 2 serve every compiler.
+
+### 3.2 The intermediate representation
+
+Everything the backends need, nothing make-specific:
+
+```
+node   := id, kind, path, role
+kind   := source | header | object | archive | program | module | generated
+          | phony | directory
+edge   := target -> prerequisite  (kind: build | order-only | implicit)
+action := template name + variable bindings   (e.g. compile, archive, link)
+point  := toolchain, chip?, build-type, switches, packages, matrix coords
+```
+
+Variables (`CC`, `CFLAGS`, `CPPFLAGS`, `LDFLAGS`, `LIBS`, plus per-point
+ones) are first-class in the IR with a *default* and an *override policy*
+(`overridable`, `fixed`, `append`), so the backend decides how to spell it
+(`CFLAGS ?= ...`, `!ifndef CFLAGS`, `set CFLAGS=...`, ninja `var =`).
+
+### 3.3 Determinism contract
+
+* All collections in the IR are ordered by (role, path) or by insertion
+  order of the walk, which is sorted. No iteration over hash order.
+  (`set` is insertion ordered since 2026-11; this is why.)
+* Paths are written relative to the output file unless `--absolute`.
+* No timestamps, user names, host names in output, except one comment line
+  with the command line (`--no-header` omits it).
+
+---
+
+## 4. Layouts: the directory configurations
+
+A *layout* is a rule set mapping directories to roles. The tool has a
+catalog; `--layout NAME` or the project file selects, otherwise it is
+detected (4.8). Layouts compose: one tree may have a module library under
+`lib/`, programs under `src/` and tests under `tests/`.
+
+### 4.1 Roles
+
+| role | meaning | linked into |
+| --- | --- | --- |
+| `program` | source with `main()` (or listed) | an executable named after it |
+| `module` | sources forming a named library | `<name>.lib/.a` |
+| `shared` | sources of a dynamic library / loadable module | `.dll/.so` |
+| `test` | like `program` but in the `test` target, not `all` | executable, run by `check` |
+| `example` | like `program`, target `examples` | executable |
+| `generated` | produced by a rule (lex/yacc/embed/lkr) | consumed by others |
+| `ignore` | never looked at | nothing |
+| `vendor` | third party, scanned for headers only | by `--library` |
+
+### 4.2 Layout catalog
+
+| name | shape | notes |
+| --- | --- | --- |
+| `modular` *(today: c-utils)* | `lib/<m>.h` + `lib/<m>/*.c` = module `m`; `src/**.c` programs | one function per file; closure rule: module needs modules its units name |
+| `flat-lib` *(today: `--library`, libpicp)* | `lib/*.c` each with `lib/<n>.h`; no subdirs | each header+source pair is a *unit*; a program links the units its includes name, not the whole directory |
+| `flat-single` | one directory of `.c`/`.h` | each `.c` with `main()` a program; rest linked per includes (`foo.h` implies `foo.c`) |
+| `src-include` | `src/*.c` and `include/*.h` (GNU style) | headers public, sources private |
+| `per-dir` | each subdirectory is a program or library (has a build marker or a `main`) | `app/`, `libfoo/` |
+| `monorepo` | several of the above under `packages/*/` | each package a project; shared `third_party/` |
+| `autotools-like` | `configure.ac`, `Makefile.am` | *input adapter only*: read `SOURCES` lists (`_SOURCES` variables), not run autotools |
+| `cmake-tree` | `CMakeLists.txt` | adapter: `-M` reads a configured build directory (today) |
+| `vendor-tree` | a dropped-in third party tree | `--library NAME --header H`, optional `--exclude` glob |
+| `firmware` | `main` files at the root, helpers in `src/`, a vendor `lib/` submodule (lc-meter) or `src/*test.c` mains (pictest) | firmware section 9 |
+| `kernel-like` | `drivers/x/y.c` with `obj-$(CONFIG_X) += y.o` | out of scope; read-only adapter possible later |
+
+### 4.3 Program discovery
+
+Order of rules (first match wins, each reported with `-v`):
+
+1. project file `program` entries and `role` globs (11.2);
+2. a source with a `main` per the scan (`main(`, `WinMain(`, `wmain(`,
+   `app_main`, plus the `--entry` names of a toolchain, e.g. `void main(void)`
+   of XC8);
+3. a source whose name matches `program-glob` (`*test.c` in pictest);
+4. none: the directory is a library candidate.
+
+A file with a `main` under `#if` is a program only when the `#if` is true
+for the point (the scan evaluates it). Two `main()`s in one file under
+different `#if`s are a program per point.
+
+### 4.4 Flat libraries
+
+For the layout `flat-lib` the module unit is a **header+source pair**:
+
+* unit `timer` = `lib/timer.c` (+ `lib/timer.h`);
+* a program that includes `timer.h` (directly or through another header
+  that the scan reaches) links `timer.o` and then, transitively, the units
+  `timer.c` names;
+* directories under it (`extra/`) are the same layout recursively, with the
+  directory name not part of the module name unless it collides;
+* sources with no header of their own (`main.c`, `isr.c`) are *attached*
+  to the program that names them via the project file or are programs.
+
+This is what replaces the hand written `<prog>_SOURCES` lists of pictest.
+
+### 4.5 Naming collisions
+
+Two programs `foo` under different directories:
+`--names=flat` (today) is an error that names both paths; `mirror` writes
+`bin/<dir>/foo`; `prefixed` writes `bin/<dir>-foo`. Two modules with the
+same name are always an error. Two objects with the same relative path under
+different roots cannot occur because objects mirror the source path.
+
+### 4.6 Object placement
+
+| `--objects=` | path of `a/b.c`'s object | when |
+| --- | --- | --- |
+| `mirror` (default) | `<builddir>/a/b.<ext>` | out-of-tree, any depth |
+| `flat` | `<builddir>/b.<ext>` | collisions are errors |
+| `per-program` *(PIC)* | `obj/<toolchain>-<chip>/<build id>/<program>/b.<ext>` | a program may get other macros than the next one |
+| `in-source` | `a/b.<ext>` | classic make style |
+
+### 4.7 Out-of-tree and in-tree
+
+The output file may be anywhere; paths in it are made relative to it (never
+`../../../..` explosions: if the relative path leaves more than 3 levels the
+tool switches to a `SRCROOT` variable and says so). `VPATH`/`vpath` is used
+only by backends that have it and only when `--vpath` is given; the default is
+explicit paths. `-w/--workdir` stays for compatibility.
+
+### 4.8 Detection
+
+The tool inspects the roots once (cheap, names only) and chooses:
+
+```
+lib/<m>.h and lib/<m>/            → modular
+lib/*.c with same-named .h, no dirs → flat-lib
+*.ini / mplab-nbproject / chip given → firmware (adds to the above)
+Makefile.am                       → autotools-like
+CMakeLists.txt                    → cmake-tree (needs -M or --cmake-configure)
+```
+
+`--layout=?` prints the detection with the evidence; `-v` prints it always.
+
+---
+
+## 5. Analysis
+
+### 5.1 The translation-unit scan
+
+For each unit the child process runs `lib/cpp` with `scan_only`
+(tokenizer does not leak, results come back as lines). It returns:
+
+| line | meaning |
+| --- | --- |
+| `D<path>` | every header reached (dependency) |
+| `H<path>` | project headers named by the unit |
+| `L<name>` | lib module named |
+| `Q<name>` | identifier queried with `#ifdef`/`defined` and never defined (switch, set A) |
+| `V<name>` | identifier used by value in `#if` and never defined (switch, set B) |
+| `P<name>` | library hint from a pragma (5.8) |
+| `M<path>` | include that could not be found (5.6) |
+| `E<text>` | diagnostics, collected, shown by `-v -v` (5.10) |
+| `X`       | the unit defines `main` for this point |
+
+Reading the line protocol is the only coupling between scan and generator,
+so the scan can be moved to threads or a server later.
+
+### 5.2 Predefined macros: probe first
+
+For a toolchain whose descriptor says `predef: probe`, run once per point
+(cached on the compiler's identity: path + mtime + flags):
+
+| compiler family | probe |
+| --- | --- |
+| gcc, clang, tcc, icc, xc16/xc32, avr-gcc, arm-none-eabi-gcc | `cc -dM -E -x c /dev/null` plus flags |
+| msvc, clang-cl | `cl /Zc:preprocessor /E` on a generated file printing `_MSC_VER` etc.; fallback table per `cl` version banner |
+| bcc32c / bcc102 | `#pragma message` probe (today) |
+| bcc55 | table (today); no way to ask |
+| xc8 | `xc8-cc -dM -E` for v2+, table (chip macros) for v1 |
+| sdcc | `sdcc -E -dM`; plus `-m<arch>` and `-p<chip>` set `__SDCC_*` |
+
+Tables are also *descriptors* (6.2). A probe result is stored beside the
+cache and reported by `--doctor` (12.3).
+
+### 5.3 System include directories
+
+`#include <stdint.h>` must resolve to the toolchain's, not the host's. Source
+of truth, in order: `cc -E -Wp,-v -x c /dev/null` output, descriptor
+`sysinclude`, `-I` options. Directories absolute and outside the project are
+*system*: headers found there are not read for dependencies (today's 3 s per
+unit win with `windows.h`), but their **existence** answers `has-include`.
+
+### 5.4 Switches (queried identifiers)
+
+Kept as designed (TASKS 1-2): sets A and B. Refinements:
+
+* match by glob list (`--switch-pattern 'USE_*,ENABLE_*'`), default `USE_*`;
+* the project file may name switches and give each a *kind*:
+  `flag` (`-DUSE_X=1` or nothing), `value` (`-DBAUD=9600`), `choice`
+  (`one of a b c`), `source` (adds files, 4.4/11.2);
+* defaults come from (a) the project file, (b) the value the scan finds in
+  `#ifndef X / #define X v` guards, (c) off;
+* the make file exposes `USE_X` as an overridable variable
+  (`make USE_SER=1`); the matrix can range over them (8.1).
+
+### 5.5 Conditional compilation per chip
+
+Chip macros come from the toolchain descriptor (`PIC16F1829=1`, `__16f1829`,
+`_16F1829`, ...) so the same scan that selects `#if defined(_16F1829)`
+branches yields chip-specific dependencies. Where a vendor includes
+`<pic16f1829.h>` through `<xc.h>`, the chip header is *vendor* (system) and
+its `#define`s are read from the descriptor's chip table instead of the
+header file, which does not exist on the host.
+
+### 5.6 Requirements and omissions
+
+Each unit gets a set of **requirements** from its scan:
+
+| source of the requirement | example | classification |
+| --- | --- | --- |
+| missing system include | `unistd.h`, `sys/socket.h` | `platform:posix` |
+| | `windows.h`, `winsock2.h` | `platform:win32` |
+| | `openssl/ssl.h` | `package:openssl` |
+| | `xc.h` for a non-PIC target | `toolchain:xc8` |
+| `#error` reached in the unit | `#error "unsupported"` | `unsupported` |
+| library hint with no library | `ws2_32` unavailable | `package` |
+| include not found anywhere | `config.h` | `unknown` (error) |
+
+Each target (toolchain+system) declares what it provides:
+`provides: [platform:win32, c89, package:...]`. A unit whose requirements
+exceed `provides` is **omitted** with a report line:
+
+```
+omit src/ftp/ftpcopy.c: needs platform:posix (unistd.h) – target bcc55 provides platform:win32
+```
+
+`--missing=skip|warn|error`: `skip` (default for platform/package
+requirements), `warn` (build it anyway, expect errors), `error` (stop).
+`unknown` is always an error unless `skip` is explicit. A **program** is
+omitted when any unit it needs is omitted or any module it links has no
+objects; the report names the chain.
+
+### 5.7 Module closure
+
+As today: a module links the modules its units name; cycles are legal
+(archives listed twice or `--start-group`, depending on capability
+`archive-cycles`).
+
+### 5.8 Library hints
+
+Hints, in the order of preference:
+
+1. project file: `link = ["ws2_32", "shlwapi"]` per module/program;
+2. pragmas: `#pragma comment(lib, "x.lib")` collected as `P<name>`;
+3. header table in the descriptor: `winsock2.h → ws2_32`, `shlwapi.h → shlwapi`,
+   `math.h → m` (system-dependent), `pthread.h → pthread`.
+
+Applied by capability `pragma-comment-lib`: when the compiler honors the
+pragma the hint is *reported* only; otherwise it becomes `-l`/`.lib` on the
+link line (`-lws2_32`, `ws2_32.lib`, bcc55's import library from the psdk
+directory).
+
+### 5.9 Link-time and compile-time reports
+
+`--report` writes (and `--doctor` shows) things the build will hit:
+undefined-symbol prediction from the scan (functions declared in a project
+header but defined by no unit), C standard mismatch (a toolchain with
+`c-standard: c89` plus a unit whose scan shows `<stdint.h>`, a missing-header
+for `inline`), duplicate definitions between modules. Prediction is
+best effort and labelled as such.
+
+### 5.10 Diagnostics policy
+
+The preprocessor's diagnostics during a scan are collected. Default output is
+a count per class; `-v` adds the first of each class; `-v -v` everything.
+`#warning`, "extra token after #endif", unterminated conditionals at EOF are
+classes. A scan error never stops generation; it marks the unit
+`scan-failed` and falls back to the text scanner for that unit, with a
+report line.
+
+### 5.11 Text scanner fallback
+
+When no compiler descriptor exists, the `#include "..."` text scanner is
+used, with `-I` directories, nested includes and `#ifdef` ignored. It also
+serves `-f` and `-M`. Result lines are the same `D`/`H`/`L`.
