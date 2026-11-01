@@ -43,7 +43,7 @@
   descriptor that had fired; byte_camelize read one byte beyond a trailing
   dash; buffer_put_quoted dropped control characters into bare octal digits
   (now backslash and three digits). Declarations and tests for the last
-  placeholders: 869 unit tests, none of them empty except where a function
+  placeholders: 872 unit tests, none of them empty except where a function
   needs a feature this build lacks.
 - fixed: range_strinbuf, range_str2inbuf and range_str4inbuf measured the
   string against the start of the string instead of the end of the buffer, so
@@ -72,6 +72,7 @@
 - tests: the cpp token, hideset, type and file helpers.
 - removed: lib/function.h, which did not compile and was used by nothing. tests/check-headers.sh checks that every header compiles on its own.
 - API: declared bmap_getref, buffer_putfmt_va, buffer_dummyread, buffer_stubborn, buffer_stubborn_read, xml_vattributes, xml_vset_attributes and xml_vfind_pred_n (they existed, undeclared; a call returned a truncated pointer).
+- fixed: cpp_read_file left the descriptor open.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

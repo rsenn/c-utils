@@ -61,5 +61,8 @@ cpp_read_file(char* path) {
     s = 0;
   }
 
+  if(fd > 2)
+    close(fd);
+
   return s;
 }
