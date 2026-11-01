@@ -8,7 +8,8 @@ fmt_base64url(char* dest, const char* src, size_t len) {
   size_t written = 0, i;
 
   if(!dest)
-    return (len > ((size_t)-1) / 2) ? (size_t)-1 : ((len + 2) / 3) * 4;
+    /* no padding: 4 characters per 3 bytes, 2 or 3 for a remainder of 1 or 2 */
+    return (len > ((size_t)-1) / 2) ? (size_t)-1 : len / 3 * 4 + (len % 3 ? len % 3 + 1 : 0);
 
   for(i = 0; i < len; ++i) {
     temp <<= 8;

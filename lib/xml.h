@@ -236,8 +236,6 @@ xmlnodeset_iter_dist(xmlnode*** itp1, xmlnode*** itp2) {
 #define XML_READ_BUFFER 4096
 #define XML_HMAP_BUCKETS 8
 
-xmlnode* xml_find_pred(xmlnode*, xml_pred_t*, ...);
-xmlnodeset xml_find_all(xmlnode*, xml_pred_t*, ...);
 xmlnodeset xml_find_all_1(xmlnode*, xml_pred_t*, const void*);
 xmlnodeset xml_find_all_2(xmlnode*, xml_pred_t*, const void*, const void*);
 xmlnodeset xml_find_all_3(xmlnode*, xml_pred_t*, const void*, const void*, const void*);

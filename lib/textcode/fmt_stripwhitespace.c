@@ -1,37 +1,34 @@
 #include "../fmt.h"
 #include "../scan.h"
+#include "../byte.h"
 
+/* Leading and trailing white space is removed, every other run of white space
+ * becomes one blank. Needs at most len bytes; dest may be NULL to measure
+ * (it crashed on NULL before, and left a blank at the end). */
 size_t
 fmt_stripwhitespace(char* dest, const char* src, size_t len) {
-  register const char* s = src;
-  register char* d = dest;
-  size_t i, j;
-  char c;
+  size_t n = 0, i, j;
 
   for(;;) {
-    i = scan_whitenskip(s, len);
-
-    if(i) {
-      s += i;
-      len -= i;
-
-      if(d > dest)
-        *d++ = ' ';
-    }
+    i = scan_whitenskip(src, len);
+    src += i;
+    len -= i;
 
     if(len == 0)
       break;
 
-    j = scan_nonwhitenskip(s, len);
-
-    while(j > 0) {
-      *d++ = *s++;
-      --len;
-      --j;
+    if(i && n) {
+      if(dest)
+        dest[n] = ' ';
+      ++n;
     }
 
-    if(len == 0)
-      break;
+    j = scan_nonwhitenskip(src, len);
+    if(dest)
+      byte_copy(dest + n, j, src);
+    n += j;
+    src += j;
+    len -= j;
   }
-  return d - dest;
+  return n;
 }

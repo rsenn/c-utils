@@ -94,7 +94,6 @@ int json_isnull(jsonval);
 int64 json_length(jsonval);
 jsonval* json_newnode(jsontype);
 jsonval json_object(void);
-int json_parse_null_or_undefined(jsonval*, charbuf*);
 jsonval* json_array_push(jsonval*, const jsonval);
 void json_read_callback(jsonreader*, json_read_callback_fn*);
 jsonval* json_read_tree(charbuf*);
@@ -136,7 +135,6 @@ const char* json_tostring(jsonval, stralloc*);
 void json_compact_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 void json_default_printer(jsonfmt*, jsonval*, int depth, int index, char quote);
 
-int json_parse_null_or_undefined(jsonval*, charbuf*);
 int json_parse_array(jsonval*, charbuf*);
 int json_parse_boolean(jsonval*, charbuf*);
 int json_parse_null(jsonval*, charbuf*);

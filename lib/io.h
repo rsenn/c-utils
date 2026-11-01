@@ -161,16 +161,6 @@ int io_passfd(fd_type sock, fd_type fd);
  * process.  Return sock if ok, -1 on error, setting errno. */
 int64 io_receivefd(fd_type sock);
 
-int io_starteventloopthread(unsigned int threads);
-
-#define HAVE_IO_QUEUEFORREAD
-/* Artificially queue a file descriptor as readable.
- * The next call to io_canread will return this descriptor. */
-int io_queueforread(fd_type d);
-/* Artificially queue a file descriptor as writable.
- * The next call to io_canread will return this descriptor. */
-int io_queueforwrite(fd_type d);
-
 typedef int64 (*io_write_callback)(fd_type sfd, const void* buf, uint64 n);
 
 /* used internally, but hey, who knows */
