@@ -97,7 +97,6 @@ bool cpp_hideset_contains(cpp_hideset*, char*, int);
 cpp_hideset* cpp_hideset_intersection(cpp_hideset*, cpp_hideset*);
 cpp_hideset* cpp_hideset_union(cpp_hideset*, cpp_hideset*);
 void cpp_init_macros(cpp_ctx*);
-void cpp_define_gnu_macros(void);
 void cpp_join_adjacent_string_literals(cpp_token*);
 char* cpp_join_tokens(cpp_token*, cpp_token*);
 cpp_macro* cpp_macro_add(cpp_ctx*, char*, bool, cpp_token*);

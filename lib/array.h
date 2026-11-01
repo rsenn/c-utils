@@ -47,8 +47,6 @@ void array_cate(array* to, const array* const from, int64 pos, int64 stop);
 void* array_find(array*, uint64 membersize, void* data);
 int64 array_indexof(array*, uint64 membersize, void* data);
 
-void array_shift(array* x, uint64 membersize, uint64 members);
-void array_chop(array* x, uint64 membersize, uint64 members);
 
 #define ARRAY_INIT() \
   (array) { 0, 0, 0, 0 }

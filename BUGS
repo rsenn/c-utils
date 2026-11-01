@@ -584,11 +584,6 @@
   answers, a man in the middle included. The certificate chain and the name
   against `h->host` need to be checked for a client.
 
-- `linked_list.h` and `tree.h` have no code: every function of `lib/linked_list.h`
-  is declared and defined nowhere, `lib/map.h` includes it and uses none of it;
-  `lib/tree.h` is a shell syntax tree that nothing in this tree includes. Both
-  look like leftovers of the sibling project shish.
-
 - `bmap` has no user: `lib/bmap` (a macro generated map) is not used by any
   program or module, has no tests and trips `bugprone-sizeof-expression` in
   `bmap_set`. It duplicates `hashmap`, `hmap`, `set` and `cbmap`.
