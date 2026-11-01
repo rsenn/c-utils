@@ -34,6 +34,7 @@
 #include "../lib/memalign.h"
 #include "../lib/hmap.h"
 #include "../lib/hmap_internal.h"
+#include "../lib/xml.h"
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>
@@ -827,6 +828,91 @@ TEST(test_buffer_stubborn_dump_fmtcall) {
   ASSERT_EQ(0, byte_diff(sa.s, 2, "pq"));
   stralloc_free(&sa);
 }
+/*
+ * xml_vattributes, xml_vset_attributes, xml_vfind_pred_n, buffer_putfmt_va (va_list forms)
+ */
+static HMAP_DB*
+attrs_va(const char* first, ...) {
+  va_list ap;
+  HMAP_DB* db;
+
+  va_start(ap, first);
+  db = xml_vattributes(first, ap);
+  va_end(ap);
+  return db;
+}
+
+static int
+set_attrs_va(xmlnode* n, ...) {
+  va_list ap;
+  int r;
+
+  va_start(ap, n);
+  r = xml_vset_attributes(n, ap);
+  va_end(ap);
+  return r;
+}
+
+static xmlnode*
+find_va(xmlnode* doc, int n, ...) {
+  va_list ap;
+  xmlnode* r;
+
+  va_start(ap, n);
+  r = xml_vfind_pred_n(doc, (xml_pred_t*)(void*)&xml_match_name, n, ap);
+  va_end(ap);
+  return r;
+}
+
+static int
+putfmt_va(buffer* b, const char* x, size_t len, size_t (*esc)(char*, int), ...) {
+  va_list ap;
+  int r;
+
+  va_start(ap, esc);
+  r = buffer_putfmt_va(b, x, len, esc, ap);
+  va_end(ap);
+  return r;
+}
+
+static size_t
+esc_star(char* dest, int c) {
+  if(dest)
+    dest[0] = (char)c;
+  if(dest && c == 'x')
+    dest[1] = '*';
+  return c == 'x' ? 2 : 1;
+}
+
+TEST(test_va_list_forms) {
+  HMAP_DB* db = attrs_va("k", "v", "k2", "v2", (char*)0);
+  xmlnode* e = xml_element("e");
+  xmlnode* doc = xml_newnode(XML_DOCUMENT);
+  stralloc sa;
+  buffer b;
+  TUPLE* t = NULL;
+
+  ASSERT_EQ(1, db != NULL);
+  ASSERT_EQ(2, hmap_size(db));
+  ASSERT_EQ(0, hmap_search(db, "k", 1, &t) == HMAP_SUCCESS ? 0 : 1);
+  hmap_destroy(&db);
+
+  ASSERT_EQ(0, set_attrs_va(e, "a", "1", (char*)0));
+  ASSERT_STR_EQUAL("1", xml_get_attribute(e, "a"));
+
+  doc->children = e;
+  e->parent = doc;
+  ASSERT_EQ(e, find_va(doc, 1, "e"));
+  ASSERT_EQ(NULL, find_va(doc, 1, "zz"));
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(6, putfmt_va(&b, "axbx", 4, esc_star)); /* "ax*bx*" */
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "ax*bx*"));
+  stralloc_free(&sa);
+  xml_free(doc);
+}
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -849,6 +935,7 @@ TEST(test_buffer_stubborn_dump_fmtcall) {
   RUN(test_memalign); \
   RUN(test_hmap_internals); \
   RUN(test_open_mmap_filename); \
-  RUN(test_buffer_stubborn_dump_fmtcall)
+  RUN(test_buffer_stubborn_dump_fmtcall); \
+  RUN(test_va_list_forms)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
