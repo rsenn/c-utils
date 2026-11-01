@@ -1,20 +1,46 @@
 .TH NDJSON_FEED 3
 .SH NAME
-ndjson_init, ndjson_free, ndjson_feed \- read newline delimited JSON
+ndjson_feed \- read newline delimited JSON
 .SH SYNOPSIS
 .B #include <json.h>
 .P
-.BI "void ndjson_init(ndjson* " nd ");"
-.br
-.BI "void ndjson_free(ndjson* " nd ");"
-.br
 .BI "size_t ndjson_feed(ndjson* " nd ", const char* " x ", size_t " n ", ndjson_callback* " cb ", void* " user ");"
 .SH DESCRIPTION
-
-Newline delimited JSON (application/x-ndjson) is a JSON value on every line, the way many servers stream the tokens of a model.
+Newline delimited JSON (application/x-ndjson, JSON Lines) has one JSON value on every line. Servers use it to stream
+the tokens of a language model, one object per line, often with a field "done": true in the last one.
+.P
 .BR ndjson_feed ()
-parses n bytes of it, which can be cut anywhere, and calls cb with the value of every line that is complete. The value is released when cb returns. Empty lines are skipped, lines that are not valid JSON are skipped and counted in nd->errors.
+takes
+.I n
+bytes at
+.I x
+in any pieces, cut anywhere, collects them into lines and parses every complete line with
+.BR json_parse_text (3).
+.I cb(value, user)
+is called with the tree; it is released when the callback returns, so copy what is needed. Empty lines (and CR LF line ends) are ignored; a line that is not
+exactly one valid JSON value is skipped and counted in
+.IR nd->errors .
+A last line without a newline is not used until the newline comes.
+.P
+.I nd->lines
+counts the values that were handed out.
 .SH RETURN VALUE
-The number of values handed out.
+The number of values passed to cb.
+.SH EXAMPLE
+.nf
+static void
+on_line(jsonval* v, void* user) {
+  jsonval t = json_property_path(*v, "message.content");
+
+  if(t.type == JSON_STRING)
+    buffer_put(buffer_1, t.stringv.s, t.stringv.len);
+}
+
+ndjson nd;
+ndjson_init(&nd);
+while((n = http_recv(&h, buf, sizeof(buf))) > 0)
+  ndjson_feed(&nd, buf, n, on_line, 0);
+ndjson_free(&nd);
+.fi
 .SH SEE ALSO
-json_parse_text(3), sse_feed(3)
+ndjson_init(3), json_parse_text(3), json_property_path(3), sse_feed(3)

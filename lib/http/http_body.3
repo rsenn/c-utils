@@ -1,15 +1,22 @@
 .TH HTTP_BODY 3
 .SH NAME
-http_body \- set the body of the request
+http_body \- set the body of a request
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "int http_body(http* " h ", const char* " x ", size_t " n ");"
 .SH DESCRIPTION
-
 .BR http_body ()
-appends n bytes to the body of the request that was started last. It is sent with a Content-Length. Not possible after http_chunked(3).
+appends
+.I n
+bytes at
+.I x
+to the body of the request that was started last. The length is only known when the
+request is sent, it goes out as Content-Length. The function can be called several times to
+build the body piece by piece; use
+.BR http_chunked (3)
+when the data should be sent while it is produced.
 .SH RETURN VALUE
-1 on success, 0 on failure.
+1 on success, 0 if there is no request, the body was declared chunked, or the memory is short.
 .SH SEE ALSO
-http_chunk(3)
+http_chunked(3), http_post(3)

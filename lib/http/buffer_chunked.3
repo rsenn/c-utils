@@ -1,32 +1,46 @@
 .TH BUFFER_CHUNKED 3
 .SH NAME
-buffer_chunked \- filter a buffered input for HTTP chunked encoding
+buffer_chunked \- decode the chunked transfer encoding of a buffer
 .SH SYNOPSIS
 .B #include <http.h>
-.PP
+.P
 .BI "int buffer_chunked(buffer* " b ", buffer* " other ");"
 .SH DESCRIPTION
-.B buffer_chunked
-initializes the buffer
+.BR buffer_chunked ()
+initializes
 .I b
-to act as a filter for the input source
+as a buffer that reads the data of the chunked transfer encoding (RFC 9112) found in
+.IR other .
+Chunk sizes, chunk extensions, line ends and trailers are removed. At the last chunk
+.I b
+reads the end of the file and the bytes behind the trailers stay in
 .IR other ,
-which is expected to provide data in HTTP chunked transfer encoding.
-.PP
-The filter transparently decodes the chunked stream, stripping chunk size headers and extensions, so that subsequent read operations on
+so a keep-alive connection can go on. An input that stops in the middle of a chunk is an
+error (errno EPIPE), not an end of file; a damaged size gives EINVAL.
+.P
+.BR buffer_close (3)
+on
 .I b
-retrieve only the raw data content.
-.PP
-The underlying
+frees it and leaves
 .I other
-buffer should already be initialized. When
-.I b
-is closed, it will automatically handle deinitialization of its internal state, though the
-.I other
-buffer remains open.
+open.
+.P
+This works on a plain
+.B buffer
+and blocks as the buffer does; for non-blocking connections use
+.BR http_recv (3).
 .SH RETURN VALUE
-Returns 1 on success, or 0 if memory allocation for the internal context fails.
+1 on success, 0 if the memory is short.
+.SH EXAMPLE
+.nf
+buffer dec;
+char tmp[512];
+ssize_t n;
+
+buffer_chunked(&dec, &in);
+while((n = buffer_get(&dec, tmp, sizeof(tmp))) > 0)
+  buffer_put(buffer_1, tmp, n);
+buffer_close(&dec);
+.fi
 .SH SEE ALSO
-.BR buffer (3),
-.BR buffer_init (3),
-.BR buffer_getline (3)
+buffer_chunked_encode(3), http_recv(3)

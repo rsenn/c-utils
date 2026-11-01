@@ -1,14 +1,18 @@
 .TH HTTP_SKIP_HEADER 3
 .SH NAME
-http_skip_header \- skip HTTP header block
+http_skip_header \- find the end of the head of a response
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "size_t http_skip_header(const char* " x ", size_t " len ");"
 .SH DESCRIPTION
 .BR http_skip_header ()
-scans the provided buffer
+returns the number of bytes at the start of the
+.I len
+bytes at
 .I x
-and skips over the HTTP header block (ending with an empty line).
-.SH RETURN VALUE
-Returns the number of bytes to skip.
+that make the head of a message: everything up to and including the empty line that ends the headers.
+If there is no empty line the result is
+.IR len .
+.SH SEE ALSO
+http_get_header(3)

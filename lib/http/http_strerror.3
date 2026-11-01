@@ -1,14 +1,21 @@
 .TH HTTP_STRERROR 3
 .SH NAME
-http_strerror \- get error message for HTTP client
+http_strerror \- text of the last error of an HTTP client
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "const char* http_strerror(http* " h ", int " ret ");"
 .SH DESCRIPTION
 .BR http_strerror ()
-returns a human-readable string describing the last error that occurred
-during an HTTP operation on client
-.IR h .
+describes the error of an operation that returned
+.IR ret .
+If
+.I ret
+is -1 the text is that of the TLS error of the connection when TLS is used, otherwise that
+of
+.I errno
+(as strerror(3)). For any other value it returns "success".
 .SH RETURN VALUE
-Returns an error string.
+A pointer to a text that must not be changed or freed.
+.SH SEE ALSO
+http_canread(3), http_canwrite(3), tls_strerror(3)

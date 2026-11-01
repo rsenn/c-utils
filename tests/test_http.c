@@ -122,6 +122,29 @@ TEST(test_http_request_body) {
   ASSERT_EQ(0, byte_diff(req->body.s, req->body.len, "5\r\nhello\r\n10\r\n0123456789abcdef\r\n0\r\n\r\n"));
 }
 
+/*
+ * a header with a line end in it would add headers of its own
+ */
+TEST(test_http_header_injection) {
+  http h;
+  http_request* req;
+
+  http_init(&h, "example.com", 80);
+  req = http_request_new(&h);
+
+  ASSERT_EQ(0, http_header(&h, "X-A", "b\r\nX-Evil: 1"));
+  ASSERT_EQ(0, http_header(&h, "X-A\nX-Evil", "1"));
+  ASSERT_EQ(0, http_header(&h, "Bad:Name", "1"));
+  ASSERT_EQ(0, http_header(&h, "", "1"));
+  ASSERT_EQ(0, req->headers.len);
+
+  ASSERT_NE(0, http_header(&h, "X-A", "fine"));
+  ASSERT_EQ(sizeof("X-A: fine\r\n") - 1, req->headers.len);
+
+  http_free(&h);
+  ASSERT_EQ(NULL, h.request);
+}
+
 /* a response that is made of what the input buffer holds */
 static void
 recv_setup(http* h, buffer* in, const char* text, size_t n, http_transfer_type transfer, uint64 length) {
@@ -210,6 +233,7 @@ TEST(test_http_recv_until_close) {
   RUN(test_buffer_chunked_truncated); \
   RUN(test_buffer_chunked_encode); \
   RUN(test_http_request_body); \
+  RUN(test_http_header_injection); \
   RUN(test_http_recv_chunked); \
   RUN(test_http_recv_length); \
   RUN(test_http_recv_truncated); \

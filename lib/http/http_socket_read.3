@@ -1,0 +1,23 @@
+.TH HTTP_SOCKET_READ 3
+.SH NAME
+http_socket_read \- read operation of the input buffer of an HTTP client
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_socket_read(fd_type " fd ", void* " buf ", size_t " len ", buffer* " b ");"
+.SH DESCRIPTION
+.BR http_socket_read ()
+is the operation of
+.IR h->q.in ,
+where the http structure is
+.IR b->cookie .
+It reads with recv(2) or tls_read(3) and keeps the state of the response up to date: a read of 0 bytes sets the
+status HTTP_STATUS_CLOSED, an error other than "try again" sets HTTP_STATUS_ERROR and stores
+.I errno
+in
+.IR response->err ;
+in both cases the socket is not watched any more.
+.SH RETURN VALUE
+The number of bytes read, 0 at the end of the stream, -1 with errno EAGAIN when there is nothing for now.
+.SH SEE ALSO
+http_socket(3), http_socket_write(3)

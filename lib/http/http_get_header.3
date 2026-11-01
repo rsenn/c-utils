@@ -1,17 +1,33 @@
 .TH HTTP_GET_HEADER 3
 .SH NAME
-http_get_header \- find a header in response data
+http_get_header \- find a header in the head of a response
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "char* http_get_header(char* " data ", size_t " n ", const char* " name ", size_t* " result_len ");"
 .SH DESCRIPTION
 .BR http_get_header ()
-searches the HTTP response headers in
-.I data
-of length
+looks for the header
+.I name
+(ignoring case) in the
 .I n
-for the header named
-.IR name .
+bytes at
+.IR data ,
+which hold the head of a response as
+.I response->data
+does. The first line, the status line, is skipped. It returns a pointer to the
+value, after the colon and the white space, and stores the length of the value (up to the CR or LF) in
+.I *result_len
+if that is not 0.
 .SH RETURN VALUE
-Returns a pointer to the header value, or NULL if not found.
+A pointer into data, the value is not terminated; 0 if there is no such header.
+.SH EXAMPLE
+.nf
+size_t n;
+char* type = http_get_header(r->data.s, r->headers_len, "Content-Type", &n);
+
+if(type && byte_finds(type, n, "ndjson") < n)
+  ...
+.fi
+.SH SEE ALSO
+http_canread(3), http_skip_header(3)

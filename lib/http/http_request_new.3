@@ -1,46 +1,20 @@
-.TH http_request_new 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_REQUEST_NEW 3
 .SH NAME
-http_request_new \- Create a new HTTP request
-
+http_request_new \- create a request
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B http_request* http_request_new(http* h);
-
+.B #include <http.h>
+.P
+.BI "http_request* http_request_new(http* " h ");"
 .SH DESCRIPTION
-The .B http_request_new function creates a new HTTP request.
-
-The function takes one parameter:
-.I h
-The HTTP structure.
-
-The function returns a pointer to the new HTTP request, or NULL on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_request_new function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume h is a valid HTTP structure
-  http h;
-
-  // Initialize h
-
-  http_request* req = http_request_new(&h);
-
-  if (!req) {
-    perror("http_request_new");
-    return 1;
-  }
-
-  // Use the new HTTP request
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+.BR http_request_new ()
+allocates a request (type GET, empty location, headers and body) and puts it on top of
+.IR h->request ;
+the one that was there becomes
+.IR next .
+Headers and body functions work on this request.
+.BR http_open (3)
+calls it and sets the type.
+.SH RETURN VALUE
+The request, or 0 if the memory is short.
+.SH SEE ALSO
+http_open(3), http_response_new(3), http_free(3)

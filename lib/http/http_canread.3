@@ -1,15 +1,40 @@
 .TH HTTP_CANREAD 3
 .SH NAME
-http_canread \- process readable HTTP socket
+http_canread \- handle a readable socket of an HTTP client
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "ssize_t http_canread(http* " h ", void (*" wantread ")(fd_type), void (*" wantwrite ")(fd_type));"
 .SH DESCRIPTION
 .BR http_canread ()
-handles data available for reading on the HTTP client socket
-.IR h .
-It performs TLS handshake (if enabled), sends the request if not already sent,
-and parses incoming response headers and body data.
+is called when the event loop reports that the socket of
+.I h
+can be read. With TLS it first completes the handshake and sends the request, as
+.BR http_canwrite (3)
+does. It then reads from the socket into the input buffer and, as long as
+.I h->response->status
+is HTTP_RECV_HEADER, parses the status line (into
+.IR code )
+and the headers: Content-Length, Transfer-Encoding: chunked and a multipart Content-Type select the
+.I transfer
+of the response, every line is appended to
+.I data
+and given to the
+.I header
+callback if there is one. The empty line ends the headers, the status becomes HTTP_RECV_DATA and
+.I headers_len
+holds the length of the header block in
+.IR data .
+.P
+What happens to the body depends on
+.IR h->stream .
+When it is set the bytes stay in the input buffer, to be taken out by
+.BR http_recv (3).
+When it is not, they are appended to
+.IR response->data .
 .SH RETURN VALUE
-Returns the number of bytes read, or -1 on error.
+The number of bytes that are in the input buffer, 0 when the peer closed the connection (the status is HTTP_STATUS_CLOSED), -1 on an error with h->err set; EAGAIN and EWOULDBLOCK only mean that there is nothing more for now.
+.SH NOTES
+Without h->stream the first byte of the body is copied into response->data together with the end of the headers, and http_read(3) then misses it. Use h->stream and http_recv(3).
+.SH SEE ALSO
+http(3), http_recv(3), http_canwrite(3)

@@ -1,0 +1,23 @@
+.TH HTTP_SOCKET_WRITE 3
+.SH NAME
+http_socket_write \- write operation of the output buffer of an HTTP client
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_socket_write(fd_type " fd ", void* " buf ", size_t " len ", buffer* " b ");"
+.SH DESCRIPTION
+.BR http_socket_write ()
+is the operation of
+.IR h->q.out ,
+where the http structure is
+.IR b->cookie .
+It writes with send(2) or tls_write(3). A TLS write that has to wait for the network gives -1 with errno EAGAIN
+or EWOULDBLOCK. Like
+.BR http_socket_read (3)
+it updates the status of the response when the connection is closed or fails.
+.BR http_body_flush (3)
+calls it directly.
+.SH RETURN VALUE
+The number of bytes written, 0 if the connection was closed, -1 on an error or when the write has to wait.
+.SH SEE ALSO
+http_socket(3), http_body_flush(3)

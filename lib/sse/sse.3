@@ -1,0 +1,59 @@
+.TH SSE 3
+.SH NAME
+sse \- server-sent events parser
+.SH SYNOPSIS
+.B #include <sse.h>
+.P
+.B #include <sse.h>
+.br
+.B typedef struct { ... } sse;
+.br
+.B typedef struct { const char *event, *data; size_t data_len; const char* id; long retry; } sse_event;
+.br
+.B typedef void sse_callback(const sse_event*, void*);
+.SH DESCRIPTION
+Server-sent events (media type text/event-stream) are what APIs answer with when a
+request asks to stream, for example the chat APIs of language models. The stream is text in lines;
+.B data: ...
+lines carry the payload, an empty line ends an event:
+.P
+.nf
+: comment, often a keep-alive
+event: message_start
+data: {"a":1}
+
+data: line one
+data: line two
+
+.fi
+.P
+The parser takes the bytes of the stream in any pieces, cut anywhere, and calls a function for every
+event that is complete. It handles LF, CR LF and CR line ends (also when the CR and LF come in
+different pieces), a byte order mark at the start, comments, and the fields
+.BR data ,
+.BR event ,
+.B id
+and
+.BR retry ;
+other fields are ignored. Several data lines of an event are joined by newlines. An event without
+data lines is not dispatched. An event that is cut off by the end of the stream is never dispatched.
+.P
+The fields of
+.B sse_event
+are valid during the callback only:
+.TP
+.I event
+the event type, "message" if the stream gave none.
+.TP
+.I data, data_len
+the data, also terminated by a NUL.
+.TP
+.I id
+the last event id (it stays set for the following events), empty if there was none.
+.TP
+.I retry
+the reconnection time in milliseconds that the server asked for, -1 if it did not.
+.P
+Many APIs end the stream with the data "[DONE]"; that is up to the caller to recognize.
+.SH SEE ALSO
+sse_init(3), sse_feed(3), sse_free(3), http_recv(3)

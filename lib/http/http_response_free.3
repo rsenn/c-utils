@@ -1,39 +1,15 @@
-.TH http_response_free 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_RESPONSE_FREE 3
 .SH NAME
-http_response_free \- Free an HTTP response structure
-
+http_response_free \- free a response
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B void http_response_free(http_response* r);
-
+.B #include <http.h>
+.P
+.BI "void http_response_free(http_response* " r ");"
 .SH DESCRIPTION
-The .B http_response_free function frees an HTTP response structure.
-
-The function takes one parameter:
-.I r
-The HTTP response structure.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_response_free function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume r is a valid HTTP response structure
-  http_response r;
-
-  // Initialize r
-
-  // Use the HTTP response
-
-  http_response_free(&r);
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+.BR http_response_free ()
+frees the data and the multipart boundary of the response and the response itself. It does not take it out of the list
+.IR h->response ;
+.BR http_free (3)
+frees them all.
+.SH SEE ALSO
+http_response_new(3), http_free(3)

@@ -109,6 +109,7 @@ typedef struct http_s {
 ssize_t http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type));
 ssize_t http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type));
 void http_close(http* h);
+void http_free(http* h);
 
 void http_dump(http*);
 /* b reads the chunked transfer encoding of other and decodes it */

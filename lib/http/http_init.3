@@ -1,17 +1,37 @@
 .TH HTTP_INIT 3
 .SH NAME
-http_init \- initialize an HTTP client
+http_init \- prepare an HTTP client structure
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "void http_init(http* " h ", const char* " host ", uint16 " port ");"
 .SH DESCRIPTION
 .BR http_init ()
-resets and initializes the HTTP client structure
+clears the structure
 .I h
-with the specified
+and sets the defaults: no socket (sock is -1), non-blocking mode, no keep-alive, no TLS,
+HTTP/1.0 for a GET. If
 .I host
+is not 0 it is copied into
+.IR h->host ,
+.I port
+is stored in
+.IR h->port .
+Both are replaced when a request is started with a URL by
+.BR http_open (3),
+so calling it with 0 and 0 is the usual thing.
+.P
+Fields can be changed afterwards, before the request is started:
+.I version
+(11 for HTTP/1.1),
+.I keepalive,
+.I nonblocking
 and
-.IR port .
+.IR stream .
+The structure must not hold resources of an earlier use; release them with
+.BR http_close (3)
+and
+.BR http_free (3)
+first.
 .SH SEE ALSO
-http_get(3)
+http(3), http_open(3), http_free(3)

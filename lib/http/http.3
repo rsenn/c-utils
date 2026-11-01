@@ -1,0 +1,186 @@
+.TH HTTP 3
+.SH NAME
+http \- HTTP/1.x client with streaming requests and responses
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.B #include <http.h>
+.br
+.B typedef struct http_s http;
+.SH DESCRIPTION
+The http module is a client for HTTP/1.0 and HTTP/1.1 over plain TCP or TLS.
+It is made for the event loop of the io(3) module: nothing blocks, the
+caller waits for the socket to become readable or writable and then calls
+.BR http_canwrite (3)
+or
+.BR http_canread (3).
+A blocking connection is possible by clearing
+.I nonblocking
+before the request is started.
+.P
+A request is described first and sent later, by the event loop. The steps are:
+.TP
+1.
+.BR http_init (3)
+prepares the
+.B http
+structure.
+.TP
+2.
+.BR http_open (3),
+.BR http_get (3)
+or
+.BR http_post (3)
+parse the URL, resolve the host, create the socket and start to connect.
+.TP
+3.
+.BR http_header (3)
+adds headers. The body is added with
+.BR http_body (3)
+(known length) or with
+.BR http_chunked (3),
+.BR http_chunk (3)
+and
+.BR http_chunk_end (3)
+(chunked transfer encoding, data that is produced while it is sent).
+.TP
+4.
+The event loop calls
+.BR http_canwrite (3)
+when the socket is writable and
+.BR http_canread (3)
+when it is readable. The first one sends the request, the second one reads and parses
+the status line and the headers of the response.
+.TP
+5.
+The body of the response is taken out with
+.BR http_recv (3),
+which decodes a chunked body, a body with a length or a body that ends with the connection.
+.TP
+6.
+.BR http_close (3)
+closes the connection and
+.BR http_free (3)
+releases the memory.
+.P
+For streamed answers, such as the server-sent events or the newline delimited JSON of
+language model APIs, set
+.I stream
+in the structure before the request is sent and feed what
+.BR http_recv (3)
+returns to
+.BR sse_feed (3)
+or
+.BR ndjson_feed (3).
+.SS The structure
+.nf
+typedef struct http_s {
+  fd_type sock;           socket, -1 when there is none
+  struct { buffer out, in; } q;   output and input buffers
+  stralloc host;          host name of the URL
+  ipv4addr addr;          address of the host, 0.0.0.0 until resolved
+  ipv4port port;          port, 80 or 443 by default
+  http_request*  request; newest request, older ones by ->next
+  http_response* response;newest response, older ones by ->next
+  tls_t* ssl;
+  int err;                errno (or TLS error) of the last operation
+  unsigned nonblocking:1; default 1
+  unsigned keepalive:1;   default 0, sends Connection: close
+  unsigned connected:1;
+  unsigned tls:1;         set by an https URL
+  unsigned sent:1;        the request headers are out
+  unsigned stream:1;      leave the body for http_recv
+  uint16 version;         11 for HTTP/1.1, otherwise 1.0 for a GET
+} http;
+.fi
+.SS Requests
+.nf
+typedef enum { GET, POST, PUT, DELETE, PATCH, HEAD } http_req_t;
+
+typedef struct http_request_s {
+  uint32 serial;
+  http_req_t type;
+  stralloc location;   path and query, as sent
+  stralloc headers;    extra header lines, each ends in CRLF
+  stralloc body;       queued body (chunked: already encoded)
+  size_t body_pos;     how much of it is written
+  unsigned chunked:1, body_done:1, queued:1;
+  struct http_request_s* next;
+} http_request;
+.fi
+.SS Responses
+.nf
+typedef struct http_response_s {
+  http_transfer_type transfer;  how the body is framed
+  http_status status;           where the response is
+  int code;                     HTTP status code, -1 until the status line
+  uint64 headers_len, data_pos, content_length, chunk_length;
+  int chunk_state;              position of http_recv in a chunked body
+  stralloc data, boundary;      status line and headers, multipart boundary
+  int err;
+  int (*header)(struct http_s*, const char*, size_t);
+  struct http_response_s* next;
+} http_response;
+.fi
+.P
+.I transfer
+is HTTP_TRANSFER_UNDEF (the body ends with the connection), HTTP_TRANSFER_CHUNKED,
+HTTP_TRANSFER_LENGTH or HTTP_TRANSFER_BOUNDARY (multipart).
+.I status
+is HTTP_RECV_HEADER while the headers are read, HTTP_RECV_DATA after them,
+HTTP_STATUS_CLOSED when the peer closed the connection, HTTP_STATUS_ERROR,
+HTTP_STATUS_BUSY and HTTP_STATUS_FINISH when the body is complete.
+If
+.I header
+is set it is called with every header line of the response, without its line end.
+.SH EXAMPLE
+A streamed POST with a chunked body, the answer written to standard output:
+.P
+.nf
+http h;
+char buf[4096];
+ssize_t n;
+fd_type fd;
+
+http_init(&h, 0, 0);
+h.version = 11;
+h.stream = 1;
+http_post(&h, "http://example.com/v1/chat");
+http_header(&h, "Content-Type", "application/json");
+http_chunked(&h);
+http_chunk(&h, "{\e"prompt\e":\e"hi\e"}", 15);
+http_chunk_end(&h);
+
+while(h.response->status != HTTP_STATUS_FINISH) {
+  io_wait();
+  while((fd = io_canwrite()) != -1)
+    if(fd == h.sock)
+      http_canwrite(&h, io_onlywantread, io_onlywantwrite);
+  while((fd = io_canread()) != -1)
+    if(fd == h.sock) {
+      http_canread(&h, io_onlywantread, io_onlywantwrite);
+      while((n = http_recv(&h, buf, sizeof(buf))) > 0)
+        write(1, buf, n);
+      if(n < 0)
+        break;
+    }
+}
+http_close(&h);
+http_free(&h);
+.fi
+.SH NOTES
+Request headers and bodies are not escaped; names and values with a CR or LF
+are refused by
+.BR http_header (3).
+The TLS client does not verify the certificate of the server.
+.P
+The functions http_read(3), http_read_header(3), http_read_internal(3) and
+http_response_read(3) are the first reader of the module, written for
+.BR buffer (3)
+operations. They work with
+.I stream
+cleared. New code should use http_recv(3).
+.SH SEE ALSO
+http_init(3), http_open(3), http_header(3), http_chunk(3), http_canwrite(3),
+http_canread(3), http_recv(3), http_close(3), http_free(3), sse_feed(3),
+ndjson_feed(3), tls_servername(3), buffer_chunked(3)

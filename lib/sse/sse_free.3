@@ -1,0 +1,12 @@
+.TH SSE_FREE 3
+.SH NAME
+sse_free \- release an SSE parser
+.SH SYNOPSIS
+.B #include <sse.h>
+.P
+.BI "void sse_free(sse* " s ");"
+.SH DESCRIPTION
+.BR sse_free ()
+releases the memory of the parser; what it held of an unfinished event is lost.
+.SH SEE ALSO
+sse(3), sse_init(3)

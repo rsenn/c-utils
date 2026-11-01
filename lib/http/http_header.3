@@ -6,10 +6,17 @@ http_header \- add a header to the request
 .P
 .BI "int http_header(http* " h ", const char* " name ", const char* " value ");"
 .SH DESCRIPTION
-
 .BR http_header ()
-adds the line "name: value" to the request that was started last. Host, Connection, the length of the body and, unless it is given here, Accept are added when the request is sent.
+adds the line "name: value" to the request that was started last. It must be called before
+the request is sent.
+.P
+The module itself writes the request line, Host (with the port if it is not the default one),
+Connection (close, unless
+.I keepalive
+is set), the framing of the body (Content-Length or Transfer-Encoding: chunked) and
+"Accept: */*", the last one only when no Accept header was added. Everything else is up to the caller:
+Content-Type, Authorization, User-Agent, ...
 .SH RETURN VALUE
-1 on success, 0 on failure.
+1 on success, 0 if there is no request, the memory is short, or if name is empty or has a colon, or name or value has a CR or LF in it (they would split the header or end it).
 .SH SEE ALSO
-http_open(3)
+http_open(3), http_body(3), http_chunked(3)

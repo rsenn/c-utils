@@ -1,6 +1,6 @@
 .TH HTTP_OPEN 3
 .SH NAME
-http_open \- start an HTTP request with any method
+http_open \- start an HTTP request
 .SH SYNOPSIS
 .B #include <http.h>
 .P
@@ -9,12 +9,36 @@ http_open \- start an HTTP request with any method
 .BR http_open ()
 starts a request of the method
 .I type
-(GET, POST, PUT, DELETE, PATCH or HEAD) to
-.IR location ,
-an URL or a path on the host of the last request. It resolves the host and
-connects. Headers and a body can be added with http_header(3), http_body(3)
-and http_chunk(3) until the event loop sends the request.
+(GET, POST, PUT, DELETE, PATCH or HEAD).
+.I location
+is an URL such as
+.B https://api.example.com:8443/v1/models?x=1
+or only a path that starts with a slash, which uses the host of the structure.
+A scheme of https selects TLS and port 443, anything else port 80, a port after the
+host name overrides this. Characters from the first CR, LF or NUL on are ignored so that
+a location cannot add headers. An URL without a path asks for "/".
+.P
+The host is resolved with dns_ip4(3), which blocks, unless
+.I h->addr
+has an address already (it keeps the address of an earlier request, so a structure should
+not be used for two different hosts). The request and an empty response are created and
+put on top of
+.I h->request
+and
+.IR h->response ,
+the socket is created by
+.BR http_socket (3),
+the connection is started and the socket is registered with
+.BR io_onlywantwrite (3).
+Nothing is sent yet: the request is written by
+.BR http_canwrite (3)
+when the connection is established, so headers and a body can be added with
+.BR http_header (3),
+.BR http_body (3)
+and
+.BR http_chunk (3)
+in between.
 .SH RETURN VALUE
-1 on success, 0 on failure.
+1 if the connection is on its way (also if connect(2) is still in progress), 0 on failure; a name that cannot be resolved is reported with errmsg(3).
 .SH SEE ALSO
-http_get(3), http_post(3)
+http(3), http_get(3), http_post(3), http_header(3), http_canwrite(3)

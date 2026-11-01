@@ -1,5 +1,19 @@
 2026-11-01:
 
+- doc/http.md: the guide to the HTTP client, its streaming parts and the
+  tools built on it; manual pages for every function of http.h (rewritten,
+  several described functions that do not exist), the overview http(3),
+  buffer_chunked_encode, http_socket_read, http_socket_write, and sse_init,
+  sse_free, sse_feed, ndjson_init, ndjson_free, ndjson_feed as pages of
+  their own
+- json: parsing no longer leaks the key strings of objects and one node per
+  document (a streamed answer leaked with every event); http_open frees the
+  result of the name lookup
+- http: http_free releases the buffers, requests and responses of a
+  connection (cgemini and copenai leaked about 48 kB per request);
+  http_header refuses names and values with a CR or LF, which could add
+  headers; an URL without a path asks for "/" instead of sending an empty
+  request target
 - http: requests of any method with headers and a body: http_open,
   http_post, http_header, http_body, and a body sent as chunks while it is
   produced: http_chunked, http_chunk, http_chunk_end, http_body_flush; the
