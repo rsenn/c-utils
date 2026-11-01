@@ -116,6 +116,8 @@ int buffer_putstra(buffer*, const strarray* stra, const char* sep);
 void strarray_dump(buffer*, const strarray*);
 #endif
 
+/* appends a copy of the n bytes at b (NUL terminated); 1 on success, 0 if out of memory */
+int strarray_emplaceb(strarray*, const char* b, size_t n);
 int strarray_unshiftb(strarray*, const char* b, size_t n);
 int strarray_unshift(strarray*, const char* s);
 int strarray_unshiftm(strarray*, ...);

@@ -22,6 +22,16 @@
 #include "../lib/ini.h"
 #include "../lib/ucs.h"
 #include "../lib/ucs_internal.h"
+#include "../lib/scan.h"
+#include "../lib/errmsg.h"
+#include "../lib/errmsg_internal.h"
+#include "../lib/cb.h"
+#include "../lib/strlist.h"
+#include "../lib/path.h"
+#include "../lib/process.h"
+#include "../lib/uri.h"
+#include "../lib/uint32.h"
+#include <stdarg.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
@@ -447,6 +457,203 @@ TEST(test_ucs_latin1_punycode) {
   ASSERT_EQ(1, ucs_punycode_adapt(100000, 10, 0) > ucs_punycode_adapt(100, 10, 0)); /* bigger jump, bigger bias */
 }
 
+/*
+ * scan_whitenskip_escaped, scan_nonwhitenskip_escaped, scan_lineskip_escaped:
+ * a backslash before a newline continues the line
+ */
+TEST(test_scan_escaped_skips) {
+  ASSERT_EQ(5, scan_whitenskip_escaped("  \\\n x", 6)); /* blanks and the continuation */
+  ASSERT_EQ(0, scan_whitenskip_escaped("x ", 2));
+  ASSERT_EQ(2, scan_nonwhitenskip_escaped("ab\\\ncd", 6)); /* the continuation ends the word */
+  ASSERT_EQ(4, scan_nonwhitenskip_escaped("abcd e", 6));
+  ASSERT_EQ(5, scan_lineskip_escaped("a\\\nb\nc", 6)); /* a\<nl>b<nl> is one line */
+  ASSERT_EQ(3, scan_lineskip_escaped("ab\n", 3));
+  ASSERT_EQ(3, scan_lineskip_escaped("ab\\", 3)); /* a trailing backslash does not run past the end */
+}
+
+/*
+ * scan_asn1derlengthvalue, scan_pb_type0_int
+ */
+TEST(test_scan_asn1_pb_values) {
+  unsigned long long v = 0;
+
+  ASSERT_EQ(1, scan_asn1derlengthvalue("\x05", 1, &v));
+  ASSERT_EQ(5, v);
+  ASSERT_EQ(2, scan_asn1derlengthvalue("\x81\xc2", 2, &v));
+  ASSERT_EQ(0xc2, v);
+  ASSERT_EQ(3, scan_asn1derlengthvalue("\x82\x01\x00", 3, &v));
+  ASSERT_EQ(256, v);
+  ASSERT_EQ(0, scan_asn1derlengthvalue("\x82\x00\xc2", 3, &v)); /* not minimal */
+  ASSERT_EQ(0, scan_asn1derlengthvalue("\x80", 1, &v));           /* indefinite */
+  ASSERT_EQ(0, scan_asn1derlengthvalue("\x82\x01", 2, &v));       /* cut short */
+  ASSERT_EQ(0, scan_asn1derlengthvalue("", 0, &v));
+
+  ASSERT_EQ(1, scan_pb_type0_int("\x2a", 1, &v));
+  ASSERT_EQ(42, v);
+  ASSERT_EQ(2, scan_pb_type0_int("\xac\x02", 2, &v)); /* 300 */
+  ASSERT_EQ(300, v);
+  ASSERT_EQ(0, scan_pb_type0_int("\x80", 1, &v)); /* continuation bit and no more */
+}
+
+/*
+ * fmt_cescape2, fmt_quotedprintable2, scan_html_tagarg, scan_urlencoded2
+ */
+TEST(test_textcode_variants) {
+  char out[64];
+  size_t n, dl = 0;
+
+  n = fmt_cescape2(out, "a\"b'c", 5, "\"");
+  out[n] = 0;
+  ASSERT_EQ(n, fmt_cescape2(NULL, "a\"b'c", 5, "\""));
+  ASSERT_EQ(1, str_contains(out, "\\x22")); /* the extra character is escaped as hex */
+  ASSERT_EQ(1, str_contains(out, "b'c")); /* the others are left */
+
+  n = fmt_quotedprintable2(out, "a b=", 4, " ");
+  out[n] = 0;
+  ASSERT_EQ(n, fmt_quotedprintable2(NULL, "a b=", 4, " "));
+  ASSERT_EQ(1, str_contains(out, "=20")); /* the extra character to escape */
+  ASSERT_EQ(1, str_contains(out, "=3d"));
+
+  n = scan_html_tagarg("a&quot;b\"rest", out, &dl);
+  ASSERT_EQ(1, n > 0);
+  ASSERT_EQ('a', out[0]);
+
+  n = scan_urlencoded2("a%2Fb+c", out, &dl);
+  ASSERT_EQ(7, n);
+  ASSERT_EQ(5, dl);
+  ASSERT_EQ(0, byte_diff(out, 5, "a/b+c")); /* the "2" variant keeps the plus sign */
+}
+
+/*
+ * errmsg_start, errmsg_puts, errmsg_flush, errmsg_write (internal)
+ */
+static void
+write_va(int64 fd, const char* err, const char* msg, ...) {
+  va_list ap;
+
+  va_start(ap, msg);
+  errmsg_write(fd, err, msg, ap);
+  va_end(ap);
+}
+
+TEST(test_errmsg_internal_write) {
+  int p[2];
+  char got[256];
+  ssize_t n;
+
+  ASSERT_EQ(0, pipe(p));
+  errmsg_start(p[1]);
+  errmsg_puts(p[1], "hello");
+  errmsg_puts(p[1], " world");
+  errmsg_flush(p[1]);
+  n = read(p[0], got, sizeof got);
+  ASSERT_EQ(1, n >= 11);
+  ASSERT_EQ(0, byte_diff(got + n - 11, 11, "hello world"));
+
+  write_va(p[1], NULL, "alpha", " beta", (char*)0);
+  n = read(p[0], got, sizeof got);
+  got[n > 0 ? n : 0] = 0;
+  ASSERT_EQ(1, str_contains(got, "alpha beta"));
+  close(p[0]);
+  close(p[1]);
+}
+
+/*
+ * cb_erase, strarray_emplaceb, strarray_emplace_sa, strlist_erase_element, strlist_sorted_intersection
+ */
+TEST(test_cb_strarray_strlist_more) {
+  critbit_tree t = CRITBIT_TREE();
+  strarray arr;
+  stralloc sa;
+  strlist a, b, out;
+
+  ASSERT_EQ(CB_SUCCESS, cb_insert(&t, "one", 4));
+  ASSERT_EQ(CB_SUCCESS, cb_insert(&t, "two", 4));
+  ASSERT_EQ(CB_SUCCESS, cb_erase(&t, "one", 4));
+  ASSERT_NE(CB_SUCCESS, cb_erase(&t, "one", 4)); /* not there any more */
+  ASSERT_EQ(1, cb_find(&t, "two", 4) != NULL);
+  ASSERT_EQ(NULL, cb_find(&t, "one", 4));
+  cb_clear(&t);
+
+  strarray_init(&arr);
+  ASSERT_EQ(1, strarray_emplaceb(&arr, "abcdef", 3));
+  stralloc_init(&sa);
+  stralloc_copys(&sa, "xyz");
+  ASSERT_EQ(1, strarray_emplace_sa(&arr, &sa));
+  ASSERT_EQ(2, strarray_size(&arr));
+  ASSERT_STR_EQUAL("abc", strarray_at(&arr, 0));
+  ASSERT_STR_EQUAL("xyz", strarray_at(&arr, 1));
+  strarray_free(&arr);
+  stralloc_free(&sa);
+
+  strlist_init(&a, '\0');
+  strlist_init(&b, '\0');
+  strlist_init(&out, '\0');
+  strlist_push(&a, "a");
+  strlist_push(&a, "b");
+  strlist_push(&a, "c");
+  strlist_push(&a, "d");
+  strlist_push(&b, "b");
+  strlist_push(&b, "d");
+  strlist_push(&b, "e");
+  strlist_sorted_intersection(&a, &b, &out);
+  ASSERT_EQ(2, strlist_count(&out));
+  ASSERT_STR_EQUAL("b", strlist_at(&out, 0));
+  ASSERT_STR_EQUAL("d", strlist_at(&out, 1));
+  strlist_erase_element(&a, 1, 1); /* "b" */
+  ASSERT_EQ(3, strlist_count(&a));
+  ASSERT_STR_EQUAL("c", strlist_at(&a, 1));
+  strlist_free(&a);
+  strlist_free(&b);
+  strlist_free(&out);
+}
+
+/*
+ * path_canonicalize, process_wait, uint32_seed, tokenizer_rewind, uri_dump
+ */
+TEST(test_path_process_misc) {
+  stralloc sa;
+  int pid;
+  uint32 r1, r2;
+  uri_t u;
+  stralloc dump;
+  buffer b;
+
+  stralloc_init(&sa);
+  ASSERT_EQ(1, path_canonicalize("/usr/./local/../lib//x", &sa, 0) >= 0);
+  stralloc_nul(&sa);
+  ASSERT_STR_EQUAL("/usr/lib/x", sa.s);
+  ASSERT_EQ(1, path_canonicalize("/../..", &sa, 0) >= 0);
+  stralloc_nul(&sa);
+  ASSERT_STR_EQUAL("/", sa.s);
+  stralloc_free(&sa);
+
+  pid = fork();
+  if(pid == 0)
+    _exit(3);
+  ASSERT_EQ(3, WEXITSTATUS(process_wait(pid)));
+
+  ASSERT_EQ(1, uint32_seed("entropy", 7) == -1);
+  uint32_seed(NULL, 0);
+  r1 = uint32_random();
+  r2 = uint32_random();
+  ASSERT_EQ(1, r1 != r2 || r1 != uint32_random()); /* not a constant */
+
+  uri_init(&u);
+  u.proto = "http";
+  u.host = "example.org";
+  u.port = 8080;
+  stralloc_init(&dump);
+  buffer_tosa(&b, &dump);
+  uri_dump(&b, &u);
+  buffer_flush(&b);
+  stralloc_nul(&dump);
+  ASSERT_EQ(1, str_contains(dump.s, "proto = \"http\""));
+  ASSERT_EQ(1, str_contains(dump.s, "host = \"example.org\""));
+  ASSERT_EQ(1, str_contains(dump.s, "port = 8080"));
+  stralloc_free(&dump);
+}
+
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -459,6 +666,12 @@ TEST(test_ucs_latin1_punycode) {
   RUN(test_iob_files_send); \
   RUN(test_set_internals); \
   RUN(test_ini_newb_keys); \
-  RUN(test_ucs_latin1_punycode)
+  RUN(test_ucs_latin1_punycode); \
+  RUN(test_scan_escaped_skips); \
+  RUN(test_scan_asn1_pb_values); \
+  RUN(test_textcode_variants); \
+  RUN(test_errmsg_internal_write); \
+  RUN(test_cb_strarray_strlist_more); \
+  RUN(test_path_process_misc)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
