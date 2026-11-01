@@ -367,15 +367,19 @@ them with -v when porting a foreign project. Details in
   synopsis of every page with the declaration in the header would find the
   rest.
 
-- genmakefile-full-spec:
-  doc/genmakefile-spec.md describes the whole tool the plans in .ai-context
-  point at: every directory layout, every make and project format, the
-  features. It is a target, not a description of the current program.
+- genmakefile-implement-spec:
+  doc/genmakefile-spec.md and doc/genmakefile-toolchains.md now describe the
+  whole tool, including the PIC use case: project file, symbol closure source
+  inference, MPLAB X and MPLAB 8 importers, the build matrix and the
+  toolchain descriptors for XC8, XC16, XC32, SDCC, MCC18 and gputils.
 
-  Only section 1, the reassessment of the four planning documents, is
-  written. Sections 2 to 15 are still open: goals, concepts, directory
-  layout catalog, discovery pipeline, toolchain descriptors, backends,
-  build matrix, configuration and probes, targets and install, command
-  line and project file, platforms, performance, conformance tests and the
-  roadmap.
+  Only the specification exists. Implement it in the order of the roadmap
+  section: project file first, then the importers, then source inference.
+
+- unit-test-gaps:
+  About 400 library functions still have no test that names them. The
+  largest groups are dns, http, io, unix, terminal, tls, gpio, and the
+  internals of hmap, cbmap, set, hashmap, stralloc and buffer. Network and
+  OpenSSL dependent functions need a loopback fixture. About 35 placeholder
+  tests are still empty; list them with grep -n "TEST(.*) {}".
 

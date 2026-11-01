@@ -1,6 +1,6 @@
 2026-11-01:
 
-- tests: 718 unit tests (from 642), valgrind clean. New: charbuf, ucs,
+- tests: 798 unit tests (from 642), valgrind clean. New: charbuf, ucs,
   textbuf, atomic, cdb, critbit, textcode codecs, stralloc, strarray, strlist
   and the buffer file/mmap/gzip functions; 76 empty placeholder tests were
   filled with real checks (37 remain, listed by `grep -n "TEST(.*) {}"`).
@@ -26,6 +26,16 @@
   left cookie uninitialised (is_textbuf read garbage); buffer_munmap and
   buffer_free left a length behind; buffer_mmapshared_fd now owns its
   descriptor like buffer_mmapread_fd.
+- fixed (found by later tests): ihex_record_write wrote a wrong checksum and
+  ihex_record_insert mishandled overlapping records; the playlist readers were
+  rewritten (playlist_free and playlist_state_new are new); xml_delete used
+  freed memory and xml_find_element_attr, xml_path and xml_get_text(NULL)
+  were wrong; cpp tokens created at the beginning of a line lost that flag;
+  scan_ip6if freed an invalid pointer; json_parse_number failed on a number at
+  the end of the input and json_property_set_str printed a debug line.
+  ihex_strip_below, str_str, taia_fmtfrac, mmap_anon and buffer_mmapshared
+  are new; declarations were added for byte_case_start, str_versdiff,
+  json_todouble, fd_filesize, buffer_fromstr, io_dup and path_canonicalize.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
