@@ -64,13 +64,6 @@ dns_ip6_packet_add(stralloc* out, const char* buf, unsigned int len) {
   return 0;
 }
 
-int
-dns_ip6_packet(stralloc* out, const char* buf, unsigned int len) {
-  if(!stralloc_copys(out, ""))
-    return -1;
-  return dns_ip6_packet_add(out, buf, len);
-}
-
 static char* q = 0;
 
 int

@@ -1,4 +1,6 @@
 #include "../xml.h"
+/* the path of node from the document: /root/item/b ("/" for the document itself) */
+/* the path from the parent of node: /item/b */
 
 static size_t
 xml_path_out(const xmlnode* node, stralloc* out, int recurse) {
@@ -15,7 +17,6 @@ xml_path_out(const xmlnode* node, stralloc* out, int recurse) {
   return n;
 }
 
-/* the path of node from the document: /root/item/b ("/" for the document itself) */
 int
 xml_path(const xmlnode* node, stralloc* out) {
   stralloc_zero(out);
@@ -24,11 +25,4 @@ xml_path(const xmlnode* node, stralloc* out) {
   if(out->len == 0)
     stralloc_catc(out, '/');
   return 1;
-}
-
-/* the path from the parent of node: /item/b */
-int
-xml_path_relative(const xmlnode* node, stralloc* out) {
-  stralloc_zero(out);
-  return xml_path_out(node, out, 1) != 0;
 }

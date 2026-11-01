@@ -7,7 +7,7 @@ What is checked, how, and what is left. Regenerate with `tests/make-api-status.p
 | unit tests | `build/.../tests/all_tests` (run in `tests/`) | 876 tests pass; `valgrind -q --error-exitcode=9` clean |
 | every header compiles alone | `tests/check-headers.sh` | 0 failures |
 | libowfat source compatibility | `tests/libowfat-compat/` (see `doc/libowfat-compat.md`) | 517 prototypes, 0 missing |
-| one function per file | `tests/check-onefunc.py` | 73 files deviate from one function per file |
+| one function per file | `tests/check-onefunc.py` | 58 files deviate from one function per file |
 | genmakefile | `tests/genmakefile/{pair-headers,import-mplabx,project-file,infer-sources}.sh GENMAKEFILE` | all pass |
 | functions not named by a test | this script | 123 |
 
@@ -46,7 +46,6 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/alloc/alloc.c alloc alloc_free
 * lib/buffer/buffer_bzip.c buffer_bunzip buffer_bunzip_fd buffer_bzip buffer_bzip_fd
 * lib/buffer/buffer_gzip.c buffer_gunzip buffer_gunzip_fd buffer_gzip buffer_gzip_fd
-* lib/cb/cb_find_prefix.c cb_find_prefix cb_find_top_i
 * lib/cbmap/cbmap_alloc.c cbmap_mem_allocated cbmap_mem_debug_calloc cbmap_mem_debug_free cbmap_mem_debug_mem cbmap_mem_debug_strdup cbmap_mem_debug_strndup cbmap_mem_mem_dup cbmap_mem_memalign cbmap_mem_posix_memalign
 * lib/cbmap/cbmap_new.c cbmap_default_allocator cbmap_default_deallocator cbmap_new cbmap_new_with_custom_allocation cbmap_new_with_static_keys_and_values cbmap_nop_allocator cbmap_nop_deallocator
 * lib/cbmap/memalign.c memalign_alloc memalign_alloc_aligned memalign_free
@@ -54,16 +53,9 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/cpp/cpp_token.c cpp_token_append cpp_token_copy cpp_token_dump cpp_token_eof cpp_token_free cpp_token_new
 * lib/dns/dns_debug.c dns_debug_hex dns_debug_msg dns_debug_num
 * lib/dns/dns_dtda.c dns_domain_todot dns_domain_todot_cat dns_domain_todot_inline dns_domain_todot_utf8_cat
-* lib/dns/dns_ip4.c dns_ip4 dns_ip4_packet
-* lib/dns/dns_ip6.c dns_ip6 dns_ip6_packet
-* lib/dns/dns_ipq.c dns_ip4_qualify dns_ip4_qualify_rules
-* lib/dns/dns_ipq6.c dns_ip6_qualify dns_ip6_qualify_rules
-* lib/dns/dns_mx.c dns_mx dns_mx_packet
-* lib/dns/dns_name.c dns_name4 dns_name6 dns_name_packet
 * lib/dns/dns_random.c dns_random dns_random_init
 * lib/dns/dns_rcip.c dns_resolvconfip dns_resolvconfip_reset
 * lib/dns/dns_transmit.c dns_transmit_free dns_transmit_get dns_transmit_io dns_transmit_start
-* lib/dns/dns_txt.c dns_txt dns_txt_packet
 * lib/env/env_put.c env_clear env_init env_put env_put2 env_put2b env_putb env_unset_internal
 * lib/errmsg/errmsg_puts.c errmsg_flush errmsg_puts errmsg_start
 * lib/fmt/fmt_escapecharxml.c fmt_escapecharhtml fmt_escapecharxml
@@ -76,7 +68,6 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/path/path_access.c hasAccessRight path_access
 * lib/scan/scan_utf8_sem.c scan_utf8_sem test_main
 * lib/scan/scan_varint.c scan_pb_type0_int scan_varint
-* lib/set/set_filter.c set_filter set_filter_out
 * lib/sig/sig_stack.c sig_pop sig_pusha
 * lib/socket/socket_send6.c socket_send6 socket_send6_flag
 * lib/socket/socket_udp6.c socket_udp6 socket_udp6b
@@ -84,7 +75,6 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/socket/winsock_socketpair.c wsa_socketpair
 * lib/strarray/strarray_glob.c strarray_glob strarray_glob_b
 * lib/textcode/fmt_jsonescape.c fmt_jsonescape unittest_main
-* lib/textcode/fmt_urlencoded.c fmt_urlencoded fmt_urlencoded2
 * lib/textcode/scan_base64.c scan_base64 unittest_main
 * lib/textcode/scan_base64url.c scan_base64url unittest_main
 * lib/textcode/scan_cescape.c scan_cescape unittest_main
@@ -111,8 +101,3 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * lib/unix/win32_popen.c _pclose popen
 * lib/unix/win32_setenv.c setenv
 * lib/unix/wordexp.c wordexp wordfree
-* lib/xml/xml_find_all_pred.c xml_find_all_1 xml_find_all_2 xml_find_all_3 xml_pfind_all
-* lib/xml/xml_find_element_attr.c xml_find_all_attrs xml_find_element_attr xml_find_with_attrs xml_find_with_attrs_l
-* lib/xml/xml_find_parent.c xml_find_parent xml_find_parent_attr xml_find_parent_pred_1 xml_find_parent_pred_2 xml_find_parent_pred_3 xml_pfind_parent
-* lib/xml/xml_find_pred.c xml_find_pred_1 xml_find_pred_2 xml_find_pred_3 xml_find_pred_n xml_pfind_pred xml_vfind_pred_n
-* lib/xml/xml_path.c xml_path xml_path_relative
