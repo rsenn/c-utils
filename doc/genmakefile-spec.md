@@ -814,3 +814,343 @@ when the capability is present).
 ### 7.6 Install, uninstall, dist, check
 
 See section 10; those are targets of the IR, not of a backend.
+
+---
+
+## 8. The build matrix
+
+### 8.1 Axes
+
+A **point** is one value from each axis that applies:
+
+| axis | option / project key | example |
+| --- | --- | --- |
+| toolchain | `-t` / `compilers` | `xc8`, `sdcc` |
+| chip | `-p` / `chips` | `18f25k50`, `16f1829` |
+| build type | `--debug` etc. / `types` | `debug`, `release` |
+| crystal | `--xtal` / `xtals` | `20000000`, `48000000` |
+| baud | `--baud` / `bauds` | `9600`, `38400` |
+| code offset | `--code-offset` / `offsets` | `0x0000`, `0x2000` |
+| program | discovered | `rgbtest`, `LC-meter` |
+| switch | `-DUSE_X` / `switch.X` | `USE_USB` on/off |
+| system | `-s` | `linux`, `windows` |
+
+*(today)*: every axis except switch and system has an option; the
+combinations are written one file per point.
+
+### 8.2 Expansion and the driver
+
+`--matrix FILE` (or the project's `[matrix]`) lists the values per axis and
+constraints:
+
+```ini
+[matrix]
+compilers = xc8 sdcc
+chips.xc8  = 18f25k50 18f26j50 16f1829
+chips.sdcc = 18f25k50 16f1829
+types      = debug release
+xtals      = 20000000 48000000
+bauds      = 9600 38400
+offsets    = 0x0000 0x2000
+exclude    = chips=16f1829 offsets=0x2000     ; no bootloader on 16f
+```
+
+`genmakefile --matrix m.ini --outdir mk/` writes one make file per point
+(`mk/<compiler>-<chip>-<build id>.mk`, user decision kept) **and** a driver:
+
+```make
+# mk/Makefile  (generated)
+POINTS := xc8-18f25k50-release_20mhz_9600bps xc8-18f25k50-release_20mhz_38kbps ...
+all: $(POINTS)
+$(POINTS):
+	$(MAKE) -f mk/$@.mk
+.PHONY: all $(POINTS) clean
+```
+
+reproducing the loops of pictest's top level `Makefile` (`COMPILERS`, `CHIPS`,
+`BUILD_TYPES`, `XTAL_FREQS`, `BAUD_RATES`, `CODE_OFFSETS`, `PROGRAMS`). The
+driver accepts the same override variables: `make CHIPS=18f25k50 BUILD_TYPES=debug`
+filters `POINTS` (generated as `$(filter ...)`).
+
+### 8.3 Build id
+
+Normative: `<type>_<mhz>mhz_<kbps>kbps[_at<offset>]` (as the hand written
+`build/vars.mk`):
+
+* `type`: lower-case build type.
+* `mhz`: `xtal / 1000000` with trailing `.0` dropped (`1`, `4`, `20`);
+  `48000000` with PLL descriptor `internal-osc` is `intosc48`; the rule is a
+  per-chip descriptor entry (`[chip.18f25k50] 48000000 = intosc48`), not a
+  special case in code.
+* `kbps`: `baud / 1000` with at most 3 decimals dropped (`9600` is `9.6`,
+  `38400` is `38.4`; written `9_6`? **no**: `9.6kbps`, with the dot kept since
+  both make and the file systems of the targets allow it).
+* `_at<offset>`: only for non-zero offset, hex as written (`0x2000`).
+
+The format string is a descriptor key (`[names] build-id = ...`) so that
+lc-meter, which derives type from `_DEBUG` and uses `XTAL`, can differ.
+
+### 8.4 Layout
+
+```
+obj/<compiler>-<chip>/<build id>/<program>/<source>.<obj>
+bin/<compiler>-<chip>/<program>_<build id>.{hex,bin,cof,elf,cfg}
+```
+
+as a `[layout]` template of the firmware kind; the generic kind uses the
+layouts of 4.6. A project can set `layout = "..."` to any template using
+`$(compiler) $(chip) $(build_id) $(program) $(type)` (not make variables:
+resolved at generation).
+
+### 8.5 Constraints
+
+* `exclude`/`only` clauses as above;
+* per-chip capability (e.g. `usb = yes`, `flash = 32k`, `lcd = no`) turns
+  switches on or off *per point*: `USE_HD44780_LCD` off on `12f1840` and
+  `16f628a`, `USE_USB` implies the usb sources and `EP*_BUFFER_BASE_ADDR` defines;
+* a baud/xtal combination can be rejected by a function (`error if
+  |baud_actual - baud| > 3%`), a standard rule for `BRG16`; reported, not
+  silently adjusted.
+
+### 8.6 Without a matrix
+
+A single point: all values from the command line, same code path.
+
+---
+
+## 9. Firmware, packages, probes
+
+### 9.1 What firmware changes
+
+| aspect | desktop | firmware |
+| --- | --- | --- |
+| entry | `main(int, char**)` | `void main(void)` and an ISR; no OS |
+| outputs | executable | `.hex` (+`.cof`, `.elf`, `.cfg`, `.map`) |
+| libc | provided | vendor, chip dependent, tiny |
+| predefs | from the compiler | from the compiler **and** the chip |
+| compile cwd | anywhere | XC8 compiles from inside `obj/` |
+| link | `-l` | `--runtime`, `--codeoffset`, linker script |
+| tests | run | simulator or none |
+
+All handled by descriptor kinds (6), not by a firmware mode.
+
+### 9.2 PIC projects (the authors reference case)
+
+Facts (from TASKS, normative for the conformance fixtures, 14.4):
+
+* `pictest`: mains in `src/*test.c`, shared code in `lib/` (the libpicp
+  submodule, **flat**), per-program source lists and defines
+  (`<prog>_SOURCES`, `<prog>_DEFS`), chip dependent additions; defines every
+  build gets: `PIC<CHIP>=1 __<chip>=1 _XTAL_FREQ=<hz> UART_BAUD=<baud>`,
+  debug adds `__DEBUG=1 _DEBUG=1`, release `NDEBUG=1 __NDEBUG=1`;
+  include path `-I. -Ilib -Isrc`.
+* `lc-meter`: mains at the root (`LC-meter.c`, `Cap-meter.c`, `Freq-meter.c`),
+  helpers in `src/`, `XTAL` instead of `_XTAL_FREQ`, build type derived from
+  `_DEBUG`, a chip list per compiler.
+
+Project file for pictest (the rest is derived by scan):
+
+```ini
+[project]
+name     = pictest
+layout   = firmware
+roots    = src lib
+include  = . lib src
+program-glob = src/*test.c
+
+[define]
+all      = PIC$(CHIP_UPPER)=1 __$(CHIP)=1 _XTAL_FREQ=$(XTAL) UART_BAUD=$(BAUD)
+debug    = __DEBUG=1 _DEBUG=1
+release  = NDEBUG=1 __NDEBUG=1
+
+[matrix]                         ; as 8.2
+...
+
+[switch.USE_USB]
+kind     = flag
+sources  = lib/usb/*.c
+define   = EP1_BUFFER_BASE_ADDR=0x500 EP2_BUFFER_BASE_ADDR=0x540
+only     = chips=18f25k50 18f26j50
+
+[switch.USE_HD44780_LCD]
+kind     = flag
+exclude  = chips=12f1840 16f628a
+```
+
+What the scan contributes and the project file does not need to say: which
+lib units each program links (from its `#include`s), which `USE_*` exist,
+which headers a unit depends on per chip.
+
+For lc-meter:
+
+```ini
+[project]
+name = lc-meter
+layout = firmware
+roots = . src lib
+program-glob = *.c            ; mains at the root; the scan keeps those with main
+[define]
+all  = XTAL=$(XTAL) PIC$(CHIP_UPPER)=1
+[layout]
+build-id = $(type)_$(mhz)mhz
+```
+
+### 9.3 Code offset (bootloader) variants
+
+A bootloader build links two images: the application at an offset and the
+bootloader at 0. Both are matrix points differing in `offset`. For XC8,
+`--codeoffset=<hex>` is passed when non-zero. For SDCC the descriptor's
+`[rule.lkr]`/`[rule.hexfilter]` (6.4) produce the linker script and strip
+the hex records below the offset; `ivt-loc=offset+8` is a descriptor
+expression. Both are tested by comparing generated command lines with
+`make -n` of the hand written build (14.4).
+
+### 9.4 Optional packages
+
+Package = (name, header(s), library(s), variable names, pkg-config module).
+
+```ini
+[package.zlib]
+header   = zlib.h
+library  = z
+pkgconfig = zlib
+define   = HAVE_ZLIB=1
+variable = LIBZ                ; make variable that enables it
+```
+
+Resolution order at generation: `--dep`/project file → built-in table
+(brotli, bzip2, lzma, zlib today) → `pkg-config --cflags --libs` if the host
+has it **and** the point is native. The generated file always leaves the
+package off until the variable is set (decision kept), but prints the
+chosen strategy in a comment:
+
+```make
+# zlib: enable with  make LIBZ=z [LIBZ_INCLUDEDIR=... LIBZ_LIBDIR=...]
+```
+
+`--packages=auto` additionally runs a probe (9.5) so a developer machine gets
+the package turned on when it works.
+
+### 9.5 Probes (replace `config.h`)
+
+A probe compiles (and optionally runs) a small program with the point's
+toolchain to answer a question. Results become defines `HAVE_X=1` in a
+generated header or `-D` flags.
+
+```ini
+[probe.HAVE_ALLOCA]
+source  = #include <alloca.h>\nint main(){return alloca(1)!=0;}
+need    = compile
+[probe.SIZEOF_LONG]
+source  = #include <stdio.h>\nint main(){printf("%d",(int)sizeof(long));return 0;}
+need    = run              ; skipped when cross compiling, then 'default = 4'
+default = 4
+```
+
+Probes run at **generation** (when the toolchain is present and
+`--probe` given), cached by compiler identity, and the generated header
+`config.h` is written beside the output; or at **build** time as make
+rules that generate it, for a generation host without the compiler (needs
+the backend capability `generate`; the probe shell scripts are emitted).
+For bcc55 the probe set is small and listed in the descriptor; for firmware
+`need = compile` only.
+
+### 9.6 Cross-compiling and wine
+
+`--cross PREFIX` for gnu; `runner = wine` in the descriptor for Windows
+toolchains on Linux; `WINEPATH` set from `[env]`; `--doctor` checks that
+wine starts. A probe with `need = run` uses the runner or its default.
+
+---
+
+## 10. Targets
+
+Standard targets of the IR (names configurable):
+
+| target | content |
+| --- | --- |
+| `all` | programs and libraries of the role `program`/`module` |
+| `libs`, `bins`, `objs` | the three `--create-*` groups |
+| `check` | build and run `test` role programs; exit status aggregated; for firmware: simulator command if the descriptor has one |
+| `examples` | the `example` role |
+| `install` / `uninstall` | `DESTDIR`, `PREFIX`, `BINDIR`, `LIBDIR`, `INCLUDEDIR` honoured; programs, libraries, `--header`s; directories created |
+| `dist` | tar/zip of sources named by the scan plus project files (listed, not copied from `git`) |
+| `clean` | remove what the graph knows; `distclean` also generated make files and caches |
+| `compile_commands.json` | `--compdb` |
+| `tags` | optional `ctags` over the scanned files |
+| `<program>` | one target per program, so `make rgbtest` works |
+| `help` | lists targets, switches and packages with their defaults |
+
+Firmware adds: `flash` (descriptor command, e.g. `pk2cmd -P... -F$(HEX)` or
+`ipecmd`), `size` (print memory use from the map), `cfg` (the `piccfg` rule).
+
+### 10.1 Variables every generated file honours
+
+`CC CXX AR RANLIB LD RM MKDIR CP`, `CFLAGS CXXFLAGS CPPFLAGS LDFLAGS LIBS`,
+`DESTDIR PREFIX`, `BUILD` (type), `V=1` (echo commands, default quiet `@`
+prefix), `JOBS` where meaningful, plus every switch, package and matrix
+axis as overridable variable. Overriding `CFLAGS` appends to the generated
+warnings and includes, `OVERRIDE_CFLAGS` replaces.
+
+---
+
+## 11. Interface
+
+### 11.1 Command line
+
+Stable subset (all options of today's `doc/genmakefile.md` stay):
+
+```
+genmakefile [options] [--] ROOT...
+genmakefile --project FILE [options]
+genmakefile --matrix FILE --outdir DIR
+genmakefile --doctor | --list-toolchains | --list-layouts | --report
+genmakefile -f BUILDLOG | -M CMAKEDIR            (input adapters)
+```
+
+Exit codes: `0` ok, `1` usage, `2` generation error, `3` generated with
+omissions (so scripts can tell `--missing=skip` happened), `4` internal.
+
+### 11.2 Project file
+
+INI dialect (same parser as descriptors; keeps the tool free of new
+dependencies). Keys of the common sections:
+
+| section | keys |
+| --- | --- |
+| `[project]` | `name layout roots exclude include define program-glob lib-dir naming objects toolchain default-target` |
+| `[module.NAME]` | `sources headers link requires skip` |
+| `[program.NAME]` | `sources link define switches skip` |
+| `[role]` | `glob = role` pairs (`tests/*.c = test`) |
+| `[define]` | `all debug release <switch>` |
+| `[switch.X]` | `kind default define sources only exclude` |
+| `[package.X]` | see 9.4 |
+| `[probe.X]` | see 9.5 |
+| `[matrix]` | see 8.2 |
+| `[toolchain.NAME]` | override or extend a descriptor inline |
+| `[install]` | `headers programs libraries prefix` |
+
+Project file wins over detection; detection wins over defaults; command line
+wins over all. `genmakefile --dump-project` prints the effective merged result
+(with the origin of each value), so the answer to "why did it build this" is
+one command.
+
+### 11.3 Environment
+
+`GENMAKEFILE_PATH`, `GENMAKEFILE_CACHE`, `CC`/`CXX`/`AR` (used for guessing
+and probes, never baked into the output unless `--freeze-tools`).
+
+### 11.4 Machine-readable output
+
+`--format=json` for `--report`, `--doctor`, `--dump-project`; `--compdb`
+for the compile database. Fields are stable (versioned by `"schema": 1`).
+
+### 11.5 Reproducibility
+
+`--reproducible` removes the command line comment, uses forward slashes in
+comments, sorts everything. Checked by the suite: generating twice and on two
+hosts must be bit identical.
+
+### 11.6 Cache
+
+See 13.2.
