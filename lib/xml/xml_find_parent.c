@@ -1,9 +1,8 @@
 #include "../buffer.h"
 #include "../str.h"
 #include "../strlist.h"
-#include "../xml.h"
+#include "../xml_internal.h"
 
-int xml_has_attr(xmlnode* node, const void*, const strlist*);
 int xml_tag_pred(xmlnode* node, const void*, const void*, const void*);
 
 static xmlnode*
@@ -20,26 +19,11 @@ xml_find_parent_predicate(xmlnode* node,
 xmlnode*
 xml_pfind_parent(xmlnode* node, int (*pred)(xmlnode*, const void*, const void*, const void*), const void* ptr[]) {
   xmlnode* ret;
-  strlist names, attrs;
-  strlist_init(&names, '\0');
-  strlist_init(&attrs, '\0');
+  strlist lists[3];
 
-  if(ptr[0]) {
-    strlist_froms(&names, (const char*)ptr[0], '|');
-    ptr[0] = (const void*)&names;
-  }
-
-  if(ptr[1]) {
-    strlist_froms(&attrs, (const char*)ptr[1], '|');
-    ptr[1] = (const void*)&attrs;
-  }
+  xml_pargs_make(ptr, lists);
   ret = (xmlnode*)xml_find_parent_predicate(node, pred, ptr);
-
-  if(names.sa.a)
-    strlist_free(&names);
-
-  if(attrs.sa.a)
-    strlist_free(&attrs);
+  xml_pargs_free(lists);
   return ret;
 }
 
@@ -82,14 +66,5 @@ xml_find_parent(xmlnode* node, const char* tag) {
 
 xmlnode*
 xml_find_parent_attr(xmlnode* node, const char* attrs) {
-  strlist sl;
-  sl.sa.s = (char*)attrs;
-  sl.sa.len = str_len(attrs);
-  sl.sa.a = 0;
-  sl.sep = ',';
-
-  return xml_find_parent_pred_2(node,
-                                (int (*)(xmlnode*, const void*, const void*, const void*))(void*)&xml_has_attr,
-                                NULL,
-                                &sl);
+  return xml_find_parent_pred_2(node, (xml_pred_t*)(void*)&xml_has_attr, NULL, attrs);
 }

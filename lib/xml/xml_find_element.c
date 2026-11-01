@@ -2,7 +2,6 @@
 #include "../strlist.h"
 #include "../xml.h"
 
-int xml_has_attr(xmlnode* node, const void* n, strlist* attrs);
 
 int
 xml_tag_pred(xmlnode* node, const void* arg, const void* arg2, const void* arg3) {

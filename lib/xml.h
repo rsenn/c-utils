@@ -99,6 +99,8 @@ xmlnode* xml_get_document(xmlnode*);
 xmlnode* xml_find_with_attrs_l(xmlnode* node, const strlist* attrs);
 int xml_match_name_and_attr(xmlnode* node, strlist* names, const char* attr, const char* value);
 int xml_match_name(xmlnode* node, strlist* names, const char* attr, const char* value);
+/* is any attribute of attrs (a list) on the element; names is not used */
+int xml_has_attr(xmlnode* node, const void* names, const strlist* attrs);
 
 #endif
 void xml_add_child(xmlnode* parent, xmlnode* node);
