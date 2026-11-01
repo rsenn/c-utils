@@ -1,27 +1,23 @@
 #include "../hmap_internal.h"
+#include <stdlib.h>
 
+/* Removes all entries, the map stays usable. */
 int
 hmap_truncate(HMAP_DB** hmap_db) {
-  TUPLE* ptr_list_tuple = (*hmap_db)->list_tuple;
+  HMAP_DB* db = *hmap_db;
+  TUPLE *t = db->list_tuple, *next;
 
-  while(ptr_list_tuple) {
-    HDB_LIST_REMOVE((*hmap_db)->list_tuple, ptr_list_tuple);
-
-    if(hmap_free_data(ptr_list_tuple) != HMAP_SUCCESS) {
-      HMAP_DUMP("Warnning: cannot free data\n", 0, 0);
-    }
-
-    if(ptr_list_tuple->data) {
-      free(ptr_list_tuple->data);
-      ptr_list_tuple->data = NULL;
-      ptr_list_tuple->key[0] = 0;
-      ptr_list_tuple->key_len = 0;
-    }
-
-    if(ptr_list_tuple->type == HMAP_TUPLE_SECONDARY) {
-      free(ptr_list_tuple);
-    }
-    ptr_list_tuple = (*hmap_db)->list_tuple;
+  while(t) {
+    next = (t->next == db->list_tuple) ? NULL : t->next;
+    hmap_free_data(t);
+    free(t);
+    t = next;
   }
+
+  if(db->table)
+    byte_zero(db->table, (size_t)db->bucket_size * sizeof(TUPLE*));
+
+  db->list_tuple = NULL;
+  db->tuple_count = 0;
   return 0;
 }

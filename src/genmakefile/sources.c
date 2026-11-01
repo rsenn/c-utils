@@ -58,7 +58,7 @@ sources_new(const char* name, const char* binext, strarray* progs, strarray* bin
       stralloc_free(&bin);
     }
 
-    set_init(&ret->pptoks, 0);
+    set_init(&ret->pptoks);
     // slist_pushb(&sources, &ret, sizeof(ret));
     return ret;
   }

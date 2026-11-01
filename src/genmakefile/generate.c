@@ -82,7 +82,7 @@ generate_single_rule(stralloc* name, stralloc* cmd) {
   target* rule;
 
   if((rule = rule_new_sa(name))) {
-    set_init(&rule->prereq, 0);
+    set_init(&rule->prereq);
 
     if(cmd && !(rule->recipe.len && stralloc_equal(&rule->recipe, cmd))) {
       if(rule->recipe.len)
@@ -125,7 +125,7 @@ generate_clean_rule(char psm) {
       continue;
 
     if(name[str_chr(name, '%')]) {
-      stralloc_catset(&delete_args.sa, &rule->output, " ");
+      set_join(&rule->output, " ", &delete_args.sa);
       continue;
     }
 
@@ -520,7 +520,7 @@ generate_srcdir_lib_rule(
 
   if((rule = rule_get_sa(&sa))) {
     sourcefile* pfile;
-    set_init(&rule->prereq, 0);
+    set_init(&rule->prereq);
 
     if(dep) {
       /* objs holds one target* per compiled source file in shell/batch
@@ -775,7 +775,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
       char** sp;
       set_t linked_libdirs = SET();
 
-      set_init(&linked_libdirs, 0);
+      set_init(&linked_libdirs);
 
       strarray_foreach(other_sources, sp) {
         stralloc odir;
@@ -943,7 +943,7 @@ generate_link_rules(char psa, char psm) {
     stralloc oldname;
 
     stralloc_init(&oldname);
-    stralloc_catset(&oldname, &link->output, " ");
+    set_join(&link->output, " ", &oldname);
 
     if(!stralloc_endb(&output_name, exts.bin, str_len(exts.bin)))
       stralloc_cats(&output_name, exts.bin);

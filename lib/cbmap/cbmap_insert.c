@@ -96,19 +96,29 @@ cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_l
 
   data = GET_DATA_NODE(p);
 
-  for(newbyte = 0; newbyte < key_len; ++newbyte) {
-    if(data->key[newbyte] != key_bytes[newbyte]) {
-      newotherbits = data->key[newbyte] ^ key_bytes[newbyte];
-      goto different_byte_found;
+  /* The keys have different lengths, a key is padded with zero bytes where it
+   * ends. Nothing past the end of either key is read. */
+  {
+    size_t i, max = key_len > data->key_len ? key_len : data->key_len;
+
+    for(i = 0; i < max; ++i) {
+      unsigned char a = i < data->key_len ? (unsigned char)data->key[i] : 0, b = i < key_len ? key_bytes[i] : 0;
+
+      if(a != b) {
+        newbyte = (unsigned int)i;
+        newotherbits = a ^ b;
+        goto different_byte_found;
+      }
     }
   }
 
-  if(newbyte == key_len) {
+  if(key_len == data->key_len) {
     void* result = cbmap_data_node_update_value(&map->value_allocator, data, value, value_len);
     return result == NULL ? INSERT_OUT_OF_MEMORY : INSERT_UPDATED;
-  } else {
-    newotherbits = data->key[newbyte];
   }
+
+  /* a key that differs from this one only by zero bytes at its end cannot be told apart by the tree */
+  return INSERT_OUT_OF_MEMORY;
 
 different_byte_found:
 
@@ -116,7 +126,7 @@ different_byte_found:
   newotherbits |= newotherbits >> 2;
   newotherbits |= newotherbits >> 4;
   newotherbits = (newotherbits & ~(newotherbits >> 1)) ^ 255;
-  c = data->key[newbyte];
+  c = newbyte < data->key_len ? (unsigned char)data->key[newbyte] : 0;
   newdirection = (1 + (newotherbits | c)) >> 8;
 
   newnode = cbmap_internal_node_new();

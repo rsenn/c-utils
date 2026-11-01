@@ -55,7 +55,7 @@ void cbmap_destroy(cbmap_t* cmap_ptr);
 /** Returns the number of keys in the map */
 size_t cbmap_count(cbmap_t map);
 
-/** @return 0 if no memory, 1 on insertion and 2 on update. */
+/** @return 0 if no memory (or if the key differs from a key in the map only by zero bytes at its end), 1 on insertion and 2 on update. */
 int cbmap_insert(cbmap_t map, void* key, size_t key_len, void* value, size_t value_len);
 
 /** @return 0 if not found, 1 if found */

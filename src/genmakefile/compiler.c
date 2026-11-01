@@ -1138,7 +1138,7 @@ resolve_toolchain(const char* argv0) {
     const char* s;
     size_t n;
 
-    set_init(&toks, 0);
+    set_init(&toks);
 
     {
       strlist tmp;

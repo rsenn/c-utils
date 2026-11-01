@@ -1,17 +1,19 @@
-#include "../uint32.h"
 #include "../hmap_internal.h"
 
-int32
+/* one-at-a-time hash of Bob Jenkins */
+uint32
 hmap_hash(const void* key, size_t len) {
-  uint32 hmap_hash, i;
+  uint32 h = 0;
+  size_t i;
 
-  for(hmap_hash = i = 0; i < len; ++i) {
-    hmap_hash += ((const unsigned char*)key)[i];
-    hmap_hash += (hmap_hash << 10);
-    hmap_hash ^= (hmap_hash >> 6);
+  for(i = 0; i < len; ++i) {
+    h += ((const unsigned char*)key)[i];
+    h += (h << 10);
+    h ^= (h >> 6);
   }
-  hmap_hash += (hmap_hash << 3);
-  hmap_hash ^= (hmap_hash >> 11);
-  hmap_hash += (hmap_hash << 15);
-  return hmap_hash & 0x7FFFFFFF;
+
+  h += (h << 3);
+  h ^= (h >> 11);
+  h += (h << 15);
+  return h;
 }

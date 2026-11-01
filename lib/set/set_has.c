@@ -1,29 +1,10 @@
-#include "../set.h"
-#include <string.h>
+#include "../set_internal.h"
 
-uint32
-set_index(const set_t* set, const void* val, const size_t size) {
-  uint32 hash;
-  hash = set_hash(set, val, size);
-  return hash & (set->len - 1);
-}
-
+/* 1 if the set holds the size bytes at val, otherwise 0. */
 int
 set_has(const set_t* set, const void* val, const size_t size) {
-  bucket_t* b;
-  uint32 hash, i;
-  hash = set_hash(set, val, size);
+  if(set->array == NULL)
+    return 0;
 
-  i = hash % set->len;
-  b = &set->array[i];
-
-  for(b = &set->array[i]; (b && b->value); b = b->next) {
-    if(size == b->size && b->hash == hash)
-
-      if(memcmp(b->value, val, size) == 0) {
-        return 1;
-      }
-  }
-
-  return 0;
+  return set_lookup(set, val, size, set_hash(set, val, size)) != NULL;
 }

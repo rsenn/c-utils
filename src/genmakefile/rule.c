@@ -31,9 +31,9 @@ rule_get(const char* name) {
     tgt.name = str_ndup(name, len);
     tgt.serial = ++rule_serial;
     tgt.type = -1;
-    set_init(&tgt.output, 0);
+    set_init(&tgt.output);
     set_adds(&tgt.output, name);
-    set_init(&tgt.prereq, 0);
+    set_init(&tgt.prereq);
     strlist_init(&tgt.cmds, ' ');
 
     MAP_INSERT2(rule_map, name, len + 1, &tgt, ((sizeof(struct target_s) + 3) / 4) * 4);
@@ -202,7 +202,7 @@ rule_rename(target* rule, const char* name, char pathsep) {
 
   stralloc_init(&out);
 
-  stralloc_catset(&out, &rule->output, " ");
+  set_join(&rule->output, " ", &out);
   len = byte_rchr(out.s, out.len, pathsep);
 
   out.len = out.len > len ? len + 1 : 0;
@@ -724,7 +724,7 @@ rule_is_compile(target* rule) {
   if(stralloc_contains(&rule->recipe, " -c "))
     return true;
 
-  if((x = set_at_n(&rule->prereq, 0, &n)))
+  if((x = set_first(&rule->prereq, &n)))
 
     if(is_source_b(x, n))
       return true;

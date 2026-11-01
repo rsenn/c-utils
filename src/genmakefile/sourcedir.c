@@ -211,9 +211,7 @@ sourcedir_addsource(const char* source, strarray* sources, strarray* progs, stra
 
   sources_addincludes(file, srcdir, &list, sources);
 
-  set_foreach_it(&file->pptoks, it) {
-    x = set_iterator_value(&it, &n);
-
+  set_foreach(&file->pptoks, it, x, n) {
     if(n >= 5 && (byte_equal(x, 4, "USE_") || byte_equal(x, 5, "HAVE_")))
       set_add(&srcdir->pptoks, x, n);
   }
@@ -323,7 +321,7 @@ sourcedir_getb(const char* x, size_t n) {
   if(!(s = sourcedir_findb(x, n))) {
     sourcedir* newdir = alloc_zero(sizeof(sourcedir));
 
-    set_init(&newdir->pptoks, 0);
+    set_init(&newdir->pptoks);
     MAP_INSERT2(sourcedir_map, x, n + 1, &newdir, sizeof(newdir));
 
     if((ptr = (sourcedir**)MAP_GET(sourcedir_map, x, n + 1)))

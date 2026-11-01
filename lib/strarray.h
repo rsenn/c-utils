@@ -10,6 +10,7 @@
 #include "array.h"
 #include "stralloc.h"
 #include "byte.h"
+#include "set.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -309,7 +309,7 @@ deps_for_libs(void) {
   MAP_PAIR_T t;
   set_t indir;
 
-  set_init(&indir, 0);
+  set_init(&indir);
 
   MAP_FOREACH(sourcedir_map, t) {
     sourcedir* srcdir = *(sourcedir**)MAP_ITER_VALUE(t);
@@ -387,7 +387,7 @@ print_rule_deps(buffer* b, target* t) {
   set_t deplist;
   strlist hierlist;
 
-  set_init(&deplist, 0);
+  set_init(&deplist);
   strlist_init(&hierlist, 0);
   set_adds(&deplist, t->name);
   buffer_putm_internal(b, "# Dependencies for '", t->name, "':", NULL);
@@ -839,7 +839,14 @@ ingest_input_file(target* all, target* compile_target) {
 
     stralloc_init(&builddir);
 
-    set_at_sa(&build_directories, 0, &builddir);
+    {
+      size_t n;
+      const char* x = set_first(&build_directories, &n);
+
+      if(x)
+        stralloc_copyb(&builddir, x, n);
+      stralloc_nul(&builddir);
+    }
 
     var_set_b(builddir_varname, builddir.s, builddir.len);
     stralloc_free(&builddir);
@@ -1788,8 +1795,8 @@ main(int argc, char* argv[]) {
   byte_zero(&vars, sizeof(vars));
   byte_zero(&bins, sizeof(bins));
   byte_zero(&tools, sizeof(tools));
-  set_init(&link_libraries, 0);
-  set_init(&build_directories, 0);
+  set_init(&link_libraries);
+  set_init(&build_directories);
 
   MAP_NEW(sourcedir_map);
   MAP_NEW(targetdirs);
