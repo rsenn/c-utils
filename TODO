@@ -411,3 +411,14 @@ them with -v when porting a foreign project. Details in
   Run tests/check-onefunc.py for the list. Split a file when the module is
   touched anyway; rename the file when its function has another name.
 
+- genmakefile-multi-chip-targets:
+  A MPLAB X project like USB-uC has one configuration per chip, and the user
+  wants all of them from one run. Giving genmakefile one target for each
+  configuration (the "--" syntax) does not work: the build id and the
+  directories are worked out once from the chip of the first target, so the
+  rules of the others are not written.
+
+  Make the build id a property of the target, not of the run, then let
+  --mplabx-conf all give one target for each configuration. Until then
+  generate one makefile per configuration with --mplabx-conf NAME.
+
