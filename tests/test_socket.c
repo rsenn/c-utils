@@ -4,6 +4,9 @@
 #include "../lib/byte.h"
 #include "../lib/scan.h"
 #include "../lib/fmt.h"
+#include "../lib/str.h"
+#include "../lib/ip4.h"
+#include "../lib/ip6.h"
 
 /*
  * int socket_tcp4(void);
@@ -248,7 +251,132 @@ TEST(test_socket_udp_loopback) {
   socket_close(u2);
 }
 
+/*
+ * fmt_ip6ifc: an address with its scope, "addr%interface"
+ */
+TEST(test_fmt_ip6ifc) {
+  char buf[64];
+  static const char ll[16] = {0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  size_t n;
+
+  n = fmt_ip6ifc(buf, ll, 0);
+  buf[n] = 0;
+  ASSERT_STR_EQUAL("fe80::1", buf); /* no scope: just the address */
+  ASSERT_EQ(n, fmt_ip6ifc(NULL, ll, 0));
+  n = fmt_ip6ifc(buf, ll, 2);
+  buf[n] = 0;
+  ASSERT_EQ(1, str_start(buf, "fe80::1%"));
+  ASSERT_EQ(n, fmt_ip6ifc(NULL, ll, 2));
+}
+
+/*
+ * socket_getifidx, socket_getifname
+ */
+TEST(test_socket_ifname_ifidx) {
+  uint32 idx = socket_getifidx("lo");
+
+  if(idx == 0)
+    return; /* no interface names here */
+  ASSERT_STR_EQUAL("lo", socket_getifname(idx));
+  ASSERT_EQ(0, socket_getifidx("no-such-if0"));
+  ASSERT_STR_EQUAL("[unknown]", socket_getifname(999999));
+}
+
+/*
+ * socket options that exist only on some systems must not fail hard:
+ * socket_fastopen, socket_quickack, socket_deferaccept, multicast v4 settings
+ */
+TEST(test_socket_options) {
+  int t = socket_tcp4(), u = socket_udp4();
+  char loop[4] = {127, 0, 0, 1}, group[4] = {(char)239, 1, 2, 3};
+
+  ASSERT_EQ(1, t >= 0 && u >= 0);
+  socket_fastopen(t);
+  socket_quickack(t, 1);
+  socket_deferaccept(t, 0);
+  ASSERT_EQ(1, socket_mcttl4(u, 2) <= 0);
+  ASSERT_EQ(1, socket_mcloop4(u, 1) <= 0);
+  /* joining may be refused in a sandbox without multicast, leaving needs a join first */
+  if(socket_mcjoin4(u, group, loop) == 0) {
+    /* the leave names no interface: the system decides if that matches the join */
+    ASSERT_EQ(1, socket_mcleave4(u, group) <= 0);
+  } else {
+    ASSERT_EQ(-1, socket_mcleave4(u, group));
+  }
+  ASSERT_EQ(0, V6any[0]);
+  ASSERT_EQ(0xff, (unsigned char)V4mappedprefix[10]);
+  ASSERT_EQ(0xff, (unsigned char)V4mappedprefix[11]);
+  socket_close(t);
+  socket_close(u);
+}
+
+/*
+ * the IPv6 variants, when the system has IPv6 at all
+ */
+TEST(test_socket_ipv6_loopback) {
+  int srv = socket_tcp6(), c, a, u1, u2;
+  char ip[16], lip[16], rb[16];
+  uint16 port = 0, pport = 0, up = 0, sp = 0;
+  uint32 scope = 0;
+  static const char lo6[16] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+
+  if(srv < 0)
+    return; /* no IPv6 here */
+  if(socket_bind6_reuse(srv, lo6, 0, 0) != 0) {
+    socket_close(srv);
+    return; /* IPv6 without a loopback address */
+  }
+  ASSERT_EQ(0, socket_local6(srv, lip, &port, &scope));
+  ASSERT_EQ(0, byte_diff(lip, 16, lo6));
+  ASSERT_EQ(0, socket_listen(srv, 5));
+  c = socket_tcp6b();
+  socket_connect6(c, lo6, port, 0);
+  a = socket_accept6(srv, ip, &pport, &scope);
+  ASSERT_EQ(1, a >= 0);
+  ASSERT_EQ(0, byte_diff(ip, 16, lo6));
+  ASSERT_EQ(0, socket_remote6(c, ip, &pport, &scope));
+  ASSERT_EQ(port, pport);
+  socket_close(a);
+  socket_close(c);
+  socket_close(srv);
+
+  u1 = socket_udp6();
+  u2 = socket_udp6();
+  ASSERT_EQ(1, u1 >= 0 && u2 >= 0);
+  ASSERT_EQ(0, socket_bind6(u1, lo6, 0, 0));
+  socket_local6(u1, lip, &up, &scope);
+  ASSERT_EQ(4, socket_send6(u2, "ping", 4, lo6, up, 0));
+  ASSERT_EQ(4, socket_recv6(u1, rb, sizeof rb, ip, &sp, &scope));
+  ASSERT_EQ(0, byte_diff(rb, 4, "ping"));
+  ASSERT_EQ(0, byte_diff(ip, 16, lo6));
+  socket_mchopcount6(u2, 1);
+  socket_mcloop6(u2, 1);
+  socket_close(u1);
+  socket_close(u2);
+}
+
+/*
+ * the SCTP sockets exist or the system says it has none
+ */
+TEST(test_socket_sctp) {
+  int s[4], i;
+
+  s[0] = socket_sctp4();
+  s[1] = socket_sctp4b();
+  s[2] = socket_sctp6();
+  s[3] = socket_sctp6b();
+  for(i = 0; i < 4; ++i)
+    if(s[i] >= 0)
+      socket_close(s[i]);
+  ASSERT_EQ(1, 1);
+}
+
 #define RUN_SOCKET_TESTS() \
+  RUN(test_fmt_ip6ifc); \
+  RUN(test_socket_ifname_ifidx); \
+  RUN(test_socket_options); \
+  RUN(test_socket_ipv6_loopback); \
+  RUN(test_socket_sctp); \
   RUN(test_socket_ip4_text); \
   RUN(test_socket_ip6_text); \
   RUN(test_socket_loopback_addresses); \
