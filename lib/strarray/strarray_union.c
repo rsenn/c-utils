@@ -1,33 +1,19 @@
-#include "../strarray.h"
+#include "../alloc.h"
+#include "../array.h"
+#include "../byte.h"
 #include "../str.h"
+#include "../strarray.h"
 
+/* out gets copies of all strings of s1, then those of s2 that s1 does not
+ * contain; both keep their order and neither has to be sorted. Linear search:
+ * meant for the short lists of command lines and option sets. */
 void
 strarray_union(const strarray* s1, const strarray* s2, strarray* out) {
-  size_t i = 0, j = 0, k = 0, common = 0;
-  size_t size1 = strarray_size(s1), size2 = strarray_size(s2);
-  char **a = strarray_BEGIN(s1), **b = strarray_BEGIN(s2), **c;
+  char **p;
 
-  array_allocate(&out->a, sizeof(char*), (size1 + size2) - 1);
-  c = strarray_BEGIN(out);
-
-  for(k = 0; k < (size1 + size2); k++) {
-    int delta = str_diff(a[i], b[j]);
-    const char* s;
-
-    if(i >= size1) {
-      s = b[j++];
-    } else if(j >= size2) {
-      s = a[i++];
-    } else if(delta < 0) {
-      s = a[i++];
-    } else if(delta > 0) {
-      s = b[j++];
-    } else {
-      s = a[i++];
-      j++;
-      common++;
-    }
-    c[k] = str_dup(s);
+  strarray_foreach(s1, p) strarray_push(out, *p);
+  strarray_foreach(s2, p) {
+    if(strarray_index_of((strarray*)s1, *p) < 0)
+      strarray_push(out, *p);
   }
-  array_truncate(&out->a, sizeof(char*), k - common);
 }

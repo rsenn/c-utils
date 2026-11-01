@@ -1,19 +1,22 @@
+#include "../alloc.h"
+#include "../array.h"
+#include "../byte.h"
 #include "../str.h"
-#include "../stralloc.h"
 #include "../strarray.h"
-#include <stdlib.h>
 
+/* appends pred(s) for every string s of in to out; pred returns an allocated
+ * string that out then owns. Returns the number of strings handled. */
 int
 strarray_transform(strarray* in, strarray* out, char* (*pred)(const char*)) {
   size_t i, n = strarray_size(in);
-  char **d, **s = strarray_BEGIN(in);
 
-  array_allocate((array*)out, sizeof(char*), n - 1);
+  for(i = 0; i < n; ++i) {
+    char* r = pred(strarray_AT(in, i));
+    char** d;
 
-  d = strarray_BEGIN(out);
-
-  for(i = 0; i < n; ++i)
-    *d++ = pred(*s++);
-
-  return i;
+    if(!r || !(d = (char**)array_allocate(&out->a, sizeof(char*), strarray_size(out))))
+      return (int)i;
+    *d = r;
+  }
+  return (int)i;
 }
