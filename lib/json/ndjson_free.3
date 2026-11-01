@@ -1,0 +1,12 @@
+.TH NDJSON_FREE 3
+.SH NAME
+ndjson_free \- release an NDJSON reader
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "void ndjson_free(ndjson* " nd ");"
+.SH DESCRIPTION
+.BR ndjson_free ()
+releases the memory of the reader; an unfinished line is lost.
+.SH SEE ALSO
+ndjson_init(3), ndjson_feed(3)

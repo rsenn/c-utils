@@ -1,17 +1,50 @@
 .TH HTTP_RECV 3
 .SH NAME
-http_recv \- read the decoded body of the response
+http_recv \- read the decoded body of a response
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "ssize_t http_recv(http* " h ", char* " buf ", size_t " len ");"
 .SH DESCRIPTION
-
 .BR http_recv ()
-stores up to len bytes of the body in buf. It decodes the chunked transfer encoding, a Content-Length or a body that ends with the connection, from what http_canread(3) received. It does not read from the socket. h->stream has to be set before the request is sent, otherwise http_canread(3) collects the body in the response.
+stores up to
+.I len
+bytes of the body of the current response in
+.IR buf .
+It works on what
+.BR http_canread (3)
+has put into the input buffer and never reads the socket, so it does not block and is cheap to call
+again. It decodes the framing of the response:
+.TP
+HTTP_TRANSFER_CHUNKED
+the chunk sizes, the line ends between chunks and the trailers are removed; a
+size with extensions ("5;ext=1") is understood.
+.TP
+HTTP_TRANSFER_LENGTH
+as many bytes as Content-Length says, bytes behind them are left in the buffer.
+.TP
+HTTP_TRANSFER_UNDEF
+everything until the connection closes.
 .P
-The response is complete when its status is HTTP_STATUS_FINISH.
+When the last byte of the body has been taken the status of the response becomes
+HTTP_STATUS_FINISH. The call can return fewer bytes than are available if a chunk boundary
+or an incomplete chunk size line is in the way; call it again after the next
+.BR http_canread (3).
+.I h->stream
+must be set before the request is sent, otherwise
+.BR http_canread (3)
+moves the body away.
 .SH RETURN VALUE
-The number of bytes, 0 if there is nothing for now, -1 on an error (a body that was cut off is one).
+The number of bytes stored, 0 if there is nothing for now (the body is complete when response->status is HTTP_STATUS_FINISH), -1 on an error: errno is EPIPE when a chunked body or a body with a length was cut off by the closing of the connection, EPROTO for a damaged chunk size, otherwise the error of the connection.
+.SH EXAMPLE
+.nf
+while((n = http_recv(&h, buf, sizeof(buf))) > 0)
+  sse_feed(&parser, buf, n, on_event, 0);
+
+if(n < 0)
+  errmsg_warnsys("answer cut off", 0);
+else if(h.response->status == HTTP_STATUS_FINISH)
+  ...done...
+.fi
 .SH SEE ALSO
-http_canread(3), sse_feed(3)
+http(3), http_canread(3), sse_feed(3), ndjson_feed(3)

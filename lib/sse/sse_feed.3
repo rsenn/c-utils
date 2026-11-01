@@ -1,0 +1,37 @@
+.TH SSE_FEED 3
+.SH NAME
+sse_feed \- parse a piece of a server-sent events stream
+.SH SYNOPSIS
+.B #include <sse.h>
+.P
+.BI "size_t sse_feed(sse* " s ", const char* " x ", size_t " n ", sse_callback* " cb ", void* " user ");"
+.SH DESCRIPTION
+.BR sse_feed ()
+parses the
+.I n
+bytes at
+.I x
+and calls
+.I cb(event, user)
+for every event that they complete. The next call goes on where this one stopped, whatever the pieces are.
+.I cb
+can be 0 to only count the events.
+.SH RETURN VALUE
+The number of events that were dispatched.
+.SH EXAMPLE
+.nf
+static void
+on_event(const sse_event* ev, void* user) {
+  if(ev->data_len == 6 && !byte_diff(ev->data, 6, "[DONE]"))
+    return;
+  ...json_parse_text(ev->data, ev->data_len)...
+}
+
+sse s;
+sse_init(&s);
+while((n = http_recv(&h, buf, sizeof(buf))) > 0)
+  sse_feed(&s, buf, n, on_event, 0);
+sse_free(&s);
+.fi
+.SH SEE ALSO
+sse(3), http_recv(3), json_parse_text(3)

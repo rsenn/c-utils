@@ -1,15 +1,27 @@
 .TH HTTP_CANWRITE 3
 .SH NAME
-http_canwrite \- process writable HTTP socket
+http_canwrite \- handle a writable socket of an HTTP client
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "ssize_t http_canwrite(http* " h ", void (*" wantread ")(fd_type), void (*" wantwrite ")(fd_type));"
 .SH DESCRIPTION
 .BR http_canwrite ()
-handles socket writability for the HTTP client
-.IR h .
-It performs the TLS handshake if necessary and sends the HTTP request if it
-has not yet been sent.
+is called when the event loop reports that the socket of
+.I h
+can be written. The first call completes the connection (the TLS handshake for https) and sends the request with
+.BR http_sendreq (3).
+Later calls write body data that was queued by
+.BR http_chunk (3)
+or did not fit before.
+.P
+.I wantread
+and
+.I wantwrite
+are functions of the event loop, normally io_onlywantread() and io_onlywantwrite(); a TLS
+handshake or write that has to wait for the other direction uses them to change what the
+socket is watched for.
 .SH RETURN VALUE
-Returns the result of the write operation, or -1 on error.
+0 on success, -1 on an error. On -1 look at h->err: EAGAIN or EWOULDBLOCK means to wait for the next event, anything else is a failure of the connection.
+.SH SEE ALSO
+http(3), http_canread(3), http_chunk(3), http_sendreq(3)

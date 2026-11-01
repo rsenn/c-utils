@@ -1,0 +1,20 @@
+.TH HTTP_FREE 3
+.SH NAME
+http_free \- release the memory of an HTTP client structure
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "void http_free(http* " h ");"
+.SH DESCRIPTION
+.BR http_free ()
+frees the input and output buffers, all requests and responses (with their headers, bodies
+and data) and the host name of
+.IR h .
+It does not close the connection, call
+.BR http_close (3)
+first. Afterwards the structure can be started again with
+.BR http_init (3).
+.SH NOTES
+Without it every request of a long running program keeps about 48 kilobytes of buffers.
+.SH SEE ALSO
+http_close(3), http_init(3)

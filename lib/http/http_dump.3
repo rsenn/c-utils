@@ -1,35 +1,15 @@
-.TH http_dump 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_DUMP 3
 .SH NAME
-http_dump \- Dump the state of an HTTP connection
-
+http_dump \- print the state of an HTTP client
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B void http_dump(http* h);
-
+.B #include <http.h>
+.P
+.BI "void http_dump(http* " h ");"
 .SH DESCRIPTION
-The .B http_dump function dumps the state of an HTTP connection.
-
-The function takes one parameter:
-.I h
-A pointer to the HTTP connection to be dumped.
-
-The function does not return a value.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_dump function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume h is a valid pointer to an HTTP connection
-  http_dump(h);
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+.BR http_dump ()
+writes one line to standard error with the socket, the flags that are set, the last error and the state of the
+response (status code, transfer, byte counts, the first 100 bytes of the headers).
+It is a debugging aid; the library has to be built with DEBUG_HTTP defined, otherwise the
+function does nothing.
+.SH SEE ALSO
+http_request_dump(3), http_response_dump(3)

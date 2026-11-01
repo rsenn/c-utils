@@ -1,0 +1,14 @@
+.TH NDJSON_INIT 3
+.SH NAME
+ndjson_init \- prepare an NDJSON reader
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "void ndjson_init(ndjson* " nd ");"
+.SH DESCRIPTION
+.BR ndjson_init ()
+clears the reader
+.I nd
+for a new stream (counters of lines and errors included).
+.SH SEE ALSO
+ndjson_feed(3), ndjson_free(3)

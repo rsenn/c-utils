@@ -1,46 +1,27 @@
-.TH http_sendreq 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_SENDREQ 3
 .SH NAME
-http_sendreq \- Send an HTTP request
-
+http_sendreq \- write the headers of a request
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B int http_sendreq(http* h);
-
+.B #include <http.h>
+.P
+.BI "int http_sendreq(http* " h ");"
 .SH DESCRIPTION
-The .B http_sendreq function sends an HTTP request.
-
-The function takes one parameter:
-.I h
-The HTTP structure.
-
-The function returns 0 on success, or -1 on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_sendreq function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume h is a valid HTTP structure
-  http h;
-
-  // Initialize h
-
-  int ret = http_sendreq(&h);
-
-  if (ret < 0) {
-    perror("http_sendreq");
-    return 1;
-  }
-
-  // Use the result
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+.BR http_sendreq ()
+puts the request line and the headers of the request that was started last into the output
+buffer and flushes it, then calls
+.BR http_body_flush (3)
+for the body. This is done once; if the flush fails the headers are not queued again. After a
+successful flush
+.I h->sent
+is set and the socket is watched for reading only (or also for writing if body data is left).
+.P
+It is called by
+.BR http_canwrite (3)
+and, with TLS, by
+.BR http_canread (3).
+.SH RETURN VALUE
+0 on success, -1 on a write error, 0 also if there is no request.
+.SH NOTES
+The output buffer is flushed with buffer_flush(3), which does not keep what a non-blocking socket refuses. The headers are small enough to go out in one write.
+.SH SEE ALSO
+http_canwrite(3), http_body_flush(3)

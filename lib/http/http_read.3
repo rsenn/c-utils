@@ -1,49 +1,31 @@
-.TH http_read 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_READ 3
 .SH NAME
-http_read \- Read data from an HTTP connection
-
+http_read \- read the body of a response as a buffer operation
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B ssize_t http_read(fd_type fd, char* buf, size_t len, buffer* b);
-
+.B #include <http.h>
+.P
+.BI "ssize_t http_read(fd_type " fd ", char* " buf ", size_t " len ", buffer* " b ");"
 .SH DESCRIPTION
-The .B http_read function reads data from an HTTP connection.
-
-The function takes four parameters:
+.BR http_read ()
+has the shape of an operation of
+.BR buffer (3),
+so that the body of a response can be read with the buffer functions (also
+through decompression filters, as buffer_lzma(3) does). The http structure is
+.IR b->cookie
+(or
 .I fd
-The file descriptor of the HTTP connection.
-.I buf
-A buffer to store the data.
-.I len
-The maximum number of bytes to read.
-.I b
-A buffer to store the data.
-
-The function returns the number of bytes read, or -1 on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_read function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume fd is a valid file descriptor for an HTTP connection
-  char buf[1024];
-  ssize_t ret = http_read(fd, buf, sizeof(buf), NULL);
-
-  if (ret < 0) {
-    perror("http_read");
-    return 1;
-  }
-
-  // Use the data in buf
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+if there is no cookie). It reads from the socket into the input buffer, parses the headers
+with
+.BR http_read_internal (3)
+while the status is HTTP_RECV_HEADER, and then returns body data.
+.P
+This belongs to the first reader of the module, written for
+.BR buffer (3)
+operations; it expects
+.I h->stream
+to be cleared. New code should use
+.BR http_recv (3).
+.SH RETURN VALUE
+The number of bytes stored in buf, 0 at the end of the body or when there is nothing for now, -1 with errno set on an error.
+.SH SEE ALSO
+http_recv(3), http_read_internal(3), http_canread(3)

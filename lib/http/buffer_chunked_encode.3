@@ -1,0 +1,37 @@
+.TH BUFFER_CHUNKED_ENCODE 3
+.SH NAME
+buffer_chunked_encode \- encode a buffer as the chunked transfer encoding
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int buffer_chunked_encode(buffer* " b ", buffer* " other ");"
+.SH DESCRIPTION
+.BR buffer_chunked_encode ()
+initializes
+.I b
+as a buffer that writes what is put into it to
+.I other
+as chunks: every flush of
+.I b
+(also the one that happens when its 1024 byte buffer is full) becomes one chunk. Closing
+.I b
+with
+.BR buffer_close (3)
+flushes it, writes the last chunk and flushes
+.IR other ;
+.I other
+is left open.
+.SH RETURN VALUE
+1 on success, 0 if the memory is short.
+.SH EXAMPLE
+.nf
+buffer enc;
+
+buffer_chunked_encode(&enc, &conn_out);
+buffer_puts(&enc, "hello ");
+buffer_flush(&enc);             /* chunk "6\er\enhello \er\en" */
+buffer_puts(&enc, "world");
+buffer_close(&enc);             /* "5\er\enworld\er\en0\er\en\er\en" */
+.fi
+.SH SEE ALSO
+buffer_chunked(3), http_chunk(3)

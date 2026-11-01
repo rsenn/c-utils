@@ -26,6 +26,10 @@ json_parse_object(jsonval* val, charbuf* b) {
       else if(json_parse_number(&key, b) > 0)
         stralloc_catulong(&str, key.intv);
 
+      /* the key is copied, its own text is not needed any more */
+      if(key.type == JSON_STRING)
+        stralloc_free(&key.stringv);
+
       stralloc_nul(&str);
 
 /*      stralloc_zero(&key);

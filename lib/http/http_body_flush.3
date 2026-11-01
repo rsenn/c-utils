@@ -1,15 +1,27 @@
 .TH HTTP_BODY_FLUSH 3
 .SH NAME
-http_body_flush \- write the queued body
+http_body_flush \- write the queued body of a request
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "ssize_t http_body_flush(http* " h ");"
 .SH DESCRIPTION
-
 .BR http_body_flush ()
-writes what http_body(3), http_chunk(3) and http_chunk_end(3) queued as far as the socket takes it. It is called by http_sendreq(3) and http_canwrite(3), also by hand. The data is written to the socket directly, not through the output buffer, so what the socket does not take is not lost.
+writes what
+.BR http_body (3),
+.BR http_chunk (3)
+and
+.BR http_chunk_end (3)
+queued, as far as the socket takes it. It is called by
+.BR http_sendreq (3)
+and
+.BR http_canwrite (3),
+there is hardly a reason to call it by hand.
+.P
+The data goes to the socket directly (through TLS if used), not through the output buffer: the
+buffer forgets what a non-blocking socket did not take, the queue of the request does not. When
+everything is written the queue is emptied and the socket is not watched for writing any more.
 .SH RETURN VALUE
-1 when all is out, 0 when the socket is full, -1 on an error.
+1 if everything is written, 0 if the socket is full (it is watched for writing then) or the headers are not sent yet, -1 on an error with errno set (EPIPE if the peer closed).
 .SH SEE ALSO
-http_canwrite(3)
+http_canwrite(3), http_sendreq(3)

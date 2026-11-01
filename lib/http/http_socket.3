@@ -1,50 +1,28 @@
-.TH lib/http/http_socket.c 3 "2023-04-10" "lib/http" "Manual Page"
+.TH HTTP_SOCKET 3
 .SH NAME
-http_socket - Create an HTTP socket
+http_socket \- create the socket of an HTTP client
 .SH SYNOPSIS
-.I #include <lib/http.h>
-.I int
-.I http_socket
-.I (
-.I http *h,
-.I int nonblock
-.I )
+.B #include <http.h>
+.P
+.BI "int http_socket(http* " h ", int " nonblock ");"
 .SH DESCRIPTION
-The .B http_socket function creates an HTTP socket.
-
-The function takes two parameters:
-.I h
-The HTTP structure.
+.BR http_socket ()
+creates a TCP socket for
+.IR h ,
+for https also the TLS client (the host name is announced with
+.BR tls_servername (3),
+so servers that host many names pick the right certificate), registers the socket with io(3), switches it to non-blocking mode if
 .I nonblock
-A flag indicating whether the socket should be non-blocking.
-
-The function returns the socket file descriptor on success, or -1 on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_socket function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume h is a valid HTTP structure
-  http h;
-
-  // Initialize h
-
-  int fd = http_socket(&h, 1);
-
-  if (fd < 0) {
-    perror("http_socket");
-    return 1;
-  }
-
-  // Use the socket file descriptor
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+is not 0 and sets up the input buffer (16 kilobytes) and the output buffer (32 kilobytes) with
+.BR http_socket_read (3)
+and
+.BR http_socket_write (3)
+as their operations. Buffers that are there already are kept.
+.P
+It is called by
+.BR http_open (3);
+only a caller that connects the socket by itself needs it.
+.SH RETURN VALUE
+The descriptor, -1 on failure.
+.SH SEE ALSO
+http_open(3), http_socket_read(3), http_socket_write(3)

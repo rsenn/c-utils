@@ -1,50 +1,29 @@
-.TH http_response_read 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_RESPONSE_READ 3
 .SH NAME
-http_response_read \- Read data from an HTTP response
-
+http_response_read \- tell how much body data may be read
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B ssize_t http_response_read(buffer* in, http_response* response);
-
+.B #include <http.h>
+.P
+.BI "ssize_t http_response_read(buffer* " in ", http_response* " response ");"
 .SH DESCRIPTION
-The .B http_response_read function reads data from an HTTP response.
-
-The function takes two parameters:
+.BR http_response_read ()
+looks at the beginning of the body in
 .I in
-The input buffer.
-.I response
-The HTTP response structure.
-
-The function returns the number of bytes read, or -1 on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_response_read function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-#include <buffer.h>
-
-int main() {
-  // Assume in is a valid input buffer and response is a valid HTTP response structure
-  buffer in;
-  http_response response;
-
-  // Initialize in and response
-
-  ssize_t bytes_read = http_response_read(&in, &response);
-
-  if (bytes_read < 0) {
-    perror("http_response_read");
-    return 1;
-  }
-
-  // Use the data read
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+(without taking it out) and says how many bytes belong to the current piece of the body. For a chunked body it reads the line with the next chunk
+size into
+.I chunk_length
+and sets the status HTTP_STATUS_FINISH at the last chunk, for a body with a length it compares
+.I data_pos
+with
+.I content_length.
+.P
+This belongs to the first reader of the module, written for
+.BR buffer (3)
+operations; it expects
+.I h->stream
+to be cleared. New code should use
+.BR http_recv (3).
+.SH RETURN VALUE
+The number of bytes that may be taken now, 0 if there are none (the chunk size is read or missing), 0 for a multipart body (not implemented).
+.SH SEE ALSO
+http_read_internal(3), http_recv(3)

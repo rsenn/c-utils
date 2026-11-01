@@ -231,6 +231,7 @@ llm_stream_run(llm_stream* s) {
 void
 llm_stream_close(llm_stream* s) {
   http_close(&s->h);
+  http_free(&s->h);
   sse_free(&s->parser);
   ndjson_free(&s->nd);
   stralloc_free(&s->error_body);

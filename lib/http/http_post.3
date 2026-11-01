@@ -6,10 +6,18 @@ http_post \- start an HTTP POST request
 .P
 .BI "int http_post(http* " h ", const char* " location ");"
 .SH DESCRIPTION
-
 .BR http_post ()
-is http_open(3) with the method POST. Without http_body(3) or http_chunk(3) the body is empty.
+is
+.BR http_open (3)
+with the method POST. The body is set with
+.BR http_body (3)
+or sent as chunks with
+.BR http_chunked (3),
+.BR http_chunk (3)
+and
+.BR http_chunk_end (3).
+A POST without any of them is sent with "Content-Length: 0".
 .SH RETURN VALUE
 1 on success, 0 on failure.
 .SH SEE ALSO
-http_open(3), http_chunk(3)
+http_open(3), http_body(3), http_chunk(3)

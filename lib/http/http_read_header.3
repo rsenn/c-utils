@@ -1,54 +1,35 @@
-.TH http_read_header 3 "HTTP Library Functions" "QuickJS" "HTTP Library Functions"
-
+.TH HTTP_READ_HEADER 3
 .SH NAME
-http_read_header \- Read the HTTP response header from a connection
-
+http_read_header \- read the headers of a response from a buffer
 .SH SYNOPSIS
-.B #include <lib/http.h>
-.B ssize_t http_read_header(buffer* in, stralloc* out, http_response* response);
-
+.B #include <http.h>
+.P
+.BI "ssize_t http_read_header(buffer* " in ", stralloc* " out ", http_response* " response ");"
 .SH DESCRIPTION
-The .B http_read_header function reads the HTTP response header from a connection.
-
-The function takes three parameters:
+.BR http_read_header ()
+reads header lines from
 .I in
-The buffer to read from.
-.I out
-The buffer to store the header data.
+and appends them to
+.IR out
+while the status of
 .I response
-The HTTP response structure.
-
-The function returns the number of bytes read, or -1 on error.
-
-.SH EXAMPLE
-The following example demonstrates how to use the .B http_read_header function:
-
-.I
-.nf
-#include <stdio.h>
-#include <lib/http.h>
-
-int main() {
-  // Assume in is a valid buffer for an HTTP response
-  buffer in;
-  stralloc out;
-  http_response response;
-
-  buffer_init(&in, ...);
-  stralloc_init(&out);
-  http_response_init(&response);
-
-  ssize_t ret = http_read_header(&in, &out, &response);
-
-  if (ret < 0) {
-    perror("http_read_header");
-    return 1;
-  }
-
-  // Use the data in out and response
-
-  return 0;
-}
-.!
-.SH "SEE ALSO"
-http_connect(3)
+is HTTP_RECV_HEADER. It takes the status code from the status line, selects
+.I transfer
+from Content-Length (and sets
+.IR content_length ),
+Transfer-Encoding: chunked or a multipart Content-Type (and sets the
+.IR boundary ),
+and at the empty line sets
+.I headers_len
+and the status HTTP_RECV_DATA.
+.P
+This belongs to the first reader of the module, written for
+.BR buffer (3)
+operations; it expects
+.I h->stream
+to be cleared. New code should use
+.BR http_recv (3).
+.SH RETURN VALUE
+The result of the last line read: greater than 0 while lines are parsed, 0 or less when the buffer holds no complete line, which is not an error for a non-blocking socket.
+.SH SEE ALSO
+http_canread(3), http_read_internal(3)

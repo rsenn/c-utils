@@ -1,43 +1,14 @@
 .TH SSE_INIT 3
 .SH NAME
-sse_init, sse_free, sse_feed \- parse a server-sent events stream
+sse_init \- prepare an SSE parser
 .SH SYNOPSIS
 .B #include <sse.h>
 .P
 .BI "void sse_init(sse* " s ");"
-.br
-.BI "void sse_free(sse* " s ");"
-.br
-.BI "size_t sse_feed(sse* " s ", const char* " x ", size_t " n ", sse_callback* " cb ", void* " user ");"
 .SH DESCRIPTION
-A server-sent events stream (media type text/event-stream) is what the APIs
-of language models answer with when asked to stream. It is made of lines
-such as
-.B data: {...}
-and an empty line ends each event.
-.P
 .BR sse_init ()
-prepares the parser
-.IR s ,
-.BR sse_free ()
-releases what it holds.
-.BR sse_feed ()
-parses the
-.I n
-bytes at
-.I x
-and calls
-.I cb
-with every event they complete. The bytes may be cut anywhere, also in the
-middle of a line or between the CR and the LF of a line end, and the next
-call goes on from there. Lines may end in LF, CR LF or CR. Comment lines
-and fields other than data, event, id and retry are ignored.
-.P
-The event given to the callback is valid until the callback returns.
-It has the event type (message if there is none), the data with its lines
-joined by newlines, the last id and the retry time in milliseconds or -1.
-.SH RETURN VALUE
-.BR sse_feed ()
-returns the number of events it dispatched.
+clears the parser
+.I s
+for a new stream.
 .SH SEE ALSO
-http_post(3)
+sse(3), sse_feed(3), sse_free(3)

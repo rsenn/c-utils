@@ -62,6 +62,7 @@ http_open(http* h, http_req_t type, const char* location) {
 
     a = (ipv4addr*)dns.s;
     byte_copy(&h->addr, sizeof(ipv4addr), &a->iaddr);
+    stralloc_free(&dns);
 
 #ifdef DEBUG_HTTP
     buffer_putspad(buffer_2, "http_get resolved ", 30);
@@ -78,6 +79,10 @@ http_open(http* h, http_req_t type, const char* location) {
 
     req->serial = serial;
     req->type = type;
+
+    /* a URL without a path asks for the root */
+    if(location[0] == '\0' || location[0] == '?')
+      stralloc_catb(&req->location, "/", 1);
 
     stralloc_catb(&req->location, location, MIN(len, str_len(location)));
     stralloc_nul(&req->location);

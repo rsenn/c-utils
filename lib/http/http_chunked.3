@@ -1,15 +1,25 @@
 .TH HTTP_CHUNKED 3
 .SH NAME
-http_chunked \- send the body as chunks
+http_chunked \- send the body of a request as chunks
 .SH SYNOPSIS
 .B #include <http.h>
 .P
 .BI "int http_chunked(http* " h ");"
 .SH DESCRIPTION
-
 .BR http_chunked ()
-declares that the body of the request is sent with the chunked transfer encoding, so that it can be produced while it is sent. It has to be called before the request is sent and before http_body(3).
+declares that the body is sent with the chunked transfer encoding ("Transfer-Encoding: chunked"
+and HTTP/1.1). The size of the body does not have to be known, so it can be produced
+while the request is being sent, as the prompt of a language model or the data of a
+pipe.
+.P
+It has to be called before the request headers are sent and before
+.BR http_body (3),
+or implicitly by the first
+.BR http_chunk (3).
+Servers that do not understand chunked requests need
+.BR http_body (3)
+instead.
 .SH RETURN VALUE
-1 on success, 0 if the request is out already or has a body of known length.
+1 on success, 0 if there is no request, the headers are out already or it has a body of known length.
 .SH SEE ALSO
 http_chunk(3), http_chunk_end(3)
