@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/textbuf.h"
+#include "../lib/byte.h"
 #include "../lib/buffer.h"
 
 /*

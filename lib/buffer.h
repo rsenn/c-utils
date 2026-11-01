@@ -7,6 +7,7 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 
+#include "tai.h"
 #include "typedefs.h"
 
 #ifdef __cplusplus
@@ -278,6 +279,13 @@ ssize_t buffer_freshen(buffer* b);
  */
 ssize_t buffer_prefetch(buffer*, size_t n);
 
+/* the do-nothing read operation: always 0, end of input */
+ssize_t buffer_dummyread(fd_type, void*, size_t, buffer*);
+/* calls op until all n bytes at x are written, repeating interrupted calls; 0 or -1 */
+int buffer_stubborn(buffer_op_proto* op, fd_type fd, const char* x, size_t n, void* b);
+/* one read through op, repeated when interrupted */
+ssize_t buffer_stubborn_read(buffer_op_proto* op, fd_type fd, const void* buf, size_t len, void* ptr);
+
 int buffer_appendfile(buffer* b, const char* fn);
 int buffer_readfile(buffer* b, const char* fn);
 int buffer_truncfile(buffer* b, const char* fn);
@@ -319,9 +327,7 @@ int buffer_putxlonglong0(buffer*, uint64 l, int pad);
 int buffer_putulonglongpad(buffer*, uint64, int pad);
 #endif
 
-#ifdef TAI_H
 int buffer_puttai(buffer*, const struct tai*);
-#endif
 int buffer_copy(buffer* out, buffer* in);
 void buffer_putstr(buffer* b, const char* x);
 void buffer_realloc(buffer* b, size_t ylen);

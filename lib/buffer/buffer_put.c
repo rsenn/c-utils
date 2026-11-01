@@ -2,7 +2,6 @@
 #include "../byte.h"
 #include <string.h>
 
-int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*);
 
 #ifdef __dietlibc__
 #undef __unlikely

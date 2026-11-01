@@ -1,6 +1,5 @@
 #include "../buffer.h"
 
-int buffer_stubborn(buffer_op_proto*, fd_type, const char*, size_t, void*);
 
 int
 buffer_putc(buffer* b, char c) {

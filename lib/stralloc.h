@@ -320,9 +320,8 @@ void stralloc_upper(register stralloc*);
 
 void stralloc_catq(stralloc*, const char*, size_t len, const char q[]);
 
-#ifdef BUFFER_H
-void stralloc_dump(const stralloc* sa, buffer* b);
-#endif
+struct buffer;
+void stralloc_dump(const stralloc* sa, struct buffer* b);
 
 void stralloc_alloc(stralloc*);
 

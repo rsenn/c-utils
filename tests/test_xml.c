@@ -544,7 +544,63 @@ TEST(test_xml_reader_callback_scanner) {
   stralloc_free(&sa);
 }
 
+/*
+ * xml_find_attr, xml_find_with_attrs(_l), xml_find_all_attrs, xml_find_parent_attr,
+ * xml_find_parent_pred_2/3, xml_tag_pred, xml_match_name_and_attr, xml_pfind_pred/all/parent
+ */
+TEST(test_xml_attr_finders) {
+  xmlnode *doc = sample_tree(), *n;
+  xmlnodeset set;
+  strlist names;
+  const void* ptr[4];
+
+  n = xml_find_attr(doc, "id");
+  ASSERT_EQ(1, n != NULL);
+  ASSERT_STR_EQUAL("a", n->name);
+  ASSERT_EQ(NULL, xml_find_attr(doc, "nope"));
+
+  n = xml_find_with_attrs(doc, "zz|id");
+  ASSERT_EQ(1, n != NULL);
+  ASSERT_STR_EQUAL("1", xml_get_attribute(n, "id"));
+
+  set = xml_find_all_attrs(doc, "id");
+  ASSERT_EQ(2, xmlnodeset_size(&set));
+  alloc_free(set.nodes);
+
+  /* from the second a: a parent with an id? none; a parent called b: yes */
+  set = xml_find_all_attrs(doc, "id");
+  n = set.nodes[1];
+  ASSERT_EQ(NULL, xml_find_parent_attr(n, "id"));
+  ASSERT_STR_EQUAL("b", xml_find_parent_pred_2(n, (xml_pred_t*)(void*)&xml_tag_pred, "b", NULL)->name);
+  ASSERT_STR_EQUAL("r", xml_find_parent_pred_3(n, (xml_pred_t*)(void*)&xml_tag_pred, "r", NULL, NULL)->name);
+  alloc_free(set.nodes);
+
+  strlist_init(&names, '\0');
+  strlist_push(&names, "a");
+  n = xml_find_pred_1(doc, (xml_pred_t*)(void*)&xml_match_name, "a");
+  ASSERT_EQ(1, xml_match_name_and_attr(n, &names, "id", "1"));
+  ASSERT_EQ(0, xml_match_name_and_attr(n, &names, "id", "2"));
+  ASSERT_EQ(0, xml_match_name_and_attr(n, &names, "other", "1"));
+  strlist_free(&names);
+
+  ptr[0] = "b";
+  ptr[1] = ptr[2] = ptr[3] = NULL;
+  n = xml_pfind_pred(doc, (xml_pred_t*)(void*)&xml_match_name, ptr);
+  ASSERT_STR_EQUAL("b", n->name);
+  ptr[0] = "a";
+  ptr[1] = ptr[2] = ptr[3] = NULL;
+  set = xml_pfind_all(doc, (xml_pred_t*)(void*)&xml_match_name, ptr);
+  ASSERT_EQ(2, xmlnodeset_size(&set));
+  n = set.nodes[1];
+  alloc_free(set.nodes);
+  ptr[0] = "r";
+  ptr[1] = ptr[2] = ptr[3] = NULL;
+  ASSERT_STR_EQUAL("r", xml_pfind_parent(n, (xml_pred_t*)(void*)&xml_match_name, ptr)->name);
+  xml_free(doc);
+}
+
 #define RUN_XML_TESTS() \
+  RUN(test_xml_attr_finders); \
   RUN(test_xml_find_pred_all); \
   RUN(test_xml_tree_edit); \
   RUN(test_xml_print_nodeset_attributes); \
