@@ -43,7 +43,7 @@
   descriptor that had fired; byte_camelize read one byte beyond a trailing
   dash; buffer_put_quoted dropped control characters into bare octal digits
   (now backslash and three digits). Declarations and tests for the last
-  placeholders: 876 unit tests, none of them empty except where a function
+  placeholders: 878 unit tests, none of them empty except where a function
   needs a feature this build lacks.
 - fixed: range_strinbuf, range_str2inbuf and range_str4inbuf measured the
   string against the start of the string instead of the end of the buffer, so
@@ -84,6 +84,7 @@
   and the USB-Stack HID mouse example (tests/genmakefile/import-mplabx.sh).
 - genmakefile: --pair-headers follows #if, #ifdef, #ifndef, #elif, #else and #define with the -D options, so the sources of an #include that is switched off are not added (a name of the system or compiler, like __XC8, counts as unknown and the branch is taken).
 - scripts/genmakefile-mplabx-all.sh writes one makefile for each configuration of a MPLAB X project (USB-uC: eleven) and a driver makefile that builds all of them (make), one (make NAME) or cleans them.
+- fixed: lib/wordexp.h and lib/unix/wordexp.c replaced the system's wordexp on Linux with a copy that has another wordexp_t (the same mistake as with glob.h); the system header is used where there is one. buffer_unixread, buffer_unixwrite and buffer_dummyreadmmap are declared. Tests for the unix services (fnmatch, ftruncate, readlink, glob, wordexp, popen) and the io registration functions.
 - API: 15 files got the name of the one function they hold (bmap_get_.c, buffer_unixread.c, dns_domain_fromdot.c, ...); 73 files still break one function per file. Then 15 more files with static helpers or global declarations (dns_ip4, dns_mx, xml_find_pred, ...) were split, one function to a file: 58 are left. tests/check-onefunc.py no longer counts the embedded UNITTEST blocks of libowfat as functions, and scan_urlencoded was split: 48 files are left, mostly Windows shims, files that wrap a function in a platform conditional, and pairs that share state.
 - doc/api-status.md: what is checked, how, and the lists of what is left (functions without a test, files that break one function per file).
 - genmakefile: --infer-sources adds the file that defines a function that a source calls and does not define (looked for in the .c files next to the sources and in the -I directories, with the -D options applied to the conditionals, programs with a main() left out); tests/genmakefile/infer-sources.sh.

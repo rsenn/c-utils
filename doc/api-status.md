@@ -4,12 +4,12 @@ What is checked, how, and what is left. Regenerate with `tests/make-api-status.p
 
 | check | command | result |
 |---|---|---|
-| unit tests | `build/.../tests/all_tests` (run in `tests/`) | 876 tests pass; `valgrind -q --error-exitcode=9` clean |
+| unit tests | `build/.../tests/all_tests` (run in `tests/`) | 878 tests pass; `valgrind -q --error-exitcode=9` clean |
 | every header compiles alone | `tests/check-headers.sh` | 0 failures |
 | libowfat source compatibility | `tests/libowfat-compat/` (see `doc/libowfat-compat.md`) | 517 prototypes, 0 missing |
 | one function per file | `tests/check-onefunc.py` | 48 files deviate from one function per file |
 | genmakefile | `tests/genmakefile/{pair-headers,import-mplabx,project-file,infer-sources}.sh GENMAKEFILE` | all pass |
-| functions not named by a test | this script | 123 |
+| functions not named by a test | this script | 104 |
 
 ## Functions not named by a test
 
@@ -17,7 +17,7 @@ Most are run by tests of bigger functions or hidden behind macros (`omf_record_f
 the rest are internal helpers, debug-only code (`DEBUG_CHARBUF`, the `cbmap` debug allocators) and code that
 exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 
-* `buffer`: buffer_default buffer_dummyread_fromstr buffer_dummyreadbuf buffer_dummyreadmmap buffer_unixread buffer_unixwrite
+* `buffer`: buffer_default
 * `cb`: cb_find_top_i cb_free_node
 * `cbmap`: cbmap_data_node_destroy cbmap_default_allocator cbmap_default_deallocator cbmap_internal_node_destroy cbmap_internal_node_new cbmap_mem_allocated cbmap_mem_debug_calloc cbmap_mem_debug_free cbmap_mem_debug_mem cbmap_mem_debug_strdup cbmap_mem_debug_strndup cbmap_mem_mem_dup cbmap_mem_memalign cbmap_mem_posix_memalign cbmap_nop_allocator cbmap_nop_deallocator cbmap_recursive_delete cbmap_visit
 * `charbuf`: charbuf_dump charbuf_stubborn_read
@@ -26,7 +26,7 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * `fmt`: fmt_2digits fmt_hex2 fmt_oct3 fmt_strm_internal
 * `gpio`: gpio_set_input_pull gpio_set_input_resistor_pull
 * `http`: chunked_line http_body_flush http_open http_read http_read_header http_read_internal http_response_free http_response_read http_sendreq http_socket http_socket_read http_socket_write
-* `io`: io_dontwantread_really io_dontwantwrite_really io_fd io_fd_canwrite io_fd_flags io_finishandshutdown io_getfds io_wantread_really io_wantwrite_really
+* `io`: io_dontwantread_really io_dontwantwrite_really io_finishandshutdown io_wantread_really io_wantwrite_really
 * `omf`: omf_record_begin omf_record_end omf_record_next
 * `path`: hasAccessRight
 * `playlist`: playlist_entry_clear playlist_state_new
@@ -38,7 +38,7 @@ exists only for Windows (`win32_*`, `winsock*`, `terminal_wattr`, `_tpopen`).
 * `textbuf`: textbuf_read
 * `textcode`: unittest_main
 * `tls`: tls_bio_socket tls_context tls_errno tls_instance_handshake tls_instance_new tls_instance_return tls_verify
-* `unix`: _dummy_add_pid _pclose _tLoadProg _tpopen daemon fnmatch ftruncate getdelim getpagesize glob globfree is_junction is_symlink pclose popen readlink wordexp wordfree
+* `unix`: _dummy_add_pid _pclose _tLoadProg _tpopen daemon getdelim is_junction is_symlink
 * `xml`: xml_find_with_attrs_l xml_pargs_free xml_pargs_make
 
 ## Files that break the one function per file rule

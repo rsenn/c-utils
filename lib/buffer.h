@@ -285,6 +285,11 @@ ssize_t buffer_prefetch(buffer*, size_t n);
 ssize_t buffer_dummyread(fd_type, void*, size_t, buffer*);
 /* the read operation of buffer_frombuf: the data is in the buffer already, 0 */
 ssize_t buffer_dummyreadbuf(fd_type, void*, size_t, buffer*);
+/* the read operation of the mmap readers: the file is mapped, 0 */
+ssize_t buffer_dummyreadmmap(fd_type, void*, size_t, buffer*);
+/* read(2) and write(2) on a descriptor, with the signature of the operations of buffer_init */
+int buffer_unixread(fd_type fd, char* x, size_t n);
+int buffer_unixwrite(int fd, const char* x, unsigned int n);
 /* the same for buffer_fromstr */
 ssize_t buffer_dummyread_fromstr();
 /* calls op until all n bytes at x are written, repeating interrupted calls; 0 or -1 */
