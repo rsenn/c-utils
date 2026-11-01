@@ -24,7 +24,9 @@ omf_record_begin(omf_record* rec) {
     /* OMF_LNAMES */ case 0x96:
     /* OMF_EXTDEF */ case 0x8C : { break; }
     default: {
-      p = NULL;
+      /* a record kind that cannot be walked: nothing to iterate (it used to return
+       * NULL, which omf_record_foreach then treated as a valid element) */
+      p = omf_record_end(rec);
       break;
     }
   }

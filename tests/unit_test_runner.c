@@ -53,6 +53,8 @@ TESTS(utf8);
 TESTS(dlist);
 TESTS(cbmap);
 TESTS(set);
+TESTS(coff);
+TESTS(omf);
 TESTS(bmap);
 TESTS(debug);
 TESTS(playlist);
@@ -120,6 +122,8 @@ START() {
   EXEC(dlist);
   EXEC(cbmap);
   EXEC(set);
+  EXEC(coff);
+  EXEC(omf);
   EXEC(bmap);
   EXEC(debug);
   EXEC(playlist);
