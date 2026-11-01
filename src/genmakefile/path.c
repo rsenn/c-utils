@@ -210,7 +210,11 @@ path_mmap_read(const char* path, size_t* n, char psm) {
 
   stralloc_init(&sa);
 
-  if(dirs.this.sa.s) {
+  if(path_isabs(path, str_len(path))) {
+    /* an absolute path is not relative to the directory of the project */
+    stralloc_copys(&sa, path);
+    stralloc_nul(&sa);
+  } else if(dirs.this.sa.s) {
     path_prefix_s(&dirs.this.sa, path, &sa, psm);
     stralloc_replacec(&sa, psm, PATHSEP_C);
   }

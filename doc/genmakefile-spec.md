@@ -1546,3 +1546,22 @@ author's five repositories then build from `genmakefile` alone.
    `glcdtest-*.mk` case in pictest's `CLAUDE.md`) a standing requirement? It needs
    the `runner`/`system=mingw` combination of 9.6 to produce a `.cof` with full
    debug symbols.
+
+## Implementation status
+
+What of this specification is in the program (see also `TODO`,
+`genmakefile-implement-spec`):
+
+* compiler types `xc8` and `sdcc`, `--chip`, `--xtal`, `--baud`, the build id in
+  the output directories;
+* `--pair-headers`: a quoted `#include "x.h"` adds `x.c` (section 9, step 1 of
+  the source inference, by header name only);
+* `--import-mplabx FILE`: chip, `-D`, `-I` and sources of the first
+  configuration of a MPLAB X project (section 9.12, one configuration);
+* checked against lc-meter + libpicp, USB-uC and the USB-Stack HID mouse
+  example; the scripts are `tests/genmakefile/pair-headers.sh` and
+  `tests/genmakefile/import-mplabx.sh`.
+
+Not yet: the project file, the MPLAB 8 `.mcp` importer, all configurations of a
+MPLAB X project as a build matrix, source inference by symbols.
+
