@@ -1,11 +1,14 @@
 # genmakefile: specification of the complete tool
 
-Status: **target specification**, written 2026-11-01. It describes the program
+Status: **work in progress -- only section 1 (the reassessment) is written;
+sections 2 to 15 below are the planned outline and still to be written**
+(tracked in `TODO` as genmakefile-full-spec). Target specification, started
+2026-11-01. It describes the program
 that the plans in `.ai-context/` point at, not the program that exists today.
 Statements about the current program are marked *(today)*; everything else is
 new. Section 1 reassesses the four planning documents item by item and says
-what happened to each; sections 2 to 14 are the specification; section 15 is the
-path from the current code to it.
+what happened to each; sections 2 to 14 will be the specification; section 15
+the path from the current code to it.
 
 Source documents, all in `.ai-context/`:
 
