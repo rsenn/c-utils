@@ -20,6 +20,7 @@
 #include "../../lib/mmap.h"
 #include "../../lib/open.h"
 #include "../../lib/pe.h"
+#include "../../lib/errmsg.h"
 #include "../../lib/uint32.h"
 #include "../../lib/str.h"
 #include "../../lib/fmt.h"
@@ -42,8 +43,19 @@ main(int argc, char* argv[]) {
 
     base = (char*)mmap_read(filename, &dllsz);
 
-    if(base == NULL)
+    if(base == NULL) {
+      errmsg_warnsys(filename, ": ", 0);
       return 1;
+    }
+
+    {
+      const char* emsg = pe_check(base, dllsz);
+
+      if(emsg) {
+        errmsg_warn(filename, ": ", emsg, 0);
+        return 1;
+      }
+    }
 
     dll_name = pe_dllname((uint8*)base);
 

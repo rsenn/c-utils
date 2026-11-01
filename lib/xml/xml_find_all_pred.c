@@ -6,6 +6,9 @@
 
 static int
 xml_find_all_predicate(xmlnode* node, array* a, xml_pred_t* pred, const void* vptr[]) {
+  if(node == NULL)
+    return 1;
+
   do {
 
     if(pred(node, vptr[0], vptr[1], vptr[2])) {

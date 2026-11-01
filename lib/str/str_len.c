@@ -1,14 +1,8 @@
-#undef __dietlibc__
 #include "../str.h"
+#include <string.h>
 
+/* str_len returns the number of bytes before the terminating NUL */
 size_t
 str_len(const char* in) {
-  register const char* t = in;
-
-  for(;;) {
-    if(!*t)
-      break;
-    ++t;
-  }
-  return t - in;
+  return strlen(in);
 }

@@ -26,6 +26,22 @@ main(int argc, char** argv) {
 
   content = mmap_private(argv[1], &length);
 
+  if(content == NULL) {
+    buffer_putm_internal(buffer_2, argv[1], ": cannot read the file", NULL);
+    buffer_putnlflush(buffer_2);
+    return 1;
+  }
+
+  {
+    const char* emsg = elf_check(content, length);
+
+    if(emsg) {
+      buffer_putm_internal(buffer_2, argv[1], ": ", emsg, NULL);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+  }
+
   {
     elf64_ehdr* header;
     size_t section_offset;

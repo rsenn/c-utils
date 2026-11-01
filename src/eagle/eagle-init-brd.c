@@ -459,12 +459,27 @@ main(int argc, char* argv[]) {
   }
   {
     buffer input;
-    buffer_mmapprivate(&input, filename);
+    if(buffer_mmapprivate(&input, filename) != 0) {
+      buffer_putm_internal(buffer_2, filename, ": cannot read the file", NULL);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
 
-    xmldoc = xml_read_tree(&input);
+    if((xmldoc = xml_read_tree(&input)) == NULL) {
+      buffer_putm_internal(buffer_2, filename, ": no XML in the file", NULL);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
 
     /* Get the root element node */
     root_element = xmldoc->children;
+
+    if(root_element == NULL) {
+      buffer_putm_internal(buffer_2, filename, ": the XML is empty", NULL);
+      buffer_putnlflush(buffer_2);
+      return 1;
+    }
+
     print_element_names(root_element);
 
     hmap_each(parts_db, (void (*)(void*)) & each_part);

@@ -423,7 +423,15 @@ main(int argc, char** argv) {
     base = (uint8*)mmap_read(argv[unix_optind], &filesize);
 
     if(base) {
-      pe32_nt_headers* nt_headers = pe_header_nt(base);
+      const char* emsg = pe_check(base, filesize);
+      pe32_nt_headers* nt_headers;
+
+      if(emsg) {
+        errmsg_warn(argv[unix_optind], ": ", emsg, 0);
+        return 1;
+      }
+
+      nt_headers = pe_header_nt(base);
 
       if(nt_headers->signature != PE_NT_SIGNATURE) {
         buffer_putsflush(buffer_2, "not PE\n");

@@ -385,6 +385,11 @@ main(int argc, char** argv) {
   for(; argv[unix_optind]; ++unix_optind) {
     base = (uint8*)mmap_read(argv[unix_optind], &filesize);
 
+    if(base && filesize < sizeof(coff_file_header)) {
+      errmsg_warn(argv[unix_optind], ": truncated COFF file", 0);
+      return 1;
+    }
+
     if(base) {
       coff_file_header* header = coff_header_file(base);
       put_value(buffer_2, "COFF_FILE_HEADER\nmachine", uint16_get(&header->machine));

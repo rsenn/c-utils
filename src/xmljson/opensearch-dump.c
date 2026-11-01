@@ -133,7 +133,12 @@ parse_xml(const char* filename) {
   /*parse the file and get the DOM */
 
   buffer input;
-  buffer_mmapprivate(&input, filename);
+  if(buffer_mmapprivate(&input, filename) != 0) {
+    buffer_puts(buffer_2, "error: could not read file ");
+    buffer_puts(buffer_2, filename);
+    buffer_putnlflush(buffer_2);
+    return -1;
+  }
 
   doc = xml_read_tree(&input);
 

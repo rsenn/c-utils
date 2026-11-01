@@ -584,3 +584,43 @@
   answers, a man in the middle included. The certificate chain and the name
   against `h->host` need to be checked for a client.
 
+- `linked_list.h` and `tree.h` have no code: every function of `lib/linked_list.h`
+  is declared and defined nowhere, `lib/map.h` includes it and uses none of it;
+  `lib/tree.h` is a shell syntax tree that nothing in this tree includes. Both
+  look like leftovers of the sibling project shish.
+
+- `bmap` has no user: `lib/bmap` (a macro generated map) is not used by any
+  program or module, has no tests and trips `bugprone-sizeof-expression` in
+  `bmap_set`. It duplicates `hashmap`, `hmap`, `set` and `cbmap`.
+
+- `eagle-to-svg` default input is a path on the author's machine:
+  `src/eagle/eagle-to-svg.c` opens
+  `/home/roman/Dokumente/Sources/pictest/eagle/PIC18F2550-USB+ICSP-Board.brd`
+  when no argument is given. `eagle-init-brd` and the other `eagle` tools are
+  scratch quality (no usage text, no tests).
+
+- `cofflist`, `omflist`, `macho32list` have no format validator: `elf_check` and
+  `pe_check` stand in front of the ELF and PE tools, the other three formats
+  are read with offsets taken from the file. `macho32list` bounds only the load
+  commands.
+
+- `http.key` stays in the git history: the RSA key and the expired certificate
+  (subject starlottery, 2019) were removed from the tree and are still in older
+  commits. They protected nothing, but a history rewrite or a note is due.
+
+- `cbmap` refuses keys that differ only by zero bytes at the end: `cbmap_insert`
+  of `"a\0"` after `"a"` returns 0 (documented in `lib/cbmap.h`), as the tree
+  cannot tell them apart. A length marker in the key bytes would lift it.
+
+- `slist_pushs`, `slist_pushb` are linear per call: they walk to the end of the
+  list and cannot return the tail like `slist_push` does, so building a list
+  of n strings costs O(n^2). `strlist_at`, `strlist_count`, `strlist_contains`
+  and `strlist_push_unique` are linear per call by design; a loop over them is
+  quadratic (16 000 items: 28 ms, 64 000 items: 473 ms for `strlist_count`).
+
+- `cpp` has 148 `-Wswitch` warnings and no unit tests: `lib/cpp/*.c` switch over
+  the token and node kinds without handling all of them, and the module is only
+  exercised through `cpre` and `genmakefile`. The analyzer reports possible null
+  dereferences in `cpp_hideset_intersection`, `cpp_hideset_union` and
+  `cpp_token_append` when an allocation fails.
+

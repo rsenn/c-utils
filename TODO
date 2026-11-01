@@ -352,3 +352,48 @@ them with -v when porting a foreign project. Details in
   sockets only, against a local server. A run against a real TLS server
   with a body larger than the socket buffer is still to be done.
 
+- one-ordered-map:
+  The tree has hashmap, hmap, set, cbmap, cb and bmap, and map.h picks one of
+  two at compile time with a define at the top of each file. Four of them do
+  the same job. A set whose buckets carry a value is an ordered map; set
+  already has the growth, the insertion order and the safe failure handling.
+
+  Replace hmap, hashmap and bmap by one type built on the set code, keep the
+  MAP macros as a thin layer, and retire the define. Check the users first:
+  json, xml, ini, genmakefile and a dozen tools go through map.h.
+
+- bounded-binary-views:
+  The format modules take a base pointer and no size. elf_check and pe_check
+  validate a whole image up front, which is a stopgap. A view type with a
+  pointer and a length, checked on every access, would make the accessors
+  safe by themselves and remove the need to remember the check.
+
+  Do ELF and PE first, then COFF, OMF and Mach-O, and make binfmt_open the one
+  entry point that sniffs the format and returns the right view.
+
+- tests-for-the-rest:
+  Sixteen modules have no test file: bmap, charbuf, coff, cpp, debug, dns,
+  gpio, omf, playlist, process, sig, terminal, textbuf, tls and ucs. Others
+  have far less than their size warrants: textcode, strarray, iob.
+
+  Start with the ones that parse untrusted input or carry the program logic:
+  cpp, dns packets, charbuf, playlist, textcode. A fuzz target for each
+  parser would find most crashes cheaply.
+
+- continuous-integration:
+  There is no CI configuration. A job that builds with the strict warnings
+  for the files that are clean, runs the unit tests under valgrind or ASan and
+  runs the n and 4n timing check used in the review would stop the classes
+  of defect found in the review from coming back.
+
+- man-pages-against-headers:
+  Several man pages described functions that do not exist. The http, sse,
+  ndjson and set pages follow the code now. A script that compares the
+  synopsis of every page with the declaration in the header would find the
+  rest.
+
+- genmakefile-full-spec:
+  doc/genmakefile-spec.md describes the whole tool the plans in .ai-context
+  point at: every directory layout, every make and project format, the
+  features. It is a target, not a description of the current program.
+

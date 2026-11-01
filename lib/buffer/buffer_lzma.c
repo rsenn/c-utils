@@ -170,14 +170,31 @@ buffer_lzma_close(buffer* b) {
   strm->next_in = (uint8*)buffer_PEEK(b);
   strm->avail_in = buffer_LEN(b);
 
-  do {
+  /* every round hands the encoder the free room of the output buffer and moves
+   * the position on by what it wrote; a full buffer is flushed first. An error
+   * or a round without progress ends it, the loop did not end at all then. */
+  for(;;) {
+    size_t space = buffer_SPACE(other);
+
+    if(space == 0) {
+      if(buffer_flush(other) < 0 || (space = buffer_SPACE(other)) == 0)
+        break;
+    }
+
     strm->next_out = (uint8*)buffer_PEEK(other);
-    strm->avail_out = a = buffer_SPACE(other);
+    strm->avail_out = space;
 
     ret = lzma_code(strm, ctx->a);
-  } while(ret != LZMA_STREAM_END);
 
-  other->p += a - strm->avail_out;
+    other->p += space - strm->avail_out;
+    a = space;
+
+    if(ret == LZMA_STREAM_END || (ret != LZMA_OK && ret != LZMA_BUF_ERROR))
+      break;
+
+    if(strm->avail_out == space)
+      break;
+  }
 
   buffer_flush(other);
 

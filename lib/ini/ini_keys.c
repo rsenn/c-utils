@@ -7,6 +7,10 @@ ini_keys(ini_section_t* ini) {
   strarray ret;
   strarray_init(&ret);
 
+  if(ini == NULL || ini->map.buckets == NULL)
+    return ret;
+
+
   for(el = ini->map.buckets; el < &ini->map.buckets[ini->map.capacity]; ++el)
     if(el->key && el->key != HASHMAP_TOMBSTONE)
       strarray_push(&ret, MAP_KEY(el));

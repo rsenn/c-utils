@@ -987,8 +987,8 @@ program(eagle-to-svg xml stralloc buffer strlist array byte cb cbmap fmt
         hashmap hmap mmap scan str)
 program(elf64list buffer elf mmap uint16 uint32 uint64)
 program(elflist strlist buffer alloc errmsg unix elf mmap str)
-program(elfwrsec buffer alloc elf mmap)
-program(pemkwingui buffer alloc pe mmap)
+program(elfwrsec buffer alloc elf mmap errmsg str)
+program(pemkwingui buffer alloc pe mmap errmsg str)
 program(genmakefile cpp ini debug set env sig set case errmsg strarray dlist slist rdir dir
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
         fmt byte str array safemult alloc json charbuf io)
@@ -998,7 +998,7 @@ program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
 
-program(impgen pe buffer byte mmap open)
+program(impgen pe buffer byte mmap open errmsg str)
 set(list_r_SOURCES src/dirlist/dump.c src/dirlist/dump.h)
 program(list-r errmsg path strarray strlist stralloc buffer array unix dir
         array fmt open str uint64 ${LIBADVAPI32})

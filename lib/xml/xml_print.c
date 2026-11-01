@@ -101,8 +101,12 @@ xml_print_list(xmlnode* list, buffer* b, int depth, xml_print_fmt_t* fmt) {
 
 void
 xml_print(xmlnode* node, buffer* b, xml_print_fmt_t* fmt) {
-  if(node->type == XML_DOCUMENT)
+  /* nothing to print: no document, or one without content */
+  if(node && node->type == XML_DOCUMENT)
     node = node->children;
+
+  if(node == NULL)
+    return;
 
   if(!(node->name && node->name[0] == '?'))
     buffer_puts(b, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
