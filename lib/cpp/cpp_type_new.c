@@ -14,21 +14,3 @@ cpp_type_new(cpp_type_kind kind, int size, int align) {
 
   return ty;
 }
-
-cpp_type*
-cpp_type_copy(cpp_type* ty) {
-  cpp_type* ret;
-
-  if((ret = alloc_zero(sizeof(cpp_type)))) {
-    *ret = *ty;
-
-    ret->origin = ty;
-  }
-
-  return ret;
-}
-
-void
-cpp_type_free(cpp_type* ty) {
-  alloc_free(ty);
-}

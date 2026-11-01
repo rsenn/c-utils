@@ -74,6 +74,7 @@
 - API: declared bmap_getref, buffer_putfmt_va, buffer_dummyread, buffer_stubborn, buffer_stubborn_read, xml_vattributes, xml_vset_attributes and xml_vfind_pred_n (they existed, undeclared; a call returned a truncated pointer).
 - fixed: cpp_read_file left the descriptor open.
 - fixed: buffer_rewind emptied a buffer made by buffer_frombuf or an mmap reader, so a tokenizer_rewind lost its input.
+- API: 39 files that held several public functions were split, one function to a file (88 are left, see tests/check-onefunc.py); buffer_dummyreadbuf, buffer_dummyread_fromstr and strarray_sort_compare are declared.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

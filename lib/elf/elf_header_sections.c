@@ -1,10 +1,5 @@
 #include "../elf.h"
 
-uint8*
-elf_header_ident(void* elf) {
-  return elf;
-}
-
 void*
 elf_header_sections(void* elf) {
   uint8* base = elf;
