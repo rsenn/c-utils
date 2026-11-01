@@ -373,8 +373,12 @@ them with -v when porting a foreign project. Details in
   inference, MPLAB X and MPLAB 8 importers, the build matrix and the
   toolchain descriptors for XC8, XC16, XC32, SDCC, MCC18 and gputils.
 
-  Only the specification exists. Implement it in the order of the roadmap
-  section: project file first, then the importers, then source inference.
+  Already there: the xc8 and sdcc compiler types, --chip, --xtal, --baud,
+  the build id in the directories and --pair-headers (a header pulls in the
+  source of the same name). Still to do, in the order of the roadmap section:
+  project file first, then the MPLAB importers, then source inference that
+  follows the symbols instead of the header names (pair-headers adds the
+  source of every header it finds, also of an #ifdef that is off).
 
 - unit-test-gaps:
   Of the public library functions, about 130 are still not named by any

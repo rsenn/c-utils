@@ -45,6 +45,7 @@ const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
 int verbose = 0, dump_level = 0;
 int cmd_objs = 0, cmd_libs = 0, cmd_bins = 0, cmd_module = 0, cmd_libs_explicit = 0;
+static int pair_headers = 0;
 commands_t commands;
 strlist vpath = {0}, build_as_lib = {0}, link_dirs = {0};
 set_t link_libraries = {0, 0, 0, byte_hash}, build_directories = {0, 0, 0, byte_hash};
@@ -454,6 +455,7 @@ usage(char* argv0) {
                        "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
                        "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
                        "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
+                       "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
                        "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
                        "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
                        "      --code-offset ADDRESS address the program is loaded to\n"
@@ -986,6 +988,8 @@ consume_positional_args(int argc, char** argv, strarray* args) {
  * @return     0 on success, nonzero (ret=127, main() should `goto fail`)
  *             if a given path doesn't exist
  */
+static void pair_header_sources(strarray* sources);
+
 static int
 discover_sources(strarray* args, strarray* sources) {
   char** arg;
@@ -1015,6 +1019,9 @@ discover_sources(strarray* args, strarray* sources) {
       if(is_source_b(x, n))
         strarray_pushb(sources, x, n);
     }
+
+    if(pair_headers)
+      pair_header_sources(sources);
 
     strarray_sort(sources, &sources_sort_callback);
   }
@@ -1065,6 +1072,127 @@ finalize_build_metadata(void) {
     stralloc_nul(&abspath);
     project_name = str_dup(path_basename_s(abspath.s));
     stralloc_free(&abspath);
+  }
+}
+
+/**
+ * @brief      Find the file for an #include: next to the including source
+ *             first, then in the -I directories.
+ *
+ * @return     1 and the path in `out`, or 0
+ */
+static int
+find_included(const char* from, const char* name, stralloc* out) {
+  stralloc dir;
+  char* d;
+
+  stralloc_init(&dir);
+  stralloc_copys(&dir, from);
+  stralloc_nul(&dir);
+  d = path_dirname_sa(&dir);
+  stralloc_zero(out);
+  stralloc_cats(out, d && *d ? d : ".");
+  stralloc_catc(out, '/');
+  stralloc_cats(out, name);
+  stralloc_nul(out);
+  stralloc_free(&dir);
+  if(path_exists(out->s))
+    return 1;
+  {
+    const char* inc;
+
+    strlist_foreach_s(&include_dirs, inc) {
+      stralloc_copys(out, inc);
+      stralloc_catc(out, '/');
+      stralloc_cats(out, name);
+      stralloc_nul(out);
+      if(path_exists(out->s))
+        return 1;
+    }
+  }
+  return 0;
+}
+
+/**
+ * @brief      With --pair-headers: for every quoted #include "x.h" that is
+ *             found, the file x.c next to it is a source of the program too
+ *             (the convention of the PIC libraries: adc.h, adc.c). Repeats
+ *             for the sources that were added.
+ */
+static void
+pair_header_sources(strarray* sources) {
+  size_t i;
+
+  for(i = 0; i < strarray_size(sources); ++i) {
+    stralloc text, path, cand;
+    size_t pos = 0;
+
+    stralloc_init(&text);
+    if(openreadclose(strarray_at(sources, i), &text, 4096) <= 0) {
+      stralloc_free(&text);
+      continue;
+    }
+    stralloc_init(&path);
+    stralloc_init(&cand);
+    while(pos < text.len) {
+      size_t eol = byte_chr(text.s + pos, text.len - pos, '\n');
+      const char* line = text.s + pos;
+      size_t n = eol, k = 0;
+
+      pos += eol + 1;
+      while(k < n && (line[k] == ' ' || line[k] == '\t'))
+        ++k;
+      if(k < n && line[k] == '#') {
+        ++k;
+        while(k < n && (line[k] == ' ' || line[k] == '\t'))
+          ++k;
+        if(n - k > 7 && !byte_diff(line + k, 7, "include")) {
+          size_t q;
+
+          k += 7;
+          while(k < n && (line[k] == ' ' || line[k] == '\t'))
+            ++k;
+          if(k < n && line[k] == '"') {
+            q = byte_chr(line + k + 1, n - k - 1, '"');
+            if(k + 1 + q < n) {
+              stralloc name;
+
+              stralloc_init(&name);
+              stralloc_copyb(&name, line + k + 1, q);
+              stralloc_nul(&name);
+              if(name.len > 3 && str_end(name.s, ".h") && find_included(strarray_at(sources, i), name.s, &path)) {
+                stralloc_copyb(&cand, path.s, str_len(path.s) - 1);
+                stralloc_catc(&cand, 'c');
+                stralloc_nul(&cand);
+                while(cand.len > 2 && cand.s[0] == '.' && cand.s[1] == '/') {
+                  byte_copy(cand.s, cand.len - 2, cand.s + 2);
+                  cand.len -= 2;
+                  stralloc_nul(&cand);
+                }
+                if(path_exists(cand.s)) {
+                  size_t j;
+                  int have = 0;
+
+                  /* the same file under another spelling counts as the same */
+                  for(j = 0; j < strarray_size(sources); ++j)
+                    if(str_equal(strarray_at(sources, j), cand.s))
+                      have = 1;
+                  if(!have) {
+                    LOG(1, "paired with its header: ", cand.s);
+                    sources_add(cand.s);
+                    strarray_push(sources, cand.s);
+                  }
+                }
+              }
+              stralloc_free(&name);
+            }
+          }
+        }
+      }
+    }
+    stralloc_free(&text);
+    stralloc_free(&path);
+    stralloc_free(&cand);
   }
 }
 
@@ -1728,6 +1856,8 @@ main(int argc, char* argv[]) {
       {"no-create-module", 0, &cmd_module, 0},
       {"name", 0, 0, 'n'},
       {"install", 0, 0, 'i'},
+      {"pair-headers", 0, &pair_headers, 1},
+      {"no-pair-headers", 0, &pair_headers, 0},
       {"include-path", 0, 0, 'I'},
       {"library-path", 0, 0, 'L'},
       {"objdir", 1, 0, 'R'},

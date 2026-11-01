@@ -93,10 +93,11 @@
 - API: declared bmap_getref, buffer_putfmt_va, buffer_dummyread, buffer_stubborn, buffer_stubborn_read, xml_vattributes, xml_vset_attributes and xml_vfind_pred_n (they existed, undeclared; a call returned a truncated pointer).
 - fixed: cpp_read_file left the descriptor open.
 - fixed: buffer_rewind emptied a buffer made by buffer_frombuf or an mmap reader, so a tokenizer_rewind lost its input.
-- fixed: lib/wordexp.h and lib/unix/wordexp.c replaced the system's wordexp on Linux with a copy that has another wordexp_t (the same mistake as with glob.h); the system header is used where there is one. buffer_unixread, buffer_unixwrite and buffer_dummyreadmmap are declared. Tests for the unix services (fnmatch, ftruncate, readlink, glob, wordexp, popen) and the io registration functions.
-- API: 15 files got the name of the one function they hold (bmap_get_.c, buffer_unixread.c, dns_domain_fromdot.c, ...); 73 files still break one function per file. Then 15 more files with static helpers or global declarations (dns_ip4, dns_mx, xml_find_pred, ...) were split, one function to a file: 58 are left. tests/check-onefunc.py no longer counts the embedded UNITTEST blocks of libowfat as functions, and scan_urlencoded was split: 48 files are left, mostly Windows shims, files that wrap a function in a platform conditional, and pairs that share state.
-- doc/api-status.md: what is checked, how, and the lists of what is left (functions without a test, files that break one function per file).
-- API: 39 files that held several public functions were split, one function to a file (88 are left, see tests/check-onefunc.py); buffer_dummyreadbuf, buffer_dummyread_fromstr and strarray_sort_compare are declared.
+- genmakefile: --pair-headers adds the file x.c for every quoted #include "x.h"
+  that is found (the convention of the PIC libraries), so a PIC program is
+  built from its main file alone; checked on lc-meter with libpicp
+  (tests/genmakefile/pair-headers.sh). Removed a leftover raise(SIGTRAP)
+  debugging aid from the source scanner.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
