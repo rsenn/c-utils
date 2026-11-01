@@ -34,19 +34,13 @@ http_get_header(char* data, size_t n, const char* name, size_t* result_len) {
 
     p = byte_chr(x, len, '\n');
     x += p;
-    len += p;
+    len -= p;
 
     if(len > 0) {
       x++;
       len--;
     }
   }
-
-  return 0;
-}
-
-const char*
-http_get_header_n(stralloc* data, const char* name, size_t* lenp) {
 
   return 0;
 }

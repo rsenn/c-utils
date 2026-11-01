@@ -2,6 +2,14 @@
 #include "../lib/http.h"
 #include "../lib/buffer.h"
 #include "../lib/byte.h"
+#include "../lib/str.h"
+#include "../lib/fmt.h"
+#include "../lib/socket.h"
+#include "../lib/io.h"
+#include "../lib/ndelay.h"
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/socket.h>
 
 /* the bytes the encoder writes end up here */
 static char sink[256];
@@ -228,6 +236,150 @@ TEST(test_http_recv_until_close) {
   ASSERT_EQ(HTTP_STATUS_FINISH, h.response->status);
 }
 
+/*
+ * const char* http_method(http_req_t); size_t http_skip_header(const char*, size_t);
+ * char* http_get_header(char* data, size_t n, const char* name, size_t* result_len);
+ */
+TEST(test_http_helpers) {
+  static char head[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nX-Other:   spaced value \r\ncontent-length: 5\r\n\r\nhello";
+  size_t n = 0, hl;
+  char* v;
+
+  ASSERT_STR_EQUAL("GET", http_method(GET));
+  ASSERT_STR_EQUAL("POST", http_method(POST));
+  ASSERT_STR_EQUAL("PUT", http_method(PUT));
+  ASSERT_STR_EQUAL("DELETE", http_method(DELETE));
+  ASSERT_STR_EQUAL("PATCH", http_method(PATCH));
+  ASSERT_STR_EQUAL("HEAD", http_method(HEAD));
+
+  hl = http_skip_header(head, sizeof(head) - 1);
+  ASSERT_EQ(sizeof(head) - 1 - 5, hl); /* the body is "hello" */
+  ASSERT_EQ(5, http_skip_header("a\r\n\r\nhello", 3) + 2); /* no end of header: all of it */
+
+  v = http_get_header(head, hl, "Content-Type", &n);
+  ASSERT_EQ(1, v != NULL);
+  ASSERT_EQ(10, n);
+  ASSERT_EQ(0, byte_diff(v, 10, "text/plain"));
+  v = http_get_header(head, hl, "x-other", &n); /* case does not matter, blanks are skipped */
+  ASSERT_EQ(1, v != NULL);
+  ASSERT_EQ(0, byte_diff(v, 12, "spaced value"));
+  v = http_get_header(head, hl, "Content-Length", &n);
+  ASSERT_EQ(1, v != NULL);
+  ASSERT_EQ(1, n);
+  ASSERT_EQ('5', v[0]);
+  ASSERT_EQ(NULL, http_get_header(head, hl, "Missing", &n));
+  ASSERT_EQ(NULL, http_get_header(head, hl, "Content", &n)); /* a prefix is not the name */
+}
+
+/*
+ * http_init, http_get, http_canwrite, http_canread, http_close, http_free,
+ * http_response_free and friends, against a server on the loopback interface
+ */
+static unsigned short
+serve_once(const char* reply, size_t replylen, int* pid_out) {
+  int s = socket_tcp4();
+  char ip[4] = {127, 0, 0, 1};
+  uint16 port = 0;
+  int pid;
+
+  if(s < 0 || socket_bind4_reuse(s, ip, 0) < 0 || socket_listen(s, 1) < 0)
+    return 0;
+  socket_local4(s, ip, &port);
+  pid = fork();
+  if(pid == 0) {
+    char peer[4];
+    uint16 pp;
+    char req[2048];
+    size_t got = 0;
+    int c;
+
+    ndelay_off(s); /* socket_tcp4 makes non-blocking sockets */
+    c = socket_accept4(s, peer, &pp);
+    if(c >= 0)
+      ndelay_off(c);
+
+    while(c >= 0 && got < sizeof(req)) {
+      ssize_t r = read(c, req + got, sizeof(req) - got);
+      if(r <= 0)
+        break;
+      got += (size_t)r;
+      if(got >= 4 && byte_diff(req + got - 4, 4, "\r\n\r\n") == 0)
+        break;
+    }
+    if(c >= 0) {
+      char junk[256];
+
+      write(c, reply, replylen);
+      shutdown(c, SHUT_WR);
+      /* wait for the client to close, an early close would reset the connection */
+      while(read(c, junk, sizeof(junk)) > 0)
+        ;
+      close(c);
+    }
+    _exit(0);
+  }
+  close(s);
+  *pid_out = pid;
+  return port;
+}
+
+TEST(test_http_get_loopback) {
+  static const char reply[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\nConnection: close\r\n\r\nhello";
+  http h;
+  char url[64];
+  int pid = 0, i, st;
+  unsigned short port = serve_once(reply, sizeof(reply) - 1, &pid);
+  size_t n = 0;
+  char* v;
+
+  ASSERT_EQ(1, port != 0);
+  url[0] = '\0';
+  str_copy(url, "http://127.0.0.1:");
+  url[str_len(url) + fmt_ulong(url + str_len(url), port)] = '\0';
+  str_copy(url + str_len(url), "/x");
+
+  http_init(&h, 0, 0);
+  h.stream = 1; /* the body is left for http_recv */
+  ASSERT_EQ(1, http_get(&h, url) != 0);
+  io_onlywantwrite(h.sock);
+
+  for(i = 0; i < 200; ++i) {
+    fd_type fd;
+
+    io_wait();
+    while((fd = io_canwrite()) != -1)
+      if(fd == h.sock)
+        http_canwrite(&h, &io_onlywantread, &io_onlywantwrite);
+    while((fd = io_canread()) != -1)
+      if(fd == h.sock)
+        http_canread(&h, &io_onlywantread, &io_onlywantwrite);
+    if(h.response && (h.response->status == HTTP_STATUS_FINISH || h.response->status == HTTP_STATUS_CLOSED ||
+                      h.response->status == HTTP_STATUS_ERROR))
+      break;
+  }
+
+  ASSERT_EQ(1, h.response != NULL);
+  ASSERT_EQ(200, h.response->code);
+  v = http_get_header(h.response->data.s, h.response->headers_len, "Content-Type", &n);
+  ASSERT_EQ(1, v != NULL);
+  ASSERT_EQ(0, byte_diff(v, 10, "text/plain"));
+  {
+    char body[16];
+    size_t got = 0;
+    ssize_t r;
+
+    while((r = http_recv(&h, body + got, sizeof(body) - got)) > 0)
+      got += (size_t)r;
+    ASSERT_EQ(5, got);
+    ASSERT_EQ(0, byte_diff(body, 5, "hello"));
+    ASSERT_EQ(HTTP_STATUS_FINISH, h.response->status);
+  }
+
+  http_close(&h);
+  http_free(&h);
+  waitpid(pid, &st, 0);
+}
+
 #define RUN_HTTP_TESTS() \
   RUN(test_buffer_chunked); \
   RUN(test_buffer_chunked_truncated); \
@@ -237,6 +389,8 @@ TEST(test_http_recv_until_close) {
   RUN(test_http_recv_chunked); \
   RUN(test_http_recv_length); \
   RUN(test_http_recv_truncated); \
-  RUN(test_http_recv_until_close)
+  RUN(test_http_recv_until_close); \
+  RUN(test_http_helpers); \
+  RUN(test_http_get_loopback)
 
 TESTS(http) { RUN_HTTP_TESTS(); }
