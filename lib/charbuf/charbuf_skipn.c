@@ -7,7 +7,9 @@ ssize_t
 charbuf_skipn(charbuf* b, size_t n) {
   size_t pos;
   ssize_t ret;
+#ifdef DEBUG_CHARBUF
   uint8* skipped = malloc(n);
+#endif
 #ifdef DEBUG_CHARBUF
   int debug = charbuf_debug;
   charbuf_debug = 0;
@@ -18,7 +20,9 @@ charbuf_skipn(charbuf* b, size_t n) {
 
     if((ret = charbuf_peekc(b, &ch)) > 0) {
       /*charbuf_dumpchar(ch, buffer_2, 2);*/
+#ifdef DEBUG_CHARBUF
       skipped[pos] = ch;
+#endif
 
       ret = charbuf_skip(b);
 
@@ -43,6 +47,8 @@ charbuf_skipn(charbuf* b, size_t n) {
   }
   charbuf_debug = debug;
 #endif
+#ifdef DEBUG_CHARBUF
   free(skipped);
+#endif
   return pos;
 }
