@@ -456,6 +456,7 @@ usage(char* argv0) {
                        "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
                        "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
                        "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
+                       "      --mplabx-conf NAME    with --import-mplabx: the configuration NAME instead of the first\n"
                        "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
                        "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
                        "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
@@ -1850,7 +1851,8 @@ import_mplabx(int* argcp, char** argv) {
   strarray out;
   char** nv;
   size_t k, pos = 0;
-  int have_chip = 0, is_mcp = 0, in_files = 0;
+  int have_chip = 0, is_mcp = 0, in_files = 0, in_conf = 0, want_at = -1;
+  const char* want = NULL;
 
   for(i = 1; i < *argcp; ++i)
     if(str_equal(argv[i], "--import-mplabx") && i + 1 < *argcp) {
@@ -1859,6 +1861,11 @@ import_mplabx(int* argcp, char** argv) {
     }
   if(at < 0)
     return argv;
+  for(i = 1; i + 1 < *argcp; ++i)
+    if(str_equal(argv[i], "--mplabx-conf")) {
+      want = argv[i + 1];
+      want_at = i;
+    }
 
   stralloc_init(&text);
   if(openreadclose(argv[at + 1], &text, 8192) <= 0) {
@@ -1897,7 +1904,7 @@ import_mplabx(int* argcp, char** argv) {
   strarray_init(&out);
   strarray_push(&out, argv[0]);
   for(i = 1; i < *argcp; ++i) {
-    if(i == at) {
+    if(i == at || i == want_at) {
       ++i;
       continue;
     }
@@ -1960,7 +1967,13 @@ import_mplabx(int* argcp, char** argv) {
           }
         }
       }
-    } else if(!have_chip && str_start(l, "<targetDevice>")) {
+    } else if(str_start(l, "<conf name=\"")) {
+      /* the first configuration, or the one that --mplabx-conf names */
+      const char* v = l + 12;
+      size_t n = str_chr(v, '"');
+
+      in_conf = !have_chip && (!want || (str_len(want) == n && !str_diffn(v, want, n)));
+    } else if(in_conf && !have_chip && str_start(l, "<targetDevice>")) {
       const char* v = l + 14;
       size_t n = str_find(v, "</");
       stralloc chip;
@@ -1980,7 +1993,7 @@ import_mplabx(int* argcp, char** argv) {
       strarray_push(&out, chip.s);
       stralloc_free(&chip);
       have_chip = 1;
-    } else if(str_start(l, "<itemPath>")) {
+    } else if(!in_conf && str_start(l, "<itemPath>")) {
       const char* v = l + 10;
       size_t n = str_find(v, "</");
 
@@ -1997,7 +2010,7 @@ import_mplabx(int* argcp, char** argv) {
         strarray_push(&out, path.s);
         stralloc_free(&path);
       }
-    } else if(str_start(l, "<property key=\"define-macros\" value=\"")) {
+    } else if(in_conf && str_start(l, "<property key=\"define-macros\" value=\"")) {
       const char* v = l + 37;
       size_t n = str_chr(v, '"');
 
@@ -2024,7 +2037,7 @@ import_mplabx(int* argcp, char** argv) {
         }
         stralloc_free(&d);
       }
-    } else if(str_start(l, "<property key=\"extra-include-directories\" value=\"")) {
+    } else if(in_conf && str_start(l, "<property key=\"extra-include-directories\" value=\"")) {
       const char* v = l + 49;
       size_t n = str_chr(v, '"');
 
@@ -2042,7 +2055,7 @@ import_mplabx(int* argcp, char** argv) {
         strarray_push(&out, inc.s);
         stralloc_free(&inc);
       }
-    } else if(have_chip && str_start(l, "</conf>")) {
+    } else if(in_conf && have_chip && str_start(l, "</conf>")) {
       stralloc_free(&line);
       break; /* only the first configuration */
     }
