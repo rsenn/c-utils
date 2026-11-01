@@ -9,6 +9,8 @@ buffer_dummyread_fromstr() {
 void
 buffer_fromstr(buffer* b, char* s, size_t n) {
   b->x = s;
+  b->cookie = 0;
+  b->deinit = 0;
   b->p = 0;
   b->n = n;
   b->a = b->n + 1;

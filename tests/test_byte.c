@@ -1,5 +1,6 @@
 #include "unit_test.h"
 #include "../lib/byte.h"
+#include "../lib/stralloc.h"
 
 /*
  * size_t byte_chr(const void* haystack, size_t len, char needle);
@@ -267,7 +268,71 @@ TEST(test_byte_diff2) {
   ASSERT_NE(0, byte_diff2("abc", 3, "abcd", 4));
 }
 
+
+/*
+ * size_t byte_skip / byte_rskip / byte_rskipn; byte_skipn is byte_chr
+ */
+TEST(test_byte_skip) {
+  ASSERT_EQ(3, byte_skip("   x  ", 6, ' '));
+  ASSERT_EQ(0, byte_skip("x  ", 3, ' '));
+  ASSERT_EQ(0, byte_skip("", 0, ' '));
+  ASSERT_EQ(2, byte_rskip("x  ", 3, ' '));
+  ASSERT_EQ(0, byte_rskip("x ", 1, ' '));
+  ASSERT_EQ(3, byte_rskipn("  abc", 5, ' '));
+  ASSERT_EQ(5, byte_rskipn("abcde", 5, ' '));
+  ASSERT_EQ(0, byte_rskipn("abc ", 4, ' '));
+  ASSERT_EQ(2, byte_skipn("ab c", 4, ' '));
+}
+
+/*
+ * size_t byte_case_start(const void* x1, size_t len, const void* x2);
+ * 1 if the NUL terminated x2 is a prefix of x1, ignoring case
+ */
+TEST(test_byte_case_start) {
+  ASSERT_EQ(1, byte_case_start("Content-Type: x", 15, "content-type"));
+  ASSERT_EQ(1, byte_case_start("ABC", 3, "abc"));
+  ASSERT_EQ(0, byte_case_start("ab", 2, "abc")); /* prefix longer than input */
+  ASSERT_EQ(0, byte_case_start("abd", 3, "abc"));
+  ASSERT_EQ(1, byte_case_start("abc", 3, ""));
+}
+
+/*
+ * uint32 byte_hash(const void*, size_t);  (djb2: 5381, h*33 + c)
+ */
+TEST(test_byte_hash) {
+  ASSERT_EQ(5381, byte_hash("", 0));
+  ASSERT_EQ(5381 * 33 + 'a', byte_hash("a", 1));
+  ASSERT_EQ((5381 * 33 + 'a') * 33 + 'b', byte_hash("ab", 2));
+  ASSERT_EQ(byte_hash("abc", 3), byte_hash("abcdef", 3));
+}
+
+/*
+ * size_t byte_fmt(const char* in, size_t n, stralloc* out, fmt_fn)
+ */
+static size_t
+fmt_upper_pair(char* dest, unsigned int ch) {
+  if(dest) {
+    dest[0] = (char)ch;
+    dest[1] = (char)ch;
+  }
+  return 2;
+}
+
+TEST(test_byte_fmt) {
+  stralloc sa;
+
+  stralloc_init(&sa);
+  ASSERT_EQ(6, byte_fmt("abc", 3, &sa, fmt_upper_pair));
+  ASSERT_EQ(0, byte_diff(sa.s, 6, "aabbcc"));
+  ASSERT_EQ(0, byte_fmt("", 0, &sa, fmt_upper_pair));
+  stralloc_free(&sa);
+}
+
 #define RUN_BYTE_TESTS() \
+  RUN(test_byte_skip); \
+  RUN(test_byte_case_start); \
+  RUN(test_byte_hash); \
+  RUN(test_byte_fmt); \
   RUN(test_byte_chr); \
   RUN(test_byte_chrs); \
   RUN(test_byte_chrns); \
