@@ -13,6 +13,16 @@
 #include "../lib/buffer.h"
 #include "../lib/uint16.h"
 #include "../lib/uint32.h"
+#include "../lib/cdb.h"
+#include "../lib/cdb_make.h"
+#include "../lib/iob.h"
+#include "../lib/set.h"
+#include "../lib/set_internal.h"
+#include "../lib/strarray.h"
+#include "../lib/ini.h"
+#include "../lib/ucs.h"
+#include "../lib/ucs_internal.h"
+#include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -261,6 +271,182 @@ TEST(test_mmap_fd_variants) {
   unlink(fn);
 }
 
+/*
+ * cdb_hashadd, cdb_hash, cdb_make_addbegin, cdb_make_addend, cdb_read, cdb_datapos
+ */
+TEST(test_cdb_lowlevel) {
+  const char* fn = "/tmp/c-utils-lowlevel.cdb";
+  struct cdb_make cm;
+  struct cdb c;
+  int64 fd = open_trunc(fn);
+  char got[8];
+  uint32 h;
+
+  /* the hash is h = ((h << 5) + h) ^ c, starting at 5381 */
+  ASSERT_EQ(177604u, cdb_hashadd(5381, 'a'));
+  h = 5381;
+  h = cdb_hashadd(h, 'a');
+  h = cdb_hashadd(h, 'b');
+  ASSERT_EQ(h, cdb_hash((const unsigned char*)"ab", 2));
+
+  cdb_make_start(&cm, fd);
+  /* one entry written in pieces */
+  ASSERT_EQ(0, cdb_make_addbegin(&cm, 3, 5));
+  buffer_putalign(&cm.b, "key", 3);
+  buffer_putalign(&cm.b, "hello", 5);
+  ASSERT_EQ(0, cdb_make_addend(&cm, 3, 5, cdb_hash((const unsigned char*)"key", 3)));
+  ASSERT_EQ(0, cdb_make_finish(&cm));
+  close((int)fd);
+
+  byte_zero(&c, sizeof c);
+  fd = open_read(fn);
+  cdb_init(&c, fd);
+  ASSERT_EQ(1, cdb_find(&c, (const unsigned char*)"key", 3));
+  ASSERT_EQ(5, cdb_datalen(&c));
+  ASSERT_EQ(0, cdb_read(&c, (unsigned char*)got, 5, cdb_datapos(&c)));
+  ASSERT_EQ(0, byte_diff(got, 5, "hello"));
+  ASSERT_EQ(-1, cdb_read(&c, (unsigned char*)got, 8, 1u << 30)); /* beyond the file */
+  cdb_free(&c);
+  close((int)fd);
+  unlink(fn);
+}
+
+/*
+ * iob_addbuf_munmap, iob_addfile, iob_addfile_close, iob_send, iob_prefetch
+ */
+TEST(test_iob_files_send) {
+  const char* fn = "/tmp/c-utils-iob.tmp";
+  int fd = open(fn, O_WRONLY | O_CREAT | O_TRUNC, 0600), in1, in2;
+  io_batch* b = iob_new(4);
+  int64 sv[2];
+  char got[64];
+  size_t n = 0;
+  char* page;
+
+  write(fd, "0123456789", 10);
+  close(fd);
+  in1 = open(fn, O_RDONLY);
+  in2 = open(fn, O_RDONLY);
+
+  page = mmap_anon(4096);
+  ASSERT_EQ(1, page != NULL);
+  byte_copy(page, 3, "map");
+
+  ASSERT_EQ(1, iob_adds(b, "<") != 0);
+  ASSERT_EQ(1, iob_addfile(b, in1, 2, 4) != 0);       /* "2345" */
+  ASSERT_EQ(1, iob_addfile_close(b, in2, 8, 2) != 0); /* "89", then in2 is closed */
+  ASSERT_EQ(1, iob_addbuf_munmap(b, page, 3) != 0);   /* "map", then unmapped */
+  ASSERT_EQ(1 + 4 + 2 + 3, iob_bytesleft(b));
+  iob_prefetch(b, 1 << 20); /* only a hint */
+
+  ASSERT_NE(0, io_socketpair(sv));
+  while(iob_bytesleft(b) > 0) {
+    int64 r = iob_send(sv[0], b);
+
+    if(r <= 0)
+      break;
+    n += (size_t)r;
+  }
+  ASSERT_EQ(10, n);
+  ASSERT_EQ(10, read(sv[1], got, sizeof got));
+  ASSERT_EQ(0, byte_diff(got, 10, "<234589map"));
+
+  iob_free(b);
+  close(in1);
+  io_close(sv[0]);
+  io_close(sv[1]);
+  unlink(fn);
+}
+
+/*
+ * set_lookup, set_put, set_rehash, set_tostrarray
+ */
+TEST(test_set_internals) {
+  set_t s = SET();
+  strarray sa;
+  bucket_t* bk;
+  uint32 hash;
+
+  ASSERT_EQ(SET_ADDED, set_put(&s, "b", 1, 0));
+  ASSERT_EQ(SET_ADDED, set_put(&s, "c", 1, 0));
+  ASSERT_EQ(SET_ADDED, set_put(&s, "a", 1, 1)); /* at the front */
+  ASSERT_EQ(SET_EXISTS, set_put(&s, "b", 1, 0));
+  ASSERT_EQ(3, set_size(&s));
+
+  hash = set_hash(&s, "c", 1);
+  bk = set_lookup(&s, "c", 1, hash);
+  ASSERT_EQ(1, bk != NULL);
+  ASSERT_EQ(1, bk->size);
+  ASSERT_EQ(NULL, set_lookup(&s, "zz", 2, set_hash(&s, "zz", 2)));
+
+  ASSERT_EQ(1, set_rehash(&s, 64));
+  ASSERT_EQ(1, set_lookup(&s, "a", 1, set_hash(&s, "a", 1)) != NULL);
+  ASSERT_EQ(3, set_size(&s));
+
+  strarray_init(&sa);
+  set_tostrarray(&s, &sa);
+  ASSERT_EQ(3, strarray_size(&sa));
+  ASSERT_STR_EQUAL("a", strarray_at(&sa, 0)); /* the order of the set */
+  ASSERT_STR_EQUAL("b", strarray_at(&sa, 1));
+  ASSERT_STR_EQUAL("c", strarray_at(&sa, 2));
+  strarray_free(&sa);
+  set_free(&s);
+}
+
+/*
+ * ini_newb, ini_set_sa, ini_keys
+ */
+TEST(test_ini_newb_keys) {
+  ini_section_t* ini = NULL;
+  ini_section_t* sec = ini_newb(&ini, "secname-extra", 7);
+  stralloc k, v;
+  strarray keys;
+
+  ASSERT_EQ(1, sec != NULL);
+  ASSERT_EQ(0, byte_diff(sec->name.s, 7, "secname"));
+  ASSERT_EQ(7, sec->name.len);
+
+  stralloc_init(&k);
+  stralloc_init(&v);
+  stralloc_copys(&k, "alpha");
+  stralloc_copys(&v, "1");
+  ini_set_sa(sec, &k, &v);
+  ini_set(sec, "beta", "2");
+  ASSERT_STR_EQUAL("1", ini_get(sec, "alpha"));
+  ASSERT_STR_EQUAL("2", ini_get(sec, "beta"));
+
+  keys = ini_keys(sec);
+  ASSERT_EQ(2, strarray_size(&keys));
+  strarray_free(&keys);
+  keys = ini_keys(NULL);
+  ASSERT_EQ(0, strarray_size(&keys));
+  stralloc_free(&k);
+  stralloc_free(&v);
+}
+
+/*
+ * ucs_from_latin1_char, ucs_to_latin1_char, stralloc_utf8_latin1, ucs_punycode_adapt
+ */
+TEST(test_ucs_latin1_punycode) {
+  stralloc sa;
+
+  ASSERT_EQ(0xe9, ucs_from_latin1_char(0xe9));
+  ASSERT_EQ(0xe9, (unsigned char)ucs_to_latin1_char(0xe9));
+  ASSERT_EQ(0, ucs_to_latin1_char(0x20ac)); /* the euro sign is not Latin-1 */
+
+  stralloc_init(&sa);
+  stralloc_copyb(&sa, "caf\xc3\xa9", 5); /* "café" in UTF-8 */
+  ASSERT_EQ(4, stralloc_utf8_latin1(&sa));
+  ASSERT_EQ(4, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 4, "caf\xe9"));
+  stralloc_free(&sa);
+
+  /* RFC 3492: the bias after the first delta of 'bücher' (delta 0x60e1... use the sample of the RFC section 6.3 shape) */
+  ASSERT_EQ(0, ucs_punycode_adapt(0, 1, 1));
+  ASSERT_EQ(ucs_punycode_adapt(1000, 5, 1), ucs_punycode_adapt(1000, 5, 1));
+  ASSERT_EQ(1, ucs_punycode_adapt(100000, 10, 0) > ucs_punycode_adapt(100, 10, 0)); /* bigger jump, bigger bias */
+}
+
 #define RUN_GAPS_TESTS() \
   RUN(test_textcode_sa_array); \
   RUN(test_textcode_ldapescape2_scan_html); \
@@ -268,6 +454,11 @@ TEST(test_mmap_fd_variants) {
   RUN(test_wait_reap_nohang); \
   RUN(test_charbuf_skip_skipc); \
   RUN(test_hashmap_entry_delete2_rehash); \
-  RUN(test_mmap_fd_variants)
+  RUN(test_mmap_fd_variants); \
+  RUN(test_cdb_lowlevel); \
+  RUN(test_iob_files_send); \
+  RUN(test_set_internals); \
+  RUN(test_ini_newb_keys); \
+  RUN(test_ucs_latin1_punycode)
 
 TESTS(gaps) { RUN_GAPS_TESTS(); }
