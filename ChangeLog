@@ -70,6 +70,7 @@
 - removed: tls_bio_method and tls_method, declared but disabled and never defined.
 - fixed: cpp_skip_line ran off the end of the tokens on an extra token after a directive (the loop condition was inverted).
 - tests: the cpp token, hideset, type and file helpers.
+- removed: lib/function.h, which did not compile and was used by nothing. tests/check-headers.sh checks that every header compiles on its own.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

@@ -119,6 +119,17 @@ own dropped stores.** Unit tests for everything ported are in
 | `struct cdb` | must be zero-initialised before `cdb_init` | libowfat contract: `cdb_init` calls `cdb_free` on it |
 | libowfat sources `io/*.c`, `iom` | do not compile against `lib/io_internal.h` | they are implementation, not API; `io.h` is compatible, the internal tables are c-utils' own |
 
+## Headers and include order
+
+Every header in `lib/` compiles on its own (`tests/check-headers.sh` checks
+all of them). As in libowfat, a few functions that need the type of another
+module are declared only when that header was included first, with
+`#ifdef STRALLOC_H`, `#ifdef BUFFER_H` and the like (the stralloc and buffer
+headers refer to each other, so neither can include the other). Include
+`stralloc.h`, `array.h`, `strlist.h` before `buffer.h`, `json.h`, `xml.h` or
+`textcode.h` when you use the functions that take them. The unit tests do so,
+and an implicit declaration warning is the sign of a wrong order.
+
 ## libowfat bugs found on the way
 
 These are bugs in libowfat 0.32 or its Debian build, noted for upstream and
