@@ -1,5 +1,60 @@
+c-utils -- where this code comes from
+=====================================
 
+  Dan Bernstein (djb), 1995-2000.  While writing qmail, djbdns, daemontools
+  and cdb, djb did not use the C library for strings, I/O or memory.  He
+  wrote his own small helper functions instead: byte_*, str_*, fmt_*, scan_*,
+  buffer, stralloc, open_*, case_*, uint32_pack and so on.  Their API is the
+  thing to learn from: a function does one job, takes the operand being
+  worked on as argument 1, returns an index or a length instead of a pointer
+  (strcpy and strcat return pointers that nobody needs), and reports
+  failure in a way that cannot be ignored by accident.  The functions were
+  never released as a library; they are copied between his packages.
 
+  Felix von Leitner (fefe), 2001-today.  In his talk "Writing Small And Fast
+  Software" (January 2001, in doc/small-and-fast.md) he argued that
+  indirection induces bloat and kills performance, that APIs should be
+  specific first and extended by adding functions, and that the way to small
+  programs is a libc that is only a static library of tiny objects.  He wrote
+  dietlibc for the second part and libowfat for the first: "a GPL
+  reimplementation of Dan Bernstein's internal helper functions", so called
+  because you link it with -lowfat.  He extended it where needed (IPv6
+  sockets, uint32_read, the io/iob event loop, critbit trees, protocol
+  buffers, JSON and ASN.1 helpers).  Many of the original djb functions have
+  since been put in the public domain; the libowfat versions and extensions
+  are GPL version 2 only.
+
+  c-utils, this repository.  It started from a libowfat tree and grew along
+  three lines: more modules in the same style (hmap, set, cb/cbmap, json,
+  xml, http, sse, cpp, elf/pe/coff/omf/ihex readers, ...), ports to places
+  libowfat does not go (Windows native and Borland/MSVC/MinGW toolchains,
+  Android, dietlibc/musl static builds, Mach-O), and a set of command line
+  tools built on them.  The conventions are unchanged:
+
+      - one function per file, one static library per lib/<name>.h, so a
+        program links only the functions it calls
+      - no stdio.h, stdlib.h or string.h in program code; use buffer, errmsg,
+        str, byte, stralloc, alloc and env
+      - fmt_* with a NULL destination only measures; scan_* returns the
+        number of bytes consumed
+      - to extend an API, add a function; never make an old one more powerful
+
+  Compatibility.  A program written for libowfat 0.32 should compile and
+  behave the same against lib/*.h.  The audit, the list of intentional
+  differences and the test harness are in doc/libowfat-compat.md and
+  tests/libowfat-compat/.  Where c-utils and libowfat disagree, c-utils adds
+  a new function (scan_u64 beside scan_ulonglong) and keeps the libowfat
+  signature.  The libowfat-derived parts (cdb, critbit, the fmt/scan
+  protocol functions) are GPL version 2 only; see doc/libowfat-compat.md
+  about the license of the repository as a whole.
+
+  Further reading, in the order to read them:
+
+      doc/small-and-fast.md      the design rules, where each one is in the
+                                 tree, where the tree breaks it
+      doc/libowfat-compat.md     what "compatible" means and how it is tested
+      doc/review.md              module by module assessment
+      doc/http.md, doc/genmakefile.md, doc/genmakefile-spec.md
 
 
   Contignuous containers:
