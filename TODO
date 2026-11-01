@@ -379,8 +379,7 @@ them with -v when porting a foreign project. Details in
   MPLAB X project or the one --mplabx-conf names, and the files and device of
   a MPLAB 8 .mcp). Still to do, in the order of the roadmap section:
   project file first, then the MPLAB importers, then source inference that
-  follows the symbols instead of the header names (pair-headers adds the
-  source of every header it finds, also of an #ifdef that is off).
+  follows the symbols instead of the header names (pair-headers follows the conditionals but still goes by the header name).
 
 - unit-test-gaps:
   Of the public library functions, about 130 are still not named by any
