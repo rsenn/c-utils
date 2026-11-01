@@ -30,6 +30,7 @@ iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout) {
         /* we got one, and its index is in f */
         *s = c->q[f].fd;
         *revents = c->q[f].events;
+        return 1;
       }
       /* collided with another thread, try again */
     }

@@ -1,5 +1,6 @@
 #include "../io_internal.h"
 #include "../iom.h"
+#include <errno.h>
 #ifdef HAVE_EPOLL
 #include <sys/epoll.h>
 #endif
@@ -17,7 +18,12 @@ iom_add(iomux_t* c, int64 s, unsigned int events) {
     e.events |= EPOLLIN;
   if(events & IOM_WRITE)
     e.events |= EPOLLOUT;
-  return epoll_ctl(c->ctx, EPOLL_CTL_ADD, s, &e);
+  /* a one-shot descriptor stays registered after it fired: re-arm it */
+  if(epoll_ctl(c->ctx, EPOLL_CTL_ADD, s, &e) == 0)
+    return 0;
+  if(errno != EEXIST)
+    return -1;
+  return epoll_ctl(c->ctx, EPOLL_CTL_MOD, s, &e);
 #elif defined(HAVE_KQUEUE)
   struct kevent kev;
   struct timespec ts = {0};

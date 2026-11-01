@@ -1,13 +1,11 @@
 #if HAVE_LIBBZ2
 #include <bzlib.h>
-#define BZ_NO_STDIO 1
 #endif
 
 #include "../buffer.h"
 #include <stdlib.h>
 
 #if HAVE_LIBBZ2
-#ifndef BZ_NO_STDIO
 static void
 buffer_bzip_close(buffer* b) {
   BZFILE* f;
@@ -32,6 +30,7 @@ buffer_bunzip(buffer* b, const char* filename) {
     return -1;
   b->fd = -1;
   b->cookie = f;
+  b->op = &buffer_bunzip_read;
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
@@ -96,5 +95,4 @@ buffer_bzip_fd(buffer* b, fd_type fd, int level) {
   b->deinit = &buffer_bzip_close;
   return 0;
 }
-#endif
 #endif

@@ -2,6 +2,7 @@
 #include "../lib/str.h"
 
 #include <ctype.h>
+#include <stdlib.h>
 
 /*
  * size_t str_copy(char* out, const char* in);
@@ -57,7 +58,17 @@ TEST(test_str_chr) {
  * Not tested: declared in str.h but has no implementation anywhere in the
  * tree (would fail to link). See BUGS.
  */
-TEST(test_str_str) {}
+TEST(test_str_str) {
+  ASSERT_EQ(6, str_str("hello world", "world"));
+  ASSERT_EQ(0, str_str("hello", "hel"));
+  ASSERT_EQ(2, str_str("hello", "llo"));
+  ASSERT_EQ(5, str_str("hello", "xyz")); /* not found: the length */
+  ASSERT_EQ(5, str_str("hello", "hellox"));
+  ASSERT_EQ(0, str_str("hello", ""));
+  ASSERT_EQ(0, str_str("", ""));
+  ASSERT_EQ(0, str_str("", "a"));
+  ASSERT_EQ(0, str_str("aabaab", "aab"));
+}
 
 /*
  * size_t str_rchr(const char* haystack, char needle);
@@ -154,7 +165,14 @@ TEST(test_str_basename) {
  * Not tested: declared in str.h but has no implementation anywhere in the
  * tree (would fail to link). See BUGS.
  */
-TEST(test_str_decamelize) {}
+TEST(test_str_decamelize) {
+  char* r = str_decamelize("fooBarBaz", '-');
+  ASSERT_STR_EQUAL("foo-bar-baz", r);
+  free(r);
+  r = str_decamelize("plain", '_');
+  ASSERT_STR_EQUAL("plain", r);
+  free(r);
+}
 
 /*
  * int str_case_diff(const void* p1, const void* p2);

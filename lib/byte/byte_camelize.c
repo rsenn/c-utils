@@ -7,8 +7,9 @@ byte_camelize(char* x, size_t len) {
 
   for(i = 0; i < len; i++) {
     if(x[i] == '-') {
-      ++i;
-      x[o++] = toupper(x[i]);
+      if(++i >= len)
+        break; /* a trailing dash adds nothing */
+      x[o++] = toupper((unsigned char)x[i]);
     } else {
       x[o++] = x[i];
     }
