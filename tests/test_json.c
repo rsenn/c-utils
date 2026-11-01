@@ -396,7 +396,111 @@ TEST(test_json_print_buffer) {
   json_free(v);
 }
 
+/*
+ * json_parse, json_parse_null, _boolean, _number, _string, _array, _object, _stralloc, json_reader_init
+ */
+TEST(test_json_parse_direct) {
+  charbuf cb;
+  jsonval v;
+  jsonreader r;
+  stralloc sa;
+
+  stralloc_init(&sa);
+
+  charbuf_froms(&cb, "null", 8);
+  ASSERT_EQ(1, json_parse_null(&v, &cb));
+  ASSERT_EQ(1, json_isnull(v));
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "true", 8);
+  ASSERT_EQ(1, json_parse_boolean(&v, &cb));
+  ASSERT_EQ(JSON_BOOL, v.type);
+  ASSERT_EQ(1, v.boolv);
+  charbuf_free(&cb);
+  charbuf_froms(&cb, "false", 8);
+  ASSERT_EQ(1, json_parse_boolean(&v, &cb));
+  ASSERT_EQ(0, v.boolv);
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "-12.5e1", 8);
+  ASSERT_EQ(1, json_parse_number(&v, &cb));
+  ASSERT_EQ(1, json_todouble(v) == -125.0);
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "\"a\\tb\"", 8);
+  ASSERT_EQ(1, json_parse_stralloc(&cb, &sa, 0) >= 0); /* unquoted: up to a colon or the end */
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "\"hi\\n\"", 8);
+  ASSERT_EQ(1, json_parse(&v, &cb));
+  ASSERT_EQ(JSON_STRING, v.type);
+  ASSERT_EQ(3, json_length(v));
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "[1,2]", 8);
+  ASSERT_EQ(1, json_parse_array(&v, &cb));
+  ASSERT_EQ(JSON_ARRAY, v.type);
+  ASSERT_EQ(2, json_length(v));
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "{\"k\":1}", 8);
+  ASSERT_EQ(1, json_parse_object(&v, &cb));
+  ASSERT_EQ(JSON_OBJECT, v.type);
+  ASSERT_EQ(1, json_length(v));
+  charbuf_free(&cb);
+
+  charbuf_froms(&cb, "  [", 8);
+  json_reader_init(&r, &cb);
+  ASSERT_EQ(JSON_UNDEFINED, r.doc->type);
+  ASSERT_EQ(&cb, r.b);
+  ASSERT_EQ(&r.doc, r.loc);
+  charbuf_free(&cb);
+
+  stralloc_free(&sa);
+}
+
+/*
+ * json_append, json_array_push, json_recurse, json_property_set_int, json_property_get
+ */
+static void
+count_nodes(jsonval* v, void* arg, int depth) {
+  (void)v;
+  (void)depth;
+  ++*(int*)arg;
+}
+
+TEST(test_json_append_recurse_set) {
+  jsonval* arrp = json_newnode(JSON_ARRAY);
+  jsonitem* list;
+  jsonval* obj;
+  jsonval got;
+  int nodes = 0;
+
+  ASSERT_EQ(1, json_append(&arrp->itemv, json_int(1)) != NULL);
+  ASSERT_EQ(1, json_append(&arrp->itemv, json_int(2)) != NULL);
+  list = arrp->itemv;
+  ASSERT_EQ(1, json_toint(list->value));
+  ASSERT_EQ(2, json_toint(list->next->value));
+  ASSERT_EQ(NULL, list->next->next);
+
+  ASSERT_EQ(2, json_length(*arrp));
+  json_array_push(arrp, json_string("x"));
+  ASSERT_EQ(3, json_length(*arrp));
+  json_recurse(arrp, (void (*)())count_nodes, &nodes);
+  ASSERT_EQ(4, nodes); /* the array and its three members */
+  json_free(arrp);
+
+  obj = json_newnode(JSON_OBJECT);
+  json_property_set_int(obj, 7, json_string("seven"));
+  got = json_property_get_int(*obj, 7);
+  ASSERT_EQ(JSON_STRING, got.type);
+  ASSERT_STR_EQUAL("seven", json_string_cstr(&got));
+  json_free(obj);
+}
+
 #define RUN_JSON_TESTS() \
+  RUN(test_json_parse_direct); \
+  RUN(test_json_append_recurse_set); \
   RUN(test_json_values); \
   RUN(test_json_build); \
   RUN(test_json_numbers); \
