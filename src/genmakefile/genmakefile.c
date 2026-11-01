@@ -2201,6 +2201,16 @@ import_mplabx(int* argcp, char** argv) {
         }
         stralloc_free(&d);
       }
+    } else if(in_conf && str_start(l, "<property key=\"optimization-level\" value=\"")) {
+      /* -O0 debug, -Os small, -O1..-O3 and -O fast: the build types of genmakefile */
+      const char* v = l + 42;
+
+      if(!str_diffn(v, "-Os", 3))
+        strarray_push(&out, "--minsizerel");
+      else if(!str_diffn(v, "-O0", 3))
+        strarray_push(&out, "--debug");
+      else if(!str_diffn(v, "-O", 2))
+        strarray_push(&out, "--release");
     } else if(in_conf && str_start(l, "<property key=\"extra-include-directories\" value=\"")) {
       const char* v = l + 49;
       size_t n = str_chr(v, '"');

@@ -25,6 +25,7 @@ cat >P.X/nbproject/configurations.xml <<'XML'
       </toolsSet>
       <XC8-config>
         <property key="define-macros" value="USE_UART=1;BAUD=9600"/>
+        <property key="optimization-level" value="-Os"/>
         <property key="extra-include-directories" value="inc"/>
       </XC8-config>
     </conf>
@@ -42,6 +43,7 @@ printf 'void u(void){}\n' >uart.c
 "$G" -t xc8 -m gmake --import-mplabx nbproject/configurations.xml -o Makefile >/dev/null 2>&1 || { echo "FAIL: genmakefile"; exit 1; }
 grep -q '^CHIP = 18f25k50' Makefile || { echo "FAIL: chip of the first configuration"; exit 1; }
 grep -q 'USE_UART=1' Makefile && grep -q 'BAUD=9600' Makefile || { echo "FAIL: defines"; exit 1; }
+grep -q 'MinSizeRel' Makefile || { echo "FAIL: optimization level -Os"; exit 1; }
 grep -q 'uart.p1' Makefile && grep -q 'main.p1' Makefile || { echo "FAIL: sources"; exit 1; }
 grep -q '16f1455' Makefile && { echo "FAIL: second configuration used"; exit 1; }
 "$G" -t xc8 -m gmake --import-mplabx nbproject/configurations.xml --mplabx-conf other -o Makefile3 >/dev/null 2>&1 || { echo "FAIL: genmakefile (--mplabx-conf)"; exit 1; }
