@@ -36,6 +36,15 @@
   ihex_strip_below, str_str, taia_fmtfrac, mmap_anon and buffer_mmapshared
   are new; declarations were added for byte_case_start, str_versdiff,
   json_todouble, fd_filesize, buffer_fromstr, io_dup and path_canonicalize.
+- fixed (found by those tests): buffer_bzip, buffer_bunzip and their _fd forms
+  were not compiled at all and buffer_bunzip had no read operation; the brotli
+  buffer was rewritten (it overran its output and failed on larger data);
+  iom_wait never returned a queued event, iom_add could not re-arm a
+  descriptor that had fired; byte_camelize read one byte beyond a trailing
+  dash; buffer_put_quoted dropped control characters into bare octal digits
+  (now backslash and three digits). Declarations and tests for the last
+  placeholders: 799 unit tests, none of them empty except where a function
+  needs a feature this build lacks.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the

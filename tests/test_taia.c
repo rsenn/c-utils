@@ -1,4 +1,5 @@
 #include "unit_test.h"
+#include "../lib/byte.h"
 #include "../lib/taia.h"
 
 /*
@@ -123,7 +124,17 @@ TEST(test_taia_pack_unpack) {
  * Not tested: declared in taia.h but has no implementation anywhere in
  * the tree (would fail to link). See BUGS.
  */
-TEST(test_taia_fmtfrac) {}
+TEST(test_taia_fmtfrac) {
+  tai6464 t;
+  char buf[24];
+  byte_zero(&t, sizeof t);
+  t.nano = 123456789;
+  t.atto = 42;
+  byte_zero(buf, sizeof buf);
+  ASSERT_EQ(18, taia_fmtfrac(buf, &t));
+  ASSERT_EQ(0, byte_diff(buf, 18, "123456789000000042"));
+  ASSERT_EQ(18, taia_fmtfrac(NULL, &t)); /* measuring only */
+}
 
 /*
  * void taia_uint(tai6464* t, unsigned int secs);

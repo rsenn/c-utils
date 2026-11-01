@@ -21,163 +21,125 @@ typedef struct {
   buffer* b;
 } brotli_ctx;
 
+/* decompress: input comes from the other buffer, output goes to data */
 static ssize_t
 buffer_brotli_read(fd_type fd, void* data, size_t n, buffer* b) {
   brotli_ctx* ctx = b->cookie;
-  BrotliDecoderResult ret;
-  ssize_t r;
-  size_t a, avail_in, avail_out;
-  const uint8* next_in;
-  uint8* next_out;
+  buffer* other = ctx->b;
 
-  if((r = buffer_prefetch(ctx->b, 1024)) > 0) {
-  } else {
-    return r;
-  }
-  next_in = (uint8*)&ctx->b->x[ctx->b->p];
-  avail_in = a = ctx->b->n - ctx->b->p;
-  next_out = data;
-  avail_out = n;
+  for(;;) {
+    BrotliDecoderResult ret;
+    const uint8_t* next_in;
+    uint8_t* next_out = data;
+    size_t avail_in, avail_out = n;
+    ssize_t r = 1;
 
-  while(avail_out > 0) {
+    if(other->p >= other->n)
+      r = buffer_feed(other);
+
+    next_in = (const uint8_t*)&other->x[other->p];
+    avail_in = other->p < other->n ? other->n - other->p : 0;
+
     ret = BrotliDecoderDecompressStream(ctx->state, &avail_in, &next_in, &avail_out, &next_out, 0);
+    other->p = (size_t)((const char*)next_in - other->x);
 
-    if(ret == BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT) {
-      errno = EAGAIN;
+    if(ret == BROTLI_DECODER_RESULT_ERROR)
       return -1;
-    }
-
-    if(ret == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
-      size_t offset = (char*)data - b->x;
-
-      if(alloc_re(&b->x, b->a, b->a << 1)) {
-        b->a <<= 1;
-        next_out = data = (char*)b->x + offset;
-        avail_out = n = b->a - offset;
-        continue;
-      }
-    }
-
-    if(avail_in == 0 || ret == BROTLI_DECODER_RESULT_SUCCESS || ret == BROTLI_DECODER_RESULT_ERROR)
-      break;
+    if(avail_out < n)
+      return (ssize_t)(n - avail_out);
+    if(ret == BROTLI_DECODER_RESULT_SUCCESS)
+      return 0;
+    if(r < 0)
+      return -1;
+    if(r == 0 && avail_in == 0)
+      return 0; /* truncated input: end of data */
   }
-
-  if(avail_in < a)
-    ctx->b->p += a - avail_in;
-
-  if(ret == BROTLI_DECODER_RESULT_ERROR)
-    return -1;
-
-  if(avail_out < n)
-    return n - avail_out;
-  return 0;
 }
 
+/* compress: whatever is written is encoded and passed on to the other buffer */
 static ssize_t
 buffer_brotli_write(fd_type fd, void* data, size_t n, buffer* b) {
   brotli_ctx* ctx = b->cookie;
-  buffer* other = ctx->b;
-  const uint8* next_in;
-  uint8* next_out;
-  ssize_t r;
-  size_t a, pos, avail_in, avail_out;
-  BROTLI_BOOL ret;
+  const uint8_t* next_in = data;
+  size_t avail_in = n;
 
-  r = 0;
-  pos = other->p /* == other->n ? 0 : other->n*/;
-  a = other->a - pos;
-  next_in = data;
-  avail_in = n;
-  next_out = (uint8*)&other->x[pos];
-  avail_out = a;
+  while(avail_in > 0) {
+    uint8_t out[4096];
+    uint8_t* next_out = out;
+    size_t avail_out = sizeof(out);
 
-  do {
-    ret = BrotliEncoderCompressStream(ctx->state,
-                                      /*n < b->a ? BROTLI_OPERATION_FINISH :*/ BROTLI_OPERATION_PROCESS,
-                                      &avail_in,
-                                      &next_in,
-                                      &avail_out,
-                                      &next_out,
-                                      0);
-  } while(avail_in > 0 && avail_out > 0 && ret != BROTLI_FALSE);
-
-  ret = BrotliEncoderHasMoreOutput(ctx->state);
-
-  if(avail_out < a)
-    other->p = pos + (a - avail_out);
-
-  if(avail_in < n)
-    r = n - avail_in;
-
-  if(ret == BROTLI_FALSE)
-    return -1;
-  return r;
+    if(!BrotliEncoderCompressStream(ctx->state, BROTLI_OPERATION_PROCESS, &avail_in, &next_in, &avail_out, &next_out, 0))
+      return -1;
+    if(next_out > out)
+      if(buffer_put(ctx->b, (const char*)out, (size_t)(next_out - out)) < 0)
+        return -1;
+  }
+  return (ssize_t)n;
 }
 
 static void
 buffer_brotli_close(buffer* b) {
   brotli_ctx* ctx = b->cookie;
-  buffer* other = ctx->b;
-  ssize_t r;
-  int eof = 0;
-  const uint8* next_in;
-  uint8* next_out;
-  size_t a, avail_in, avail_out;
-  BROTLI_BOOL ret;
 
-  r = 0;
-  next_in = (const uint8*)&b->x[b->p];
-  avail_in = buffer_LEN(b);
-  a = buffer_SPACE(other);
-  next_out = (uint8*)&other->x[other->p];
-  avail_out = a;
+  if(b->op == (buffer_op_proto*)(void*)&buffer_brotli_write) {
+    size_t avail_in = 0;
+    const uint8_t* next_in = NULL;
 
-  if(b->op == (buffer_op_proto*)&buffer_brotli_write) {
     do {
-      ret = BrotliEncoderCompressStream(ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0);
-    } while(ret != BROTLI_FALSE && avail_in > 0);
+      uint8_t out[4096];
+      uint8_t* next_out = out;
+      size_t avail_out = sizeof(out);
+
+      if(!BrotliEncoderCompressStream(ctx->state, BROTLI_OPERATION_FINISH, &avail_in, &next_in, &avail_out, &next_out, 0))
+        break;
+      if(next_out > out)
+        buffer_put(ctx->b, (const char*)out, (size_t)(next_out - out));
+    } while(!BrotliEncoderIsFinished(ctx->state));
 
     BrotliEncoderDestroyInstance(ctx->state);
+    buffer_flush(ctx->b);
   } else {
-    do {
-
-      ret = BrotliDecoderDecompressStream(ctx->state, &avail_in, &next_in, &avail_out, &next_out, 0);
-    } while(ret != BROTLI_FALSE && avail_in > 0);
     BrotliDecoderDestroyInstance(ctx->state);
   }
 
-  if(avail_out < a)
-    other->p += a - avail_out;
-
-  buffer_flush(other);
-
+  alloc_free(b->x);
+  alloc_free(ctx);
+  b->x = NULL;
   b->deinit = 0;
-  // buffer_close(b);
 }
 
+/* compress != 0: writes to b are compressed (quality 0..11) into other;
+ * compress == 0: reads from b decompress what is read from other. */
 int
 buffer_brotli(buffer* b, buffer* other, int compress) {
   brotli_ctx* ctx;
   char* buf;
 
-  if((buf = alloc(1024)) == NULL)
+  if((buf = alloc(4096)) == NULL)
     return 0;
 
-  ctx = alloc_zero(sizeof(brotli_ctx));
-
-  if(ctx == NULL)
+  if((ctx = alloc_zero(sizeof(brotli_ctx))) == NULL) {
+    alloc_free(buf);
     return 0;
+  }
 
   if(compress) {
     ctx->state = BrotliEncoderCreateInstance(0, 0, ctx);
-    BrotliEncoderSetParameter(ctx->state, BROTLI_PARAM_QUALITY, compress);
+    if(ctx->state)
+      BrotliEncoderSetParameter(ctx->state, BROTLI_PARAM_QUALITY, compress);
   } else {
     ctx->state = BrotliDecoderCreateInstance(0, 0, ctx);
   }
 
+  if(ctx->state == NULL) {
+    alloc_free(buf);
+    alloc_free(ctx);
+    return 0;
+  }
+
   ctx->b = other;
 
-  buffer_init(b, (buffer_op_proto*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read), -1, buf, 1024);
+  buffer_init(b, (buffer_op_proto*)(void*)(compress ? &buffer_brotli_write : &buffer_brotli_read), -1, buf, 4096);
   b->cookie = ctx;
   b->deinit = &buffer_brotli_close;
 

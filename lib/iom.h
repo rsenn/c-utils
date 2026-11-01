@@ -41,7 +41,7 @@ typedef struct iomux {
 #endif
 } iomux_t;
 
-/* Init master context */
+/* Init master context; returns 1 on success, 0 on failure */
 int iom_init(iomux_t* c);
 
 /* Add socket to iomux */
@@ -50,7 +50,8 @@ enum { IOM_READ = 1, IOM_WRITE = 2, IOM_ERROR = 4 };
 int iom_add(iomux_t* c, int64 s, unsigned int events);
 
 /* Blocking wait for single event, timeout in milliseconds */
-/* return -1 if error, 0 if ok; s set to fd, revents set to known events on that fd */
+/* return -1 if error, -2 if aborted, 0 on timeout, 1 if an event was returned:
+ * s set to fd, revents set to known events on that fd */
 /* when done with the fd, call iom_add on it again! */
 /* This can be called by multiple threads in parallel */
 int iom_wait(iomux_t* c, int64* s, unsigned int* revents, unsigned long timeout);

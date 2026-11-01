@@ -272,21 +272,7 @@ TEST(test_array_indexof) {
   array_reset(&a);
 }
 
-/*
- * void array_shift(array* x, uint64 membersize, uint64 members);
- *
- * Not tested: declared in array.h but has no implementation anywhere in
- * the tree (would fail to link). See BUGS.
- */
-TEST(test_array_shift) {}
 
-/*
- * void array_chop(array* x, uint64 membersize, uint64 members);
- *
- * Not tested: declared in array.h but has no implementation anywhere in
- * the tree (would fail to link). See BUGS.
- */
-TEST(test_array_chop) {}
 
 /*
  * int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x);
@@ -339,8 +325,6 @@ TEST(test_array_macros) {
   RUN(test_array_cate); \
   RUN(test_array_find); \
   RUN(test_array_indexof); \
-  RUN(test_array_shift); \
-  RUN(test_array_chop); \
   RUN(test_array_splice); \
   RUN(test_array_macros)
 

@@ -1,4 +1,6 @@
 #include "unit_test.h"
+#include <unistd.h>
+#include <sys/wait.h>
 #include "../lib/wait.h"
 #include "../lib/process.h"
 
@@ -85,7 +87,18 @@ TEST(test_wait_pid_nohang) {
  * reasoning about kernel scheduling of several children at once; the
  * single-pid paths above already cover the underlying waitpid() plumbing.
  */
-TEST(test_wait_pids) {}
+TEST(test_wait_pids) {
+  int pids[3], i;
+  for(i = 0; i < 3; ++i) {
+    int pid = fork();
+    if(pid == 0)
+      _exit(i);
+    pids[i] = pid;
+    ASSERT_EQ(1, pid > 0);
+  }
+  ASSERT_EQ(1, wait_pids(pids, 3));
+  ASSERT_EQ(0, wait_pids(pids, 1)); /* no children left: failure */
+}
 
 #define RUN_WAIT_TESTS() \
   RUN(test_wait_pid); \

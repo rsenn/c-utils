@@ -83,7 +83,12 @@ TEST(test_byte_zero) {
  * Not tested: declared in byte.h but has no implementation anywhere in
  * the tree (would fail to link). See BUGS.
  */
-TEST(test_byte_equal_notimingattack) {}
+TEST(test_byte_equal_notimingattack) {
+  ASSERT_EQ(1, byte_equal_notimingattack("secret", 6, "secret"));
+  ASSERT_EQ(0, byte_equal_notimingattack("secret", 6, "Secret"));
+  ASSERT_EQ(0, byte_equal_notimingattack("secret", 6, "secreT"));
+  ASSERT_EQ(1, byte_equal_notimingattack("a", 0, "b")); /* nothing to compare */
+}
 
 /*
  * void byte_fill(void* out, size_t len, int c);
@@ -226,7 +231,17 @@ TEST(test_byte_trim) {
 /*
  * size_t byte_camelize(char* x, size_t len);
  */
-TEST(test_byte_camelize) {}
+TEST(test_byte_camelize) {
+  char s[] = "foo-bar-baz";
+  char t[] = "plain";
+  char u[] = "end-";
+  ASSERT_EQ(9, byte_camelize(s, 11));
+  ASSERT_EQ(0, byte_diff(s, 9, "fooBarBaz"));
+  ASSERT_EQ(5, byte_camelize(t, 5));
+  ASSERT_EQ(0, byte_diff(t, 5, "plain"));
+  ASSERT_EQ(3, byte_camelize(u, 4)); /* a trailing dash adds nothing */
+  ASSERT_EQ(0, byte_diff(u, 3, "end"));
+}
 
 /*
  * int byte_startb(const void*, size_t, const char*, size_t);

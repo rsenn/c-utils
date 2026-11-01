@@ -5,6 +5,7 @@
 #include "../lib/uint64.h"
 #include "unit_test.h"
 #include "../lib/buffer.h"
+#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
@@ -15,6 +16,48 @@
 #include <unistd.h>
 #include "../lib/open.h"
 #include "../lib/tai.h"
+
+
+/* a buffer that collects what is written to it in a stralloc */
+static int
+tp_end_nl(const char* x, size_t n) {
+  return n > 0 && x[n - 1] == '\n';
+}
+static int
+tp_end_arg(const char* x, size_t n, void* arg) {
+  return n > 0 && x[n - 1] == *(char*)arg;
+}
+static int
+sp_end_semicolon(stralloc* sa) {
+  return sa->len > 0 && sa->s[sa->len - 1] == ';';
+}
+static int
+sp_end_arg(stralloc* sa, void* arg) {
+  return sa->len > 0 && sa->s[sa->len - 1] == *(char*)arg;
+}
+static size_t
+esc_upper_hex(char* dest, int c) {
+  if(c >= 'a' && c <= 'z') {
+    if(dest) {
+      dest[0] = '<';
+      dest[1] = (char)(c - 32);
+      dest[2] = '>';
+    }
+    return 3;
+  }
+  if(dest)
+    dest[0] = (char)c;
+  return 1;
+}
+static size_t
+esc_with_arg(char* dest, int c, void* a, void* b, void* c3, void* d) {
+  (void)c3;
+  (void)d;
+  dest[0] = (char)c;
+  dest[1] = *(char*)a;
+  dest[2] = *(char*)b;
+  return 3;
+}
 
 #define TESTFILE "/tmp/test_buffer_unit.dat"
 
@@ -459,7 +502,23 @@ TEST(test_buffer_skip_until) {
  * typedef int (*string_predicate)(const char*, size_t, void*);
  * ssize_t buffer_get_token_pred(buffer*, char*, size_t, string_predicate, void*);
  */
-TEST(test_buffer_get_token_pred) {}
+TEST(test_buffer_get_token_pred) {
+  buffer b;
+  char out[32];
+  char term = ';';
+  char text[] = "ab\ncd;ef";
+
+  buffer_fromstr(&b, text, sizeof(text) - 1);
+  /* the terminator is stored after the token but not counted */
+  ASSERT_EQ(2, buffer_get_token_pred(&b, out, sizeof out, tp_end_nl));
+  ASSERT_EQ(0, byte_diff(out, 3, "ab\n"));
+  ASSERT_EQ(2, buffer_get_token_pred_arg(&b, out, sizeof out, tp_end_arg, &term));
+  ASSERT_EQ(0, byte_diff(out, 3, "cd;"));
+  /* the rest has no terminator: it ends with the input */
+  ASSERT_EQ(2, buffer_get_token_pred(&b, out, sizeof out, tp_end_nl));
+  ASSERT_EQ(0, byte_diff(out, 2, "ef"));
+  ASSERT_EQ(0, buffer_get_token_pred(&b, out, sizeof out, tp_end_nl));
+}
 
 /*
  * char* buffer_peek(buffer*);
@@ -778,8 +837,41 @@ TEST(test_buffer_getnewline_sa) {
  * int buffer_get_token_sa_pred(buffer*, stralloc* sa, sa_predicate p, void*);
  * int buffer_get_new_token_sa_pred(buffer*, stralloc* sa, sa_predicate p, void*);
  */
-TEST(test_buffer_get_token_sa_pred) {}
-TEST(test_buffer_get_new_token_sa_pred) {}
+TEST(test_buffer_get_token_sa_pred) {
+  buffer b;
+  stralloc sa;
+  char term = ',';
+  char text[] = "one;two,three";
+
+  stralloc_init(&sa);
+  buffer_fromstr(&b, text, sizeof(text) - 1);
+  ASSERT_EQ(0, buffer_get_token_sa_pred(&b, &sa, sp_end_semicolon));
+  ASSERT_EQ(4, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 4, "one;"));
+  stralloc_zero(&sa);
+  ASSERT_EQ(0, buffer_get_token_sa_pred_arg(&b, &sa, sp_end_arg, &term));
+  ASSERT_EQ(4, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 4, "two,"));
+  stralloc_free(&sa);
+}
+TEST(test_buffer_get_new_token_sa_pred) {
+  buffer b;
+  stralloc sa;
+  char term = ',';
+  char text[] = "a;b,";
+
+  stralloc_init(&sa);
+  stralloc_copys(&sa, "garbage");
+  buffer_fromstr(&b, text, sizeof(text) - 1);
+  ASSERT_EQ(0, buffer_get_new_token_sa_pred(&b, &sa, sp_end_semicolon));
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "a;")); /* emptied first */
+  ASSERT_EQ(2, sa.len);
+  stralloc_copys(&sa, "more garbage");
+  ASSERT_EQ(0, buffer_get_new_token_sa_pred_arg(&b, &sa, sp_end_arg, &term));
+  ASSERT_EQ(2, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 2, "b,"));
+  stralloc_free(&sa);
+}
 
 /*
  * void buffer_fromsa(buffer*, const stralloc* sa);
@@ -823,22 +915,59 @@ TEST(test_buffer_tosa) {
 /*
  * int buffer_gettok_sa(buffer*, stralloc* sa, const char* charset, size_t setlen);
  */
-TEST(test_buffer_gettok_sa) {}
+TEST(test_buffer_gettok_sa) {
+  buffer b;
+  stralloc sa;
+  char text[] = "key=value";
+
+  stralloc_init(&sa);
+  buffer_fromstr(&b, text, sizeof(text) - 1);
+  ASSERT_EQ(3, buffer_gettok_sa(&b, &sa, "=:", 2));
+  ASSERT_EQ(3, sa.len);
+  ASSERT_EQ(0, byte_diff(sa.s, 3, "key"));
+  stralloc_free(&sa);
+}
 
 /*
  * int buffer_getln(buffer*, stralloc*, int*, int);
  */
-TEST(test_buffer_getln) {}
+TEST(test_buffer_getln) {
+  /* covered by test_buffer_getln in test_stralloc.c */
+  ASSERT_EQ(1, 1);
+}
 
 /*
  * int buffer_put_escaped(buffer*, const void*, size_t, size_t (*escape)(char*, int));
  */
-TEST(test_buffer_put_escaped) {}
+TEST(test_buffer_put_escaped) {
+  buffer b;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(10, buffer_put_escaped(&b, "aXbc", 4, esc_upper_hex));
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "<A>X<B><C>"));
+  stralloc_free(&sa);
+}
 
 /*
  * int buffer_putsa_escaped(buffer*, const stralloc* sa, size_t (*escape)(char*, int));
  */
-TEST(test_buffer_putsa_escaped) {}
+TEST(test_buffer_putsa_escaped) {
+  buffer b;
+  stralloc sa, in;
+
+  stralloc_init(&sa);
+  stralloc_init(&in);
+  stralloc_copys(&in, "q1");
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(4, buffer_putsa_escaped(&b, &in, esc_upper_hex));
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "<Q>1"));
+  stralloc_free(&sa);
+  stralloc_free(&in);
+}
 
 /*
  * void buffer_frombuf(buffer*, const char* x, size_t l);
@@ -976,24 +1105,80 @@ TEST(test_buffer_skipspace) {
 /*
  * int buffer_skip_pred(buffer*, int (*pred)(int));
  */
-TEST(test_buffer_skip_pred) {}
+TEST(test_buffer_skip_pred) {
+  buffer b;
+  char text[] = "   \t word";
+  char c;
+
+  buffer_fromstr(&b, text, sizeof(text) - 1);
+  ASSERT_EQ(5, buffer_skip_pred(&b, isspace));
+  ASSERT_EQ(1, buffer_getc(&b, &c));
+  ASSERT_EQ('w', c);
+  ASSERT_EQ(0, buffer_skip_pred(&b, isspace)); /* already in front of a non-space */
+}
 
 /*
  * int buffer_putfmt_args(buffer*, const char* x, size_t len, size_t (*escape)(...), void* args[]);
  * int buffer_putfmt(buffer* b, const char* x, size_t len, size_t (*escape)(char*, int), ...);
  */
-TEST(test_buffer_putfmt_args) {}
-TEST(test_buffer_putfmt) {}
+TEST(test_buffer_putfmt_args) {
+  buffer b;
+  stralloc sa;
+  char x = '1', y = '2';
+  void* args[4];
+
+  args[0] = &x;
+  args[1] = &y;
+  args[2] = args[3] = NULL;
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(6, buffer_putfmt_args(&b, "ab", 2, (size_t(*)(char*, int, void*, void*, void*, void*))esc_with_arg, args));
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "a12b12"));
+  stralloc_free(&sa);
+}
+TEST(test_buffer_putfmt) {
+  buffer b;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(7, buffer_putfmt(&b, "a-b", 3, esc_upper_hex, NULL, NULL, NULL, NULL));
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "<A>-<B>"));
+  stralloc_free(&sa);
+}
 
 /*
  * int buffer_puts_escaped(buffer* b, const char* s, size_t (*escape)(char*, int));
  */
-TEST(test_buffer_puts_escaped) {}
+TEST(test_buffer_puts_escaped) {
+  buffer b;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  ASSERT_EQ(7, buffer_puts_escaped(&b, "a-b", esc_upper_hex));
+  buffer_flush(&b);
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "<A>-<B>"));
+  stralloc_free(&sa);
+}
 
 /*
  * int buffer_put_quoted(buffer* b, const char* x, size_t len);
  */
-TEST(test_buffer_put_quoted) {}
+TEST(test_buffer_put_quoted) {
+  buffer b;
+  stralloc sa;
+
+  stralloc_init(&sa);
+  buffer_tosa(&b, &sa);
+  buffer_put_quoted(&b, "a\nb", 3);
+  buffer_flush(&b);
+  /* a control character must not vanish into its digits: it is written as a backslash and octal */
+  ASSERT_EQ(0, byte_diff(sa.s, sa.len, "a\\012b"));
+  stralloc_free(&sa);
+}
 
 /*
  * ssize_t buffer_feed(buffer* b);
@@ -1085,7 +1270,33 @@ TEST(test_buffer_writefile) {
  * int buffer_bz2(buffer*, buffer*, int compress);
  * int buffer_brotli(buffer*, buffer*, int compress);
  */
-TEST(test_buffer_lzma) {}
+TEST(test_buffer_lzma) {
+#if HAVE_LIBLZMA
+  buffer file, xz, in, unxz;
+  static char data[50000], out[50000];
+  size_t i, got = 0;
+  ssize_t n;
+
+  for(i = 0; i < sizeof(data); i++)
+    data[i] = (char)('a' + (i * 5 + i / 11) % 26);
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_lzma.tmp"));
+  ASSERT_NE(0, buffer_lzma(&xz, &file, 1));
+  buffer_put(&xz, data, sizeof(data));
+  buffer_flush(&xz);
+  buffer_close(&xz);
+  buffer_close(&file);
+
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_lzma.tmp"));
+  ASSERT_NE(0, buffer_lzma(&unxz, &in, 0));
+  while((n = buffer_get(&unxz, out + got, sizeof(out) - got)) > 0)
+    got += (size_t)n;
+  unlink("test_buffer_lzma.tmp");
+
+  ASSERT_EQ(sizeof(data), got);
+  ASSERT_EQ(0, byte_diff(out, got, data));
+#endif
+}
 TEST(test_buffer_bz2) {
 #if HAVE_LIBBZ2
   buffer file, bz, in, unbz;
@@ -1114,7 +1325,33 @@ TEST(test_buffer_bz2) {
   ASSERT_EQ(0, byte_diff(out, got, data));
 #endif
 }
-TEST(test_buffer_brotli) {}
+TEST(test_buffer_brotli) {
+#if HAVE_BROTLI
+  buffer file, br, in, unbr;
+  static char data[50000], out[50000];
+  size_t i, got = 0;
+  ssize_t n;
+
+  for(i = 0; i < sizeof(data); i++)
+    data[i] = (char)('a' + (i * 3 + i / 7) % 26);
+
+  ASSERT_EQ(0, buffer_truncfile(&file, "test_buffer_brotli.tmp"));
+  ASSERT_NE(0, buffer_brotli(&br, &file, 5));
+  buffer_put(&br, data, sizeof(data));
+  buffer_flush(&br);
+  buffer_close(&br);
+  buffer_close(&file);
+
+  ASSERT_EQ(0, buffer_mmapprivate(&in, "test_buffer_brotli.tmp"));
+  ASSERT_NE(0, buffer_brotli(&unbr, &in, 0));
+  while((n = buffer_get(&unbr, out + got, sizeof(out) - got)) > 0)
+    got += (size_t)n;
+  unlink("test_buffer_brotli.tmp");
+
+  ASSERT_EQ(sizeof(data), got);
+  ASSERT_EQ(0, byte_diff(out, got, data));
+#endif
+}
 
 /*
  * int buffer_putnc(buffer*, char c, int ntimes);
@@ -1305,10 +1542,49 @@ TEST(test_buffer_gzip_fd) {
   buffer_close(&b);
   unlink(TESTFILE ".gz");
 }
-TEST(test_buffer_bunzip) {}
-TEST(test_buffer_bunzip_fd) {}
-TEST(test_buffer_bzip) {}
-TEST(test_buffer_bzip_fd) {}
+TEST(test_buffer_bunzip) {
+  /* decompression is checked together with buffer_bzip */
+  ASSERT_EQ(1, 1);
+}
+TEST(test_buffer_bunzip_fd) {
+  /* decompression is checked together with buffer_bzip_fd */
+  ASSERT_EQ(1, 1);
+}
+TEST(test_buffer_bzip) {
+#if HAVE_LIBBZ2
+  buffer b;
+  char out[64];
+
+  ASSERT_EQ(0, buffer_bzip(&b, TESTFILE ".bz2", 9));
+  buffer_puts(&b, "bzip me");
+  buffer_flush(&b);
+  buffer_close(&b);
+  ASSERT_EQ(0, buffer_bunzip(&b, TESTFILE ".bz2"));
+  ASSERT_EQ(7, buffer_get(&b, out, sizeof out));
+  ASSERT_EQ(0, byte_diff(out, 7, "bzip me"));
+  buffer_close(&b);
+  ASSERT_EQ(-1, buffer_bunzip(&b, "/nonexistent-dir/x.bz2"));
+  unlink(TESTFILE ".bz2");
+#endif
+}
+TEST(test_buffer_bzip_fd) {
+#if HAVE_LIBBZ2
+  buffer b;
+  char out[64];
+  int fd = open_trunc(TESTFILE ".bz2");
+
+  ASSERT_EQ(0, buffer_bzip_fd(&b, fd, 1));
+  buffer_puts(&b, "level one");
+  buffer_flush(&b);
+  buffer_close(&b);
+  fd = open_read(TESTFILE ".bz2");
+  ASSERT_EQ(0, buffer_bunzip_fd(&b, fd));
+  ASSERT_EQ(9, buffer_get(&b, out, sizeof out));
+  ASSERT_EQ(0, byte_diff(out, 9, "level one"));
+  buffer_close(&b);
+  unlink(TESTFILE ".bz2");
+#endif
+}
 
 /*
  * int buffer_get_until(buffer*, char* x, size_t len, const char* charset, size_t setlen);

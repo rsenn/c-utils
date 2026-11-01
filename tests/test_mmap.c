@@ -1,4 +1,5 @@
 #include "unit_test.h"
+#include <sys/mman.h>
 #include "../lib/mmap.h"
 
 #include <fcntl.h>
@@ -163,7 +164,18 @@ TEST(test_mmap_shared) {
  * Not tested: declared in mmap.h but has no implementation anywhere in
  * the tree (would fail to link). See BUGS.
  */
-TEST(test_mmap_anon) {}
+TEST(test_mmap_anon) {
+  char* p = mmap_anon(8192);
+  size_t i;
+  ASSERT_EQ(1, p != NULL);
+  for(i = 0; i < 8192; ++i)
+    ASSERT_EQ(0, p[i]); /* zeroed */
+  p[0] = 'x';
+  p[8191] = 'y';
+  ASSERT_EQ('x', p[0]);
+  munmap(p, 8192);
+  ASSERT_EQ(NULL, mmap_anon(0));
+}
 
 /*
  * char* mmap_rw_fd(fd_type, size_t*);

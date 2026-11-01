@@ -48,7 +48,14 @@ TEST(test_alloc_free) {
 /*
  * void alloc_clear(void* ptr);
  */
-TEST(test_alloc_clear) {}
+TEST(test_alloc_clear) {
+  void* p = alloc(16);
+  ASSERT_EQ(1, p != NULL);
+  alloc_clear(&p);
+  ASSERT_EQ(NULL, p);
+  alloc_clear(&p); /* a null pointer is left alone */
+  ASSERT_EQ(NULL, p);
+}
 
 /*
  * int alloc_re(void* x, size_t m, size_t n);

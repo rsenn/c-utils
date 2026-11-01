@@ -1,4 +1,7 @@
 #include "unit_test.h"
+#include <unistd.h>
+#include <sys/wait.h>
+extern char** environ;
 #include "../lib/stralloc.h"
 #include "../lib/env.h"
 #include "../lib/str.h"
@@ -127,7 +130,20 @@ TEST(test_env_pick) {
  * Not exercised directly: it would clobber the process's actual
  * environment for the remainder of the test run.
  */
-TEST(test_env_clear) {}
+TEST(test_env_clear) {
+  int pid = fork();
+  if(pid == 0) {
+    env_put("FOO=bar");
+    env_clear();
+    _exit(env_get("FOO") == NULL && environ[0] == NULL ? 0 : 1);
+  }
+  {
+    int st = -1;
+    ASSERT_EQ(pid, waitpid(pid, &st, 0));
+    ASSERT_EQ(1, WIFEXITED(st));
+    ASSERT_EQ(0, WEXITSTATUS(st));
+  }
+}
 
 /*
  * int env_addmodif(stralloc* sa, const char* s, const char* t);
