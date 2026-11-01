@@ -1,6 +1,7 @@
 #include "unit_test.h"
 #include "../lib/unix.h"
 
+#include <string.h>
 #include <unistd.h>
 
 /*
@@ -82,7 +83,43 @@ TEST(test_unix_errno) {
   ASSERT_NE(NULL, msg);
 }
 
+/*
+ * int unix_getopt_long(argc, argv, optstring, longopts, int* index);
+ * int unix_getopt_long_only(...)
+ */
+TEST(test_unix_getopt_long) {
+  static int verbose_flag;
+  struct unix_longopt longopts[] = {
+      {"verbose", 0, &verbose_flag, 1},
+      {"file", 1, 0, 'f'},
+      {"count", 1, 0, 'c'},
+      {0, 0, 0, 0},
+  };
+  char a0[] = "prog", a1[] = "--verbose", a2[] = "--file=x.txt", a3[] = "-c", a4[] = "7", a5[] = "rest";
+  char* argv[] = {a0, a1, a2, a3, a4, a5, NULL};
+  int c, idx = -1, got_f = 0, got_c = 0;
+  char file[16] = "", count[16] = "";
+
+  unix_optind = 1;
+  verbose_flag = 0;
+  while((c = unix_getopt_long(6, argv, "f:c:", longopts, &idx)) != -1) {
+    if(c == 'f') {
+      got_f = 1;
+      strncpy(file, unix_optarg, 15);
+    } else if(c == 'c') {
+      got_c = 1;
+      strncpy(count, unix_optarg, 15);
+    }
+  }
+  ASSERT_EQ(1, verbose_flag); /* a flag option sets the variable and returns 0 */
+  ASSERT_EQ(1, got_f);
+  ASSERT_STR_EQUAL("x.txt", file);
+  ASSERT_EQ(1, got_c);
+  ASSERT_STR_EQUAL("7", count);
+  ASSERT_EQ(5, unix_optind); /* "rest" is the first non option */
+}
 #define RUN_UNIX_TESTS() \
+  RUN(test_unix_getopt_long); \
   RUN(test_unix_fnmatch); \
   RUN(test_fnmatch_b); \
   RUN(test_isleap); \
