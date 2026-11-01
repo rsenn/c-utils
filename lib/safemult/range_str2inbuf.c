@@ -11,7 +11,7 @@ range_str2inbuf(const void* buf, size_t len, const void* stringstart) {
 
   if(!range_ptrinbuf(buf, len, x = (const uint16*)stringstart))
     return 0;
-  y = (const uint16*)((char*)x + len);
+  y = (const uint16*)((const char*)buf + len);
 
   for(; x + 1 <= y && *x; ++x)
     ;
