@@ -1,24 +1,17 @@
-#include "../strarray.h"
+#include "../alloc.h"
+#include "../array.h"
+#include "../byte.h"
 #include "../str.h"
+#include "../strarray.h"
 
+/* out gets copies of the strings of s1 that s2 contains, in the order of s1;
+ * neither has to be sorted */
 void
 strarray_intersection(const strarray* s1, const strarray* s2, strarray* out) {
-  char **a = strarray_BEGIN(s1), **b = strarray_BEGIN(s2);
-  size_t alen = strarray_size(s1), blen = strarray_size(s2);
-  size_t i = 0, j = 0;
+  char **p;
 
-  while(i < alen && j < blen) {
-    int delta = str_diff(a[i], b[j]);
-
-    if(delta < 0) {
-      i += 1;
-    } else if(delta > 0) {
-      j += 1;
-    } else {
-      // A[i] == B[j]
-      strarray_push(out, a[i]);
-      i += 1;
-      j += 1;
-    }
+  strarray_foreach(s1, p) {
+    if(strarray_index_of((strarray*)s2, *p) >= 0)
+      strarray_push(out, *p);
   }
 }

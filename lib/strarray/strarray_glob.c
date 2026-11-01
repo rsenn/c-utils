@@ -11,27 +11,30 @@ strarray_glob_error(const char* path, int err) {
   return 0;
 }
 
+/* appends the files that match pattern; returns how many (0 when nothing
+ * matches), -1 on a real error. (It used to return glob()'s own error code on
+ * failure, which looked like a match count: GLOB_NOMATCH is 3.) */
 int
 strarray_glob(strarray* arr, const char* pattern) {
-  int r;
+  int r, count = 0;
   glob_t g;
 
   byte_zero(&g, sizeof(glob_t));
-
-  if((r = glob(pattern, GLOB_ERR, &strarray_glob_error, &g)) == 0) {
-    ssize_t i;
-
+  r = glob(pattern, 0, &strarray_glob_error, &g);
+  if(r == 0) {
     if(g.gl_pathv) {
-      for(i = 0; i < g.gl_pathc; ++i) {
-        strarray_push(arr, g.gl_pathv[i]);
-        ++r;
-      }
+      size_t i;
+
+      for(i = 0; i < (size_t)g.gl_pathc; ++i)
+        if(strarray_push(arr, g.gl_pathv[i]))
+          ++count;
     }
-
-    globfree(&g);
+  } else if(r != GLOB_NOMATCH) {
+    count = -1;
   }
-
-  return r;
+  if(r == 0 || r == GLOB_NOMATCH)
+    globfree(&g);
+  return count;
 }
 
 int

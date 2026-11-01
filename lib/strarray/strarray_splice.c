@@ -1,49 +1,57 @@
-#include "../strarray.h"
+#include "../alloc.h"
 #include "../array.h"
 #include "../byte.h"
-#include "../safemult.h"
-#include "../uint64.h"
 #include "../str.h"
-#include "../alloc.h"
+#include "../strarray.h"
 
+/* Removes del strings at start (and frees them), puts copies of the insert
+ * strings x[0..insert) in their place and returns the new size, -1 when out of
+ * memory (the array is then unchanged). start and del are clipped to the size. */
 int64
 strarray_splice(strarray* a, uint64 start, uint64 del, uint64 insert, const char** x) {
-  char** s;
-  uint64 i, len, newlen;
+  size_t len = strarray_size(a), i;
+  size_t newlen;
+  char **dup = NULL, **s;
 
-  if(strarray_BEGIN(a) == NULL) {
-    array_allocate(&a->a, sizeof(char*), 0);
-    array_trunc(&a->a);
-  }
-  s = (char**)array_get(&a->a, sizeof(char*), start);
-  len = strarray_size(a);
-
-  if(start + del > len)
+  if(start > len)
+    start = len;
+  if(del > len - start)
     del = len - start;
-
-  for(i = 0; i < del; i++)
-    alloc_free(s[i]);
   newlen = len - del + insert;
 
-  if(insert != del) {
-    size_t nmove = len - (start + del);
-    size_t movepos = &s[i] - strarray_BEGIN(a);
-    char** end = strarray_END(a);
-
-    if(insert > del) {
-      end = (char**)array_allocate(&a->a, sizeof(char*), newlen);
-      s = end - newlen + start;
-      // move = s + del;
-    }
-
-    if(nmove) {
-      (insert > del ? byte_copyr
-                    : byte_copy)(&s[insert], nmove * sizeof(char*), array_get(&a->a, sizeof(char*), movepos));
+  /* copy the new strings first: nothing is touched if that fails */
+  if(insert) {
+    if(!(dup = (char**)alloc(insert * sizeof(char*))))
+      return -1;
+    for(i = 0; i < insert; ++i) {
+      if(!(dup[i] = str_dup(x[i]))) {
+        while(i > 0)
+          alloc_free(dup[--i]);
+        alloc_free(dup);
+        return -1;
+      }
     }
   }
 
+  if(newlen > len && !array_allocate(&a->a, sizeof(char*), newlen - 1)) {
+    for(i = 0; i < insert; ++i)
+      alloc_free(dup[i]);
+    alloc_free(dup);
+    return -1;
+  }
+
+  s = strarray_BEGIN(a);
+  for(i = 0; i < del; ++i)
+    alloc_free(s[start + i]);
+
+  if(insert != del && len > start + del)
+    byte_copyr(&s[start + insert], (len - start - del) * sizeof(char*), &s[start + del]);
   for(i = 0; i < insert; ++i)
-    s[i] = str_dup(x[i]);
-  array_truncate(&a->a, sizeof(char*), newlen);
-  return newlen;
+    s[start + i] = dup[i];
+  if(dup)
+    alloc_free(dup);
+
+  if(newlen < len)
+    array_truncate(&a->a, sizeof(char*), newlen);
+  return (int64)newlen;
 }

@@ -4,6 +4,18 @@
 #ifndef GLOB_H
 #define GLOB_H
 
+/* On systems that have a glob() of their own this header is the system's
+ * (the replacement below has a different glob_t and different flag values:
+ * mixing the two corrupted the stack of strarray_glob). The replacement is for
+ * Windows only. */
+#if !defined(_WIN32) && !defined(__MSYS__) && !defined(__CYGWIN__) && defined(__has_include_next)
+#if __has_include_next(<glob.h>)
+#include_next <glob.h>
+#define GLOB_SYSTEM 1
+#endif
+#endif
+#ifndef GLOB_SYSTEM
+
 /** This API provides facilities for enumerating the file-system contents
 
 */
@@ -136,4 +148,5 @@ void globfree(glob_t* pglob);
 }
 #endif /* __cplusplus */
 
+#endif /* !GLOB_SYSTEM */
 #endif /* GLOB_H */
