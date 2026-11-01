@@ -1,0 +1,13 @@
+.TH HTTP_METHOD 3
+.SH NAME
+http_method \- the name of a request method
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "const char* http_method(http_req_t " type ");"
+.SH DESCRIPTION
+
+.BR http_method ()
+returns the method as it is written in the request line, as GET.
+.SH SEE ALSO
+http_open(3)

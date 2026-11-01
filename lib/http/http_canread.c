@@ -92,6 +92,17 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
 
     stralloc_nul(&response->data);
 
+    /* the status line */
+    if(response->code == -1 && len >= 12 && !byte_diff(&response->data.s[pos], 5, "HTTP/")) {
+      unsigned int code;
+      size_t p = pos + str_chr(&response->data.s[pos], ' ');
+
+      p += scan_whitenskip(&response->data.s[p], response->data.len - p);
+
+      if(scan_uint(&response->data.s[p], &code) > 0)
+        response->code = (int)code;
+    }
+
     if(len == 0) {
       response->headers_len = response->data.len;
       response->status = HTTP_RECV_DATA;
@@ -133,7 +144,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   }
 
   if(response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {
-    if(ret > 0) {
+    if(ret > 0 && !h->stream) {
       stralloc_readyplus(&response->data, ret);
       buffer_get(&h->q.in, &response->data.s[response->data.len], ret);
       response->data.len += ret;

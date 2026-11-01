@@ -1,0 +1,1 @@
+/home/user/c-utils/tests/test_sse.c:53  Assertion failed: 0 != str_diff("message|{\"a\":1}||-1\n" "ping|one\ntwo|7|-1\n" "message|nospace|7|2500\n" "message|[DONE]|7|2500\n", seen.s))

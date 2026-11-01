@@ -8,6 +8,7 @@ http_request_new(http* h) {
   if((req = alloc_zero(sizeof(http_request)))) {
     stralloc_init(&req->location);
     stralloc_init(&req->headers);
+    stralloc_init(&req->body);
 
     req->type = GET;
     req->serial = 0;

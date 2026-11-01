@@ -1,0 +1,15 @@
+.TH HTTP_BODY_FLUSH 3
+.SH NAME
+http_body_flush \- write the queued body
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "ssize_t http_body_flush(http* " h ");"
+.SH DESCRIPTION
+
+.BR http_body_flush ()
+writes what http_body(3), http_chunk(3) and http_chunk_end(3) queued as far as the socket takes it. It is called by http_sendreq(3) and http_canwrite(3), also by hand. The data is written to the socket directly, not through the output buffer, so what the socket does not take is not lost.
+.SH RETURN VALUE
+1 when all is out, 0 when the socket is full, -1 on an error.
+.SH SEE ALSO
+http_canwrite(3)

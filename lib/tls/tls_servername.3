@@ -1,0 +1,25 @@
+.TH TLS_SERVERNAME 3
+.SH NAME
+tls_servername \- set the server name a TLS client announces
+.SH SYNOPSIS
+.B #include <tls.h>
+.P
+.BI "int tls_servername(fd_type " fd ", const char* " name ");"
+.SH DESCRIPTION
+.BR tls_servername ()
+sets the server name indication (SNI) of the TLS instance of
+.I fd
+to
+.IR name .
+It has to be called after
+.BR tls_client (3)
+and before
+.BR tls_connect (3).
+Servers that host many names, as the big API providers do, select the
+certificate and often accept the connection only with it.
+.SH RETURN VALUE
+Returns 1 on success, 0 if
+.I fd
+has no TLS instance or the name was refused.
+.SH SEE ALSO
+tls_connect(3)

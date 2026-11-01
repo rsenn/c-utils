@@ -24,7 +24,8 @@ json_parse_number(jsonval* val, charbuf* b) {
         return ret;
 
       if(!isdigit(c) && c != '.' && c != 'E' && c != 'e') {
-        if(!(val->type == JSON_DOUBLE && c == '-'))
+        /* the sign of an exponent, 1e-5 or 1E+5 */
+        if(!((c == '-' || c == '+') && val->type == JSON_DOUBLE && (num.s[num.len - 1] == 'e' || num.s[num.len - 1] == 'E')))
           break;
       }
 

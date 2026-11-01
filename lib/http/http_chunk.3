@@ -1,0 +1,15 @@
+.TH HTTP_CHUNK 3
+.SH NAME
+http_chunk \- queue a chunk of the body
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_chunk(http* " h ", const char* " x ", size_t " n ");"
+.SH DESCRIPTION
+
+.BR http_chunk ()
+queues n bytes as one chunk. It declares the body chunked if http_chunked(3) did not. When the request is out already the socket is asked for being writable, http_canwrite(3) then sends the chunk. An empty chunk is ignored, it would end the body.
+.SH RETURN VALUE
+1 on success, 0 on failure or after http_chunk_end(3).
+.SH SEE ALSO
+http_chunk_end(3), http_body_flush(3)

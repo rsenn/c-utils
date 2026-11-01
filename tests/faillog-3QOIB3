@@ -1,0 +1,1 @@
+/home/user/c-utils/tests/test_json.c:165  Assertion failed: 1 != json_valid("{\"a\":[1,-2.5e+3,true,false,null,{}],\"b\":\"x\"}", 41))

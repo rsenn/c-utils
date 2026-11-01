@@ -1119,6 +1119,12 @@ if(NOT WINDOWS_NATIVE AND USE_SSL)
   set(chttpcat_SOURCES src/dnsutils/address.c src/dnsutils/address_connect.c src/dnsutils/address.h)
   program(chttpcat strlist unix dns uri http stralloc buffer errmsg byte io tls socket scan str case alloc taia
           ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
+  set(copenai_SOURCES src/tcp/llmstream.c src/tcp/llmstream.h)
+  program(copenai strlist unix dns http sse json hashmap charbuf slist stralloc buffer errmsg byte io tls socket scan str
+          case alloc taia env fmt ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
+  set(cgemini_SOURCES src/tcp/llmstream.c src/tcp/llmstream.h)
+  program(cgemini strlist unix dns http sse json hashmap charbuf slist stralloc buffer errmsg byte io tls socket scan str
+          case alloc taia env fmt ${TLS_LIBRARIES} ${LIBDL} ${LIBPTHREAD})
 endif(NOT WINDOWS_NATIVE AND USE_SSL)
 
 if(NOT WINDOWS_NATIVE)

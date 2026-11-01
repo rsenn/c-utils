@@ -49,6 +49,10 @@ http_canwrite(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
     h->sent = 1;
   }
 
+  /* the body of a POST that did not fit in the first write, or a new chunk */
+  if(h->sent && h->request && h->request->body_pos < h->request->body.len)
+    ret = http_body_flush(h) < 0 ? -1 : 0;
+
 fail:
   /*if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK))
     tls_want(h->sock, wantread, wantwrite);*/

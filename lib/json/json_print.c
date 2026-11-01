@@ -97,9 +97,8 @@ json_print_str(buffer* b, const char* x, size_t len, const jsonfmt* fmt) {
     buffer_putc(b, quote);
 
   while(len--) {
-    assert(*x);
-
-    if(*x == quote || (unsigned char)*x < 0x20 || (*x == '\\' && !(len > 0 && x[1] == 'u')))
+    /* the string is the text itself, a backslash is always escaped and UTF-8 goes out as it is */
+    if(*x == quote || (unsigned char)*x < 0x20 || *x == '\\')
       buffer_put(b, tmp, fmt_escapecharjson(tmp, *x, quote));
     else
       buffer_PUTC(b, *x);

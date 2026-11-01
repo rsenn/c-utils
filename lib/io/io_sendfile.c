@@ -181,9 +181,10 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
       else
         return done + i;
     }
-
-    return 0;
   }
+
+  return done;
+}
 #endif
 
 #elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)

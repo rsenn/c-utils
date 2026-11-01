@@ -1,0 +1,17 @@
+.TH JSON_PROPERTY_PATH 3
+.SH NAME
+json_property_path \- follow a path through a JSON tree
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "jsonval json_property_path(jsonval " val ", const char* " path ");"
+.SH DESCRIPTION
+
+.BR json_property_path ()
+follows a path such as
+.B candidates[0].content.parts[0].text
+through objects and arrays. A key with dots in it is written as ["a.b"].
+.SH RETURN VALUE
+The value, or one of the type JSON_UNDEFINED if a step is missing.
+.SH SEE ALSO
+json_property_get_str(3)

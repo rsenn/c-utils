@@ -1,3 +1,33 @@
+2026-11-01:
+
+- http: requests of any method with headers and a body: http_open,
+  http_post, http_header, http_body, and a body sent as chunks while it is
+  produced: http_chunked, http_chunk, http_chunk_end, http_body_flush; the
+  Host header has the port when it is not the default one, the request
+  line is HTTP/1.1 for POST and chunks
+- http: http_recv decodes the response body (chunked, Content-Length or
+  until close) incrementally for streamed answers, set h->stream to leave
+  the body in the input buffer; the status code of the response is parsed
+  by http_canread; stray "failed recv()" lines on non-blocking reads are gone
+- tls: tls_servername sets the SNI name, http_socket announces the host;
+  writes may be retried from a buffer that grew or moved
+- sse: new module, a parser for server-sent events that accepts any
+  pieces, LF, CR LF and CR line ends, comments, id and retry
+- json: strings are stored as the text they stand for (\u escapes and
+  surrogate pairs decode to UTF-8, an escaped backslash before u00e4 is no
+  longer taken for an escape) and are printed with every backslash escaped;
+  json_valid checks a text strictly, json_parse_text reads it, only if it
+  is valid; json_property_path follows candidates[0].content.parts[0].text;
+  ndjson_feed reads newline delimited JSON; exponents with a sign (1e+5)
+  are numbers; json_property_get no longer crashes on a missing key
+- copenai: new tool, asks an OpenAI compatible chat API with a chunked
+  POST and writes the streamed answer (SSE or NDJSON) as it arrives
+- cgemini: new tool, conversation with Google Gemini ($GEMINI_API_KEY) on
+  the terminal, through a pipe or for the clients of a TCP socket (-l)
+- scan: scan_double reads exponents with a sign (1e-5, 2.5E+3), it
+  rejected them before
+- io: io_sendfile compiles again on Linux (a closing brace was missing)
+
 2026-10-30:
 
 - genmakefile: -t bcc102 selects the clang based bcc32c of Embarcadero C++

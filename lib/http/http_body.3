@@ -1,0 +1,15 @@
+.TH HTTP_BODY 3
+.SH NAME
+http_body \- set the body of the request
+.SH SYNOPSIS
+.B #include <http.h>
+.P
+.BI "int http_body(http* " h ", const char* " x ", size_t " n ");"
+.SH DESCRIPTION
+
+.BR http_body ()
+appends n bytes to the body of the request that was started last. It is sent with a Content-Length. Not possible after http_chunked(3).
+.SH RETURN VALUE
+1 on success, 0 on failure.
+.SH SEE ALSO
+http_chunk(3)

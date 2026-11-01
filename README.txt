@@ -28,13 +28,13 @@
 
 
 
-      lib/http.h           HTTP client model with requests, responses and headers, compression chains async reading via iopause
+      lib/http.h           HTTP client model with requests (any method, headers, body or chunked body), responses and headers, streamed body decoding, compression chains async reading via iopause
       lib/charbuf.h        an 1-byte character buffer
 
 
   Serialization / Data formats:
 
-      lib/json.h           JSON callback and tree parsers, tree iteration, token output
+      lib/json.h           JSON callback and tree parsers, strict validation, property paths, NDJSON streams, tree iteration, token output
       lib/xml.h            XML read with callback, set of functions for building element and attribute lists
       lib/playlist.h       Read/write Playlist generic playlist abstraction
 
@@ -44,6 +44,7 @@
       lib/process.h        exec and wait for processes
       lib/wait.h           wait/waitpid from djb
       lib/sig.h            sig action/block from djb
+      lib/sse.h            server-sent events (text/event-stream) parser for streamed answers
 
 
       lib/var.h            Lexically ordered NAME=VALUE pairs with attributes (exported, local, readonly, ...)
@@ -141,6 +142,9 @@
       src/dnsutils/dnsname.c Reverse lookup of IP address
       src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
       src/tcp/chttpcat.c   HTTP/HTTPS client, GET of every URL, stdin is POSTed chunked, -i -H -X -L -o
+      src/tcp/copenai.c    streams the answer of an OpenAI compatible chat API (chunked POST, SSE or NDJSON), $OPENAI_API_KEY
+      src/tcp/cgemini.c    conversation with Google Gemini on the terminal, a pipe or a TCP socket (-l), $GEMINI_API_KEY
+      src/tcp/llmstream.c  shared by those two: the event loop, SSE or NDJSON by Content-Type, error messages
       src/tcp/cftpcat.c    FTP client, ftp:// URL lists or downloads, HOST COMMAND runs ls/cat/cd/pwd/size/quote -u -p -P -v
       src/tcp/ctlscat.c    netcat style relay of stdin/stdout over TLS (plain with -n), connects or listens with -l
 

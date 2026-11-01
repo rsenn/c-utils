@@ -1,0 +1,20 @@
+.TH NDJSON_FEED 3
+.SH NAME
+ndjson_init, ndjson_free, ndjson_feed \- read newline delimited JSON
+.SH SYNOPSIS
+.B #include <json.h>
+.P
+.BI "void ndjson_init(ndjson* " nd ");"
+.br
+.BI "void ndjson_free(ndjson* " nd ");"
+.br
+.BI "size_t ndjson_feed(ndjson* " nd ", const char* " x ", size_t " n ", ndjson_callback* " cb ", void* " user ");"
+.SH DESCRIPTION
+
+Newline delimited JSON (application/x-ndjson) is a JSON value on every line, the way many servers stream the tokens of a model.
+.BR ndjson_feed ()
+parses n bytes of it, which can be cut anywhere, and calls cb with the value of every line that is complete. The value is released when cb returns. Empty lines are skipped, lines that are not valid JSON are skipped and counted in nd->errors.
+.SH RETURN VALUE
+The number of values handed out.
+.SH SEE ALSO
+json_parse_text(3), sse_feed(3)
