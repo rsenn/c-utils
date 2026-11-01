@@ -88,12 +88,6 @@ sources_add(const char* source) {
  */
 int
 sources_add_b(const char* x, size_t len) {
-  if(byte_chr(x, len, '/') == len && byte_ends(x, len, "strlist_shift.c")) {
-#ifdef SIGTRAP
-    raise(SIGTRAP);
-#endif
-  }
-
   if(is_source_b(x, len) || is_include_b(x, len)) {
     if(len > dirs.this.sa.len && byte_startb(x, len, dirs.this.sa.s, dirs.this.sa.len)) {
       size_t dirlen = dirs.this.sa.len + 1;

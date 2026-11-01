@@ -74,6 +74,11 @@
 - API: declared bmap_getref, buffer_putfmt_va, buffer_dummyread, buffer_stubborn, buffer_stubborn_read, xml_vattributes, xml_vset_attributes and xml_vfind_pred_n (they existed, undeclared; a call returned a truncated pointer).
 - fixed: cpp_read_file left the descriptor open.
 - fixed: buffer_rewind emptied a buffer made by buffer_frombuf or an mmap reader, so a tokenizer_rewind lost its input.
+- genmakefile: --pair-headers adds the file x.c for every quoted #include "x.h"
+  that is found (the convention of the PIC libraries), so a PIC program is
+  built from its main file alone; checked on lc-meter with libpicp
+  (tests/genmakefile/pair-headers.sh). Removed a leftover raise(SIGTRAP)
+  debugging aid from the source scanner.
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
