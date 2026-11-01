@@ -43,7 +43,7 @@
   descriptor that had fired; byte_camelize read one byte beyond a trailing
   dash; buffer_put_quoted dropped control characters into bare octal digits
   (now backslash and three digits). Declarations and tests for the last
-  placeholders: 816 unit tests, none of them empty except where a function
+  placeholders: 818 unit tests, none of them empty except where a function
   needs a feature this build lacks.
 - fixed: range_strinbuf, range_str2inbuf and range_str4inbuf measured the
   string against the start of the string instead of the end of the buffer, so
@@ -51,6 +51,7 @@
   appended the size of the encoded text instead of the decoded bytes.
 - tests: the terminal module is covered (sequences, keys, a pseudo terminal for raw mode and size).
 - fixed: http_get_header looped past the end of the headers (the remaining length grew instead of shrinking); removed the stub http_get_header_n.
+- fixed: json_property_get_int could not read what json_property_set_int stored in an object. Removed json_read_callback, a function that did nothing (json_read_tree never needed it).
 - API: renamed the files slist_find_remove, dlist_find_remove, str_utf8_latin,
   xml_set_attribute_long and socket_v6loopback to the name of the function they
   define; added str_str, taia_fmtfrac, mmap_anon, buffer_mmapshared and the
