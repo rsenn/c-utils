@@ -1,10 +1,10 @@
 #include "../fmt.h"
-#include "../uint32.h"
 #include <sys/types.h>
 
 size_t
-fmt_escapecharc(char* dest, uint32 ch) {
+fmt_escapecharc(char* dest, int arg) {
   char c;
+  unsigned int ch = arg;
 
   if(ch > 0xff) { /* \uXXXX or \UXXXXXXXX, as in libowfat */
     if(dest) {
@@ -27,6 +27,7 @@ fmt_escapecharc(char* dest, uint32 ch) {
       dest[i + 2] = fmt_tohex((ch >> 4) & 0xf);
       dest[i + 3] = fmt_tohex(ch & 0xf);
     }
+
     return ch > 0xffff ? 10 : 6;
   }
 

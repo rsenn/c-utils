@@ -173,6 +173,10 @@ size_t fmt_longlong(char* dest, int64 i);
 size_t fmt_xlonglong(char* dest, uint64 x);
 size_t fmt_octal(char* dest, uint64 o);
 
+unsigned int fmt_2digits(char* dest, int);
+void fmt_oct3(char* dest, unsigned char);
+void fmt_hex2(char* dest, unsigned char);
+
 size_t fmt_escapecharquotedprintable(char* dest, int ch);
 size_t fmt_escapecharquotedprintableutf8(char* dest, int ch);
 size_t fmt_escapecharnonprintable(char* dest, int c);
@@ -182,7 +186,7 @@ size_t fmt_hexbs(void* out, const void* d, size_t len);
 
 size_t fmt_xmlescape(char* dest, int ch);
 
-size_t fmt_escapecharc(char* dest, uint32 ch);
+size_t fmt_escapecharc(char* dest, int ch);
 size_t fmt_escapecharcx(char* dest, int chr);
 
 size_t fmt_escapecharshell(char* dest, int ch);

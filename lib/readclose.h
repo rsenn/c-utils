@@ -10,8 +10,10 @@
 extern "C" {
 #endif
 
+#ifndef OPEN_H
 ssize_t readclose_append(int fd,stralloc *buf,size_t initlen);
 ssize_t readclose(int fd,stralloc *buf,size_t initlen);
+#endif
 
 #ifdef __cplusplus
 }

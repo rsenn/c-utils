@@ -101,3 +101,6 @@
 /* seek function */
 #define io_seek @IO_SEEK@
 #cmakedefine HAVE_LONGLONG_TYPE 1
+
+/* Define this if you have the pread() function */
+#cmakedefine HAVE_PREAD 1

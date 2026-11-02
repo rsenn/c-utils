@@ -30,7 +30,7 @@ buffer_bunzip(buffer* b, const char* filename) {
     return -1;
   b->fd = -1;
   b->cookie = f;
-  b->op = &buffer_bunzip_read;
+  b->op = (buffer_op_proto*)&buffer_bunzip_read;
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
@@ -46,7 +46,7 @@ buffer_bunzip_fd(buffer* b, fd_type fd) {
     return -1;
   b->fd = -1;
   b->cookie = f;
-  b->op = &buffer_bunzip_read;
+  b->op = (buffer_op_proto*)&buffer_bunzip_read;
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
@@ -70,7 +70,7 @@ buffer_bzip(buffer* b, const char* filename, int level) {
     return -1;
   b->fd = -1;
   b->cookie = f;
-  b->op = &buffer_bzip_write;
+  b->op = (buffer_op_proto*)&buffer_bzip_write;
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);
@@ -88,7 +88,7 @@ buffer_bzip_fd(buffer* b, fd_type fd, int level) {
     return -1;
   b->fd = -1;
   b->cookie = f;
-  b->op = &buffer_bzip_write;
+  b->op = (buffer_op_proto*)&buffer_bzip_write;
   b->n = b->p = 0;
   b->a = BUFFER_OUTSIZE;
   b->x = malloc(b->a);

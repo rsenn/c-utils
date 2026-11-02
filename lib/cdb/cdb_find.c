@@ -6,7 +6,9 @@
 #include <errno.h>
 #include "../byte.h"
 #include "../cdb.h"
-#include "../havepread.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #ifdef __MINGW32__
 #include "../windows.h"
 #else
