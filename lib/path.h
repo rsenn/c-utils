@@ -36,12 +36,14 @@ typedef enum path_format {
 #define PATHLISTSEP_C ';'
 #define PATHLISTSEP_S ";"
 #define PATHLISTSEP_CHARS ";"
+#define IS_DIRSEP(c) ((c) == '\\' || (c) == '/')
 #else
 #define PATHSEP_C '/'
 #define PATHSEP_S "/"
 #define PATHLISTSEP_C ':'
 #define PATHLISTSEP_S ":"
 #define PATHLISTSEP_CHARS ":;"
+#define IS_DIRSEP(c) ((c) == '/')
 #endif
 
 #define PATH_FNM_NOMATCH 1

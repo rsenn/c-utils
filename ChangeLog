@@ -1,3 +1,20 @@
+2026-11-04:
+
+- lib: added arena, dirlist and walk (from shish): a whole directory read into
+  an arena as one packed blob, and a recursive tree walker with one open
+  descriptor at a time. utf8 gained u8decode, u8encode, u8tou16, u8fromu16.
+- removed all C++ sources: src/cxx, lib/intelhex.cpp, lib/ntldd.cpp and
+  lib/directory_iterator.hpp (none were built).
+- removed the dir module (lib/dir.h, lib/dir/): list-r reads directories with
+  dirlist and takes file size and time from stat; IS_DIRSEP moved to path.h.
+- removed the rdir module (lib/rdir.h, lib/rdir/); test_rdir is now test_walk.
+- serial, lsproc, pipeinfo, piccfg, genmakefile and the dns roots reader use
+  dirlist; roots_init2 takes a struct dirlist* instead of a dir_t*.
+- pkgcfg, pathtool, compiler-wrapper, path_find and the glob fallback read
+  directories with dirlist; logserial and genmakefile (cmake, project, sources)
+  walk trees with walk instead of rdir. pkgcfg and the source scans no longer
+  leak the directory handle.
+
 2026-11-01:
 
 - tests: 801 unit tests (from 642), valgrind clean. New: charbuf, ucs,

@@ -27,7 +27,7 @@
 #include "../../lib/byte.h"
 #include "../../lib/fmt.h"
 #include "../../lib/buffer.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 
 #define mytolower(c) ((c) >= 'A' && (c) <= 'Z' ? (c) + 0x20 : (c))
 
@@ -86,32 +86,33 @@ dump_str(const char* name, const char* s) {
 
 int
 get_compiler_dir(const char* basedir, stralloc* out) {
-  struct dir_s d;
-  char* name;
+  arena ar;
+  struct dirlist dl;
+  char* rec;
   struct stat st;
 
-  if(dir_open(&d, basedir) != 0)
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, basedir, DIRLIST_NOHIDDEN);
+
+  if(!dl.s) {
+    arena_free(&ar);
     return -1;
+  }
 
-  while((name = dir_read(&d))) {
-    int dtype = dir_type(&d);
-
-    if(dtype != D_DIRECTORY)
-      continue;
-
-    if(name[0] == '.')
+  dirlist_foreach(rec, dl) {
+    if(dirlist_type(rec) != DL_DIR)
       continue;
 
     stralloc_copys(out, basedir);
     stralloc_catb(out, "/", 1);
-    stralloc_cats(out, name);
+    stralloc_cats(out, dirlist_name(rec));
     stralloc_0(out);
 
     if(stat(out->s, &st) == 0)
-      return 0;
+      break;
   }
 
-  dir_close(&d);
+  arena_free(&ar);
   return 0;
 }
 

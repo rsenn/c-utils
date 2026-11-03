@@ -535,21 +535,22 @@ input_cmake_compile_commands(const char* file, target* all) {
  */
 void
 input_cmake_builddir(const char* builddir, target* all) {
-  rdir_t rdir;
+  struct walk w;
 
-  if(rdir_open(&rdir, builddir) == 0) {
-    const char* s;
+  if(walk_open(&w, builddir, WALK_ERR) == 0) {
+    struct walk_ent* e;
 
-    while((s = rdir_read(&rdir))) {
-      const char* base = path_basename_s(s);
+    while((e = walk_read(&w))) {
+      if(e->phase == WALK_ERR)
+        continue;
 
-      if(case_equals(base, "link.txt"))
-        input_process_file(s, all);
-      else if(str_equal(base, "compile_commands.json"))
-        input_cmake_compile_commands(s, all);
+      if(case_equals(e->name, "link.txt"))
+        input_process_file(e->path, all);
+      else if(str_equal(e->name, "compile_commands.json"))
+        input_cmake_compile_commands(e->path, all);
     }
 
-    rdir_close(&rdir);
+    walk_close(&w);
   } else {
     errmsg_warnsys("error opening '", builddir, "'", 0);
   }

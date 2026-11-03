@@ -5,7 +5,7 @@
 #include "../../lib/mmap.h"
 #include "../../lib/buffer.h"
 #include "../../lib/unix.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/errmsg.h"
 #include "../../lib/open.h"
 
@@ -24,14 +24,8 @@ static const char* statm_fields[] = {"size", "resident", "share", "text", "lib",
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       prog,
-                       "\n",
-                       "Options\n",
-                       "  -h, --help                show this help\n",
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1, "Usage: ", prog, "\n", "Options\n", "  -h, --help                show this help\n", "\n", NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -59,29 +53,32 @@ proc_openreadclose(const char* pid, const char* file, stralloc* out) {
 
 void
 proc_list(strlist* pids) {
-  dir_t d;
-  dir_type_t type;
+  arena ar;
+  struct dirlist dl;
+  char* rec;
   const char* name;
 
-  if(dir_open(&d, "/proc") != 0) {
-    errmsg_warnsys("ERROR: Opening directory /proc: ",
-                   0);
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, "/proc", 0);
+
+  if(!dl.s) {
+    errmsg_warnsys("ERROR: Opening directory /proc: ", 0);
     exit(1);
   }
 
-  while((name = dir_read(&d))) {
-    type = dir_type(&d);
+  dirlist_foreach(rec, dl) {
+    name = dirlist_name(rec);
 
-    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
+    if(str_equal(name, ""))
       continue;
 
-    if(type != D_DIRECTORY || !(name[0] >= '0' && name[0] <= '9'))
+    if(dirlist_type(rec) != DL_DIR || !(name[0] >= '0' && name[0] <= '9'))
       continue;
 
     strlist_push(pids, name);
   }
 
-  dir_close(&d);
+  arena_free(&ar);
 }
 
 int

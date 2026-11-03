@@ -16,7 +16,7 @@
 #include "../../lib/windoze.h"
 #include "../../lib/uint64.h"
 #include "../../lib/io.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 
 #include "serial.h"
 
@@ -501,27 +501,26 @@ serial_write_string(int fd, const char* s) {
 
 char**
 serial_ports(void) {
-  dir_t dir;
-  char* entry;
+  arena ar;
+  struct dirlist dl;
+  char *rec, *entry;
   char** files;
-  int size = 0;
+  int size;
 
-  dir_open(&dir, "/dev/");
-
-  while((entry = dir_read(&dir)) != NULL) {
-#ifdef SEARCH
-    if(strstr(entry, SEARCH) != NULL)
-#endif
-      size++;
-  }
-  dir_close(&dir);
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, "/dev/", 0);
+  size = dl.s ? (int)dl.n : 0;
 
   files = (char**)malloc((size + 1) * sizeof(char*));
 
   int i = 0;
-  dir_open(&dir, "/dev/");
 
-  while((entry = dir_read(&dir)) != NULL && (i < size)) {
+  if(dl.s)
+  dirlist_foreach(rec, dl) {
+    if(i >= size)
+      break;
+
+    entry = dirlist_name(rec);
 #ifdef SEARCH
     if(strstr(entry, SEARCH) != NULL) {
 #endif
@@ -551,7 +550,7 @@ serial_ports(void) {
     }
 #endif
   }
-  dir_close(&dir);
+  arena_free(&ar);
   files[i] = NULL;
   return files;
 }

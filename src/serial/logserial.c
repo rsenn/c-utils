@@ -14,8 +14,7 @@
 #include "../../lib/ndelay.h"
 #include "../../lib/tai.h"
 #include "../../lib/taia.h"
-#include "../../lib/dir.h"
-#include "../../lib/rdir.h"
+#include "../../lib/walk.h"
 #include "../../lib/path.h"
 #include "../../lib/getopt.h"
 #include "../../lib/scan.h"
@@ -71,17 +70,17 @@ int baudrate = -1;
  */
 void
 dir_entries(const char* dir, strarray* arr) {
-  rdir_t d;
-  const char* entry;
+  struct walk w;
+  struct walk_ent* e;
 
-  if(rdir_open(&d, dir) != 0) {
+  if(walk_open(&w, dir, 0) != 0) {
     errmsg_warnsys("ERROR: Opening directory /dev", 0);
     return;
   }
 
-  while((entry = rdir_read(&d)))
-    strarray_push(arr, entry);
-  rdir_close(&d);
+  while((e = walk_read(&w)))
+    strarray_push(arr, e->path);
+  walk_close(&w);
 }
 
 struct link**

@@ -15,6 +15,7 @@ endif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_C_COMPILER_ID}" STREQUAL "Clang" OR "$
 
 set(MODSUBDIRS
     alloc
+    arena
     array
     binfmt
     bmap
@@ -29,7 +30,7 @@ set(MODSUBDIRS
     critbit
     cpp
     debug
-    dir
+    dirlist
     dlist
     dns
     elf
@@ -56,7 +57,6 @@ set(MODSUBDIRS
     playlist
     process
     range
-    rdir
     safemult
     scan
     seek
@@ -84,6 +84,7 @@ set(MODSUBDIRS
     uri
     utf8
     wait
+    walk
     xml)
 
 file(GLOB MODHEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
@@ -129,7 +130,10 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   endforeach()
 
   target_link_libraries(alloc PRIVATE byte)
-  target_link_libraries(unix PRIVATE stralloc buffer ndelay utf8)
+  target_link_libraries(arena PRIVATE byte mmap)
+  target_link_libraries(dirlist PRIVATE arena byte str utf8)
+  target_link_libraries(walk PRIVATE dirlist arena byte str)
+  target_link_libraries(unix PRIVATE stralloc buffer ndelay utf8 dirlist arena)
   target_link_libraries(array PRIVATE safemult byte str)
   target_link_libraries(binfmt PRIVATE mmap byte)
   if(USE_ZLIB)
@@ -141,7 +145,6 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(cb PRIVATE str)
   target_link_libraries(cbmap PRIVATE str)
   target_link_libraries(dns PRIVATE stralloc byte case fmt io open socket str taia ucs uint16 ${LIBIPHLPAPI})
-  target_link_libraries(dir PRIVATE stralloc)
   target_link_libraries(errmsg PRIVATE str)
   target_link_libraries(elf PRIVATE byte str range mmap uint64 uint32 uint16)
   target_link_libraries(terminal PRIVATE buffer byte str)
@@ -162,7 +165,7 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(bmap PRIVATE str)
   target_link_libraries(mmap PRIVATE seek open scan ${LIBPSAPI})
   target_link_libraries(open PRIVATE str uint32)
-  target_link_libraries(path PRIVATE unix dir strlist scan byte str stralloc)
+  target_link_libraries(path PRIVATE unix dirlist arena strlist scan byte str stralloc)
   # PUBLIC: path's *.c call PathFileExistsW/PathIsRelativeW/PathIsDirectoryW
   # directly, so every executable linking path needs shlwapi too, not just
   # path.a itself -- PRIVATE only affects path's own (moot, for a static
@@ -172,7 +175,6 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
   target_link_libraries(path PUBLIC ${LIBSHLWAPI})
   target_link_libraries(pe PRIVATE uint64 uint32 uint16)
   target_link_libraries(playlist PRIVATE byte fmt scan str xml)
-  target_link_libraries(rdir PRIVATE dir)
   target_link_libraries(scan PRIVATE byte str)
   target_link_libraries(socket PRIVATE io iarray byte fmt ndelay scan uint16 ${LIBMSWSOCK})
   target_link_libraries(sse PRIVATE stralloc byte scan)

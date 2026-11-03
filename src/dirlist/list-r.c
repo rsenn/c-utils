@@ -23,7 +23,7 @@
 #include "dump.h"
 
 #include "../../lib/buffer.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/fmt.h"
 #include "../../lib/fnmatch.h"
 #include "../../lib/io.h"
@@ -97,7 +97,7 @@ typedef col_t offsets_lengths_t[2];
 static void print_strarray(buffer* b, array* a);
 static int fnmatch_strarray(buffer* b, array* a, const char* string, int flags);
 static strlist extensions, exclude_masks, include_masks;
-static char opt_separator = DIRSEP_C;
+static char opt_separator = PATHSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0, opt_human = 0;
 static int64 opt_minsize = -1;
@@ -443,6 +443,17 @@ is_junction_point(const char* fn) {
 
 #endif
 static int list_dir_internal(stralloc* dir, int type, long depth);
+
+/* entry type bits, as filtered by the -t option */
+typedef enum dir_type {
+  D_PIPE = 0x01,
+  D_CHARDEV = 0x02,
+  D_BLKDEV = 0x04,
+  D_SYMLINK = 0x08,
+  D_DIRECTORY = 0x10,
+  D_FILE = 0x20,
+  D_SOCKET = 0x40,
+} dir_type_t;
 
 static uint32
 type_mask(const char* arg) {
@@ -892,7 +903,7 @@ file_crc32(const char* path, size_t size, uint32* crc) {
 }
 
 int
-list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, struct dir_s* dir_p) {
+list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) {
   size_t l;
   struct stat st;
   static stralloc pre;
@@ -904,7 +915,6 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
   int match, show = 1;
   uint64 mtime = 0, size = 0, nlink = 0;
   uint32 uid = 0, gid = 0;
-  struct dir_s d = {dir_p ? dir_p->dir_int : 0};
 
   match = match_extensions(path);
 #ifdef DEBUG_OUTPUT_
@@ -969,18 +979,10 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev, 
 #else
   if(dtype & D_SYMLINK)
     is_symlink = 1;
-#if USE_READDIR
-  if(!is_dir) {
-    size = dir_size(&d);
-    mtime = dir_time(&d, D_TIME_MODIFICATION);
-  } else {
-    mtime = 0;
-    size = 0;
+  if(!is_dir && stat(path->s, &st) == 0) {
+    size = st.st_size;
+    mtime = st.st_mtime;
   }
-#else
-  size = dir_size(&d);
-  mtime = dir_time(&d, D_TIME_MODIFICATION);
-#endif
 #endif
 
   if(dtype) {
@@ -1129,8 +1131,9 @@ list_dir_internal(stralloc* dir, int type, long depth) {
   size_t l;
   static dev_t root_dev = 0;
   dir_type_t dtype;
-  struct dir_s d;
-  char *name, *s;
+  arena ar;
+  struct dirlist dl;
+  char *rec, *name, *s;
   struct stat st;
   byte_zero(&st, sizeof(st));
 
@@ -1148,13 +1151,16 @@ list_dir_internal(stralloc* dir, int type, long depth) {
       const char* base = path_basename_s(dir->s);
       //    path_dirname_s(dir->s, dir);
       dtype = stat_type(dir->s, st.st_mode);
-      list_file(dir, base, dtype, 0, root_dev, &d);
+      list_file(dir, base, dtype, 0, root_dev);
       return 0;
     }
   }
 #endif
 
-  if(dir_open(&d, dir->s) != 0) {
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, dir->s, 0);
+
+  if(!dl.s) {
     buffer_puts(buffer_2, "ERROR: Opening directory ");
     buffer_putsa(buffer_2, dir);
     buffer_puts(buffer_2, " failed!\n");
@@ -1162,26 +1168,32 @@ list_dir_internal(stralloc* dir, int type, long depth) {
     goto end;
   }
 
-  if(dir->s[dir->len - 1] != DIRSEP_C)
-    stralloc_cats(dir, DIRSEP_S);
+  if(dir->s[dir->len - 1] != PATHSEP_C)
+    stralloc_cats(dir, PATHSEP_S);
   l = dir->len;
 
-  while((name = dir_read(&d))) {
-    dtype = dir_type(&d);
-    dir_name(&d);
+  dirlist_foreach(rec, dl) {
+    switch(dirlist_type(rec)) {
+      case DL_REG: dtype = D_FILE; break;
+      case DL_DIR: dtype = D_DIRECTORY; break;
+      case DL_LNK: dtype = D_SYMLINK; break;
+      default: dtype = 0; break;
+    }
+
+    name = dirlist_name(rec);
     dir->len = l;
 
-    if(str_equal(name, "") || str_equal(name, ".") || str_equal(name, ".."))
+    if(str_equal(name, ""))
       continue;
     stralloc_readyplus(dir, str_len(name) + 1);
     str_copy(dir->s + dir->len, name);
     dir->len += str_len(name);
 
-    list_file(dir, name, dtype, depth, root_dev, &d);
+    list_file(dir, name, dtype, depth, root_dev);
     dir->len = l;
   }
 end:
-  dir_close(&d);
+  arena_free(&ar);
   return 0;
 }
 
@@ -1261,29 +1273,30 @@ usage(char* argv0) {
 typedef const char* ext_class_t[2];
 
 static const ext_class_t ext_classes[] = {
-    {"archives",
-     "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^tlzma"},
+    {"archives", "^rar^zip^7z^cab^tar^tar.Z^tar.gz^tar.xz^tar.bz2^tar.lzma^tgz^txz^tbz2^tlzma"},
     {"audio", "^aif^aiff^flac^m4a^m4b^mp2^mp3^mpc^ogg^raw^rm^wav^wma"},
     {"books", "^pdf^epub^mobi^azw3^djv^djvu"},
-    {"documents",
-     "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
+    {"documents", "^cdr^doc^docx^odf^odg^odp^ods^odt^pdf^ppt^pptx^rtf^vsd^xls^xlsx^html"},
     {"fonts", "^CompositeFont^pcf^ttc^otf^afm^pfb^fon^ttf"},
     {"images",
-     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^rmp^sgi^shx^svg^tga^tif^tiff^wim^xcf^xpm^xwd^mng"},
+     "^bmp^cin^cod^dcx^djvu^emf^fig^gif^ico^im1^im24^im8^jin^jpeg^jpg^lss^miff^opc^pbm^pcx^pgm^pgx^png^pnm^ppm^psd^rle^"
+     "rmp^sgi^shx^svg^tga^tif^tiff^wim^xcf^xpm^xwd^mng"},
     {"incomplete", "^*.part^*.!??^INCOMPL*"},
     {"music", "^mp3^ogg^flac^mpc^m4a^m4b^wma^wav^aif^aiff^mod^s3m^xm^it^669^mp4"},
     {"packages", "^tgz^txz^rpm^deb"},
     {"scripts", "^sh^py^rb^bat^cmd^js^ts^jsx^tsx"},
     {"software",
-     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*.dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^exe^iso^msi^msu^cab^vbox-extpack^apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
+     "^*setup*.exe^*install*.exe^*.msi^*.msu^*.cab^*.vbox-extpack^*.apk^*.run^*.dmg^*.app^*.apk^7z^app^bin^daa^deb^dmg^"
+     "exe^iso^msi^msu^cab^vbox-extpack^apk^nrg^pkg^rar^rpm^run^sh^tar.Z^tar.bz2^tar.gz^tar.xz^tbz2^tgz^txz^zip"},
     {"sources", "^c^cs^cc^cpp^cxx^h^hh^hpp^hxx^ipp^mm^r^java^rb^py^S^s^asm^inc"},
-    {"scripts",
-     "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^tcl^pl^awk^m4^php"},
+    {"scripts", "^lua^etlua^moon^py^rb^sh^js^jsx^es^es5^es6^es7^coffee^scss^sass^css^jsx^tcl^pl^awk^m4^php"},
     {"web", "^js^css^htm^html^xml^svg"},
     {"videos", "^3gp^avi^f4v^flv^m4v^m2v^mkv^mov^mp4^mpeg^mpg^ogm^vob^webm^wmv"},
     {"vmdisk", "^vdi^vmdk^vhd^qed^qcow^qcow2^vhdx^hdd"},
     {"project",
-     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^groupproj^jsproj^jucer^lproj^lsxproj^metaproj^packproj^pbxproj^pkgproj^pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^uvproj^vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^zdsproj^zfpproj"},
+     "^avrgccproj^bdsproj^cbproj^coproj^cproj^cproject^csproj^dproj^fsproj^groupproj^jsproj^jucer^lproj^lsxproj^"
+     "metaproj^packproj^pbxproj^pkgproj^pmproj^pnproj^pro^proj^project^pssproj^shfbproj^sln^tmproj^unityproj^uvproj^"
+     "vbproj^vcproj^vcxproj^vdproj^vfproj^webproj^winproj^wixproj^zdsproj^zfpproj"},
     {"spice", "^sp^cir^spc^spi"},
     {"eda", "^sch^brd^lbr"},
     {"bin", "^hex^cof"},
@@ -1590,7 +1603,7 @@ main(int argc, char* argv[]) {
         unsigned int mode;
         scan_8int(line.s, &mode);
 
-        list_file(&file, path_basename_s(file.s), mode, 0, 0, 0);
+        list_file(&file, path_basename_s(file.s), mode, 0, 0);
       }
     }
     return 0;

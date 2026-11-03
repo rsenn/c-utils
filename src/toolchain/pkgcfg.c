@@ -6,7 +6,7 @@
 #include "../../lib/uint16.h"
 #include "../../lib/buffer.h"
 #include "../../lib/byte.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/env.h"
 #include "../../lib/errmsg.h"
 #include "../../lib/iterator.h"
@@ -706,15 +706,23 @@ pkg_list(id code) {
 
   strlist_foreach(&cmd.path, s, n) {
     const char* entry;
-    dir_t d;
+    char* rec;
+    arena ar;
+    struct dirlist dl;
     stralloc_copyb(&path, s, n);
     len = path.len;
     stralloc_nul(&path);
 
-    if(dir_open(&d, path.s))
-      continue;
+    arena_init(&ar, &arena_heap, 0);
+    dl = dirlist_read(&ar, path.s, 0);
 
-    while((entry = dir_read(&d))) {
+    if(!dl.s) {
+      arena_free(&ar);
+      continue;
+    }
+
+    dirlist_foreach(rec, dl) {
+      entry = dirlist_name(rec);
       path.len = len;
       stralloc_catm_internal(&path, "/", entry, NULL);
 
@@ -807,6 +815,8 @@ pkg_list(id code) {
 
       path.len = len;
     }
+
+    arena_free(&ar);
   }
 
   while(pkgs) {
