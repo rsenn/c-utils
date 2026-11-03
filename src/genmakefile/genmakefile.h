@@ -16,7 +16,8 @@
 #include "../../lib/unix.h"
 #include "../../lib/mmap.h"
 #include "../../lib/open.h"
-#include "../../lib/rdir.h"
+#include "../../lib/walk.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/scan.h"
 #include "../../lib/str.h"
 #include "../../lib/stralloc.h"
@@ -28,7 +29,6 @@
 #include "../../lib/array.h"
 #include "../../lib/byte.h"
 #include "../../lib/fmt.h"
-#include "../../lib/dir.h"
 #include "../../lib/range.h"
 #include "../../lib/case.h"
 #include "../../lib/map.h"
@@ -63,11 +63,14 @@
 #define rule_foreach(it, r) MAP_FOREACH_VALUE(rules, it, r)
 
 typedef struct {
-  strlist work;  /* -w/--workdir/outfile dir/"build"; relative; written verbatim into the Makefile (VPATH, rule/target-name prefixes) -- never used to compute anything */
-  strlist obj;   /* object output dir; absolute+canonical; anchors BUILDDIR/object paths */
-  strlist bin;   /* -k/--bindir; linker output dir; absolute+canonical; defaults to dirs.obj */
-  strlist out;   /* -O/--outdir, else dirs.this+dirs.work; absolute+canonical; assumed cwd `make` is invoked from, used only to compute the relative paths *written into* the Makefile -- never itself written, and independent of where the Makefile file is actually saved (-o, resolved against the real cwd) */
-  strlist this;  /* invocation dir or --infile's dirname; absolute; anchors CLI-relative paths */
+  strlist work; /* -w/--workdir/outfile dir/"build"; relative; written verbatim into the Makefile (VPATH,
+                   rule/target-name prefixes) -- never used to compute anything */
+  strlist obj;  /* object output dir; absolute+canonical; anchors BUILDDIR/object paths */
+  strlist bin;  /* -k/--bindir; linker output dir; absolute+canonical; defaults to dirs.obj */
+  strlist out;  /* -O/--outdir, else dirs.this+dirs.work; absolute+canonical; assumed cwd `make` is invoked from, used
+                   only to compute the relative paths *written into* the Makefile -- never itself written, and
+                   independent of where the Makefile file is actually saved (-o, resolved against the real cwd) */
+  strlist this; /* invocation dir or --infile's dirname; absolute; anchors CLI-relative paths */
 } dirs_t;
 
 typedef struct {

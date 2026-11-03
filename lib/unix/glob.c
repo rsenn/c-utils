@@ -347,8 +347,8 @@ globfree(glob_t* pglob) {
 #include <sys/stat.h>
 #include <assert.h>
 #include <fnmatch.h>
-#include <dirent.h>
 #include <pwd.h>
+#include "../dirlist.h"
 
 #include "../glob.h"
 
@@ -371,15 +371,6 @@ cmp_func(const void* a, const void* b) {
    The GLOB_NOSORT bit in FLAGS is ignored.  No sorting is ever done.
    The GLOB_APPEND flag is assumed to be set (always appends).
    Prepends DIRECTORY in constructed PGLOB. */
-static void
-close_dir_keep_errno(DIR* dp) {
-  int save = errno;
-
-  if(dp)
-    closedir(dp);
-  errno = save;
-}
-
 static int
 add_entry(const char* name, glob_t* pglob, int* nfound) {
   pglob->gl_pathv = (char**)realloc(pglob->gl_pathv, (pglob->gl_pathc + pglob->gl_offs + 2) * sizeof(char*));
@@ -412,23 +403,29 @@ build_fullname(char* fullname, const char* directory, const char* filename) {
 static int
 glob_in_dir(
     const char* pattern, const char* directory, int flags, int errfunc(const char* epath, int eerrno), glob_t* pglob) {
-  DIR* dp = opendir(directory);
+  arena ar;
+  struct dirlist dl;
+  char* rec;
   int nfound = 0;
 
   int i;
   char* ptr;
 
-  if(!dp) {
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, directory, DIRLIST_DOTS);
+
+  if(!dl.s) {
     if(errno != ENOTDIR && ((errfunc != NULL && (*errfunc)(directory, errno)) || (flags & GLOB_ERR)))
       return GLOB_ABORTED;
   } else {
     int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0) | ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE : 0));
-    struct dirent* ep;
 
-    while((ep = readdir(dp))) {
-      i = strlen(directory) + strlen(ep->d_name) + 2;
+    dirlist_foreach(rec, dl) {
+      const char* d_name = dirlist_name(rec);
+
+      i = strlen(directory) + strlen(d_name) + 2;
       ptr = (char*)alloca(i);
-      build_fullname(ptr, directory, ep->d_name);
+      build_fullname(ptr, directory, d_name);
 
       if(flags & GLOB_ONLYDIR) {
         struct stat statr;
@@ -437,14 +434,14 @@ glob_in_dir(
           continue;
       }
 
-      if(fnmatch(pattern, ep->d_name, fnm_flags) == 0)
+      if(fnmatch(pattern, d_name, fnm_flags) == 0)
 
         if(add_entry(ptr, pglob, &nfound))
           goto memory_error;
     }
   }
 
-  close_dir_keep_errno(dp);
+  arena_free(&ar);
 
   if(nfound != 0)
     pglob->gl_flags = flags;
@@ -465,7 +462,7 @@ memory_error:
    * [allocated from strdup(filame)] Well, after all, when malloc returns
    * NULL we're already in a bad mood, and no doubt the
    * program will manage to segfault by itself very soon :-). */
-  close_dir_keep_errno(dp);
+  arena_free(&ar);
   return GLOB_NOSPACE;
 }
 

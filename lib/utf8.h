@@ -38,6 +38,11 @@ int wc_charwidth(wchar_t);
 
 size_t wcs_to_u8sa(stralloc*, const wchar_t*);
 
+int u8decode(const char* s, size_t n, unsigned* cp);
+int u8encode(char* dst, unsigned cp);
+size_t u8fromu16(char* dst, size_t max, const unsigned short* w, size_t n, size_t* used);
+size_t u8tou16(unsigned short* dst, size_t max, const char* s, size_t n, size_t* used);
+
 #ifdef __cplusplus
 }
 #endif

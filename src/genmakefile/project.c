@@ -14,7 +14,7 @@
 #include "../../lib/cpp_internal.h"
 #include "../../lib/hashmap.h"
 #include "../../lib/path.h"
-#include "../../lib/rdir.h"
+#include "../../lib/walk.h"
 #include "../../lib/str.h"
 #include "../../lib/stralloc.h"
 #include "../../lib/strarray.h"
@@ -25,8 +25,8 @@ int main_present(const char*);
    found out */
 typedef struct {
   char* src;
-  char* base;      /* src without ".c" */
-  char* libname;   /* module name when below the lib directory, else NULL */
+  char* base;    /* src without ".c" */
+  char* libname; /* module name when below the lib directory, else NULL */
   int has_main;
   strarray deps;   /* every header reached, existing files only */
   strarray hdrs;   /* project headers named by the unit or by project headers */
@@ -39,8 +39,8 @@ typedef struct {
 
 static unit** units;
 static size_t n_units;
-static hashmap unit_map;   /* src -> unit* */
-static hashmap lib_map;    /* module name -> strarray* of the libs it needs */
+static hashmap unit_map; /* src -> unit* */
+static hashmap lib_map;  /* module name -> strarray* of the libs it needs */
 static strarray lib_names;
 static const char* libdir = "lib";
 static const char* const* predefs;
@@ -52,7 +52,7 @@ strarray project_tested, project_valued;
 const char* project_switch_prefix = "USE_";
 strarray project_dep_names;
 const char* project_libname = 0; /* --library: the sources of the arguments make one library */
-strarray project_headers;        /* --header: public headers to install */ /* --dep: packages named on the command line */
+strarray project_headers; /* --header: public headers to install */ /* --dep: packages named on the command line */
 static strarray project_cmp, project_defd;
 
 /* path relative to the working directory */
@@ -162,7 +162,8 @@ scan_unit_inproc(unit* u, strarray* incs) {
        what the unit really uses, not what a library header pulls in;
        the sources of a module itself need all of them, as the types
        a header gets from another one (io.h and iarray.h) are used there */
-    if(by && ((u->libname && is_lib_public(r)) || !str_diff(by, u->src) || !is_lib_public(rel(by)) || is_facade(rel(by)))) {
+    if(by &&
+       ((u->libname && is_lib_public(r)) || !str_diff(by, u->src) || !is_lib_public(rel(by)) || is_facade(rel(by)))) {
       if(is_lib_public(r)) {
         char* name = str_ndup(r + str_len(libdir) + 1, str_len(r) - str_len(libdir) - 3);
 
@@ -282,21 +283,16 @@ add_source(const char* s) {
 /* a directory is walked, a .c file is taken as it is */
 static void
 collect(const char* dir) {
-  rdir_t rd;
-  char* s;
+  struct walk w;
+  struct walk_ent* e;
 
-  if(!path_is_directory(dir)) {
-    add_source(dir);
-    return;
-  }
-
-  if(rdir_open(&rd, dir))
+  if(walk_open(&w, dir, 0))
     return;
 
-  while((s = rdir_read(&rd)))
-    add_source(s);
+  while((e = walk_read(&w)))
+    add_source(e->path);
 
-  rdir_close(&rd);
+  walk_close(&w);
 }
 
 static unit*
@@ -344,7 +340,6 @@ lib_closure(const char* name, strarray* out) {
   if((needs = hashmap_get(&lib_map, name)))
     strarray_foreach(needs, p) lib_closure(*p, out);
 }
-
 
 /* output name of rel (a source path) below the object or binary directory */
 static void
@@ -612,7 +607,8 @@ project_deps(strarray* out) {
   char** p;
 
   for(i = 0; i < sizeof(known_deps) / sizeof(known_deps[0]); ++i) {
-    int found = strarray_contains(&project_tested, known_deps[i][1]) || strarray_contains(&project_valued, known_deps[i][1]);
+    int found =
+        strarray_contains(&project_tested, known_deps[i][1]) || strarray_contains(&project_valued, known_deps[i][1]);
 
     strarray_foreach(&project_dep_names, p) if(!str_diff(*p, known_deps[i][0])) found = 1;
 
@@ -836,8 +832,12 @@ project_generate(strarray* args, strarray* includes, int bins, int libs) {
   {
     char nt[FMT_ULONG], nv[FMT_ULONG];
 
-    LOG(1, "found ", LOG_NUM(nt, strarray_size(&project_tested)), " names tested for being defined and ",
-        LOG_NUM(nv, strarray_size(&project_valued)), " used by value, none of them defined");
+    LOG(1,
+        "found ",
+        LOG_NUM(nt, strarray_size(&project_tested)),
+        " names tested for being defined and ",
+        LOG_NUM(nv, strarray_size(&project_valued)),
+        " used by value, none of them defined");
     strarray_foreach(&project_tested, p) LOG(2, "tested: ", *p);
     strarray_foreach(&project_valued, p) LOG(2, "valued: ", *p);
   }
@@ -850,7 +850,11 @@ project_generate(strarray* args, strarray* includes, int bins, int libs) {
       if(units[i]->has_main && !units[i]->libname)
         ++progs;
 
-    LOG(1, "creating the rules for ", LOG_NUM(np, progs), " programs and ", LOG_NUM(nl, strarray_size(&lib_names)),
+    LOG(1,
+        "creating the rules for ",
+        LOG_NUM(np, progs),
+        " programs and ",
+        LOG_NUM(nl, strarray_size(&lib_names)),
         " lib modules");
   }
 

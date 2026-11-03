@@ -3,7 +3,7 @@
 #include "../../lib/windoze.h"
 #include "../../lib/buffer.h"
 #include "../../lib/errmsg.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/path.h"
 #include "../../lib/str.h"
 #include "../../lib/stralloc.h"
@@ -237,7 +237,9 @@ proc_fd_str(const procfd_t* pfd, stralloc* out) {
 
 void
 read_proc() {
-  dir_t procdir, fddir;
+  arena ar, far;
+  struct dirlist pdl, fdl;
+  char *prec, *frec;
   uint32 pid, fd, pipeId;
   int64 n;
   fd_type tmpfd;
@@ -248,17 +250,25 @@ read_proc() {
   const char *fdPath, targetPath, *fdStr, *s;
   char* x;
   struct stat lst, st;
- 
+
   stralloc target, real, current;
   stralloc_init(&procfd);
   stralloc_init(&real);
   stralloc_init(&target);
   stralloc_init(&current);
 
-  if(dir_open(&procdir, "/proc"))
-    return;
+  arena_init(&ar, &arena_heap, 0);
+  arena_init(&far, &arena_heap, 0);
+  pdl = dirlist_read(&ar, "/proc", 0);
 
-  while((s = dir_read(&procdir))) {
+  if(!pdl.s) {
+    arena_free(&ar);
+    return;
+  }
+
+  dirlist_foreach(prec, pdl) {
+    s = dirlist_name(prec);
+
     if(!isdigit(s[0]))
       continue;
 
@@ -267,10 +277,15 @@ read_proc() {
       stralloc_copys(&current, fdPath);
       stralloc_nul(&current);
 
-      if(dir_open(&fddir, fdPath))
+      arena_reset(&far);
+      fdl = dirlist_read(&far, fdPath, 0);
+
+      if(!fdl.s)
         continue;
 
-      while((fdStr = dir_read(&fddir))) {
+      dirlist_foreach(frec, fdl) {
+        fdStr = dirlist_name(frec);
+
         if(!isdigit(fdStr[0]))
           continue;
 
@@ -294,7 +309,7 @@ read_proc() {
 
         if(stralloc_start(&real, &current))
           stralloc_remove(&real, 0, current.len);
- 
+
         n = -1;
 
         if((tmpfd = open_read(real.s)) != -1) {
@@ -343,6 +358,8 @@ read_proc() {
     }
   }
 
+  arena_free(&far);
+  arena_free(&ar);
   stralloc_free(&procfd);
   stralloc_free(&real);
   stralloc_free(&target);
@@ -380,7 +397,7 @@ procfd_dump(const procfd_t* pfd) {
   buffer_puts(buffer_1, " info='");
   buffer_putfmt(buffer_1, pfd->info.s, pfd->info.len, &fmt_escapecharnonprintable);
   buffer_puts(buffer_1, "'");
-  //print_stralloc(" info", &pfd->info);
+  // print_stralloc(" info", &pfd->info);
 }
 
 int
@@ -427,7 +444,7 @@ main(int argc, char* argv[]) {
     i = 0;
     array_foreach(&pipes, sizeof(pipe_t), p) {
       const procfd_t* pfd;
-    
+
       print_number("i", i);
       print_number_nonl("pipe#", p->id);
 

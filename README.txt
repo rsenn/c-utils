@@ -247,6 +247,6 @@ c-utils -- where this code comes from
 
       src/toolchain/cpre.c        C preprocessor driver (-D -I -P -L, dump defines, dependencies)
 
-  The unit tests for the libraries (ini, uri, strarray, rdir, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.
+  The unit tests for the libraries (ini, uri, strarray, walk, binfmt, xml, json, tokenizer, buffer, ...) are in tests/.
 
 

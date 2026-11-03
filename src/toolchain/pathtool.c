@@ -1,6 +1,6 @@
 #include "../../lib/unix.h"
 #include "../../lib/buffer.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/errmsg.h"
 #include "../../lib/path.h"
 #include "../../lib/stralloc.h"
@@ -358,8 +358,9 @@ static int
 wine_mounts_read(MAP_T map) {
   const char *wineprefix, *home;
   stralloc prefix, full, target, key;
-  dir_t d;
-  char* name;
+  arena ar;
+  struct dirlist dl;
+  char *rec, *name;
   int ret = 0;
 
   stralloc_init(&prefix);
@@ -375,7 +376,11 @@ wine_mounts_read(MAP_T map) {
   stralloc_cats(&prefix, "/dosdevices");
   stralloc_nul(&prefix);
 
-  if(dir_open(&d, prefix.s)) {
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, prefix.s, 0);
+
+  if(!dl.s) {
+    arena_free(&ar);
     stralloc_free(&prefix);
     return -1;
   }
@@ -384,8 +389,11 @@ wine_mounts_read(MAP_T map) {
   stralloc_init(&target);
   stralloc_init(&key);
 
-  while((name = dir_read(&d))) {
-    size_t len = str_len(name);
+  dirlist_foreach(rec, dl) {
+    size_t len;
+
+    name = dirlist_name(rec);
+    len = str_len(name);
 
     /* only bare drive-letter symlinks ("c:", "z:", ...) -- skip
      * device symlinks like "com1"/"lpt1" and anything else */
@@ -432,7 +440,7 @@ wine_mounts_read(MAP_T map) {
     ++ret;
   }
 
-  dir_close(&d);
+  arena_free(&ar);
 
   stralloc_free(&key);
   stralloc_free(&target);

@@ -15,7 +15,7 @@
 #include "../../lib/strlist.h"
 #include "../../lib/getopt.h"
 #include "../../lib/errmsg.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/fmt.h"
 #include "../../lib/path.h"
 #include <assert.h>
@@ -142,7 +142,7 @@ cfg_data_at(uint32 addr) {
     buffer_putlonglong(buffer_2, result);
   else
     buffer_putxlonglong(buffer_2, result);
-  
+
   buffer_putnlflush(buffer_2);
 #endif
 
@@ -355,9 +355,7 @@ cfg_infer_chip(const char* x, size_t n) {
         char c1 = setting[1];
 
         if(c1 == '2' || c1 == '6' || c1 == '8') {
-          len = scan_charsetnskip(setting,
-                                  "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV",
-                                  len);
+          len = scan_charsetnskip(setting, "0123456789aAbBcCeEfFgGhHiIjJkKlLmMnNpPrRtTvV", len);
 
           if(len > 3) {
             stralloc_copyb(&chip, setting, len);
@@ -385,7 +383,9 @@ cfg_get_data(const char* chip) {
   };
 
   if(path.len == 0) {
-    dir_t d;
+    arena ar;
+    struct dirlist dl;
+    char* rec;
     const char *dir = 0, *subdir;
 
     for(i = 0; i < sizeof(search_dirs) / sizeof(search_dirs[0]); i++) {
@@ -401,19 +401,22 @@ cfg_get_data(const char* chip) {
     stralloc_copys(&path, dir);
     stralloc_cats(&path, "/xc8/");
     stralloc_nul(&path);
-    dir_open(&d, path.s);
+    arena_init(&ar, &arena_heap, 0);
+    dl = dirlist_read(&ar, path.s, DIRLIST_NOHIDDEN);
 
-    while((subdir = dir_read(&d))) {
-      if(subdir[0] == '.' || dir_type(&d) != D_DIRECTORY)
+    if(dl.s)
+    dirlist_foreach(rec, dl) {
+      if(dirlist_type(rec) != DL_DIR)
         continue;
 
-      dir = subdir;
+      dir = subdir = dirlist_name(rec);
 
       /*buffer_putm_internal(buffer_2, "subdir = ", subdir, NULL);
         buffer_putnlflush(buffer_2);*/
       break;
     }
     stralloc_cats(&path, dir);
+    arena_free(&ar);
   }
 
   path.len = stralloc_finds(&path, "/dat/");

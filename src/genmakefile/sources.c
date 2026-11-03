@@ -1,7 +1,7 @@
 #include "sources.h"
 #include "is.h"
 #include "ansi.h"
-#include "../../lib/rdir.h"
+#include "../../lib/walk.h"
 #include "genmakefile.h"
 
 set_t sources_set = {0};
@@ -144,7 +144,7 @@ sources_sort_callback(const char** a, const char** b) {
  */
 void
 sources_get(const char* basedir) {
-  rdir_t rdir;
+  struct walk w;
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "sources_get: ");
@@ -152,11 +152,12 @@ sources_get(const char* basedir) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(!rdir_open(&rdir, basedir)) {
-    const char* s;
+  if(!walk_open(&w, basedir, 0)) {
+    struct walk_ent* e;
 
-    while((s = rdir_read(&rdir))) {
-      size_t len = str_len(s);
+    while((e = walk_read(&w))) {
+      const char* s = e->path;
+      size_t len = e->len;
 
       if(len + 1 > dirs.this.sa.len && byte_equal(s, dirs.this.sa.len, dirs.this.sa.s) &&
          (s[dirs.this.sa.len] == PATHSEP_C || s[dirs.this.sa.len] == '/'))
@@ -171,6 +172,8 @@ sources_get(const char* basedir) {
       buffer_putnlflush(buffer_2);
 #endif
     }
+
+    walk_close(&w);
   }
 }
 
@@ -303,7 +306,7 @@ sources_deps(sourcefile* file, strlist* out) {
  */
 void
 sources_readdir(stralloc* dir, strarray* out) {
-  rdir_t d;
+  struct walk w;
   stralloc srcdir;
 
   stralloc_init(&srcdir);
@@ -316,10 +319,12 @@ sources_readdir(stralloc* dir, strarray* out) {
   buffer_putnlflush(buffer_2);
 #endif
 
-  if(!rdir_open(&d, srcdir.s)) {
-    const char* s;
+  if(!walk_open(&w, srcdir.s, 0)) {
+    struct walk_ent* e;
 
-    while((s = rdir_read(&d))) {
+    while((e = walk_read(&w))) {
+      const char* s = e->path;
+
       if(!is_source(s) && !is_include(s))
         continue;
 
@@ -330,6 +335,8 @@ sources_readdir(stralloc* dir, strarray* out) {
 
       strarray_push_unique(out, s);
     }
+
+    walk_close(&w);
   }
 
   stralloc_free(&srcdir);

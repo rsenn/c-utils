@@ -629,7 +629,6 @@ Quadratic on wide documents (53 KB table per element): now linear (20 000 siblin
 | `src/toolchain/ar-wrap, cc-wrap, exe-wrap, compiler-wrapper, cmake-run, msys-shell, pathtool, cpre` | compiler/archiver/exe wrappers, cross environment finder, realpath, C preprocessor | `exe-wrap` crashed without an ini; fixed; `cpre` hang fixed |
 | `src/winreg/reg2cmd, regfilter` | .REG to batch | `regfilter` is a "zombie copy" by its own README |
 | `src/xmljson/jsonpp, xmlpp, xml2json, xml2moon, opensearch-dump` | pretty printers and converters | crashes on empty/missing input fixed |
-| `src/cxx/*.cpp` | C++ leftovers (intelhex, kbd-adjacency, utf8, ls-R, piccfghex) | not built; C++ in a C project: port or move out |
 
 ## 4. Cross-cutting findings
 

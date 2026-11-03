@@ -4,7 +4,7 @@
 #include "../../lib/open.h"
 #include "../../lib/str.h"
 #include "../../lib/byte.h"
-#include "../../lib/dir.h"
+#include "../../lib/dirlist.h"
 #include "../../lib/ip4.h"
 #include "../../lib/ip6.h"
 #include "../../lib/dns.h"
@@ -73,8 +73,8 @@ roots_same(char* q, char* q2) {
 }
 
 int
-roots_init2(dir_t* dir, bool ip6) {
-  char* d;
+roots_init2(struct dirlist* dl, bool ip6) {
+  char *d, *rec;
   const char* fqdn;
   static char* q;
   static stralloc text;
@@ -84,17 +84,10 @@ roots_init2(dir_t* dir, bool ip6) {
   size_t serverslen;
   size_t i, j;
 
-  for(;;) {
-    errno = 0;
-    d = dir_read(dir);
+  dirlist_foreach(rec, *dl) {
+    d = dirlist_name(rec);
 
-    if(!d) {
-      if(errno)
-        return 0;
-      return 1;
-    }
-
-    if(d[0] != '.') {
+    {
       if(openreadclose(d, &text, 1024) != 1)
         return 0;
 
@@ -130,20 +123,29 @@ roots_init2(dir_t* dir, bool ip6) {
         return 0;
     }
   }
+
+  return 1;
 }
 
 int
 roots_init1(void) {
-  dir_t dir;
+  arena ar;
+  struct dirlist dl;
   int r;
 
   if(chdir("servers") == -1)
     return 0;
 
-  if(dir_open(&dir, "."))
+  arena_init(&ar, &arena_heap, 0);
+  dl = dirlist_read(&ar, ".", DIRLIST_NOHIDDEN);
+
+  if(!dl.s) {
+    arena_free(&ar);
     return 0;
-  r = roots_init2(&dir, false);
-  dir_close(&dir);
+  }
+
+  r = roots_init2(&dl, false);
+  arena_free(&ar);
   return r;
 }
 

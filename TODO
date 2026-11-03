@@ -420,3 +420,10 @@ them with -v when porting a foreign project. Details in
   target; today they are worked out once for the run, so the "--" syntax
   with a different chip in every target does not write the later targets.
 
+- walk-windows:
+  walk only compiles on WINDOWS_NATIVE: stat stands in for lstat and there is
+  no cycle check. The converted callers (logserial, genmakefile) use walk
+  unconditionally, so a Windows build needs a real backend from shish first.
+  Likewise list-r.c on Windows native now gets size and time from stat on a
+  UTF-8 path instead of the find data, which is unchecked there.
+

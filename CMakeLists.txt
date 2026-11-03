@@ -964,7 +964,7 @@ if(USE_BZIP)
     install(CODE "execute_process(COMMAND \${CMAKE_COMMAND} -E create_symlink ccat \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/bin/czip)")
   endif(NOT WINDOWS_NATIVE)
 endif(USE_BZIP)
-program(compiler-wrapper stralloc buffer byte fmt str strlist dir)
+program(compiler-wrapper stralloc buffer byte fmt str strlist dirlist arena)
 program(count-depth buffer fmt)
 program(decode-ls-lR stralloc buffer byte fmt io open str)
 program(dnsip dns src/dnsutils/dnsopt.c unix env scan str stralloc buffer errmsg socket ${LIBIPHLPAPI})
@@ -989,18 +989,18 @@ program(elf64list buffer elf mmap uint16 uint32 uint64)
 program(elflist strlist buffer alloc errmsg unix elf mmap str)
 program(elfwrsec buffer alloc elf mmap errmsg str)
 program(pemkwingui buffer alloc pe mmap errmsg str)
-program(genmakefile cpp ini debug set env sig set case errmsg strarray dlist slist rdir dir
+program(genmakefile cpp ini debug set env sig set case errmsg strarray dlist slist walk dirlist arena
         path strarray strlist hashmap hmap stralloc buffer mmap unix open scan
         fmt byte str array safemult alloc json charbuf io)
 program(ihextool errmsg unix path ihex uint16 stralloc buffer alloc mmap scan str byte)
-program(piccfg ihex errmsg strarray slist rdir dir path strlist hashmap hmap
+program(piccfg ihex errmsg strarray slist dirlist arena path strlist hashmap hmap
         stralloc buffer mmap unix open scan fmt byte str array safemult alloc)
 program(hexedit stralloc buffer array io errmsg mmap open path scan uint64 unix
         ${ZLIB_LIBRARY})
 
 program(impgen pe buffer byte mmap open errmsg str)
 set(list_r_SOURCES src/dirlist/dump.c src/dirlist/dump.h)
-program(list-r errmsg path strarray strlist stralloc buffer array unix dir
+program(list-r errmsg path strarray strlist stralloc buffer array unix dirlist arena
         array fmt open str uint64 ${LIBADVAPI32})
 program(macho32list mmap uint32)
 if(USE_LZMA)
@@ -1014,24 +1014,24 @@ program(mediathek-parser case ucs errmsg strarray strlist stralloc buffer array
 program(ntldd stralloc buffer pe strlist byte path str unix uint64)
 program(opensearch-dump xml stralloc buffer)
 
-program(pathtool debug set hmap stralloc buffer errmsg path strlist unix)
+program(pathtool debug set hmap stralloc buffer errmsg path strlist unix dirlist arena)
 
 program(pelist buffer errmsg mmap pe str unix)
 program(omflist stralloc buffer errmsg omf mmap str unix)
 program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte cbmap
-        dir env errmsg slist case str strarray strlist)
+        dirlist arena env errmsg slist case str strarray strlist)
 program(plsconv path stralloc buffer byte open playlist str unix)
 program(reg2cmd stralloc buffer byte fmt open scan str uint64)
 program(regfilter stralloc buffer byte fmt open scan str uint64)
 program(sln unix stralloc buffer byte errmsg path)
-program(pipeinfo slist seek unix stralloc buffer array byte errmsg path)
+program(pipeinfo slist seek unix stralloc buffer array byte errmsg path dirlist arena)
 program(torrent-progress stralloc buffer io mmap open uint64)
 program(xmlpp errmsg xml stralloc buffer hmap io unix)
-program(cc-wrap process errmsg env buffer path dir strarray strlist stralloc
+program(cc-wrap process errmsg env buffer path strarray strlist stralloc
         fmt)
-program(exe-wrap ini hashmap process errmsg env buffer path dir strarray
+program(exe-wrap ini hashmap process errmsg env buffer path strarray
         strlist stralloc fmt)
-program(ar-wrap path process errmsg env buffer dir strarray strlist stralloc
+program(ar-wrap path process errmsg env buffer strarray strlist stralloc
         fmt alloc)
 program(cofflist coff unix errmsg stralloc buffer mmap)
 program(msys-shell unix errmsg env buffer path strarray strlist stralloc)
@@ -1057,7 +1057,6 @@ set(nscache_SOURCES
     lib/buffer.h
     lib/byte.h
     lib/case.h
-    lib/dir.h
     lib/dns.h
     lib/env.h
     lib/errmsg.h
@@ -1078,23 +1077,23 @@ set(nscache_SOURCES
     lib/uint16.h
     lib/uint32.h
     lib/uint64.h)
-program(nscache dns path errmsg dir array stralloc alloc env byte uint16
+program(nscache dns path errmsg array stralloc alloc env byte uint16
         ${LIBMSWSOCK} ${LIBIPHLPAPI} ${LIBSHLWAPI})
 program(crc errmsg buffer mmap open ${ZLIB_LIBRARY})
-program(cmake-run errmsg env buffer path dir strarray strlist stralloc fmt)
+program(cmake-run errmsg env buffer path strarray strlist stralloc fmt)
 
 program(jsonpp json errmsg charbuf unix)
 program(xml2json json xml charbuf errmsg unix)
 program(xml2moon xml charbuf textcode errmsg)
-program(strip-comments errmsg env charbuf buffer path dir strarray strlist
+program(strip-comments errmsg env charbuf buffer path strarray strlist
         stralloc fmt unix)
-program(q textcode unix errmsg env charbuf buffer path dir strarray strlist
+program(q textcode unix errmsg env charbuf buffer path strarray strlist
         stralloc fmt)
 
 program(httpproxy unix http io hmap)
 program(montty io hmap)
 if(UNIX)
-  program(logserial sig charbuf hmap path unix rdir dir errmsg io ndelay
+  program(logserial sig charbuf hmap path unix walk dirlist arena errmsg io ndelay
           strarray stralloc buffer taia tai)
 endif(UNIX)
 
@@ -1108,7 +1107,7 @@ link_program(tinyproxy ${LIBMSWSOCK})
 
 program(parse unix strlist errmsg)
 program(setuidgid errmsg path stralloc mmap open scan str)
-program(lsproc strlist errmsg mmap buffer unix dir)
+program(lsproc strlist errmsg mmap buffer unix dirlist arena)
 
 program(cpre cpp hmap path fmt str)
 
@@ -1181,140 +1180,140 @@ include(CPack)
 # src/intercept/socket-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc socket/TLS
 # calls) -- LD_PRELOAD and <netinet/in.h>/<sys/un.h>/<dlfcn.h> have no
 # WINDOWS_NATIVE (mingw/MSVC) equivalent, so this tool is POSIX-only.
-if(NOT WINDOWS_NATIVE)
-set(socket_intercept_SOURCES
-    lib/buffer/buffer_2.c
-    lib/alloc/alloc.c
-    lib/open/open_read.c
-    lib/buffer/buffer_free.c
-    lib/buffer/buffer_write_fd.c
-    lib/buffer/buffer_flush.c
-    lib/buffer/buffer_put.c
-    lib/buffer/buffer_putc.c
-    lib/buffer/buffer_putptr.c
-    lib/buffer/buffer_putflush.c
-    lib/buffer/buffer_putlong.c
-    lib/buffer/buffer_putnlflush.c
-    lib/buffer/buffer_puts.c
-    lib/buffer/buffer_putulong.c
-    lib/buffer/buffer_putxlong.c
-    lib/buffer/buffer_stubborn.c
-    lib/byte/byte_copy.c
-    lib/byte/byte_equal.c
-    lib/byte/byte_diff.c
-    lib/byte/byte_zero.c
-    lib/byte/byte_rchrs.c
-    lib/byte/byte_copyr.c
-    lib/fmt/fmt_tohex.c
-    lib/fmt/fmt_hexbs.c
-    lib/fmt/fmt_long.c
-    lib/fmt/fmt_tohex.c
-    lib/fmt/fmt_ulong.c
-    lib/fmt/fmt_xlong.c
-    lib/fmt/fmt_xlonglong.c
-    lib/fmt/fmt_escapecharcx.c
-    lib/textcode/fmt_cescape.c
-    lib/textcode/fmt_hexdump.c
-    lib/str/str_chr.c
-    lib/str/str_len.c
-    lib/str/str_copy.c
-    lib/str/str_copyn.c
-    lib/socket/socket_v4mappedprefix.c
-    lib/socket/fmt_ip4.c
-    lib/socket/fmt_ip6.c
-    lib/open/open_append.c
-    lib/open/open_trunc.c
-    lib/stralloc/stralloc_trunc.c
-    lib/stralloc/stralloc_ready.c
-    lib/stralloc/stralloc_readyplus.c
-    lib/stralloc/stralloc_copyb.c
-    lib/stralloc/stralloc_copys.c
-)
+if(NOT WINDOWS_NATIVE AND BUILD_SHARED)
+  set(socket_intercept_SOURCES
+      lib/buffer/buffer_2.c
+      lib/alloc/alloc.c
+      lib/open/open_read.c
+      lib/buffer/buffer_free.c
+      lib/buffer/buffer_write_fd.c
+      lib/buffer/buffer_flush.c
+      lib/buffer/buffer_put.c
+      lib/buffer/buffer_putc.c
+      lib/buffer/buffer_putptr.c
+      lib/buffer/buffer_putflush.c
+      lib/buffer/buffer_putlong.c
+      lib/buffer/buffer_putnlflush.c
+      lib/buffer/buffer_puts.c
+      lib/buffer/buffer_putulong.c
+      lib/buffer/buffer_putxlong.c
+      lib/buffer/buffer_stubborn.c
+      lib/byte/byte_copy.c
+      lib/byte/byte_equal.c
+      lib/byte/byte_diff.c
+      lib/byte/byte_zero.c
+      lib/byte/byte_rchrs.c
+      lib/byte/byte_copyr.c
+      lib/fmt/fmt_tohex.c
+      lib/fmt/fmt_hexbs.c
+      lib/fmt/fmt_long.c
+      lib/fmt/fmt_tohex.c
+      lib/fmt/fmt_ulong.c
+      lib/fmt/fmt_xlong.c
+      lib/fmt/fmt_xlonglong.c
+      lib/fmt/fmt_escapecharcx.c
+      lib/textcode/fmt_cescape.c
+      lib/textcode/fmt_hexdump.c
+      lib/str/str_chr.c
+      lib/str/str_len.c
+      lib/str/str_copy.c
+      lib/str/str_copyn.c
+      lib/socket/socket_v4mappedprefix.c
+      lib/socket/fmt_ip4.c
+      lib/socket/fmt_ip6.c
+      lib/open/open_append.c
+      lib/open/open_trunc.c
+      lib/stralloc/stralloc_trunc.c
+      lib/stralloc/stralloc_ready.c
+      lib/stralloc/stralloc_readyplus.c
+      lib/stralloc/stralloc_copyb.c
+      lib/stralloc/stralloc_copys.c
+  )
 
-add_library(socket-intercept SHARED src/intercept/socket-intercept.c
-                                    ${socket_intercept_SOURCES})
-set_target_properties(socket-intercept PROPERTIES PREFIX "")
+  add_library(socket-intercept SHARED src/intercept/socket-intercept.c
+                                      ${socket_intercept_SOURCES})
+  set_target_properties(socket-intercept PROPERTIES PREFIX "")
 
-check_flag(-fvisibility=hidden F_VISIBILITY)
+  check_flag(-fvisibility=hidden F_VISIBILITY)
 
-if(F_VISIBILITY)
-  target_compile_options(socket-intercept PUBLIC ${F_VISIBILITY})
-  target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=1)
-else(F_VISIBILITY)
-  target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=0)
-endif(F_VISIBILITY)
+  if(F_VISIBILITY)
+    target_compile_options(socket-intercept PUBLIC ${F_VISIBILITY})
+    target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=1)
+  else(F_VISIBILITY)
+    target_compile_definitions(socket-intercept PRIVATE HAVE_VISIBILITY=0)
+  endif(F_VISIBILITY)
 
-target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
-                                                    HAVE_LIBLZMA=0)
-target_link_libraries(socket-intercept PUBLIC dl pthread)
+  target_compile_definitions(socket-intercept PRIVATE HAVE_BROTLI=0 HAVE_LIBBZ2=0
+                                                      HAVE_LIBLZMA=0)
+  target_link_libraries(socket-intercept PUBLIC dl pthread)
 
-install(TARGETS socket-intercept DESTINATION "lib")
-endif(NOT WINDOWS_NATIVE)
+  install(TARGETS socket-intercept DESTINATION "lib")
+endif(NOT WINDOWS_NATIVE AND BUILD_SHARED)
 
 # src/intercept/exec-intercept.c is an LD_PRELOAD shim (dlopen/dlsym'd libc exec*() calls)
 # that redirects execs by basename -- LD_PRELOAD and <dlfcn.h> have no
 # WINDOWS_NATIVE (mingw/MSVC) equivalent, so this tool is POSIX-only.
-if(NOT WINDOWS_NATIVE)
-set(exec_intercept_SOURCES
-    lib/alloc/alloc.c
-    lib/buffer/buffer_flush.c
-    lib/buffer/buffer_free.c
-    lib/buffer/buffer_put.c
-    lib/buffer/buffer_putflush.c
-    lib/buffer/buffer_putlong.c
-    lib/buffer/buffer_putnlflush.c
-    lib/buffer/buffer_puts.c
-    lib/buffer/buffer_stubborn.c
-    lib/buffer/buffer_write_fd.c
-    lib/byte/byte_copy.c
-    lib/byte/byte_diff.c
-    lib/env/env_get.c
-    lib/fmt/fmt_iso8601.c
-    lib/fmt/fmt_long.c
-    lib/fmt/fmt_str.c
-    lib/fmt/fmt_ulong.c
-    lib/open/open_append.c
-    lib/open/open_read.c
-    lib/path/path_fnmatch.c
-    lib/str/str_basename.c
-    lib/str/str_chr.c
-    lib/str/str_copy.c
-    lib/str/str_diff.c
-    lib/str/str_dup.c
-    lib/str/str_len.c
-    lib/str/str_rchr.c
-    lib/str/str_tok.c
-)
+if(NOT WINDOWS_NATIVE AND BUILD_SHARED)
+  set(exec_intercept_SOURCES
+      lib/alloc/alloc.c
+      lib/buffer/buffer_flush.c
+      lib/buffer/buffer_free.c
+      lib/buffer/buffer_put.c
+      lib/buffer/buffer_putflush.c
+      lib/buffer/buffer_putlong.c
+      lib/buffer/buffer_putnlflush.c
+      lib/buffer/buffer_puts.c
+      lib/buffer/buffer_stubborn.c
+      lib/buffer/buffer_write_fd.c
+      lib/byte/byte_copy.c
+      lib/byte/byte_diff.c
+      lib/env/env_get.c
+      lib/fmt/fmt_iso8601.c
+      lib/fmt/fmt_long.c
+      lib/fmt/fmt_str.c
+      lib/fmt/fmt_ulong.c
+      lib/open/open_append.c
+      lib/open/open_read.c
+      lib/path/path_fnmatch.c
+      lib/str/str_basename.c
+      lib/str/str_chr.c
+      lib/str/str_copy.c
+      lib/str/str_diff.c
+      lib/str/str_dup.c
+      lib/str/str_len.c
+      lib/str/str_rchr.c
+      lib/str/str_tok.c
+  )
 
-add_library(exec-intercept SHARED src/intercept/exec-intercept.c ${exec_intercept_SOURCES})
-set_target_properties(exec-intercept PROPERTIES PREFIX "")
+  add_library(exec-intercept SHARED src/intercept/exec-intercept.c ${exec_intercept_SOURCES})
+  set_target_properties(exec-intercept PROPERTIES PREFIX "")
 
-if(F_VISIBILITY)
-  target_compile_options(exec-intercept PUBLIC ${F_VISIBILITY})
-  target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=1)
-else(F_VISIBILITY)
-  target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=0)
-endif(F_VISIBILITY)
+  if(F_VISIBILITY)
+    target_compile_options(exec-intercept PUBLIC ${F_VISIBILITY})
+    target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=1)
+  else(F_VISIBILITY)
+    target_compile_definitions(exec-intercept PRIVATE HAVE_VISIBILITY=0)
+  endif(F_VISIBILITY)
 
-target_link_libraries(exec-intercept PUBLIC dl)
+  target_link_libraries(exec-intercept PUBLIC dl)
 
-install(TARGETS exec-intercept DESTINATION "lib")
+  install(TARGETS exec-intercept DESTINATION "lib")
 
-# exec-intercept, compiled a second time with -DEXEC_INTERCEPT_MAIN=1: a
-# standalone launcher (`exec-intercept [-o FILE] [--] <program> [args...]`)
-# that sets LD_PRELOAD to the .so above (and EXEC_INTERCEPT_LOG, if -o was
-# given) and execs <program> -- see the EXEC_INTERCEPT_MAIN block at the
-# top of exec-intercept.c. Only main() and its own helpers are compiled
-# in this mode; none of the interception code above is needed or built.
-add_executable(exec-intercept-launcher src/intercept/exec-intercept.c)
-set_target_properties(exec-intercept-launcher PROPERTIES
-    OUTPUT_NAME "exec-intercept"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-target_compile_definitions(exec-intercept-launcher PRIVATE EXEC_INTERCEPT_MAIN=1)
-target_link_libraries(exec-intercept-launcher buffer str errmsg env alloc byte stralloc path)
+  # exec-intercept, compiled a second time with -DEXEC_INTERCEPT_MAIN=1: a
+  # standalone launcher (`exec-intercept [-o FILE] [--] <program> [args...]`)
+  # that sets LD_PRELOAD to the .so above (and EXEC_INTERCEPT_LOG, if -o was
+  # given) and execs <program> -- see the EXEC_INTERCEPT_MAIN block at the
+  # top of exec-intercept.c. Only main() and its own helpers are compiled
+  # in this mode; none of the interception code above is needed or built.
+  add_executable(exec-intercept-launcher src/intercept/exec-intercept.c)
+  set_target_properties(exec-intercept-launcher PROPERTIES
+      OUTPUT_NAME "exec-intercept"
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  target_compile_definitions(exec-intercept-launcher PRIVATE EXEC_INTERCEPT_MAIN=1)
+  target_link_libraries(exec-intercept-launcher buffer str errmsg env alloc byte stralloc path)
 
-install(TARGETS exec-intercept-launcher DESTINATION "bin")
-endif(NOT WINDOWS_NATIVE)
+  install(TARGETS exec-intercept-launcher DESTINATION "bin")
+endif(NOT WINDOWS_NATIVE AND BUILD_SHARED)
 
 
 file(GLOB MAN3
