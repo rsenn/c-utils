@@ -12,6 +12,9 @@ extern strarray xc8_cflags, xc8_ldflags;
    --program NAME (the name of the image) */
 extern const char *xc8_pack, *xc8_version, *xc8_program;
 
+/* --universal-hex (1), --no-universal-hex (0), -1: on for PIC18 with a code offset */
+extern int xc8_universal_opt;
+
 /* the compiler is the modern XC8 driver (xc8-cc) */
 int xc8_is_cc(void);
 

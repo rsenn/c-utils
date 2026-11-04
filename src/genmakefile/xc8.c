@@ -7,22 +7,32 @@
 
 strarray xc8_cflags, xc8_ldflags;
 const char *xc8_pack, *xc8_version, *xc8_program;
+int xc8_universal_opt = -1;
 
 int
 xc8_is_cc(void) {
   return tools.compiler && str_start(tools.compiler, "xc8-cc");
 }
 
-/* 0x2000, 2000 and 0X2000 as 0x2000; 0 when there is no offset */
+/* 0x2000, 2000 and 0X2000 as 0x2000; 0 when there is no offset. The
+   offset of --code-offset, else the one of an imported -mcodeoffset= flag */
 static int
-code_offset(stralloc* out) {
+code_offset_opt(stralloc* out, int from_flags) {
   unsigned long v = 0;
-  const char* s;
+  const char* s = 0;
+  char** p;
 
-  if(!matrix_offset)
+  if(matrix_offset)
+    s = matrix_offset;
+  else if(from_flags)
+    strarray_foreach(&xc8_cflags, p) if(str_start(*p, "-mcodeoffset=")) s = *p + 13;
+
+  if(!s)
     return 0;
 
-  s = str_start(matrix_offset, "0x") || str_start(matrix_offset, "0X") ? matrix_offset + 2 : matrix_offset;
+  if(str_start(s, "0x") || str_start(s, "0X"))
+    s += 2;
+
   scan_xlong(s, &v);
 
   if(!v)
@@ -32,6 +42,40 @@ code_offset(stralloc* out) {
   stralloc_cats(out, s);
   stralloc_nul(out);
   return 1;
+}
+
+static int
+code_offset(stralloc* out) {
+  return code_offset_opt(out, 0);
+}
+
+/* one hex for both: the bootloader skips what lies below the offset, so
+   GOTO stubs there (ihextool vectors) make the same file run without it */
+static int
+universal(void) {
+  stralloc off;
+  const char* c = cfg.chip.s;
+  int ret;
+
+  if(!(xc8_is_cc() || (tools.compiler && str_start(tools.compiler, "xc8"))) || xc8_universal_opt == 0)
+    return 0;
+
+  if(build_tool == TOOL_NINJA || build_tool == TOOL_BATCH || build_tool == TOOL_SHELL)
+    return 0;
+
+  if(!c || !cfg.chip.len)
+    return 0;
+
+  if(str_start(c, "pic") || str_start(c, "PIC"))
+    c += 3;
+
+  if(c[0] != '1' || c[1] != '8')
+    return 0;
+
+  stralloc_init(&off);
+  ret = code_offset_opt(&off, 1);
+  stralloc_free(&off);
+  return ret;
 }
 
 void
@@ -163,7 +207,7 @@ xc8_preamble(buffer* out) {
   stralloc bin, dfp;
   int gmake;
 
-  if(!xc8_is_cc() || build_tool == TOOL_NINJA || build_tool == TOOL_BATCH || build_tool == TOOL_SHELL)
+  if(!(xc8_is_cc() || universal()) || build_tool == TOOL_NINJA || build_tool == TOOL_BATCH || build_tool == TOOL_SHELL)
     return;
 
   gmake = str_equal(tools.make, "gmake");
@@ -196,6 +240,16 @@ xc8_preamble(buffer* out) {
                          NULL);
   }
 
+  if(universal()) {
+    stralloc off;
+
+    stralloc_init(&off);
+    code_offset_opt(&off, 1);
+    output_default(out, build_tool, "IHEXTOOL", "ihextool");
+    output_default(out, build_tool, "CODE_OFFSET", off.s);
+    stralloc_free(&off);
+  }
+
   buffer_putnl(out, 0);
   buffer_flush(out);
 
@@ -209,8 +263,9 @@ xc8_hex_rules(void) {
   strlist images;
   const char* x;
   size_t n;
+  int uni = universal();
 
-  if(!xc8_is_cc() || !exts.bin || !str_equal(exts.bin, ".elf"))
+  if(!exts.bin || !((xc8_is_cc() && str_equal(exts.bin, ".elf")) || (uni && str_equal(exts.bin, ".cof"))))
     return;
 
   strlist_init(&images, '\0');
@@ -223,7 +278,7 @@ xc8_hex_rules(void) {
       continue;
 
     set_foreach(&rule->output, it, x, n) {
-      if(n > 4 && !byte_diff(x + n - 4, 4, ".elf"))
+      if(n > 4 && !byte_diff(x + n - 4, 4, exts.bin))
         strlist_pushb_unique(&images, x, n);
     }
   }
@@ -233,19 +288,33 @@ xc8_hex_rules(void) {
     char* img;
 
     strlist_foreach_s(&images, img) {
-      stralloc hex;
+      stralloc hex, un;
       target* rule;
 
       stralloc_init(&hex);
+      stralloc_init(&un);
       stralloc_catb(&hex, img, str_len(img) - 4);
+      stralloc_copy(&un, &hex);
       stralloc_cats(&hex, ".hex");
       stralloc_nul(&hex);
 
-      /* the driver writes the .hex when it links the .elf */
+      /* the driver writes the .hex when it links the image */
       rule = rule_get_sa(&hex);
       set_adds(&rule->prereq, img);
       add_path_b(&all->prereq, hex.s, hex.len);
+
+      if(uni) {
+        stralloc_cats(&un, "-universal.hex");
+        stralloc_nul(&un);
+        rule = rule_get_sa(&un);
+        set_adds(&rule->prereq, hex.s);
+        stralloc_copys(&rule->recipe, "$(IHEXTOOL) vectors -a $(CODE_OFFSET) -o $@ $<");
+        stralloc_nul(&rule->recipe);
+        add_path_b(&all->prereq, un.s, un.len);
+      }
+
       stralloc_free(&hex);
+      stralloc_free(&un);
     }
   }
 

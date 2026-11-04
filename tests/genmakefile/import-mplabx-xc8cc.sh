@@ -74,6 +74,9 @@ grep -q '^: ' Makefile && { echo "FAIL: stray rule line"; exit 1; }
 grep -q '^DFP_DIR\|DFP_DIR is not set' Makefile || { echo "FAIL: DFP_DIR"; exit 1; }
 grep -q 'build/Prog.hex' Makefile || { echo "FAIL: .hex target"; exit 1; }
 grep -q 'build/\*.map' Makefile && grep -q 'build/\*.sdb' Makefile || { echo "FAIL: clean"; exit 1; }
+grep -q "Prog-universal.hex" Makefile && grep -q "vectors -a .(CODE_OFFSET)" Makefile || { echo "FAIL: universal hex rule"; exit 1; }
+"$G" -t xc8-cc -m gmake --import-mplabx nbproject/configurations.xml --no-universal-hex -d build -o Makefile.nu >/dev/null 2>&1
+grep -q "Prog-universal" Makefile.nu && { echo "FAIL: --no-universal-hex"; exit 1; }
 "$G" -t xc8 -m gmake --import-mplabx nbproject/configurations.xml -o Makefile.v1 >/dev/null 2>&1 || { echo "FAIL: -t xc8"; exit 1; }
 grep -q -e '-mcodeoffset\|-mdfp\|--cflag' Makefile.v1 && { echo "FAIL: v2 flags in -t xc8"; exit 1; }
 echo "import-mplabx-xc8cc: ok"

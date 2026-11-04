@@ -98,6 +98,7 @@ How the headers are found depends on the compiler:
 | `--cflag FLAG`, `--ldflag FLAG` | xc8-cc: a flag for compile and link, or for the link only (repeatable); `--import-mplabx` makes them from the HI-TECH-COMP, HI-TECH-LINK and XC8-config-global properties |
 | `--pack VENDOR/NAME/VERSION` | xc8-cc: device family pack; the makefile gets `DFP_DIR ?=` its directory when found (else a warning) |
 | `--toolchain-version V` | xc8-cc: compiler version; the makefile gets `XC8_BIN ?=` and `export PATH` when `v<V>/bin/xc8-cc` is found |
+| `--universal-hex`, `--no-universal-hex` | PIC18 with a code offset: also write `<name>-universal.hex` (default on), see below |
 | `--program NAME` | name of the image (`NAME.elf`, and for xc8-cc `NAME.hex`) |
 
 Without any of the `--create-` options programs, libraries and objects are
@@ -241,6 +242,32 @@ other macros than the next one.
     genmakefile -t xc8 -m make -I. -Ilib -Isrc --chip=18f25k50 \
         --xtal 48000000 --baud 38400 --code-offset 0x2000 --release \
         -o rgbtest-18f25k50-xc8-release.mk src/ lib/
+
+## One hex for both: with and without the bootloader
+
+An application linked at a code offset (`--code-offset 0x2000`, or
+`additional-options-code-offset` of a MPLAB X project) leaves 0x0000..0x1FFF
+empty. The USB-uC bootloader skips every hex block below its
+`PROG_REGION_START` (0x2000) and ignores the ID and configuration records; its
+own vectors forward 0x08 to 0x2008, 0x18 to 0x2018 and the reset to GOTO 0x2000.
+Without the bootloader (a PICkit) nothing sits at the vectors: the reset only
+works by sliding over NOPs, and the interrupt vector 0x0008 slides into 0x2000,
+which restarts the program.
+
+For PIC18 with a code offset genmakefile therefore writes a second image,
+`<name>-universal.hex`, made from the plain `<name>.hex` (which stays as the
+compiler wrote it):
+
+    $(IHEXTOOL) vectors -a $(CODE_OFFSET) -o $@ $<
+
+`ihextool vectors` adds a `GOTO (vector + offset)` at 0x00, 0x08 and 0x18
+(`--vectors` changes the list; the encoding is bytes `k&ff EF (k>>8)&ff F0|(k>>16)&0f`
+with k = target/2) and replaces data that is already there, with a warning.
+The bootloader ignores the stubs, a programmer loads them. `IHEXTOOL` and
+`CODE_OFFSET` can be overridden on the make command line. The rule is on by
+default for PIC18 when the offset is not zero (gmake and make, xc8 and xc8-cc;
+not ninja or the script backends); `--no-universal-hex` turns it off. PIC16 (14
+bit core) uses other encodings and is not supported yet.
 
 ## Optional packages
 

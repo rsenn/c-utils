@@ -22,6 +22,7 @@ static const char* prog;
 static unsigned long opt_addr, opt_len, opt_fill = 0xff, opt_width = 16;
 static int have_addr, have_len;
 static const char* opt_output = "-";
+static const char *opt_vectors = "0x00,0x08,0x18", *opt_family = "pic18";
 
 static void
 usage(const char* argv0) {
@@ -38,6 +39,8 @@ usage(const char* argv0) {
                        "                       (also: cut, extract)\n"
                        "  bin FILE...          write the data as a flat binary, gaps filled\n"
                        "  frombin FILE         write a binary file as hex at address -a\n"
+                       "  vectors FILE         add GOTO stubs at the vectors that jump to vector+offset (-a), so one\n"
+                       "                       hex works with and without a bootloader (PIC18), write normalized hex\n"
                        "  verify FILE...       check checksums and structure, exit 1 on a problem\n"
                        "  sum FILE...          byte count and sums of the data\n"
                        "\n"
@@ -46,6 +49,8 @@ usage(const char* argv0) {
                        "  -l, --length LEN     number of bytes from -a\n"
                        "  -f, --fill BYTE      value for bytes without data in bin, default 0xff\n"
                        "  -w, --width N        bytes per data record in merge and frombin, default 16\n"
+                       "      --vectors LIST   vectors for vectors, default 0x00,0x08,0x18\n"
+                       "      --family NAME    chip family for vectors, only pic18\n"
                        "  -o, --output FILE    write to FILE instead of standard output\n"
                        "  -h, --help           show this help\n"
                        "\n"
@@ -76,13 +81,15 @@ options(int argc, char* argv[]) {
                                              {"fill", 1, NULL, 'f'},
                                              {"width", 1, NULL, 'w'},
                                              {"output", 1, NULL, 'o'},
+                                             {"vectors", 1, NULL, 'V'},
+                                             {"family", 1, NULL, 'F'},
                                              {"help", 0, NULL, 'h'},
                                              {0, 0, 0, 0}};
   int c, index = 0;
 
   unix_optind = 1;
 
-  while((c = unix_getopt_long(argc, argv, "a:l:f:w:o:h", opts, &index)) != -1) {
+  while((c = unix_getopt_long(argc, argv, "a:l:f:w:o:hV:F:", opts, &index)) != -1) {
     switch(c) {
       case 'a':
         if(!number(unix_optarg, &opt_addr)) {
@@ -111,6 +118,8 @@ options(int argc, char* argv[]) {
         }
         break;
       case 'o': opt_output = unix_optarg; break;
+      case 'V': opt_vectors = unix_optarg; break;
+      case 'F': opt_family = unix_optarg; break;
       case 'h': usage(prog); return -2;
       default: return -1;
     }
@@ -546,6 +555,134 @@ cmd_verify(int argc, char* argv[], int first) {
   return status;
 }
 
+/* GOTO target (PIC18, 4 bytes): word address k = target/2 */
+static void
+pic18_goto(uint8* x, unsigned long target) {
+  unsigned long k = target / 2;
+
+  x[0] = (uint8)(k & 0xff);
+  x[1] = 0xef;
+  x[2] = (uint8)((k >> 8) & 0xff);
+  x[3] = (uint8)(0xf0 | ((k >> 16) & 0x0f));
+}
+
+/* adds GOTO (vector + offset) at each vector; data already there is replaced */
+static int
+cmd_vectors(int argc, char* argv[], int first) {
+  ihex_file* files = load_all(argc, argv, first);
+  unsigned long vec[16], v;
+  size_t nvec = 0, pos = 0, run, i, n;
+  uint32 lo, hi, a, b;
+  uint16 hi16 = 0;
+  const char* s;
+  buffer out, *o;
+  int opened, replaced = 0;
+  uint8 *image, *map;
+
+  if(!files)
+    return 1;
+
+  if(argc - first != 1) {
+    errmsg_warn("vectors takes one hex file", 0);
+    return 1;
+  }
+
+  if(!str_equal(opt_family, "pic18")) {
+    errmsg_warn("unsupported family ", opt_family, 0);
+    return 1;
+  }
+
+  if(!have_addr || opt_addr == 0) {
+    errmsg_warn("vectors needs the application offset, -a ADDR", 0);
+    return 1;
+  }
+
+  for(s = opt_vectors; *s;) {
+    char tok[24];
+
+    n = str_chr(s, ',');
+    if(n == 0 || n >= sizeof(tok) || nvec == 16) {
+      errmsg_warn("invalid vector list ", opt_vectors, 0);
+      return 1;
+    }
+    byte_copy(tok, n, s);
+    tok[n] = '\0';
+    if(!number(tok, &v)) {
+      errmsg_warn("invalid vector ", tok, 0);
+      return 1;
+    }
+    if(v & 1) {
+      errmsg_warn("vector ", tok, " is not word aligned", 0);
+      return 1;
+    }
+    if(v + 4 > opt_addr) {
+      errmsg_warn("vector ", tok, " lies in the application (at or above -a)", 0);
+      return 1;
+    }
+    if((v + opt_addr) & 1) {
+      errmsg_warn("the target of vector ", tok, " is not word aligned", 0);
+      return 1;
+    }
+    vec[nvec++] = v;
+    s += n;
+    if(*s == ',')
+      s++;
+  }
+
+  if(!ihex_range(&files[0], &a, &b)) {
+    errmsg_warn("no data records", 0);
+    return 1;
+  }
+
+  lo = 0;
+  hi = b;
+  image = alloc(hi);
+  map = alloc_zero(hi);
+  if(!image || !map) {
+    errmsg_warn("out of memory", 0);
+    return 1;
+  }
+  byte_fill(image, hi, (unsigned char)opt_fill);
+  ihex_copy_to(&files[0], lo, image, map, hi);
+
+  for(i = 0; i < nvec; i++) {
+    size_t k;
+
+    for(k = 0; k < 4; k++)
+      if(map[vec[i] + k])
+        replaced++;
+
+    pic18_goto(image + vec[i], vec[i] + opt_addr);
+    byte_fill(map + vec[i], 4, 1);
+  }
+
+  if(replaced)
+    errmsg_warn("replaced existing data at a vector", 0);
+
+  if((opened = output_open(&out)) < 0)
+    return 1;
+
+  o = output_buffer(&out, opened);
+
+  {
+    flat f;
+
+    f.image = image;
+    f.map = map;
+    f.lo = 0;
+    f.size = hi;
+
+    while((run = flat_run(&f, &pos))) {
+      ihex_write_data(o, &hi16, (uint32)pos, image + pos, run, (unsigned)opt_width);
+      pos += run;
+    }
+  }
+
+  ihex_write_eof(o);
+  output_close(&out, opened);
+  return 0;
+}
+
 static int
 cmd_sum(int argc, char* argv[], int first) {
   ihex_file* files = load_all(argc, argv, first);
@@ -611,6 +748,8 @@ main(int argc, char* argv[]) {
     return cmd_frombin(argc, argv, first);
   if(str_equal(cmd, "verify"))
     return cmd_verify(argc, argv, first);
+  if(str_equal(cmd, "vectors"))
+    return cmd_vectors(argc, argv, first);
   if(str_equal(cmd, "sum"))
     return cmd_sum(argc, argv, first);
 

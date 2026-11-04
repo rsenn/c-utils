@@ -185,7 +185,7 @@ c-utils -- where this code comes from
 
   Compression and integrity
 
-      src/filedata/ihextool.c Intel HEX swiss knife: info, records, dump, merge/cut, bin, frombin, verify, sum
+      src/filedata/ihextool.c Intel HEX swiss knife: info, records, dump, merge/cut, bin, frombin, vectors, verify, sum
       src/filedata/ccat.c  Compressed file cat with getopt() options and error reporting
       czip                 ccat run under this name (installed as a link) compresses by default; type from -t or the file extension (gz bz2 xz lzma br)
       crc32.c              Calculate crc32 checksum, using zlib or diet version

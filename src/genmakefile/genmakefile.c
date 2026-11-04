@@ -476,6 +476,9 @@ usage(char* argv0) {
       "      --ldflag FLAG         xc8-cc: a flag for the link only (may be repeated)\n"
       "      --pack V/NAME/VERSION xc8-cc: device family pack, DFP_DIR defaults to its directory\n"
       "      --toolchain-version V xc8-cc: compiler version, XC8_BIN defaults to its bin directory\n"
+      "      --universal-hex       PIC18 with a code offset: also write NAME-universal.hex, with GOTO stubs at\n"
+      "                            0x00, 0x08, 0x18 (ihextool vectors), one hex with and without the bootloader;\n"
+      "                            on by default, --no-universal-hex turns it off\n"
       "      --program NAME        name of the image (NAME.elf, NAME.hex)\n"
       "  -v, --verbose             tell what is being done (twice: every source scanned)\n"
       "  -G, --dump                dump the state when built with DEBUG_OUTPUT (twice: all rules)\n"
@@ -3154,6 +3157,8 @@ main(int argc, char* argv[]) {
       {"header", 1, 0, 'H'},
       {"baud", 1, 0, 'Q'},
       {"code-offset", 1, 0, 'K'},
+      {"universal-hex", 0, &xc8_universal_opt, 1},
+      {"no-universal-hex", 0, &xc8_universal_opt, 0},
       {"cflag", 1, 0, 1001},
       {"ldflag", 1, 0, 1002},
       {"pack", 1, 0, 1003},

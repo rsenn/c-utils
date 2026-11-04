@@ -1,5 +1,14 @@
 2026-11-04:
 
+- ihextool: new command vectors; it adds PIC18 GOTO stubs at the vectors
+  (default 0x00, 0x08, 0x18) that jump to vector + the application offset
+  (-a), so a hex built for a bootloader runs without it too. --vectors and
+  --family options.
+- genmakefile: PIC18 with a code offset (--code-offset or the offset of an
+  imported MPLAB X project) also builds NAME-universal.hex with ihextool
+  vectors (xc8 and xc8-cc, gmake and make); IHEXTOOL and CODE_OFFSET can be
+  overridden. --no-universal-hex turns it off.
+- tests: genmakefile/ihextool-vectors.sh.
 - genmakefile -t xc8-cc: --code-offset gives -mcodeoffset on compile and
   link; --import-mplabx maps the HI-TECH-COMP/-LINK and XC8-config-global
   properties to flags (-fno-short-double, -memi, -mwarn, -mstack, -msummary,

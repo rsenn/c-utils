@@ -1010,6 +1010,14 @@ the hex records below the offset; `ivt-loc=offset+8` is a descriptor
 expression. Both are tested by comparing generated command lines with
 `make -n` of the hand written build (14.4).
 
+For PIC18 the application hex is also written as `<name>-universal.hex`
+(`ihextool vectors -a <offset>`): `GOTO offset+V` stubs at the vectors 0x00,
+0x08, 0x18. The USB-uC bootloader skips every block below `PROG_REGION_START`
+and forwards its own vectors to offset+V, so the one file runs with and
+without the bootloader; without it, the empty area below the offset only
+slides over NOPs and the interrupt vector restarts the program. On by default
+when the offset is not zero (`--no-universal-hex` turns it off).
+
 ### 9.4 Optional packages
 
 Package = (name, header(s), library(s), variable names, pkg-config module).
