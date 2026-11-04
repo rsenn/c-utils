@@ -1,5 +1,7 @@
 2026-11-04:
 
+- genmakefile: -m batch no longer writes `|| GOTO FAIL` after an empty recipe
+  (the rule all); the line made every batch file end in the Fail branch.
 - genmakefile: the xc8 and xc8-cc features also work with -m ninja, shell and
   batch: XC8_BIN, DFP_DIR, IHEXTOOL and CODE_OFFSET defaults (ninja reads them
   from the environment of the shell, as for DFP_DIR), PATH set up, the

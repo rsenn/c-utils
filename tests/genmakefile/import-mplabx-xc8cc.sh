@@ -91,6 +91,7 @@ grep -q '^: ${IHEXTOOL:=ihextool}' build.sh && grep -q '^: ${CODE_OFFSET:=0x2000
 gen batch build.bat || { echo "FAIL: -m batch"; exit 1; }
 grep -q 'IF NOT DEFINED IHEXTOOL SET IHEXTOOL=ihextool' build.bat && grep -q 'IF NOT DEFINED CODE_OFFSET SET CODE_OFFSET=0x2000' build.bat &&
   grep -q '^%IHEXTOOL% vectors -a %CODE_OFFSET%' build.bat || { echo "FAIL: batch universal"; exit 1; }
+grep -q '^[[:space:]]*|| GOTO FAIL' build.bat && { echo "FAIL: empty command before || GOTO FAIL"; exit 1; }
 for m in ninja shell batch; do
   gen $m nu.$m --no-universal-hex
   grep -q 'Prog-universal\|ihextool_vectors\|IHEXTOOL vectors' nu.$m && { echo "FAIL: --no-universal-hex ($m)"; exit 1; }

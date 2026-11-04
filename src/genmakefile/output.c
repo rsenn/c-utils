@@ -663,8 +663,16 @@ output_script(buffer* b, target* rule, build_tool_t tool, const char quote[], ch
     rule_command(rule, &cmd, tool, quote, psa, sep, tools.make);
     buffer_putsa(b, &cmd);
 
-    if(tool == TOOL_BATCH)
-      buffer_puts(b, " || GOTO FAIL");
+    /* an empty recipe (the rule "all") has no command to test */
+    if(tool == TOOL_BATCH) {
+      size_t k = 0;
+
+      while(k < cmd.len && (cmd.s[k] == ' ' || cmd.s[k] == '\t' || cmd.s[k] == '\r' || cmd.s[k] == '\n'))
+        ++k;
+
+      if(k < cmd.len)
+        buffer_puts(b, " || GOTO FAIL");
+    }
 
     stralloc_free(&cmd);
   }
