@@ -413,13 +413,17 @@ them with -v when porting a foreign project. Details in
   touched anyway; rename the file when its function has another name.
 
 - genmakefile-multi-chip-targets:
-  A MPLAB X project like USB-uC has one configuration per chip, and the user
-  wants all of them from one run. Giving genmakefile one target for each
-  configuration (the "--" syntax) does not work: the build id and the
-  directories are worked out once from the chip of the first target, so the
-  rules of the others are not written.
+  All configurations of a MPLAB X project are built from one makefile by a
+  driver makefile that calls one makefile for each (scripts/
+  genmakefile-mplabx-all.sh). One makefile with several chips would need
+  the build id, the compiler flags and the CHIP variable to belong to a
+  target; today they are worked out once for the run, so the "--" syntax
+  with a different chip in every target does not write the later targets.
 
-  Make the build id a property of the target, not of the run, then let
-  --mplabx-conf all give one target for each configuration. Until then
-  generate one makefile per configuration with --mplabx-conf NAME.
+- walk-windows:
+  walk only compiles on WINDOWS_NATIVE: stat stands in for lstat and there is
+  no cycle check. The converted callers (logserial, genmakefile) use walk
+  unconditionally, so a Windows build needs a real backend from shish first.
+  Likewise list-r.c on Windows native now gets size and time from stat on a
+  UTF-8 path instead of the find data, which is unchecked there.
 

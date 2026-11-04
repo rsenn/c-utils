@@ -39,7 +39,6 @@ extern buffer* unix_optbuf;
 
 const char* const build_types[] = {"Release", "RelWithDebInfo", "MinSizeRel", "Debug"};
 
-
 char pathsep_make = DEFAULT_PATHSEP, pathsep_args = DEFAULT_PATHSEP;
 const char* builddir_varname = "BUILDDIR";
 strarray dirstack = {0};
@@ -423,113 +422,118 @@ libdirs_add(const char* dir) {
  */
 void
 usage(char* argv0) {
-  buffer_putm_internal(buffer_1,
-                       "Usage: ",
-                       str_basename(argv0),
-                       " [common-options] [--] [target1-options...] -- [target2-options...] ...\n"
-                       "\n"
-                       "  Multiple targets may be given in one invocation, each with its own\n"
-                       "  options and sources, separated by a literal \"--\"; every target's rules\n"
-                       "  are generated into the same output file.\n"
-                       "\n"
-                       "Options\n"
-                       "  -h, --help                show this help\n"
-                       "\n"
-                       "  -o, --output FILE         write to file\n"
-                       "  -f, --input-file FILE     read from build-log file\n"
-                       "  -M, --cmake-builddir DIR  read a CMake build directory recursively for\n"
-                       "                            link.txt/compile_commands.json\n"
-                       "\n"
-                       "  -T, --objext EXT          object file extension\n"
-                       "  -B, --exeext EXT          binary file extension\n"
-                       "  -X, --libext EXT          library file extension\n"
-                       "\n"
-                       "      --create-libs         create rule_map for libraries\n"
-                       "      --create-objs         create rule_map for objects\n"
-                       "      --create-bins         create rule_map for programs\n"
-                       "      --create-module       create rule_map for loadable module\n"
-                       "  -S, --build-as-lib TARGET build target as library\n"
-                       "\n"
-                       "      --lib-dir DIR         directory of the lib modules (default: lib)\n"
-                       "      --library NAME        the sources that have no main() make the library NAME\n"
-                       "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
-                       "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, LIB<NAME>_LIBDIR)\n"
-                       "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
-                       "      --dump-project        print the arguments --project and --import-mplabx stand for, one to a line, and stop\n"
-                       "      --project FILE        arguments from the [project] section of an INI file (toolchain, make, chip, xtal, baud,\n"
-                       "                            build, define, include, link, library, import, conf, pair-headers, sources)\n"
-                       "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
-                       "      --mplabx-conf NAME    with --import-mplabx: the configuration NAME instead of the first\n"
-                       "      --infer-sources       a function that a source calls and does not define is looked for in the .c files next to\n"
-                       "                            the sources and in the -I directories; the file that defines it is a source too\n"
-                       "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
-                       "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
-                       "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
-                       "      --code-offset ADDRESS address the program is loaded to\n"
-                       "                            (with --chip: bin/<compiler>-<chip>/ and obj/<compiler>-<chip>/<build id>/)\n"
-                       "  -v, --verbose             tell what is being done (twice: every source scanned)\n"
-                       "  -G, --dump                dump the state when built with DEBUG_OUTPUT (twice: all rules)\n"
-                       "  -x FILE                   write the debug log to FILE\n"
-                       "  -i, --install             create installation rule_map\n"
-                       "\n"
-                       //"  -R, --objdir   DIR        object directory\n"
-                       "  -O, --outdir   DIR        output directory\n"
-                       "  -d, --builddir DIR        build directory\n"
-                       "  -k, --bindir   DIR        binary directory (defaults to --builddir)\n"
-                       "\n"
-                       "  -a, --arch   MACHINE      set architecture\n"
-                       "  -s, --system OS           set operating system\n"
-                       "  -c, --cross  TARGET       set cross compiler\n"
-                       "\n"
-                       "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
-                       "  -I, --include-path DIR    add an include directory\n"
-                       "  -L, --library-path DIR    add a library directory\n"
-                       "  -l, --link LIB            link a library\n"
-                       "\n"
-                       "  -t, --compiler-type TYPE  compiler type, one of:\n"
-                       "                            (default: guessed from --builddir/--output,\n"
-                       "                            otherwise unset)\n"
-                       "\n"
-                       "     gcc         GNU make\n"
-                       "     bcc55       Borland C++ Builder 5.5\n"
-                       "     bcc102      Embarcadero C++ 10.2 (bcc32c, clang based, C99)\n"
-                       "     bcc         Borland C++ Builder >= 6.0\n"
-                       "     lcc         lcc\n"
-                       "     tcc         TinyCC\n"
-                       "     msvc        Visual C++\n"
-                       "     icl         Intel C++\n"
-                       "     clang       LLVM\n"
-                       "     occ         OrangeC\n"
-                       "     dmc         Digital Mars C++\n"
-                       "     pocc        Pelles-C\n"
-                       "     zapcc[-cl]  ZapCC\n"
-                       "     xc8         Microchip C Compiler for 8-bit PIC\n"
-                       "     sdcc        Small Device C Compiler\n"
-                       "\n"
-                       "  -m, --make-type TYPE      make program type, one of:\n"
-                       "                            (default: derived from --compiler-type,\n"
-                       "                            otherwise \"make\")\n"
-                       "     nmake       Microsoft NMake\n"
-                       "     borland     Borland Make\n"
-                       "     gmake       GNU Make\n"
-                       "     omake       OrangeCC Make\n"
-                       "     pomake      Pelles-C Make\n"
-                       "     make        Other make\n"
-                       "     batch       Windows batch (.bat .cmd)\n"
-                       "     shell       Bourne shell script\n"
-                       "     ninja       Ninja build\n"
-                       "     mplab       MPLAB project (.mcp)\n"
-                       "     mplabx      MPLAB X project (NetBeans)\n"
-                       "     cmake       KitWare CMake\n"
-                       "\n"
-                       "  Specify build type:\n"
-                       "\n"
-                       "    --debug            with debugging information, no optimization\n"
-                       "    --relwithdebinfo   with debugging information, optimize for speed\n"
-                       "    --release          optimize for speed\n"
-                       "    --minsizerel       optimize for size\n"
-                       "\n",
-                       NULL);
+  buffer_putm_internal(
+      buffer_1,
+      "Usage: ",
+      str_basename(argv0),
+      " [common-options] [--] [target1-options...] -- [target2-options...] ...\n"
+      "\n"
+      "  Multiple targets may be given in one invocation, each with its own\n"
+      "  options and sources, separated by a literal \"--\"; every target's rules\n"
+      "  are generated into the same output file.\n"
+      "\n"
+      "Options\n"
+      "  -h, --help                show this help\n"
+      "\n"
+      "  -o, --output FILE         write to file\n"
+      "  -f, --input-file FILE     read from build-log file\n"
+      "  -M, --cmake-builddir DIR  read a CMake build directory recursively for\n"
+      "                            link.txt/compile_commands.json\n"
+      "\n"
+      "  -T, --objext EXT          object file extension\n"
+      "  -B, --exeext EXT          binary file extension\n"
+      "  -X, --libext EXT          library file extension\n"
+      "\n"
+      "      --create-libs         create rule_map for libraries\n"
+      "      --create-objs         create rule_map for objects\n"
+      "      --create-bins         create rule_map for programs\n"
+      "      --create-module       create rule_map for loadable module\n"
+      "  -S, --build-as-lib TARGET build target as library\n"
+      "\n"
+      "      --lib-dir DIR         directory of the lib modules (default: lib)\n"
+      "      --library NAME        the sources that have no main() make the library NAME\n"
+      "      --header NAME[,NAME]  headers --install copies to include/ (those in an include directory always)\n"
+      "      --dep NAME[,NAME]     optional packages the make file looks for (LIB<NAME>, LIB<NAME>_INCLUDEDIR, "
+      "LIB<NAME>_LIBDIR)\n"
+      "      --switch-prefix STR   names the sources query that begin with STR become switches (default USE_)\n"
+      "      --dump-project        print the arguments --project and --import-mplabx stand for, one to a line, and "
+      "stop\n"
+      "      --project FILE        arguments from the [project] section of an INI file (toolchain, make, chip, xtal, "
+      "baud,\n"
+      "                            build, define, include, link, library, import, conf, pair-headers, sources)\n"
+      "      --import-mplabx FILE  take chip, -D, -I and the .c files from a MPLAB X nbproject/configurations.xml\n"
+      "      --mplabx-conf NAME    with --import-mplabx: the configuration NAME instead of the first\n"
+      "      --infer-sources       a function that a source calls and does not define is looked for in the .c files "
+      "next to\n"
+      "                            the sources and in the -I directories; the file that defines it is a source too\n"
+      "      --pair-headers        a quoted #include \"x.h\" that is found also adds the file x.c next to it\n"
+      "      --xtal HZ             clock of the microcontroller (_XTAL_FREQ)\n"
+      "      --baud BPS            baud rate of the serial port (UART_BAUD)\n"
+      "      --code-offset ADDRESS address the program is loaded to\n"
+      "                            (with --chip: bin/<compiler>-<chip>/ and obj/<compiler>-<chip>/<build id>/)\n"
+      "  -v, --verbose             tell what is being done (twice: every source scanned)\n"
+      "  -G, --dump                dump the state when built with DEBUG_OUTPUT (twice: all rules)\n"
+      "  -x FILE                   write the debug log to FILE\n"
+      "  -i, --install             create installation rule_map\n"
+      "\n"
+      //"  -R, --objdir   DIR        object directory\n"
+      "  -O, --outdir   DIR        output directory\n"
+      "  -d, --builddir DIR        build directory\n"
+      "  -k, --bindir   DIR        binary directory (defaults to --builddir)\n"
+      "\n"
+      "  -a, --arch   MACHINE      set architecture\n"
+      "  -s, --system OS           set operating system\n"
+      "  -c, --cross  TARGET       set cross compiler\n"
+      "\n"
+      "  -D, --define NAME[=VALUE] add a preprocessor definition\n"
+      "  -I, --include-path DIR    add an include directory\n"
+      "  -L, --library-path DIR    add a library directory\n"
+      "  -l, --link LIB            link a library\n"
+      "\n"
+      "  -t, --compiler-type TYPE  compiler type, one of:\n"
+      "                            (default: guessed from --builddir/--output,\n"
+      "                            otherwise unset)\n"
+      "\n"
+      "     gcc         GNU make\n"
+      "     bcc55       Borland C++ Builder 5.5\n"
+      "     bcc102      Embarcadero C++ 10.2 (bcc32c, clang based, C99)\n"
+      "     bcc         Borland C++ Builder >= 6.0\n"
+      "     lcc         lcc\n"
+      "     tcc         TinyCC\n"
+      "     msvc        Visual C++\n"
+      "     icl         Intel C++\n"
+      "     clang       LLVM\n"
+      "     occ         OrangeC\n"
+      "     dmc         Digital Mars C++\n"
+      "     pocc        Pelles-C\n"
+      "     zapcc[-cl]  ZapCC\n"
+      "     xc8         Microchip C Compiler for 8-bit PIC\n"
+      "     sdcc        Small Device C Compiler\n"
+      "\n"
+      "  -m, --make-type TYPE      make program type, one of:\n"
+      "                            (default: derived from --compiler-type,\n"
+      "                            otherwise \"make\")\n"
+      "     nmake       Microsoft NMake\n"
+      "     borland     Borland Make\n"
+      "     gmake       GNU Make\n"
+      "     omake       OrangeCC Make\n"
+      "     pomake      Pelles-C Make\n"
+      "     make        Other make\n"
+      "     batch       Windows batch (.bat .cmd)\n"
+      "     shell       Bourne shell script\n"
+      "     ninja       Ninja build\n"
+      "     mplab       MPLAB project (.mcp)\n"
+      "     mplabx      MPLAB X project (NetBeans)\n"
+      "     cmake       KitWare CMake\n"
+      "\n"
+      "  Specify build type:\n"
+      "\n"
+      "    --debug            with debugging information, no optimization\n"
+      "    --relwithdebinfo   with debugging information, optimize for speed\n"
+      "    --release          optimize for speed\n"
+      "    --minsizerel       optimize for size\n"
+      "\n",
+      NULL);
   buffer_putnlflush(buffer_1);
 }
 
@@ -1412,16 +1416,27 @@ infer_sources(strarray* sources) {
       const char* dir = strarray_at(&dirs_seen, i);
       size_t j;
       int dup = 0;
-      struct dir_s rd;
+      arena ar;
+      struct dirlist dl;
+      char* rec;
       const char* name;
 
       for(j = 0; j < i; ++j)
         if(str_equal(strarray_at(&dirs_seen, j), dir))
           dup = 1;
-      if(dup || dir_open(&rd, dir))
+      if(dup)
         continue;
-      while((name = dir_read(&rd))) {
-        size_t nl = str_len(name);
+      arena_init(&ar, &arena_heap, 0);
+      dl = dirlist_read(&ar, dir, 0);
+      if(!dl.s) {
+        arena_free(&ar);
+        continue;
+      }
+      dirlist_foreach(rec, dl) {
+        size_t nl;
+
+        name = dirlist_name(rec);
+        nl = str_len(name);
 
         if(nl > 2 && name[nl - 2] == '.' && name[nl - 1] == 'c' && !str_contains(name, "/")) {
           stralloc f;
@@ -1437,7 +1452,7 @@ infer_sources(strarray* sources) {
           stralloc_free(&f);
         }
       }
-      dir_close(&rd);
+      arena_free(&ar);
     }
     strarray_free(&dirs_seen);
   }
@@ -2036,7 +2051,8 @@ parse_target_options(
   const char* objdir = NULL;
 
   for(;;) {
-    c = unix_getopt_long(argc, argv, "hvGe:j:H:U:Z:Q:K:a:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
+    c = unix_getopt_long(
+        argc, argv, "hvGe:j:H:U:Z:Q:K:a:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
 
     if(c == -1)
       break;
@@ -2409,7 +2425,8 @@ import_project(int* argcp, char** argv) {
       stralloc_nul(&val);
 
       if(!str_diff(key.s, "toolchain") || !str_diff(key.s, "make") || !str_diff(key.s, "chip") ||
-         !str_diff(key.s, "xtal") || !str_diff(key.s, "baud") || !str_diff(key.s, "import") || !str_diff(key.s, "conf")) {
+         !str_diff(key.s, "xtal") || !str_diff(key.s, "baud") || !str_diff(key.s, "import") ||
+         !str_diff(key.s, "conf")) {
         stralloc opt;
 
         stralloc_init(&opt);
