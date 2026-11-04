@@ -620,10 +620,12 @@
   declarations in `lib/fmt.h` and the definitions together if it ever matters.
 
 - genmakefile-xc8cc-hex-depends-on-source-path: the `.hex` of an xc8-cc build
-  is not the same when the sources are named by a relative path (`make`) or by
-  an absolute one (`ninja`, `shell`): in `CDC_Serial_UART_Example.X` the
-  application differs in the RAM addresses of the code (`0x48` against `0x4D`).
-  The stub area below the code offset is the same. The ninja and shell
-  backends use absolute source paths (`sources_dir`), the make backends
-  relative ones.
+  is not the same when the sources are named by absolute paths (an output file
+  outside the project directory gives `$(SRCROOT)` or absolute paths) as when
+  they are relative: in `CDC_Serial_UART_Example.X` the `.p1` files are four
+  times larger and the application differs in RAM addresses. Built from the
+  project directory, gmake, ninja and the shell backend give byte-identical
+  hex files, so it is the compiler and not the backends. The stub area below
+  the code offset is the same. Build from the project directory when the hex
+  has to be reproducible.
 
