@@ -993,8 +993,8 @@ ftpparse_mlsx(struct ftpparse* fp, char* x, int ll, int is_mlst) {
 
     if(i + j + k == ll)
       return 0;
-      /* x[i+j+k] is space or semicolon,
-       * so use of getlong is safe */
+    /* x[i+j+k] is space or semicolon,
+     * so use of getlong is safe */
 #define ISFACT(name) (j == sizeof(name) - 1 && case_startb(x + i, j, name))
 
     if(ISFACT("size")) {

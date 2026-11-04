@@ -122,7 +122,7 @@ struct dns_resolver {
 #define dns_is_busy(dns) ((dns)->s1)
 
 #define DNS_NAME4_DOMAIN 31
-//#define DNS_NAME6_DOMAIN (4 * 16 + 10)
+// #define DNS_NAME6_DOMAIN (4 * 16 + 10)
 #define IP4_FMT 20
 
 /* bzero a resolver struct and set

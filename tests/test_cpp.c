@@ -100,7 +100,11 @@ TEST(test_cpp_function_macro) {
 TEST(test_cpp_stringize_paste) {
   char out[512];
 
-  run("#define STR(x) #x\n#define CAT(a, b) a##b\nconst char* s = STR(hello world);\nint CAT(foo, 1) = 0;\n", NULL, out, sizeof out, 0);
+  run("#define STR(x) #x\n#define CAT(a, b) a##b\nconst char* s = STR(hello world);\nint CAT(foo, 1) = 0;\n",
+      NULL,
+      out,
+      sizeof out,
+      0);
   ASSERT_EQ(1, str_contains(out, "\"hello world\""));
   ASSERT_EQ(1, str_contains(out, "foo1"));
 }

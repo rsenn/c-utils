@@ -16,7 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <ctype.h>
-//#include <sys/socket.h>
+// #include <sys/socket.h>
 #include <sys/types.h>
 
 static int iphex = 0;
@@ -219,7 +219,13 @@ log_startup(void) {
 }
 
 void
-log_query(uint64* qnum, const char client[], unsigned int port, int fd, const char id[2], const char* q, const char qtype[2]) {
+log_query(uint64* qnum,
+          const char client[],
+          unsigned int port,
+          int fd,
+          const char id[2],
+          const char* q,
+          const char qtype[2]) {
   log_string("query ");
   log_number(*qnum);
   log_space();

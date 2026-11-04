@@ -19,7 +19,8 @@
 /* a self signed certificate for the server of the test; 0 if openssl cannot make one */
 static int
 make_certificate(void) {
-  return system("openssl req -x509 -newkey rsa:2048 -nodes -keyout " KEYFILE " -out " CERTFILE " -subj /CN=localhost -days 2 >/dev/null 2>&1") == 0;
+  return system("openssl req -x509 -newkey rsa:2048 -nodes -keyout " KEYFILE " -out " CERTFILE
+                " -subj /CN=localhost -days 2 >/dev/null 2>&1") == 0;
 }
 
 /*

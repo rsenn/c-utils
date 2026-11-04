@@ -272,8 +272,6 @@ TEST(test_array_indexof) {
   array_reset(&a);
 }
 
-
-
 /*
  * int64 array_splice(array*, uint64 membersize, uint64 start, uint64 del, uint64 insert, const void* x);
  */

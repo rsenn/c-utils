@@ -114,14 +114,14 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
 
     if(byte_diff(x, 2, ", "))
       break;
-  
+
     x += 2;
     n -= 2;
   }
 
-  if(x[0] == ']') 
+  if(x[0] == ']')
     x += 1, n -= 1;
-  
+
   stralloc_free(&arg);
   return x - start;
 }
@@ -129,7 +129,7 @@ parse_strlist(const char* x, ssize_t n, strlist* out) {
 void
 print_args(buffer* b, const strlist* sl) {
   stralloc sa;
-  
+
   stralloc_init(&sa);
   strlist_joins(sl, &sa, "' '");
   buffer_puts(b, "'");

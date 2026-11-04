@@ -154,7 +154,8 @@ TEST(test_xml_read_tree_stray_close) {
  */
 TEST(test_xml_read_token) {
   static const char text[] = "<a k=\"v\">text</a>";
-  static const xmltokid expected[6] = {XML_TAG_NAME, XML_ATTR_NAME, XML_ATTR_VALUE, XML_TAG_CLOSE, XML_DATA, XML_TAG_CLOSE};
+  static const xmltokid expected[6] = {
+      XML_TAG_NAME, XML_ATTR_NAME, XML_ATTR_VALUE, XML_TAG_CLOSE, XML_DATA, XML_TAG_CLOSE};
   xmlscanner s;
   xmltoken tok;
   buffer in;
@@ -174,8 +175,8 @@ TEST(test_xml_read_token) {
   ASSERT_EQ(7, i);
 }
 
-
-static const char tree_doc[] = "<root a=\"1\"><item id=\"x\" n=\"3.5\">one</item><item id=\"y\">two <b>bold</b></item><other/></root>";
+static const char tree_doc[] =
+    "<root a=\"1\"><item id=\"x\" n=\"3.5\">one</item><item id=\"y\">two <b>bold</b></item><other/></root>";
 
 static xmlnode*
 load(buffer* b, const char* text, size_t n) {
@@ -339,7 +340,7 @@ TEST(test_xml_scan_pieces) {
   ASSERT_EQ(6, xml_scan_attrvalue("\"abc\" d", 7, &tl)); /* quotes in the token, the blank after it skipped */
   ASSERT_EQ(5, tl);
   ASSERT_EQ(6, xml_scan_attrvalue("'a\\'b'", 6, &tl));
-  ASSERT_EQ(6, tl); /* an escaped quote does not end it */
+  ASSERT_EQ(6, tl);                                 /* an escaped quote does not end it */
   ASSERT_EQ(3, xml_scan_attrvalue("abc>", 4, &tl)); /* unquoted */
   ASSERT_EQ(3, tl);
   ASSERT_EQ(2, xml_scan_attrvalue("x y", 3, &tl));

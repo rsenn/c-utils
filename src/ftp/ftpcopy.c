@@ -420,12 +420,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
             do_log2(l_dir->s, ": is a link\n");
           return 1;
         }
-        xbailout(100,
-                 errno,
-                 "failed to create link from ",
-                 fptr,
-                 " to ",
-                 l_dir->s);
+        xbailout(100, errno, "failed to create link from ", fptr, " to ", l_dir->s);
       }
       hash_it(x, l_dir, !found);
 
@@ -490,8 +485,7 @@ download(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   if(o_dry_run) {
     if(o_loglevel)
 
-      do_log2(l_dir->s,
-              ": dry-run non-download successful\n");
+      do_log2(l_dir->s, ": dry-run non-download successful\n");
     hash_it(x, l_dir, 1);
     return 1;
   }
@@ -642,7 +636,8 @@ retry_pasv:
         static uint32 old_window_x;
         /* note: should be larger than
          * 20+20+4+2+2+3 == 51 */
-        static char bs[] = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b";
+        static char bs[] = "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b"
+                           "\b\b\b\b\b\b\b\b\b";
 
         if(!old_window_x)
           old_window_x = window_x;
@@ -934,12 +929,7 @@ handle_hackish_symlink(struct ftpparse* x, stralloc* l_dir) {
       remove_dir(&t);
 
     if(0 != do_symlink(idstr.s, t.s))
-      xbailout(100,
-               errno,
-               "failed to create symlink from ",
-               idstr.s,
-               " to ",
-               t.s);
+      xbailout(100, errno, "failed to create symlink from ", idstr.s, " to ", t.s);
   }
   hash_it(x, &t, 1);
   stralloc_free(&t);
@@ -967,19 +957,11 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
   if(found) {
     if(o_loglevel > 1)
 
-      do_log4(l_dir->s,
-              ": (sym)linking, ID identical to `",
-              fptr,
-              "'\n");
+      do_log4(l_dir->s, ": (sym)linking, ID identical to `", fptr, "'\n");
     remove_dir(l_dir);
 
     if(0 != do_symlink(fptr, l_dir->s))
-      xbailout(111,
-               errno,
-               "failed to create symlink from ",
-               fptr,
-               " to ",
-               l_dir->s);
+      xbailout(111, errno, "failed to create symlink from ", fptr, " to ", l_dir->s);
     hash_it(x, l_dir, 1);
 
     done = 1;
@@ -1002,11 +984,7 @@ handle_directory(struct ftpparse* x, stralloc* r_dir, stralloc* l_dir) {
       if(!o_dry_run)
 
         if(-1 == api_utimes(l_dir->s, TAI2UNIX(&x->mtime), 0, TAI2UNIX(&x->mtime), 0))
-          warning(errno,
-                  "failed to call utimes on ",
-                  l_dir->s,
-                  0,
-                  0);
+          warning(errno, "failed to call utimes on ", l_dir->s, 0, 0);
 
       done = 1;
     }
@@ -1200,12 +1178,7 @@ skip_listing:
       oom();
   } else {
     if(-1 == ftp_read_list(data_sock, &dirdata))
-      xbailout(111,
-               errno,
-               "failed to read remote directory",
-               0,
-               0,
-               0);
+      xbailout(111, errno, "failed to read remote directory", 0, 0, 0);
 
     close(data_sock);
     data_sock = -1;
@@ -1341,12 +1314,7 @@ skip_listing:
   if(-1 == fchdir(olddirfd)) /* ECANTHAPPEN,
                                 but we'd be in
                                 trouble */
-    xbailout(111,
-             errno,
-             "failed to fchdir to upper level directory",
-             0,
-             0,
-             0);
+    xbailout(111, errno, "failed to fchdir to upper level directory", 0, 0, 0);
   close(olddirfd); /* ECANTHAPPEN */
   return 1;        /* done */
 }
@@ -1385,12 +1353,7 @@ initialdirectory(stralloc* dirdata, struct ftpparse* fp, stralloc* r_dir) {
     eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
 
   if(*p != '1')
-    xbailout(111,
-             errno,
-             "failed to read initial directory LIST answer",
-             0,
-             0,
-             0);
+    xbailout(111, errno, "failed to read initial directory LIST answer", 0, 0, 0);
   count = ftp_read_list(data_sock, dirdata);
   close(data_sock);
   data_sock = -1;
@@ -1520,12 +1483,7 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
     eof_or_error(111, errno, "failed to read LIST answer", 0, 0);
 
   if(*p != '1')
-    xbailout(100,
-             0,
-             "failed to LIST the remote directory: ",
-             p,
-             0,
-             0);
+    xbailout(100, 0, "failed to LIST the remote directory: ", p, 0, 0);
 
   count = ftp_read_list(data_sock, &dirdata);
 
@@ -1537,20 +1495,10 @@ initialentity(struct ftpparse* fp, stralloc* r_dir) {
 
   if(count == 0) /* typically happens if first
                     entity is nonexistant */
-    xbailout(111,
-             0,
-             "remote file/directory doesn't exist",
-             0,
-             0,
-             0);
+    xbailout(111, 0, "remote file/directory doesn't exist", 0, 0, 0);
 
   if(count != 1)
-    xbailout(111,
-             0,
-             "too many entries return by 'LIST ",
-             r_dir->s,
-             "'",
-             0);
+    xbailout(111, 0, "too many entries return by 'LIST ", r_dir->s, "'", 0);
   /* might be a directory with one file,
    * or a file */
   /* try to get the date. We need it
@@ -1603,16 +1551,14 @@ delete(stralloc* dn) {
       if(!found) {
         if(o_dry_run)
 
-          do_log2(dn->s,
-                  ": not found on remote, would be deleted\n");
+          do_log2(dn->s, ": not found on remote, would be deleted\n");
         else {
           if(-1 == rmdir(dn->s))
             xbailout(100, errno, "failed to rmdir ", dn->s, 0, 0);
 
           if(o_loglevel)
 
-            do_log2(dn->s,
-                    ": not found on remote, deleted\n");
+            do_log2(dn->s, ": not found on remote, deleted\n");
         }
       } else {
         if(o_loglevel > 3)
@@ -1630,14 +1576,12 @@ delete(stralloc* dn) {
         if(count_deletes++ >= o_max_deletes) {
           if(o_loglevel)
 
-            do_log2(dn->s,
-                    ": not deleted due to --max-deletes\n");
+            do_log2(dn->s, ": not deleted due to --max-deletes\n");
           continue;
         }
 
       if(o_dry_run) {
-        do_log2(dn->s,
-                ": not found on remote, would be deleted\n");
+        do_log2(dn->s, ": not found on remote, would be deleted\n");
       } else {
         if(-1 == unlink(dn->s)) {
           unsigned int er = errno;
@@ -1648,8 +1592,7 @@ delete(stralloc* dn) {
 
         if(o_loglevel)
 
-          do_log2(dn->s,
-                  ": not found on remote, deleted\n");
+          do_log2(dn->s, ": not found on remote, deleted\n");
       }
     } else {
       if(o_loglevel > 3)
@@ -1715,12 +1658,7 @@ include_exclude_file(const char* fname) {
       break;
 
     if(!gotlf)
-      xbailout(111,
-               errno,
-               "unterminated line read from ",
-               fname,
-               0,
-               0);
+      xbailout(111, errno, "unterminated line read from ", fname, 0, 0);
     s.len--;
 
     if(!s.len)
@@ -1734,12 +1672,7 @@ include_exclude_file(const char* fname) {
     else if(s.s[0] == '-')
       callback_exclude(0, 0, s.s + 1);
     else if(s.s[0] != '#')
-      xbailout(111,
-               0,
-               fname,
-               ": unknown tag at start of line ",
-               s.s,
-               0);
+      xbailout(111, 0, fname, ": unknown tag at start of line ", s.s, 0);
   }
   close(fd);
   stralloc_free(&s);
@@ -1755,12 +1688,7 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
     x = ip4_scan(s, ip);
 
     if(!x || (s[x] != ',' && s[x] != 0))
-      xbailout(2,
-               0,
-               "cannot parse IP address at `",
-               s,
-               "'",
-               0);
+      xbailout(2, 0, "cannot parse IP address at `", s, "'", 0);
 
     if(!stralloc_catb(&pasv_response_ips, ip, 4))
       oom();
@@ -1773,15 +1701,7 @@ callback_ip(uogetopt_env* e, uogetopt2* g, char* s) {
 }
 
 static uogetopt2 myopts[] = {
-    {0,
-     "",
-     uogo_label,
-     0,
-     0,
-     0,
-     "Connect / login / username / password options:",
-     0,
-     0},
+    {0, "", uogo_label, 0, 0, 0, "Connect / login / username / password options:", 0, 0},
     COMMON_OPT_user,
     COMMON_OPT_pass,
     COMMON_OPT_account,
@@ -1821,7 +1741,8 @@ static uogetopt2 myopts[] = {
      &o_progress,
      1,
      "Report progress to stderr.",
-     "This will print a report of the download every second: a short form of the file name, the bytes got and expected and the percentage received.\n"
+     "This will print a report of the download every second: a short form of the file name, the bytes got and expected "
+     "and the percentage received.\n"
      "This option was added in version 0.6.0.",
      0},
     {0, "", uogo_label, 0, 0, 0, "File selection options:", 0, 0},
@@ -1832,7 +1753,8 @@ static uogetopt2 myopts[] = {
      &o_max_days,
      0,
      "Download only files modified in the last DAYS.",
-     "Locally existing copies of the not downloaded files will be kept. The default is not to restrict the age of files.",
+     "Locally existing copies of the not downloaded files will be kept. The default is not to restrict the age of "
+     "files.",
      "DAYS"},
     {0,
      "max-size",
@@ -1841,7 +1763,8 @@ static uogetopt2 myopts[] = {
      &o_max_size,
      0,
      "Download only files up to MAXBYTES length.",
-     "Locally existing copies of overlong files will be deleted during the clean-up step. The default is not to restrict the file size.\n"
+     "Locally existing copies of overlong files will be deleted during the clean-up step. The default is not to "
+     "restrict the file size.\n"
      "This option was added in version 0.5.1.",
      "MAXBYTES"},
     {'x',
@@ -1853,9 +1776,13 @@ static uogetopt2 myopts[] = {
      /*2345678901234567890123456789012345678901234567890
       */
      "Exclude paths matching WILDCARD.",
-     "If WILDCARD matches the full path of the remote file then the file will not be downloaded. WILDCARD is a shell style wildcard expression, not a regular expression like those of grep. You can repeat this option as often as you want, and you can intermix it with the --include option.\n"
-     "If both includes and excludes are used then the last matching one will be honored. The list starts with an implicit '--include *'.\n"
-     "If the --tolower option is used together with --exclude or --include then the in/exclude patterns have to be written in lower case.\n"
+     "If WILDCARD matches the full path of the remote file then the file will not be downloaded. WILDCARD is a shell "
+     "style wildcard expression, not a regular expression like those of grep. You can repeat this option as often as "
+     "you want, and you can intermix it with the --include option.\n"
+     "If both includes and excludes are used then the last matching one will be honored. The list starts with an "
+     "implicit '--include *'.\n"
+     "If the --tolower option is used together with --exclude or --include then the in/exclude patterns have to be "
+     "written in lower case.\n"
      "This option was added in version 0.3.0.",
      "WILDCARD"},
     {'i',
@@ -1875,7 +1802,9 @@ static uogetopt2 myopts[] = {
      &o_inex_file,
      0,
      "Read in/exclude patterns from FILE.",
-     "The include and exclude patterns are read from a file. If the first character of a line is a '+' the remainder of the line is treated as an argument of a --include optiona and if it is a '-' it is treated as an argument to a --exclude option. Lines starting with a '#' are ignored.\n"
+     "The include and exclude patterns are read from a file. If the first character of a line is a '+' the remainder "
+     "of the line is treated as an argument of a --include optiona and if it is a '-' it is treated as an argument to "
+     "a --exclude option. Lines starting with a '#' are ignored.\n"
      "FILE will be read after any --include and --exclude options given on the command line have been read.\n"
      "This option was added in version 0.6.6.",
      "FILE"},
@@ -1896,7 +1825,9 @@ static uogetopt2 myopts[] = {
      &o_ignore_time,
      1,
      "Ignore modification times.",
-     "Do not compare file modification times when checking the remote file has to be downloaded. This option may be combined with --ignore-size, in which case a file will never be downloaded regardless of changes in file size or modification time. In other words: ftpcopy will not download any updates.\n"
+     "Do not compare file modification times when checking the remote file has to be downloaded. This option may be "
+     "combined with --ignore-size, in which case a file will never be downloaded regardless of changes in file size or "
+     "modification time. In other words: ftpcopy will not download any updates.\n"
      "This option was added in version 0.4.4.",
      0},
     {0,
@@ -1918,7 +1849,8 @@ static uogetopt2 myopts[] = {
      &o_do_delete,
      0,
      "Do not delete files.",
-     "This influences the cleanup step when getting rid of things the server doesn't have anymore. It does not stop ftpcopy from deleting files when it detects something in it's way during a download.",
+     "This influences the cleanup step when getting rid of things the server doesn't have anymore. It does not stop "
+     "ftpcopy from deleting files when it detects something in it's way during a download.",
      0},
     {'M',
      "max-deletes",
@@ -1927,7 +1859,9 @@ static uogetopt2 myopts[] = {
      &o_max_deletes,
      0,
      "Do not delete more then COUNT files.",
-     "This option may be useful to limit the impact of a tempoary loss of files on the server. This only influences the cleanup step and does not stop ftpcopy to delete files in it's way during a download. The default is 0, meaning unlimited.\n"
+     "This option may be useful to limit the impact of a tempoary loss of files on the server. This only influences "
+     "the cleanup step and does not stop ftpcopy to delete files in it's way during a download. The default is 0, "
+     "meaning unlimited.\n"
      "This option was added in version 0.4.5.",
      "COUNT"},
 
@@ -1960,7 +1894,9 @@ static uogetopt2 myopts[] = {
      &o_rate_limit,
      0,
      "Limit file download speed.",
-     "Limit the transfer rate of file downloads to about that many bytes per seconds. The implementation is crude and simple, by sleeping up to one second between network reads, and therefore does not even try to limit the rate exactly to that number. On the other hand it usually works and is unlikely to break things by causing timeouts.\n"
+     "Limit the transfer rate of file downloads to about that many bytes per seconds. The implementation is crude and "
+     "simple, by sleeping up to one second between network reads, and therefore does not even try to limit the rate "
+     "exactly to that number. On the other hand it usually works and is unlikely to break things by causing timeouts.\n"
      "The default is unlimited.\n"
      "This option was added in version 0.4.7.",
      "BYTES_PER_SECOND"},
@@ -1971,7 +1907,9 @@ static uogetopt2 myopts[] = {
      &o_interactive,
      1,
      "Read directories from stdin.",
-     "This option tells ftpcopy to ignore any directories given on the command line, and to read commands from the standard input. Each command consists of two lines, the first being a directory on the remote server, and the second a local directory. ftpcopy will print an END-OF-COPY line after each operation.\n"
+     "This option tells ftpcopy to ignore any directories given on the command line, and to read commands from the "
+     "standard input. Each command consists of two lines, the first being a directory on the remote server, and the "
+     "second a local directory. ftpcopy will print an END-OF-COPY line after each operation.\n"
      "This option was added in version 0.3.6 and will be removed in future versions, unless someone objects.",
      0},
 
@@ -1985,7 +1923,8 @@ static uogetopt2 myopts[] = {
      &o_symlink_hack,
      1,
      "Deal with symbolic links.",
-     "This is only useful to mirror sites which create listings through /bin/ls, and will fail if a file name in a link contains a ` -> ' sequence.",
+     "This is only useful to mirror sites which create listings through /bin/ls, and will fail if a file name in a "
+     "link contains a ` -> ' sequence.",
      0},
     COMMON_OPT_force_select,
     {0,
@@ -1995,8 +1934,12 @@ static uogetopt2 myopts[] = {
      &o_mdtm,
      1,
      "Use the MDTM command to get the remote time.",
-     "The default is to take the times from the directory listings. This doesn't work if the server implements an inferior listing format (most do) and doesn't send time stamps in universal coordinated time (UTC). The damage caused by this is limited to file time stamps being wrong by a few hours.\n"
-     "This option makes ftpcopy send a MDTM command for any file it might want to download. The drawback is that this eats performance: ftpcopy usually sends just one command for a complete directory its traverses. With the --mdtm option it has to send an additional command for any file.\n"
+     "The default is to take the times from the directory listings. This doesn't work if the server implements an "
+     "inferior listing format (most do) and doesn't send time stamps in universal coordinated time (UTC). The damage "
+     "caused by this is limited to file time stamps being wrong by a few hours.\n"
+     "This option makes ftpcopy send a MDTM command for any file it might want to download. The drawback is that this "
+     "eats performance: ftpcopy usually sends just one command for a complete directory its traverses. With the --mdtm "
+     "option it has to send an additional command for any file.\n"
      "This option was added in version 0.3.10.",
      0},
     COMMON_OPT_pasv_ip,
@@ -2008,7 +1951,8 @@ static uogetopt2 myopts[] = {
      1,
      "Do not try to resume downloads.",
      "The REST command, needed to resume a failed\n"
-     "download, is badly specified and likely to be misinterpreted and -implemented. Use this option in case of trouble.\n"
+     "download, is badly specified and likely to be misinterpreted and -implemented. Use this option in case of "
+     "trouble.\n"
      "This option was added in version 0.6.0.",
      0},
     {0,
@@ -2018,8 +1962,10 @@ static uogetopt2 myopts[] = {
      &o_tolower,
      1,
      "Change all local file names to lowercase.",
-     "Use this only if you are absolutely sure that the remote side does not contain any files or directories whose lower cased names collide with each other. Otherwise this option will waste bandwidth.\n"
-     "If this option is used together with the --exclude or --include options then the in/exclude patterns have to be written in lower case.\n"
+     "Use this only if you are absolutely sure that the remote side does not contain any files or directories whose "
+     "lower cased names collide with each other. Otherwise this option will waste bandwidth.\n"
+     "If this option is used together with the --exclude or --include options then the in/exclude patterns have to be "
+     "written in lower case.\n"
      "This option was added in version 0.3.8.",
      0},
     COMMON_OPT_eat_leading_spaces,
@@ -2034,11 +1980,14 @@ static uogetopt2 myopts[] = {
      "How --include and --exclude work.",
      /* 12345678901234567890123456789012345678901234567890
       */
-     "In- and exclude lists are internally mixed together, keeping the order in which they were given. The list starts with an implicit `include *'. ftpcopy honors the last match.\n"
+     "In- and exclude lists are internally mixed together, keeping the order in which they were given. The list starts "
+     "with an implicit `include *'. ftpcopy honors the last match.\n"
      "\n"
-     "The wildcard matching is done against the full remote path of the file. The `/' character has no special meaning for the matching and is treated like any other.\n"
+     "The wildcard matching is done against the full remote path of the file. The `/' character has no special meaning "
+     "for the matching and is treated like any other.\n"
      "\n"
-     "Note: you have to include top level directories of files or directories you want to include. Something like this will NOT work:\n"
+     "Note: you have to include top level directories of files or directories you want to include. Something like this "
+     "will NOT work:\n"
      "    --exclude '*' --include '/w/h/e/r/e/file.c'\n"
      "You need to include /w, /w/h and so on.",
      0},
@@ -2083,7 +2032,8 @@ static uogetopt2 myopts[] = {
      "\n"
      "The software comes with NO WARRANTY, to the extent permitted by law.\n"
      "\n"
-     "This package is published unter the terms of the GNU General Public License version 2. Later versions of the GPL may or may not apply, see http://www.ohse.de/uwe/licenses/\n",
+     "This package is published unter the terms of the GNU General Public License version 2. Later versions of the GPL "
+     "may or may not apply, see http://www.ohse.de/uwe/licenses/\n",
      0},
     {0,
      "see-also",
@@ -2185,11 +2135,17 @@ static uogetopt_env optenv = {
     PACKAGE,
     VERSION,
     "usage: ftpcopy [options]                               ost[:port] remotedir [localdir]\n"
-    "   or: ftpcopy [options]                               tp://host[:port]/remotedir                               localdir]",
+    "   or: ftpcopy [options]                               tp://host[:port]/remotedir                               "
+    "localdir]",
     "create and maintain a ftp mirror.",
-    "ftpcopy copies a FTP site                               ecursivly. It afterwards deletes                               ll files in                               he local directory tree which                               ere not found on the remote                               ite.\n"
+    "ftpcopy copies a FTP site                               ecursivly. It afterwards deletes                          "
+    "     ll files in                               he local directory tree which                               ere "
+    "not found on the remote                               ite.\n"
     "\n"
-    "local-directory defaults to `.' -                               he current working directory -                               f the                               -no-delete option is used.                               ocal-directory is not needed if                               he                               -interactive option is used.\n"
+    "local-directory defaults to `.' -                               he current working directory -                    "
+    "           f the                               -no-delete option is used.                               "
+    "ocal-directory is not needed if                               he                               -interactive "
+    "option is used.\n"
     "Otherwise you must provide a                               ocal-directory argument.\n",
     COMMON_BUGREPORT_INFO,
     0,
@@ -2222,12 +2178,7 @@ main(int argc, char** argv) {
   uogetopt_parse(&optenv, &argc, argv);
 
   if(o_v4_only && o_v6_only)
-    xbailout(2,
-             0,
-             "the --v4 and --v6 options are mutally exclusive",
-             0,
-             0,
-             0);
+    xbailout(2, 0, "the --v4 and --v6 options are mutally exclusive", 0, 0, 0);
 
   if(o_v4_only)
     socket_flag_noipv6 = 1;
@@ -2301,12 +2252,7 @@ main(int argc, char** argv) {
     char dotdir[] = ".";
 
     if(o_do_delete)
-      xbailout(100,
-               0,
-               "default `localdir' (.) not allowed without the -n option",
-               0,
-               0,
-               0);
+      xbailout(100, 0, "default `localdir' (.) not allowed without the -n option", 0, 0, 0);
     localdir = dotdir;
   }
 
@@ -2329,12 +2275,7 @@ main(int argc, char** argv) {
   local_start_dir = get_cwd();
 
   if(!local_start_dir)
-    xbailout(111,
-             errno,
-             "failed to get current directory",
-             0,
-             0,
-             0);
+    xbailout(111, errno, "failed to get current directory", 0, 0, 0);
 
   ldirfd = open_read(".");
 
@@ -2362,12 +2303,7 @@ main(int argc, char** argv) {
         break;
 
       if(!gotlf)
-        xbailout(111,
-                 errno,
-                 "unterminated line read from stdin",
-                 0,
-                 0,
-                 0);
+        xbailout(111, errno, "unterminated line read from stdin", 0, 0, 0);
       d1.len--;
 
       if(!stralloc_0(&d1))
@@ -2380,12 +2316,7 @@ main(int argc, char** argv) {
         break;
 
       if(!gotlf)
-        xbailout(111,
-                 errno,
-                 "unterminated line read from stdin",
-                 0,
-                 0,
-                 0);
+        xbailout(111, errno, "unterminated line read from stdin", 0, 0, 0);
       d2.len--;
 
       if(!stralloc_0(&d2))
@@ -2413,12 +2344,7 @@ main(int argc, char** argv) {
        */
 
       if(-1 == fchdir(ldirfd))
-        xbailout(111,
-                 errno,
-                 "failed to fchdir to starting directory",
-                 0,
-                 0,
-                 0);
+        xbailout(111, errno, "failed to fchdir to starting directory", 0, 0, 0);
       /* back to remote root */
       cmdwrite1("CWD /");
       p = ccread();

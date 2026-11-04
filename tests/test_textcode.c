@@ -41,7 +41,6 @@ TEST(test_scan_jsonescape_surrogates) {
   ASSERT_EQ(1, byte_equal(buf, 7, "\xf0\x9d\x84\x9exyz"));
 }
 
-
 typedef size_t fmt_fn(char*, const char*, size_t);
 typedef size_t scan_fn(const char*, char*, size_t*);
 
@@ -68,7 +67,7 @@ TEST(test_textcode_base64_vectors) {
   ASSERT_EQ(3, n);
   ASSERT_EQ(0, byte_diff(out, 3, "-_8"));
   ASSERT_EQ(3, fmt_base64url(NULL, "\xfb\xff", 2)); /* measure == written */
-  ASSERT_EQ(3, scan_base64url("-_8=", out, &dl) );
+  ASSERT_EQ(3, scan_base64url("-_8=", out, &dl));
   ASSERT_EQ(2, dl);
   ASSERT_EQ(0xfb, (unsigned char)out[0]);
 }
@@ -83,7 +82,9 @@ TEST(test_textcode_vectors) {
   ASSERT_EQ(6, fmt_uuencoded(NULL, "Cat", 3));
 
   n = fmt_quotedprintable(out, "caf\xc3\xa9 =x", 8);
-  ASSERT_EQ(0, byte_diff(out, n, "caf=c3=a9 =3dx") * 0 + (str_diffn(out, "caf=C3=A9 =3Dx", n) && str_diffn(out, "caf=c3=a9 =3dx", n)));
+  ASSERT_EQ(0,
+            byte_diff(out, n, "caf=c3=a9 =3dx") * 0 +
+                (str_diffn(out, "caf=C3=A9 =3Dx", n) && str_diffn(out, "caf=c3=a9 =3dx", n)));
 
   n = fmt_urlencoded(out, "a b&c/", 6);
   ASSERT_EQ(0, byte_diff(out, 3, "a%2"));

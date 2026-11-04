@@ -98,7 +98,6 @@ TEST(test_set_values) {
   set_free(&s);
 }
 
-
 /*
  * values that do not fit one slot: chains
  */
@@ -124,7 +123,6 @@ TEST(test_set_collisions) {
   ASSERT_STR_EQUAL("a,b,c,d", out);
   set_free(&s);
 }
-
 
 /* the slot of the array and the buckets behind it */
 TEST(test_set_delete_chain) {
@@ -207,17 +205,10 @@ TEST(test_set_clear_free) {
 
 /* the table grows, nothing gets lost and the order stays */
 
-
-
-
 static int
 starts_with_a(const char* x, size_t n) {
   return n > 0 && x[0] == 'a';
 }
-
-
-
-
 
 /*
  * int set_insert(set_t*, const void*, size_t);
@@ -408,7 +399,6 @@ TEST(test_set_iterator) {
   ASSERT_NE(NULL, set_iterator_value(&it, &n));
   set_free(&s);
 }
-
 
 /*
  * int set_cat / set_intersection / set_filter / set_filter_out

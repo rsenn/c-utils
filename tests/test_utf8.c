@@ -111,8 +111,8 @@ TEST(test_u8_to_wc_invalid) {
   ASSERT_EQ(0, u8_to_wc(&w, "\xc1\xbf"));     /* overlong 0x7f */
   ASSERT_EQ(0, u8_to_wc(&w, "\xe0\x80\x80")); /* overlong */
   ASSERT_EQ(0, u8_to_wc(&w, "\xf0\x80\x80\x80"));
-  ASSERT_EQ(0, u8_to_wc(&w, "\xed\xa0\x80")); /* U+D800, a surrogate */
-  ASSERT_EQ(0, u8_to_wc(&w, "\xed\xbf\xbf")); /* U+DFFF */
+  ASSERT_EQ(0, u8_to_wc(&w, "\xed\xa0\x80"));     /* U+D800, a surrogate */
+  ASSERT_EQ(0, u8_to_wc(&w, "\xed\xbf\xbf"));     /* U+DFFF */
   ASSERT_EQ(0, u8_to_wc(&w, "\xf4\x90\x80\x80")); /* U+110000 */
   ASSERT_EQ(0x1234, w);
 }
@@ -235,7 +235,11 @@ TEST(test_u8s_to_wcs) {
 TEST(test_u8s_to_wcs_invalid) {
   wchar_t out[16];
 
-  ASSERT_EQ((size_t)-1, u8s_to_wcs(out, "ab\xff" "cd", 16));
+  ASSERT_EQ((size_t)-1,
+            u8s_to_wcs(out,
+                       "ab\xff"
+                       "cd",
+                       16));
   ASSERT_EQ((size_t)-1, u8s_to_wcs(out, "ab\xe2\x82", 16));
   ASSERT_EQ((size_t)-1, u8s_to_wcs(out, "\xc0\x80", 16));
 }
@@ -304,10 +308,29 @@ TEST(test_u8_chrs) {
 
 /* invalid bytes must not make the search run for ever */
 TEST(test_u8_chrs_invalid) {
-  ASSERT_EQ(3, u8s_chrs("\xff\xfe" "x" "y", "y", 1));
-  ASSERT_EQ(4, u8b_chrs("\xff\xfe" "xy", 4, "q", 1));
-  ASSERT_EQ(3, u8s_rchrs("\xff\xfe" "xy", "y", 1));
-  ASSERT_EQ(4, u8b_rchrs("\xff\xfe" "xy", 4, "q", 1));
+  ASSERT_EQ(3,
+            u8s_chrs("\xff\xfe"
+                     "x"
+                     "y",
+                     "y",
+                     1));
+  ASSERT_EQ(4,
+            u8b_chrs("\xff\xfe"
+                     "xy",
+                     4,
+                     "q",
+                     1));
+  ASSERT_EQ(3,
+            u8s_rchrs("\xff\xfe"
+                      "xy",
+                      "y",
+                      1));
+  ASSERT_EQ(4,
+            u8b_rchrs("\xff\xfe"
+                      "xy",
+                      4,
+                      "q",
+                      1));
   /* a needle cut off at the end of the list */
   ASSERT_EQ(3, u8s_chrs("abc", "\xc3", 1));
 }
@@ -365,7 +388,8 @@ TEST(test_wc_charwidth) {
 
 /* a round trip through both directions gives the text back */
 TEST(test_u8_roundtrip) {
-  static const char text[] = "Gr" AE "\xc3\x9f" "e " EURO " " FACE " end";
+  static const char text[] = "Gr" AE "\xc3\x9f"
+                             "e " EURO " " FACE " end";
   wchar_t w[64];
   char back[128];
   size_t n;

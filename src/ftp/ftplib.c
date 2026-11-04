@@ -14,9 +14,9 @@
 #include "../../lib/buffer.h"
 #include "../../lib/ip4.h"
 #include "../../lib/scan.h"
-//#include "getln.h"
-//#include "ftplib.h"
-//#include "host_connect.h"
+// #include "getln.h"
+// #include "ftplib.h"
+// #include "host_connect.h"
 #include "../../lib/str.h"
 #include "../../lib/fmt.h"
 #include "../../lib/byte.h"
@@ -43,7 +43,7 @@ ftplib_write_cmd_s(buffer* out, const char* s1) {
 
   if(-1 == buffer_puts(out, "\r\n"))
     return -1;
-  
+
   return buffer_flush(out);
 }
 
@@ -117,10 +117,12 @@ ftplib_read(buffer* in, stralloc* ret) {
       return 0;
     p = ret->s;
 
-    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == ' '))
+    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') &&
+       (p[3] == ' '))
       break;
 
-    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') && (p[3] == '-')) 
+    if(ret->len >= 4 && (p[0] >= '0' && p[0] <= '9') && (p[1] >= '0' && p[1] <= '9') && (p[2] >= '0' && p[2] <= '9') &&
+       (p[3] == '-'))
       multiline = 1;
 
     if(!multiline)
@@ -131,7 +133,8 @@ ftplib_read(buffer* in, stralloc* ret) {
 }
 
 int
-ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ips, stralloc* meld, unsigned int retries) {
+ftplib_pasv(
+    buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ips, stralloc* meld, unsigned int retries) {
   stralloc x;
   char *p, *q, *r;
   unsigned i;
@@ -203,7 +206,7 @@ ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ip
 
   if(0 == ip4_scan(q, ip))
     return -2;
-  
+
   q[i++] = ':';
   i += fmt_ulong(q + i, p1 * 256 + p2);
   q[i] = 0;
@@ -215,7 +218,7 @@ ftplib_pasv(buffer* in, buffer* out, unsigned long timeout, stralloc* allowed_ip
 
   if(i >= allowed_ips->len)
     return -3;
-  
+
   /* don't allow redirects to ports <
    * 1024, except of 20 */
 

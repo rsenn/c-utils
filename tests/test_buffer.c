@@ -11,12 +11,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-
 #include <fcntl.h>
 #include <unistd.h>
 #include "../lib/open.h"
 #include "../lib/tai.h"
-
 
 /* a buffer that collects what is written to it in a stralloc */
 static int
@@ -1132,7 +1130,7 @@ TEST(test_buffer_putfmt_args) {
   args[2] = args[3] = NULL;
   stralloc_init(&sa);
   buffer_tosa(&b, &sa);
-  ASSERT_EQ(6, buffer_putfmt_args(&b, "ab", 2, (size_t(*)(char*, int, void*, void*, void*, void*))esc_with_arg, args));
+  ASSERT_EQ(6, buffer_putfmt_args(&b, "ab", 2, (size_t (*)(char*, int, void*, void*, void*, void*))esc_with_arg, args));
   buffer_flush(&b);
   ASSERT_EQ(0, byte_diff(sa.s, sa.len, "a12b12"));
   stralloc_free(&sa);

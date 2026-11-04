@@ -31,12 +31,13 @@
 #include "compiler.h"
 
 static const char* compiler_types[] = {
-    "8cc", "bcc",    "clang",  "digitalmars", "dmc", "gcc",  "gnu", "gp", "icl", "lcc",   "llvm", "msvc",
-    "occ", "orange", "pelles", "po",  "sdcc", "tcc", "vc", "vs20", "xc8", "zapcc", 0,
+    "8cc", "bcc",    "clang",  "digitalmars", "dmc",  "gcc", "gnu", "gp",   "icl", "lcc",   "llvm", "msvc",
+    "occ", "orange", "pelles", "po",          "sdcc", "tcc", "vc",  "vs20", "xc8", "zapcc", 0,
 };
 
 int ilink_by_hand; /* the link command names the linker itself: $(ILINK) */
-const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "", *quote_args = "";
+const char *make_begin_inline, *make_sep_inline, *make_end_inline, *comment = "#", *cross_compile = "",
+                                                                   *quote_args = "";
 bool batchmode, cygming;
 build_tool_t build_tool = 0;
 
@@ -74,21 +75,57 @@ set_command(stralloc* sa, const char* cmd, const char* args) {
 
 /* what bcc32 5.5 defines on its own for -tWC -tWM, found by compiling probes */
 static const char* const bcc55_defs[] = {
-    "__BORLANDC__=0x0551", "__TURBOC__=0x0551", "_M_IX86=300",   "__WIN32__=1",
-    "_WIN32=1",            "_Windows=1",        "__CONSOLE__=1", "__FLAT__=1",
-    "__CDECL__=1",         "__TLS__=1",         "_CPPUNWIND=1",  "_INTEGRAL_MAX_BITS=64",
-    "_STDCALL_SUPPORTED=", "__MT__=1",          "_MT=1",         0,
+    "__BORLANDC__=0x0551",
+    "__TURBOC__=0x0551",
+    "_M_IX86=300",
+    "__WIN32__=1",
+    "_WIN32=1",
+    "_Windows=1",
+    "__CONSOLE__=1",
+    "__FLAT__=1",
+    "__CDECL__=1",
+    "__TLS__=1",
+    "_CPPUNWIND=1",
+    "_INTEGRAL_MAX_BITS=64",
+    "_STDCALL_SUPPORTED=",
+    "__MT__=1",
+    "_MT=1",
+    0,
 };
 
 /* bcc32c of C++ Builder 10.2 (clang 3.3.1 based), found the same way; its
    defaults give a console program with the dynamic run time */
 static const char* const bcc102_defs[] = {
-    "__BORLANDC__=0x0730", "__CODEGEARC__=0x0730", "__CODEGEARC_VERSION__=0x7308CAF", "__TURBOC__=0x0730",
-    "__BCPLUSPLUS__=0x0730", "__TCPLUSPLUS__=0x0730", "__clang__=1", "__clang_major__=3", "__clang_minor__=3",
-    "__llvm__=1", "_M_IX86=600", "_M_IX86_FP=0", "__i386__=1", "__i386=1",
-    "_WIN32=1", "_Windows=1", "__FLAT__=1", "_INTEGRAL_MAX_BITS=64", "__STDC__=1", "__STDC_VERSION__=199901L",
-    "__STDC_HOSTED__=1", "__SIZEOF_POINTER__=4", "__SIZEOF_LONG__=4", "__SIZEOF_INT__=4", "__SIZEOF_LONG_LONG__=8",
-    "__BYTE_ORDER__=1234", "__ORDER_LITTLE_ENDIAN__=1234", "_STDCALL_SUPPORTED=1", "__CHAR_BIT__=8", 0,
+    "__BORLANDC__=0x0730",
+    "__CODEGEARC__=0x0730",
+    "__CODEGEARC_VERSION__=0x7308CAF",
+    "__TURBOC__=0x0730",
+    "__BCPLUSPLUS__=0x0730",
+    "__TCPLUSPLUS__=0x0730",
+    "__clang__=1",
+    "__clang_major__=3",
+    "__clang_minor__=3",
+    "__llvm__=1",
+    "_M_IX86=600",
+    "_M_IX86_FP=0",
+    "__i386__=1",
+    "__i386=1",
+    "_WIN32=1",
+    "_Windows=1",
+    "__FLAT__=1",
+    "_INTEGRAL_MAX_BITS=64",
+    "__STDC__=1",
+    "__STDC_VERSION__=199901L",
+    "__STDC_HOSTED__=1",
+    "__SIZEOF_POINTER__=4",
+    "__SIZEOF_LONG__=4",
+    "__SIZEOF_INT__=4",
+    "__SIZEOF_LONG_LONG__=8",
+    "__BYTE_ORDER__=1234",
+    "__ORDER_LITTLE_ENDIAN__=1234",
+    "_STDCALL_SUPPORTED=1",
+    "__CHAR_BIT__=8",
+    0,
 };
 
 /* the compilers of C++ Builder 5.5, 5.6 and 6.0 are the classic ones, the
@@ -327,8 +364,7 @@ set_compiler_type(const char* compiler) {
     // var_push("LDFLAGS", "/SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT");
     // var_push("LDFLAGS", "/MANIFEST /manifest:embed2 /MANIFESTUAC:\"level=asInvoker uiAccess=false\"");
 
-    stralloc_copys(&commands.compile,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
+    stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo\"$@\" $<");
     set_command(&commands.lib, "$(LIB) -out:$@", "$^");
     // stralloc_copys(&commands.lib, "$(LIB) /OUT:$@ <<\n\t\t$^\n<<");
 
@@ -352,10 +388,8 @@ set_compiler_type(const char* compiler) {
       // stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -Fo $@ $<");
     }
 
-    var_push("LDFLAGS",
-             "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)ucrt\\$(MACHINE)\"");
-    var_push("LDFLAGS",
-             "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$(MACHINE)\"");
+    var_push("LDFLAGS", "-libpath:\"$(UNIVERSALCRTSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)ucrt\\$(MACHINE)\"");
+    var_push("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib\\$(WINDOWSSDKLIBVERSION)um\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(VCTOOLSINSTALLDIR)lib\\$(MACHINE)\"");
     var_push("LDFLAGS", "-libpath:\"$(WINDOWSSDKDIR)lib$(X64)\"");
     var_push("LDFLAGS", "-libpath:\"$(VCINSTALLDIR)\\lib$(AMD64)\"");
@@ -366,8 +400,7 @@ set_compiler_type(const char* compiler) {
       var_push("LDFLAGS", "-debug");
 
     if(str_start(compiler, "icl"))
-      var_push("LDFLAGS",
-               "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
+      var_push("LDFLAGS", "-manifest:embed -manifestuac:\"level='asInvoker' uiAccess='false'\"");
 
     if(cfg.mach.arch == ARM) {
       var_push("LDFLAGS", "-machine:ARM");
@@ -443,9 +476,7 @@ set_compiler_type(const char* compiler) {
     // set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)
     // $(EXTRA_LIBS)");
 
-    set_command(&commands.link,
-                "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
-                "$^ $(LIBS)");
+    set_command(&commands.link, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@", "$^ $(LIBS)");
 
     set_command(&commands.link_module,
                 "$(CC) -shared $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@",
@@ -507,7 +538,8 @@ set_compiler_type(const char* compiler) {
       /* the linker is called by hand: the driver runs the incremental
          ilink32 of the same package, which does not run under wine, and
          objects of both compilers link with the old one (give LINK=...) */
-      set_command(&commands.link, "$(ILINK) -Tpe -ap -c -x $(LDFLAGS) $(EXTRA_LDFLAGS)",
+      set_command(&commands.link,
+                  "$(ILINK) -Tpe -ap -c -x $(LDFLAGS) $(EXTRA_LDFLAGS)",
                   "c0x32.obj $^, $@,, $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
       var_push("STDC_LIBS", "cw32.lib");
       var_push("STDC_LIBS", "import32.lib");
@@ -532,8 +564,7 @@ set_compiler_type(const char* compiler) {
       else
         var_push("CFLAGS", "-r");
 
-      stralloc_copys(&commands.compile,
-                     "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
+      stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c -o$@ $<");
       set_command(&commands.link, "$(CC) $(LDFLAGS) $(EXTRA_LDFLAGS) -e$@", "$^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     }
 
@@ -577,10 +608,10 @@ set_compiler_type(const char* compiler) {
       var_push("STDC_LIBS", "libc.lib");
     }
 
-    stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
-    stralloc_copys(&commands.link,
-                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(
+        &commands.link,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     /*
      * Tiny CC compiler
      */
@@ -625,8 +656,7 @@ set_compiler_type(const char* compiler) {
     push_lib("DEFAULT_LIBS", "clwin");
     push_lib("DEFAULT_LIBS", "climp");
     // stralloc_copys(&commands.compile, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ \"/I;\" $<");
-    stralloc_copys(&commands.compile,
-                   "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
+    stralloc_copys(&commands.compile, "$(CC) /! /c $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -o$@ $<");
     set_command(&commands.lib, "$(LIB) /! $@", "$^");
     set_command(&commands.link, "$(LINK) -c /! $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@", "$^ c0xpe.o $(LIBS) $(DEFAULT_LIBS)");
   } else if(str_start(compiler, "8cc")) {
@@ -700,8 +730,7 @@ set_compiler_type(const char* compiler) {
     }
 
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -Fo$@");
-    stralloc_copys(&commands.link,
-                   "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(CC) $^ -Fe $@ $(LDFLAGS) $(EXTRA_LDFLAGS) $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     pathsep_args = '\\';
     quote_args = "\"";
   } else if(str_start(compiler, "gp")) {
@@ -755,8 +784,7 @@ set_compiler_type(const char* compiler) {
     }*/
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(AS) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(&commands.link,
-                   "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(&commands.link, "$(LINK) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "sdcc")) {
     if(cmd_libs_explicit) {
       buffer_putm_internal(buffer_2,
@@ -835,8 +863,9 @@ set_compiler_type(const char* compiler) {
 
     set_command(&commands.lib, "$(LIB) r $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(
+        &commands.link,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8-cc")) {
     /* modern (v2.00+), LLVM-based XC8 driver -- gcc-like CLI, entirely
      * different from the legacy (v1.x, HI-TECH-derived) "xc8"
@@ -886,8 +915,9 @@ set_compiler_type(const char* compiler) {
 
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
-    stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(
+        &commands.link,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o $@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
   } else if(str_start(compiler, "xc8")) {
     // no_libs = 1;
     var_unset("CXX");
@@ -927,8 +957,7 @@ set_compiler_type(const char* compiler) {
     var_push("LDFLAGS", "--output=-elf,+mcof");
     // var_push("LDFLAGS", "--output=-mcof,+elf:multilocs");
     var_push("LDFLAGS", "--summary=default");
-    var_push("LDFLAGS",
-             "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
+    var_push("LDFLAGS", "--runtime=default,+clear,+init,-keep,-no_startup,-osccal,-resetbits,+download,+clib");
     // var_push("LDFLAGS", "--output=-default,elf,+mcof");
     // var_push("LDFLAGS", "--output=-mcof,+elf");
     var_push("LDFLAGS", "--stack=compiled");
@@ -939,10 +968,13 @@ set_compiler_type(const char* compiler) {
     stralloc_copys(&commands.preprocess, "$(CPP) $(CPPFLAGS) $(DEFS) $< -o$@");
     stralloc_copys(&commands.compile,
                    "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) --pass1 -c $< -o$@");
-    stralloc_copys(&commands.link,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+    stralloc_copys(
+        &commands.link,
+        "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) -o$@ $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
     stralloc_copys(&commands.lib,
-                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) --OUTPUT=lpp --memorysummary -G -m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) $(EXTRA_LIBS) $(STDC_LIBS)");
+                   "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(LDFLAGS) $(EXTRA_LDFLAGS) --OUTPUT=lpp --memorysummary -G "
+                   "-m$@.map -P --asmlist --output=default,-inhx032 --output=-mcof,+elf:multilocs -o$@.elf $^ $(LIBS) "
+                   "$(EXTRA_LIBS) $(STDC_LIBS)");
   } else {
     return 0;
   }
@@ -1144,4 +1176,3 @@ resolve_toolchain(const char* argv0) {
 
   return 0;
 }
-

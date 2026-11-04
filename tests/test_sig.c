@@ -136,10 +136,10 @@ TEST(test_sig_push_pop) {
   raise(SIGUSR1);
   ASSERT_EQ(1, got_usr2);
   ASSERT_EQ(0, got_usr1);
-  ASSERT_EQ(0, sig_pop(SIGUSR1));           /* back to on_usr1 */
+  ASSERT_EQ(0, sig_pop(SIGUSR1)); /* back to on_usr1 */
   raise(SIGUSR1);
   ASSERT_EQ(1, got_usr1);
-  ASSERT_EQ(-1, sig_pop(SIGUSR1));          /* nothing left on the stack */
+  ASSERT_EQ(-1, sig_pop(SIGUSR1)); /* nothing left on the stack */
   ASSERT_EQ(EFAULT, errno);
   ASSERT_EQ(-1, sig_push(-1, on_usr1));
   ASSERT_EQ(EINVAL, errno);

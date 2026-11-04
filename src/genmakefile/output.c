@@ -704,7 +704,8 @@ output_switches(buffer* b, build_tool_t tool, const strarray* switches) {
   else if(tool == TOOL_SHELL)
     buffer_putm_internal(b, "# Give a name below a value to define it, e.g. USE_X=1", newline, NULL);
   else
-    buffer_putm_internal(b, "# Give a name below a value to define it, e.g. ", bang ? "make -DUSE_X=1" : "make USE_X=1", newline, NULL);
+    buffer_putm_internal(
+        b, "# Give a name below a value to define it, e.g. ", bang ? "make -DUSE_X=1" : "make USE_X=1", newline, NULL);
 
   strarray_foreach(switches, p) {
     const char* n = *p;
@@ -714,9 +715,26 @@ output_switches(buffer* b, build_tool_t tool, const strarray* switches) {
     else if(tool == TOOL_SHELL)
       buffer_putm_internal(b, "if [ -n \"$", n, "\" ]; then DEFS=\"$DEFS -D", n, "=$", n, "\"; fi", newline, NULL);
     else if(bang)
-      buffer_putm_internal(b, "!ifdef ", n, newline, "DEFS = $(DEFS) -D", n, "=$(", n, ")", newline, "!endif", newline, NULL);
+      buffer_putm_internal(
+          b, "!ifdef ", n, newline, "DEFS = $(DEFS) -D", n, "=$(", n, ")", newline, "!endif", newline, NULL);
     else
-      buffer_putm_internal(b, n, " ?=", newline, "ifneq ($(", n, "),)", newline, "DEFS += -D", n, "=$(", n, ")", newline, "endif", newline, NULL);
+      buffer_putm_internal(b,
+                           n,
+                           " ?=",
+                           newline,
+                           "ifneq ($(",
+                           n,
+                           "),)",
+                           newline,
+                           "DEFS += -D",
+                           n,
+                           "=$(",
+                           n,
+                           ")",
+                           newline,
+                           "endif",
+                           newline,
+                           NULL);
   }
 
   buffer_putnl(b, 0);
@@ -743,11 +761,25 @@ output_deps(buffer* b, build_tool_t tool, const strarray* deps) {
     return;
 
   if(tool == TOOL_BATCH)
-    buffer_putm_internal(b, "REM Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths", newline, NULL);
+    buffer_putm_internal(
+        b,
+        "REM Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths",
+        newline,
+        NULL);
   else if(tool == TOOL_SHELL)
-    buffer_putm_internal(b, "# Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths", newline, NULL);
+    buffer_putm_internal(
+        b,
+        "# Set a package to its library names to use it, with <NAME>_INCLUDEDIR and <NAME>_LIBDIR for the paths",
+        newline,
+        NULL);
   else
-    buffer_putm_internal(b, "# Set a package to its library names to use it, e.g. ", bang ? "make -DLIBZ=z" : "make LIBZ=z", newline, "# <NAME>_INCLUDEDIR and <NAME>_LIBDIR add the paths", newline, NULL);
+    buffer_putm_internal(b,
+                         "# Set a package to its library names to use it, e.g. ",
+                         bang ? "make -DLIBZ=z" : "make LIBZ=z",
+                         newline,
+                         "# <NAME>_INCLUDEDIR and <NAME>_LIBDIR add the paths",
+                         newline,
+                         NULL);
 
   strarray_foreach(deps, p) {
     size_t n = str_chr(*p, '=');
@@ -776,21 +808,62 @@ output_deps(buffer* b, build_tool_t tool, const strarray* deps) {
     stralloc_nul(&dir);
 
     if(tool == TOOL_BATCH) {
-      buffer_putm_internal(b, "IF DEFINED ", v, " SET DEFS=%DEFS% -D", macro, "=1 & SET LIBS=%LIBS% %", v, "%", newline, NULL);
+      buffer_putm_internal(
+          b, "IF DEFINED ", v, " SET DEFS=%DEFS% -D", macro, "=1 & SET LIBS=%LIBS% %", v, "%", newline, NULL);
       buffer_putm_internal(b, "IF DEFINED ", inc.s, " SET CPPFLAGS=%CPPFLAGS% -I%", inc.s, "%", newline, NULL);
       buffer_putm_internal(b, "IF DEFINED ", lib.s, " SET LDFLAGS=%LDFLAGS% ", dir.s, newline, NULL);
     } else if(tool == TOOL_SHELL) {
-      buffer_putm_internal(b, "if [ -n \"$", v, "\" ]; then DEFS=\"$DEFS -D", macro, "=1\"; LIBS=\"$LIBS $", v, "\"; fi", newline, NULL);
-      buffer_putm_internal(b, "if [ -n \"$", inc.s, "\" ]; then CPPFLAGS=\"$CPPFLAGS -I$", inc.s, "\"; fi", newline, NULL);
+      buffer_putm_internal(
+          b, "if [ -n \"$", v, "\" ]; then DEFS=\"$DEFS -D", macro, "=1\"; LIBS=\"$LIBS $", v, "\"; fi", newline, NULL);
+      buffer_putm_internal(
+          b, "if [ -n \"$", inc.s, "\" ]; then CPPFLAGS=\"$CPPFLAGS -I$", inc.s, "\"; fi", newline, NULL);
       buffer_putm_internal(b, "if [ -n \"$", lib.s, "\" ]; then LDFLAGS=\"$LDFLAGS ", dir.s, "\"; fi", newline, NULL);
     } else if(bang) {
-      buffer_putm_internal(b, "!ifdef ", v, newline, "DEFS = $(DEFS) -D", macro, "=1", newline, "LIBS = $(LIBS) $(", v, ")", newline, NULL);
-      buffer_putm_internal(b, "!ifdef ", inc.s, newline, "CPPFLAGS = $(CPPFLAGS) -I$(", inc.s, ")", newline, "!endif", newline, NULL);
-      buffer_putm_internal(b, "!ifdef ", lib.s, newline, "LDFLAGS = $(LDFLAGS) ", dir.s, newline, "!endif", newline, "!endif", newline, NULL);
+      buffer_putm_internal(b,
+                           "!ifdef ",
+                           v,
+                           newline,
+                           "DEFS = $(DEFS) -D",
+                           macro,
+                           "=1",
+                           newline,
+                           "LIBS = $(LIBS) $(",
+                           v,
+                           ")",
+                           newline,
+                           NULL);
+      buffer_putm_internal(
+          b, "!ifdef ", inc.s, newline, "CPPFLAGS = $(CPPFLAGS) -I$(", inc.s, ")", newline, "!endif", newline, NULL);
+      buffer_putm_internal(b,
+                           "!ifdef ",
+                           lib.s,
+                           newline,
+                           "LDFLAGS = $(LDFLAGS) ",
+                           dir.s,
+                           newline,
+                           "!endif",
+                           newline,
+                           "!endif",
+                           newline,
+                           NULL);
     } else {
-      buffer_putm_internal(b, "ifneq ($(", v, "),)", newline, "DEFS += -D", macro, "=1", newline, "LIBS += $(", v, ")", newline, NULL);
-      buffer_putm_internal(b, "ifneq ($(", inc.s, "),)", newline, "CPPFLAGS += -I$(", inc.s, ")", newline, "endif", newline, NULL);
-      buffer_putm_internal(b, "ifneq ($(", lib.s, "),)", newline, "LDFLAGS += ", dir.s, newline, "endif", newline, "endif", newline, NULL);
+      buffer_putm_internal(
+          b, "ifneq ($(", v, "),)", newline, "DEFS += -D", macro, "=1", newline, "LIBS += $(", v, ")", newline, NULL);
+      buffer_putm_internal(
+          b, "ifneq ($(", inc.s, "),)", newline, "CPPFLAGS += -I$(", inc.s, ")", newline, "endif", newline, NULL);
+      buffer_putm_internal(b,
+                           "ifneq ($(",
+                           lib.s,
+                           "),)",
+                           newline,
+                           "LDFLAGS += ",
+                           dir.s,
+                           newline,
+                           "endif",
+                           newline,
+                           "endif",
+                           newline,
+                           NULL);
     }
 
     stralloc_free(&inc);

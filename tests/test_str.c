@@ -326,13 +326,12 @@ TEST(test_str_ansilen) {
   ASSERT_EQ(3, str_ansilen("\x1b[31mabc\x1b[0m"));
 }
 
-
 /*
  * int str_versdiff(const char*, const char*);  version aware compare
  */
 TEST(test_str_versdiff) {
   ASSERT_EQ(0, str_versdiff("abc", "abc"));
-  ASSERT_EQ(1, str_versdiff("a10", "a9") > 0);   /* 10 is greater than 9 */
+  ASSERT_EQ(1, str_versdiff("a10", "a9") > 0); /* 10 is greater than 9 */
   ASSERT_EQ(1, str_versdiff("a9", "a10") < 0);
   ASSERT_EQ(1, str_versdiff("1.2.10", "1.2.9") > 0);
   ASSERT_EQ(1, str_versdiff("b", "a") > 0);

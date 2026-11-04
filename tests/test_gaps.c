@@ -138,7 +138,7 @@ TEST(test_range_inbuf) {
   ASSERT_EQ(1, range_strinbuf(buf, sizeof buf, buf));
   ASSERT_EQ(1, range_strinbuf(buf, sizeof buf, buf + 3));
   ASSERT_EQ(0, range_strinbuf(buf, sizeof buf, buf + 16)); /* outside */
-  memset(buf, 'x', sizeof buf); /* no terminator at all */
+  memset(buf, 'x', sizeof buf);                            /* no terminator at all */
   ASSERT_EQ(0, range_strinbuf(buf, sizeof buf, buf));
   buf[10] = 0;
   ASSERT_EQ(1, range_strinbuf(buf, sizeof buf, buf));
@@ -473,7 +473,8 @@ TEST(test_ucs_latin1_punycode) {
   ASSERT_EQ(0, byte_diff(sa.s, 4, "caf\xe9"));
   stralloc_free(&sa);
 
-  /* RFC 3492: the bias after the first delta of 'bücher' (delta 0x60e1... use the sample of the RFC section 6.3 shape) */
+  /* RFC 3492: the bias after the first delta of 'bücher' (delta 0x60e1... use the sample of the RFC section 6.3 shape)
+   */
   ASSERT_EQ(0, ucs_punycode_adapt(0, 1, 1));
   ASSERT_EQ(ucs_punycode_adapt(1000, 5, 1), ucs_punycode_adapt(1000, 5, 1));
   ASSERT_EQ(1, ucs_punycode_adapt(100000, 10, 0) > ucs_punycode_adapt(100, 10, 0)); /* bigger jump, bigger bias */
@@ -506,8 +507,8 @@ TEST(test_scan_asn1_pb_values) {
   ASSERT_EQ(3, scan_asn1derlengthvalue("\x82\x01\x00", 3, &v));
   ASSERT_EQ(256, v);
   ASSERT_EQ(0, scan_asn1derlengthvalue("\x82\x00\xc2", 3, &v)); /* not minimal */
-  ASSERT_EQ(0, scan_asn1derlengthvalue("\x80", 1, &v));           /* indefinite */
-  ASSERT_EQ(0, scan_asn1derlengthvalue("\x82\x01", 2, &v));       /* cut short */
+  ASSERT_EQ(0, scan_asn1derlengthvalue("\x80", 1, &v));         /* indefinite */
+  ASSERT_EQ(0, scan_asn1derlengthvalue("\x82\x01", 2, &v));     /* cut short */
   ASSERT_EQ(0, scan_asn1derlengthvalue("", 0, &v));
 
   ASSERT_EQ(1, scan_pb_type0_int("\x2a", 1, &v));
@@ -528,7 +529,7 @@ TEST(test_textcode_variants) {
   out[n] = 0;
   ASSERT_EQ(n, fmt_cescape2(NULL, "a\"b'c", 5, "\""));
   ASSERT_EQ(1, str_contains(out, "\\x22")); /* the extra character is escaped as hex */
-  ASSERT_EQ(1, str_contains(out, "b'c")); /* the others are left */
+  ASSERT_EQ(1, str_contains(out, "b'c"));   /* the others are left */
 
   n = fmt_quotedprintable2(out, "a b=", 4, " ");
   out[n] = 0;
@@ -956,8 +957,8 @@ TEST(test_cdb_successor_tokenizer_rewind) {
   cdb_init(&c, fd);
   ASSERT_EQ(1, cdb_successor(&c, NULL, 0)); /* the first record */
   ASSERT_EQ(2, cdb_datalen(&c));
-  ASSERT_EQ(1, cdb_successor(&c, (const unsigned char*)"k1", 2)); /* the one after k1 */
-  ASSERT_EQ(0, cdb_successor(&c, (const unsigned char*)"k2", 2)); /* nothing after the last */
+  ASSERT_EQ(1, cdb_successor(&c, (const unsigned char*)"k1", 2));   /* the one after k1 */
+  ASSERT_EQ(0, cdb_successor(&c, (const unsigned char*)"k2", 2));   /* nothing after the last */
   ASSERT_EQ(0, cdb_successor(&c, (const unsigned char*)"none", 4)); /* not found */
   cdb_free(&c);
   close((int)fd);
@@ -998,12 +999,11 @@ TEST(test_sig_pusha_and_dumps) {
   stralloc_init(&out);
   buffer_tosa(&b, &out);
 
-
   http_init(&h, "example.com", 80);
   http_response_new(&h);
   http_request_new(&h);
   out.len = 0;
-  http_dump(&h);        /* these write to the error stream: only no crash is checked */
+  http_dump(&h); /* these write to the error stream: only no crash is checked */
   http_response_dump(h.response);
   http_request_dump(h.request);
   ASSERT_EQ(1, http_strerror(&h, 0) != NULL);

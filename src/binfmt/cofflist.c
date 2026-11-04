@@ -128,8 +128,7 @@ coff_list_symbols(buffer* b, void* coff) {
 
   symtab = coff_symbol_table(coff);
 
-  buffer_puts(b,
-              "number of symbol table entries: ");
+  buffer_puts(b, "number of symbol table entries: ");
   buffer_putulong(b, range_size(&symtab));
   buffer_putnlflush(b);
 
@@ -238,14 +237,12 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_puts(b, "Aux .bf/.ef def: ");
           buffer_puts(b, ".source_line_number: ");
           buffer_putulong(b, aux->bfef.source_line_number);
-          buffer_puts(b,
-                      ", .pointer_to_next_function: ");
+          buffer_puts(b, ", .pointer_to_next_function: ");
           buffer_putulong(b, aux->bfef.pointer_to_next_function);
           buffer_putnlflush(b);
 
         } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-          buffer_puts(b,
-                      "\t\t\tAux function def: ");
+          buffer_puts(b, "\t\t\tAux function def: ");
           buffer_puts(b,
                       "\n"
                       "\t\t\t.bf_tag_index: ");
@@ -300,7 +297,7 @@ coff_list_symbols(buffer* b, void* coff) {
           buffer_putnlflush(b);
         }
       }
-      
+
       e = range_plus(&symtab, e, numaux);
       i += numaux;
 

@@ -30,9 +30,9 @@ TEST(test_ucs_utf8_ucs4) {
   ASSERT_EQ(0x20ac, u);
   ASSERT_EQ(4, scan_utf8_ucs4("\xf0\x9f\x98\x80", 4, &u));
   ASSERT_EQ(0x1f600, u);
-  ASSERT_EQ(0, scan_utf8_ucs4("\xc0\x80", 2, &u));         /* overlong */
-  ASSERT_EQ(0, scan_utf8_ucs4("\xe2\x82", 2, &u));         /* truncated */
-  ASSERT_EQ(0, scan_utf8_ucs4("\xed\xa0\x80", 3, &u));     /* surrogate */
+  ASSERT_EQ(0, scan_utf8_ucs4("\xc0\x80", 2, &u));     /* overlong */
+  ASSERT_EQ(0, scan_utf8_ucs4("\xe2\x82", 2, &u));     /* truncated */
+  ASSERT_EQ(0, scan_utf8_ucs4("\xed\xa0\x80", 3, &u)); /* surrogate */
   ASSERT_EQ(0, scan_utf8_ucs4("", 0, &u));
 
   ASSERT_EQ(1, fmt_ucs4_utf8(buf, 'z'));
@@ -116,7 +116,8 @@ TEST(test_ucs_punycode) {
 TEST(test_ucs_idna) {
   char out[64];
   size_t n;
-  const char* uni = "b\xc3\xbc" "cher.example"; /* bücher.example, 15 bytes */
+  const char* uni = "b\xc3\xbc"
+                    "cher.example"; /* bücher.example, 15 bytes */
 
   n = ucs_idna_to_ascii(out, sizeof out, uni, 15);
   ASSERT_EQ(21, n);
@@ -156,7 +157,8 @@ TEST(test_ucs_latin1_utf8) {
 
   /* invalid UTF-8 is kept byte for byte and must terminate */
   {
-    char bad[] = "a\xff" "b";
+    char bad[] = "a\xff"
+                 "b";
     ASSERT_EQ(3, str_utf8_latin1(bad));
     ASSERT_EQ(0xff, (unsigned char)bad[1]);
   }

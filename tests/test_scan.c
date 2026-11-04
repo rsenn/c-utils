@@ -276,7 +276,6 @@ TEST(test_scan_asn1) {
   ASSERT_EQ(2, n);
 }
 
-
 /* libowfat compat additions */
 TEST(test_scan_compat_extra) {
   unsigned long long u;
@@ -322,7 +321,6 @@ TEST(test_scan_compat_extra) {
   }
 }
 
-
 /*
  * size_t scan_longn / scan_xlongn / scan_8longn (bounded versions)
  */
@@ -353,10 +351,10 @@ TEST(test_scan_rskip) {
  * size_t scan_ansiskip(const char*, size_t);
  */
 TEST(test_scan_ansiskip) {
-  ASSERT_EQ(4, scan_ansiskip("\x1b[1mX", 5));      /* ESC [ 1 m */
+  ASSERT_EQ(4, scan_ansiskip("\x1b[1mX", 5)); /* ESC [ 1 m */
   ASSERT_EQ(7, scan_ansiskip("\x1b[31;1mX", 9));
   ASSERT_EQ(0, scan_ansiskip("abc", 3));
-  ASSERT_EQ(0, scan_ansiskip("\x1b[1", 3));         /* cut off */
+  ASSERT_EQ(0, scan_ansiskip("\x1b[1", 3)); /* cut off */
   ASSERT_EQ(0, scan_ansiskip("", 0));
   ASSERT_EQ(4, scan_ansiskip("\x1b[A~", 4)); /* key sequence with ~ */
 }
@@ -381,7 +379,7 @@ TEST(test_scan_xmlescape) {
   ASSERT_EQ('p', c);
   ASSERT_EQ(1, scan_xmlescape("&foo;", &c)); /* unknown entity: the & is copied */
   ASSERT_EQ('&', c);
-  ASSERT_EQ(1, scan_xmlescape("&#65", &c));  /* missing semicolon */
+  ASSERT_EQ(1, scan_xmlescape("&#65", &c)); /* missing semicolon */
 }
 
 /*

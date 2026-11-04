@@ -212,7 +212,10 @@ TEST(test_dlist_move) {
   /* to the head of to */
   dlist_init(&from);
   dlist_init(&to);
-  a = make(1); b = make(2); c = make(3); d = make(4);
+  a = make(1);
+  b = make(2);
+  c = make(3);
+  d = make(4);
   dlist_push(&to, &c.link);
   dlist_push(&to, &d.link);
   dlist_push(&from, &a.link);
@@ -226,7 +229,8 @@ TEST(test_dlist_move) {
   /* into an empty list */
   dlist_init(&from);
   dlist_init(&to);
-  a = make(1); b = make(2);
+  a = make(1);
+  b = make(2);
   dlist_push(&from, &a.link);
   dlist_push(&from, &b.link);
   dlist_move_tail(&from, &to);

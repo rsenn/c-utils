@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <wchar.h>
 
-
 /* true when sa holds exactly the NUL-free string s */
 static int
 is(const stralloc* sa, const char* s) {
@@ -408,7 +407,8 @@ TEST(test_stralloc_diffb) {
  */
 
 TEST(test_stralloc_scan) {
-  /* stralloc_scan needs a scan_function(const char*, char*) that converts in place: use a hex scanner */ stralloc in, out;
+  /* stralloc_scan needs a scan_function(const char*, char*) that converts in place: use a hex scanner */ stralloc in,
+      out;
   stralloc_init(&in);
   stralloc_init(&out);
   stralloc_free(&in);
@@ -737,7 +737,6 @@ TEST(test_stralloc_replace) {
   stralloc_free(&sa);
 }
 
-
 /*
  * the rest of the stralloc API that had no test
  */
@@ -766,7 +765,7 @@ TEST(test_stralloc_append) {
   stralloc_init(&sa);
   ASSERT_EQ(1, stralloc_append(&sa, "xyz")); /* takes a pointer to ONE char */
   ASSERT_EQ(1, is(&sa, "x"));
-  stralloc_0(&sa);                            /* appends a NUL byte, counted */
+  stralloc_0(&sa); /* appends a NUL byte, counted */
   ASSERT_EQ(2, sa.len);
   ASSERT_EQ(0, sa.s[1]);
   stralloc_zero(&sa);
@@ -816,7 +815,9 @@ TEST(test_stralloc_transform) {
   stralloc_copys(&sa, "abcdef");
   stralloc_reverse_blocks(&sa, 2);
   ASSERT_EQ(1, is(&sa, "cdabef"));
-  stralloc_copys(&sa, "a\x01" "b\x7f");
+  stralloc_copys(&sa,
+                 "a\x01"
+                 "b\x7f");
   stralloc_replace_non_printable(&sa, '.');
   ASSERT_EQ(1, is(&sa, "a.b."));
   stralloc_copys(&sa, "a-b_c");
@@ -861,7 +862,7 @@ TEST(test_stralloc_catq) {
   stralloc_catq(&sa, "foo bar", 7, "'");
   ASSERT_EQ(1, is(&sa, "'foo' 'bar'")); /* every blank separated word is quoted */
   stralloc_zero(&sa);
-  stralloc_catq(&sa, "foo", 3, "");     /* no quote: copied as is */
+  stralloc_catq(&sa, "foo", 3, ""); /* no quote: copied as is */
   ASSERT_EQ(1, is(&sa, "foo"));
   stralloc_free(&sa);
 }
@@ -887,7 +888,7 @@ TEST(test_stralloc_scan_stops) {
   stralloc_init(&in);
   stralloc_init(&out);
   stralloc_copys(&in, "ab");
-  stralloc_scan(&out, &in, (size_t(*)(const char*, char*))scan_nothing);
+  stralloc_scan(&out, &in, (size_t (*)(const char*, char*))scan_nothing);
   ASSERT_EQ(0, out.len);
   stralloc_free(&in);
   stralloc_free(&out);

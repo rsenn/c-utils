@@ -235,9 +235,7 @@ is_var_b(const char* x, size_t n) {
   n--;
 
   while(n > 0) {
-    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_",
-                63,
-                *x) == 63) {
+    if(byte_chr("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_", 63, *x) == 63) {
       if(*x == '=')
         return 1;
 

@@ -24,9 +24,7 @@ nomem(void) {
 }
 void
 usage(void) {
-  die(100,
-      "dnstrace: usage: dnstrace type name rootip ...",
-      0);
+  die(100, "dnstrace: usage: dnstrace type name rootip ...", 0);
 }
 
 static stralloc querystr;
@@ -83,8 +81,7 @@ resolve(char* q, char qtype[2], char ip[16]) {
 
   if(taia_less(&deadline, &stamp)) {
     buffer_put(buffer_1, querystr.s, querystr.len);
-    buffer_puts(buffer_1,
-                "ALERT:took more than 1 second\n");
+    buffer_puts(buffer_1, "ALERT:took more than 1 second\n");
   }
 
   return 0;
@@ -397,8 +394,7 @@ parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2
 
     if(dns_domain_equal(referral, control) || !dns_domain_suffix(referral, control)) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:lame server; refers to ");
+      buffer_puts(buffer_1, "ALERT:lame server; refers to ");
       printdomain(referral);
       buffer_puts(buffer_1, "\n");
       return;
@@ -487,8 +483,7 @@ parsepacket(const char* buf, unsigned int len, const char* d, const char dtype[2
 DIE:
   x = strerror(errno);
   buffer_put(buffer_1, querystr.s, querystr.len);
-  buffer_puts(buffer_1,
-              "ALERT:unable to parse response packet; ");
+  buffer_puts(buffer_1, "ALERT:unable to parse response packet; ");
   buffer_puts(buffer_1, x);
   buffer_puts(buffer_1, "\n");
 }
@@ -608,15 +603,13 @@ main(int argc, char** argv) {
 
     if(dns_domain_equal(q, "\011localhost\0")) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:some caches do not handle localhost internally\n");
+      buffer_puts(buffer_1, "ALERT:some caches do not handle localhost internally\n");
       address_add(q, "\177\0\0\1");
     }
 
     if(dd(q, "", ip) == 4) {
       buffer_put(buffer_1, querystr.s, querystr.len);
-      buffer_puts(buffer_1,
-                  "ALERT:some caches do not handle IP addresses internally\n");
+      buffer_puts(buffer_1, "ALERT:some caches do not handle IP addresses internally\n");
       address_add(q, ip);
     }
 

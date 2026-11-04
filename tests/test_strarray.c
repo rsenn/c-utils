@@ -46,7 +46,6 @@ TEST(test_strarray_removesuffixs_joins) {
   strarray_free(&arr);
 }
 
-
 static ssize_t
 discard(int fd, const void* x, size_t n, void* b) {
   (void)fd;

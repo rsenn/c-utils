@@ -48,10 +48,10 @@ count_depth() {
 
     c = 0;
 
-    for(i = 0; i < len; i++) 
+    for(i = 0; i < len; i++)
       if(buffer[i] == '/')
         c++;
-    
+
     buffer_putulong(buffer_1, (unsigned long)c);
     buffer_put(buffer_1, " ", 1);
     buffer_put(buffer_1, buffer, len);
@@ -71,9 +71,11 @@ main(int argc, char* argv[]) {
        || !str_diff(argv[argi],
        "--list")) { opt_list = 1; }
        else*/
-    { break; }
+    {
+      break;
+    }
     argi++;
   }
-  
+
   return count_depth();
 }

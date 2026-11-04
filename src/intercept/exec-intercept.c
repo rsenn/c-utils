@@ -78,22 +78,22 @@
 static void
 usage(const char* argv0) {
   buffer_putm_internal_flush(buffer_2,
-                              "Usage: ",
-                              path_basename_s(argv0),
-                              " [-o FILE] [from[=to] ...] -- <program> [args...]\n",
-                              "  -o FILE  set EXEC_INTERCEPT_LOG=FILE before exec'ing <program>\n",
-                              "  from=to  add a remap to EXEC_INTERCEPT_MAP (replacing any existing\n",
-                              "           entry for the same \"from\"), e.g. bash=/usr/local/bin/shish\n",
-                              "  from     log-only: log every matching exec*() call without\n",
-                              "           redirecting it, e.g. \"*\" logs every exec*() call\n",
-                              "\n",
-                              "\"from\" (on either side of a bare \"=\", too) is a path_fnmatch()\n",
-                              "pattern matched against the exec'd basename, not just a literal name.\n",
-                              "\n",
-                              "A bare (no \"=\") \"from\" is only recognized as a remap when \"--\" is\n",
-                              "also given, to tell it apart from <program>; with \"from=to\" the \"=\"\n",
-                              "already does that, so \"--\" stays optional in that case.\n",
-                              0);
+                             "Usage: ",
+                             path_basename_s(argv0),
+                             " [-o FILE] [from[=to] ...] -- <program> [args...]\n",
+                             "  -o FILE  set EXEC_INTERCEPT_LOG=FILE before exec'ing <program>\n",
+                             "  from=to  add a remap to EXEC_INTERCEPT_MAP (replacing any existing\n",
+                             "           entry for the same \"from\"), e.g. bash=/usr/local/bin/shish\n",
+                             "  from     log-only: log every matching exec*() call without\n",
+                             "           redirecting it, e.g. \"*\" logs every exec*() call\n",
+                             "\n",
+                             "\"from\" (on either side of a bare \"=\", too) is a path_fnmatch()\n",
+                             "pattern matched against the exec'd basename, not just a literal name.\n",
+                             "\n",
+                             "A bare (no \"=\") \"from\" is only recognized as a remap when \"--\" is\n",
+                             "also given, to tell it apart from <program>; with \"from=to\" the \"=\"\n",
+                             "already does that, so \"--\" stays optional in that case.\n",
+                             0);
 }
 
 /* `map` holds EXEC_INTERCEPT_MAP's comma-separated "from=to" entries

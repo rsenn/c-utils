@@ -167,8 +167,7 @@ fetch(const char* url, int with_body) {
     buffer_putc(&c->out, ':');
     buffer_putulong(&c->out, u.port);
   }
-  buffer_puts(&c->out,
-              "\r\nUser-Agent: chttpcat\r\nAccept: */*\r\nAccept-Encoding: identity\r\nConnection: close\r\n");
+  buffer_puts(&c->out, "\r\nUser-Agent: chttpcat\r\nAccept: */*\r\nAccept-Encoding: identity\r\nConnection: close\r\n");
   buffer_putsa(&c->out, &extra_headers);
 
   if(with_body) {
@@ -222,7 +221,8 @@ fetch(const char* url, int with_body) {
 
     if(case_starts(line.s, "content-length:"))
       scan_u64(line.s + 15 + scan_whitenskip(line.s + 15, line.len - 15), &length);
-    else if(case_starts(line.s, "transfer-encoding:") && case_starts(line.s + 18 + scan_whitenskip(line.s + 18, line.len - 18), "chunked"))
+    else if(case_starts(line.s, "transfer-encoding:") &&
+            case_starts(line.s + 18 + scan_whitenskip(line.s + 18, line.len - 18), "chunked"))
       chunked = 1;
     else if(case_starts(line.s, "location:")) {
       stralloc_copys(&location, line.s + 9 + scan_whitenskip(line.s + 9, line.len - 9));
@@ -354,8 +354,9 @@ main(int argc, char* argv[]) {
     for(hops = 0;; hops++) {
       code = fetch(url, with_body);
 
-      if(!with_body && follow && hops < 10 && (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) &&
-         location.len && (url = redirect_target(&next)))
+      if(!with_body && follow && hops < 10 &&
+         (code == 301 || code == 302 || code == 303 || code == 307 || code == 308) && location.len &&
+         (url = redirect_target(&next)))
         continue;
 
       break;
