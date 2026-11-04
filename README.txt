@@ -197,7 +197,7 @@ c-utils -- where this code comes from
       src/dnsutils/dnsname.c Reverse lookup of IP address
       src/tcp/tcping.c     try to TCP connect and output time of each acknowledge or reset
       src/tcp/chttpcat.c   HTTP/HTTPS client, GET of every URL, stdin is POSTed chunked, -i -H -X -L -o
-      src/tcp/copenai.c    streams the answer of an OpenAI compatible chat API (chunked POST, SSE or NDJSON), $OPENAI_API_KEY
+      src/tcp/copenai.c    streams the answer of an OpenAI compatible chat API (chunked POST, SSE or NDJSON), $OPENAI_API_URL, $OPENAI_MODEL, $OPENAI_API_KEY
       src/tcp/cgemini.c    conversation with Google Gemini on the terminal, a pipe or a TCP socket (-l), $GEMINI_API_KEY
       src/tcp/llmstream.c  shared by those two: the event loop, SSE or NDJSON by Content-Type, error messages
       src/tcp/cftpcat.c    FTP client, ftp:// URL lists or downloads, HOST COMMAND runs ls/cat/cd/pwd/size/quote -u -p -P -v

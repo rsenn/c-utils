@@ -1,5 +1,7 @@
 2026-11-04:
 
+- copenai: the default of -u/--url is $OPENAI_API_URL and the default of
+  -m/--model is $OPENAI_MODEL when set.
 - genmakefile: -m batch no longer writes `|| GOTO FAIL` after an empty recipe
   (the rule all); the line made every batch file end in the Fail branch.
 - genmakefile: the xc8 and xc8-cc features also work with -m ninja, shell and

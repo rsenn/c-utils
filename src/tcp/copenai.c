@@ -9,7 +9,7 @@
 
 #include <unistd.h>
 
-static const char *model = "gpt-4o-mini", *base = "https://api.openai.com/v1", *key, *system_prompt;
+static const char *model, *base, *key, *system_prompt;
 static int use_length;
 static llm_stream stream;
 
@@ -26,8 +26,9 @@ usage(const char* argv0) {
                        "read as server-sent events or as newline delimited JSON, as the\n"
                        "Content-Type of the answer says.\n"
                        "\n"
-                       "  -m, --model NAME     model, default gpt-4o-mini\n"
-                       "  -u, --url URL        base url, default https://api.openai.com/v1\n"
+                       "  -m, --model NAME     model, default $OPENAI_MODEL or gpt-4o-mini\n"
+                       "  -u, --url URL        base url, default $OPENAI_API_URL or\n"
+                       "                       https://api.openai.com/v1\n"
                        "  -k, --key KEY        API key, default $OPENAI_API_KEY\n"
                        "  -s, --system TEXT    system prompt\n"
                        "  -l, --length         send the request with a Content-Length instead of chunks\n"
@@ -153,6 +154,18 @@ main(int argc, char* argv[]) {
       default: return 2;
     }
   }
+
+  if(!model)
+    model = env_get("OPENAI_MODEL");
+
+  if(!model || !*model)
+    model = "gpt-4o-mini";
+
+  if(!base)
+    base = env_get("OPENAI_API_URL");
+
+  if(!base || !*base)
+    base = "https://api.openai.com/v1";
 
   if(!key)
     key = env_get("OPENAI_API_KEY");
