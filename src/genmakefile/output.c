@@ -1,6 +1,7 @@
 #include "genmakefile.h"
 #include "../../lib/debug.h"
 #include "output.h"
+#include "xc8.h"
 #include "compiler.h"
 #include "ansi.h"
 
@@ -409,7 +410,9 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
   stralloc_init(&obj_dir);
 
-  if(rule_is_compile(rule) || rule->recipe.s == commands.compile.s)
+  if(xc8_is_vectors_rule(rule))
+    rule_name = "ihextool_vectors";
+  else if(rule_is_compile(rule) || rule->recipe.s == commands.compile.s)
     rule_name = "cc";
   else if(str_end(rule->name, exts.lib) || rule->recipe.s == commands.lib.s)
     /* checked ahead of rule_is_link(): a plain program's link rule can
@@ -425,7 +428,7 @@ output_ninja_target(buffer* b, target* rule, char psa) {
      * under dirs.bin (dirs.obj by default, unless -k/--bindir was
      * given) -- everything else ("cc"/"lib" outputs, and a link rule's
      * own prereqs below) still lives under dirs.obj. */
-    const char* out_dir = str_equal(rule_name, "link") ? dirs.bin.sa.s : dirs.obj.sa.s;
+    const char* out_dir = str_equal(rule_name, "link") || str_equal(rule_name, "ihextool_vectors") ? dirs.bin.sa.s : dirs.obj.sa.s;
 
     stralloc_init(&path);
     {
@@ -441,6 +444,14 @@ output_ninja_target(buffer* b, target* rule, char psa) {
 
     buffer_puts(b, "build ");
     buffer_putsa(b, &path);
+
+    /* xc8-cc writes the .hex when it links the .elf: an implicit output */
+    if(xc8_is_cc() && str_equal(rule_name, "link") && path.len > 4 && !byte_diff(path.s + path.len - 4, 4, ".elf")) {
+      buffer_puts(b, " | ");
+      buffer_put(b, path.s, path.len - 4);
+      buffer_puts(b, ".hex");
+    }
+
     buffer_puts(b, ": ");
     buffer_puts(b, rule_name);
     buffer_puts(b, " ");

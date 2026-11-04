@@ -77,6 +77,24 @@ grep -q 'build/\*.map' Makefile && grep -q 'build/\*.sdb' Makefile || { echo "FA
 grep -q "Prog-universal.hex" Makefile && grep -q "vectors -a .(CODE_OFFSET)" Makefile || { echo "FAIL: universal hex rule"; exit 1; }
 "$G" -t xc8-cc -m gmake --import-mplabx nbproject/configurations.xml --no-universal-hex -d build -o Makefile.nu >/dev/null 2>&1
 grep -q "Prog-universal" Makefile.nu && { echo "FAIL: --no-universal-hex"; exit 1; }
+# the other backends: universal rule and defaults
+gen() { m=$1; o=$2; shift 2; "$G" -t xc8-cc -m "$m" --import-mplabx nbproject/configurations.xml -d build -o "$o" "$@" >/dev/null 2>&1; }
+gen ninja build.ninja || { echo "FAIL: -m ninja"; exit 1; }
+grep -q '^rule ihextool_vectors' build.ninja && grep -q 'Prog-universal.hex: ihextool_vectors' build.ninja &&
+  grep -q 'Prog.elf | .*Prog.hex: link' build.ninja && grep -q 'IHEXTOOL:-ihextool' build.ninja &&
+  grep -q 'CODE_OFFSET:-0x2000' build.ninja || { echo "FAIL: ninja universal"; exit 1; }
+grep -q 'DFP_DIR' build.ninja || { echo "FAIL: ninja DFP_DIR"; exit 1; }
+grep -q 'memoryfile.xml' build.ninja && ! grep -q '\$builddir' build.ninja || { echo "FAIL: ninja BUILDDIR"; exit 1; }
+gen shell build.sh || { echo "FAIL: -m shell"; exit 1; }
+grep -q '^: ${IHEXTOOL:=ihextool}' build.sh && grep -q '^: ${CODE_OFFSET:=0x2000}' build.sh &&
+  grep -q '^\$IHEXTOOL vectors -a \$CODE_OFFSET' build.sh || { echo "FAIL: shell universal"; exit 1; }
+gen batch build.bat || { echo "FAIL: -m batch"; exit 1; }
+grep -q 'IF NOT DEFINED IHEXTOOL SET IHEXTOOL=ihextool' build.bat && grep -q 'IF NOT DEFINED CODE_OFFSET SET CODE_OFFSET=0x2000' build.bat &&
+  grep -q '^%IHEXTOOL% vectors -a %CODE_OFFSET%' build.bat || { echo "FAIL: batch universal"; exit 1; }
+for m in ninja shell batch; do
+  gen $m nu.$m --no-universal-hex
+  grep -q 'Prog-universal\|ihextool_vectors\|IHEXTOOL vectors' nu.$m && { echo "FAIL: --no-universal-hex ($m)"; exit 1; }
+done
 "$G" -t xc8 -m gmake --import-mplabx nbproject/configurations.xml -o Makefile.v1 >/dev/null 2>&1 || { echo "FAIL: -t xc8"; exit 1; }
 grep -q -e '-mcodeoffset\|-mdfp\|--cflag' Makefile.v1 && { echo "FAIL: v2 flags in -t xc8"; exit 1; }
 echo "import-mplabx-xc8cc: ok"

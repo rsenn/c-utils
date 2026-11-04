@@ -1016,7 +1016,8 @@ For PIC18 the application hex is also written as `<name>-universal.hex`
 and forwards its own vectors to offset+V, so the one file runs with and
 without the bootloader; without it, the empty area below the offset only
 slides over NOPs and the interrupt vector restarts the program. On by default
-when the offset is not zero (`--no-universal-hex` turns it off).
+when the offset is not zero, in the make, ninja, shell and batch backends
+(`--no-universal-hex` turns it off).
 
 ### 9.4 Optional packages
 

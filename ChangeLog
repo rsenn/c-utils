@@ -1,5 +1,13 @@
 2026-11-04:
 
+- genmakefile: the xc8 and xc8-cc features also work with -m ninja, shell and
+  batch: XC8_BIN, DFP_DIR, IHEXTOOL and CODE_OFFSET defaults (ninja reads them
+  from the environment of the shell, as for DFP_DIR), PATH set up, the
+  NAME-universal.hex rule, and the .hex as an implicit output of the ninja
+  link. The --ldflag directories ($(BUILDDIR)) are the build directory in every
+  backend (plain make had an undefined variable).
+- tests: genmakefile/xc8-universal-build.sh builds the CDC example with
+  XC8 through ninja, the shell backend and make when XC8 is installed.
 - ihextool: new command vectors; it adds PIC18 GOTO stubs at the vectors
   (default 0x00, 0x08, 0x18) that jump to vector + the application offset
   (-a), so a hex built for a bootloader runs without it too. --vectors and

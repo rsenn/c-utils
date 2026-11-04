@@ -618,3 +618,18 @@
   `unsigned long long`. Calls are unaffected, but taking the address of one into
   a function pointer of libowfat's type warns on LP64 Linux. Change the
   declarations in `lib/fmt.h` and the definitions together if it ever matters.
+
+- genmakefile-batch-empty-recipe-goto-fail: every `-m batch` file ends its
+  rules with a line `<TAB> || GOTO FAIL` that has no command in front of it
+  (the empty recipe of the `all` rule), which `cmd.exe` rejects as a syntax
+  error. Found with `genmakefile -t gcc -m batch m.c`; the same line follows the
+  `xc8-cc` rules. `output_script()` should skip a recipe that is empty.
+
+- genmakefile-xc8cc-hex-depends-on-source-path: the `.hex` of an xc8-cc build
+  is not the same when the sources are named by a relative path (`make`) or by
+  an absolute one (`ninja`, `shell`): in `CDC_Serial_UART_Example.X` the
+  application differs in the RAM addresses of the code (`0x48` against `0x4D`).
+  The stub area below the code offset is the same. The ninja and shell
+  backends use absolute source paths (`sources_dir`), the make backends
+  relative ones.
+

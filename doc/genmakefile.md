@@ -265,8 +265,16 @@ compiler wrote it):
 with k = target/2) and replaces data that is already there, with a warning.
 The bootloader ignores the stubs, a programmer loads them. `IHEXTOOL` and
 `CODE_OFFSET` can be overridden on the make command line. The rule is on by
-default for PIC18 when the offset is not zero (gmake and make, xc8 and xc8-cc;
-not ninja or the script backends); `--no-universal-hex` turns it off. PIC16 (14
+default for PIC18 when the offset is not zero (xc8 and xc8-cc, every backend);
+`--no-universal-hex` turns it off. make and gmake write `IHEXTOOL ?=` and
+`CODE_OFFSET ?=`; the shell script `: ${IHEXTOOL:=ihextool}` and
+`: ${CODE_OFFSET:=0x2000}`; the batch file `IF NOT DEFINED ... SET`; ninja has
+no `?=`, so its rule reads `${IHEXTOOL:-ihextool}` and `${CODE_OFFSET:-0x2000}`
+from the environment of the shell that runs it (the way `$$DFP_DIR` is used).
+For xc8-cc the same backends also default `XC8_BIN` (and put it in front of
+`PATH`) and `DFP_DIR` when the compiler and the pack are found; for ninja they
+are `${XC8_BIN:-...}` and `${DFP_DIR:-...}` in the commands. The linked .hex
+is an implicit output of the ninja link edge. PIC16 (14
 bit core) uses other encodings and is not supported yet.
 
 ## Optional packages

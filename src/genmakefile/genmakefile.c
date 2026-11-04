@@ -1989,6 +1989,7 @@ write_makefile_output(buffer* out, strlist* cmdline) {
     output_ninja_rule(out, "cc", &commands.compile);
     output_ninja_rule(out, "link", &commands.link);
     output_ninja_rule(out, "lib", &commands.lib);
+    xc8_ninja_rules(out);
     buffer_putnl(out, 0);
   }
 
@@ -3286,6 +3287,7 @@ main(int argc, char* argv[]) {
   matrix_defines();
   xc8_apply();
   resolve_directories();
+  xc8_apply_late();
 
   setup_search_paths(&libdirs, &libs, &includes);
 
