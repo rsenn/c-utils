@@ -523,7 +523,6 @@ TEST(test_strlist_unshift) {
   strlist_init(&sl, '\0');
 }
 
-
 /* true when the list holds exactly the n strings of v */
 static int
 list_is(const strlist* sl, size_t n, const char* const* v) {
@@ -583,7 +582,7 @@ TEST(test_strlist_access) {
   ASSERT_EQ(1, strlist_contains(&sl, "two"));
   ASSERT_EQ(0, strlist_containsb(&sl, "thr", 3)); /* whole elements only */
   ASSERT_EQ(1, strlist_containsb(&sl, "three", 5));
-  ASSERT_EQ(4, strlist_index_of(&sl, "two"));      /* a byte offset */
+  ASSERT_EQ(4, strlist_index_of(&sl, "two")); /* a byte offset */
   ASSERT_EQ(8, strlist_index_of_b(&sl, "three", 5));
   ASSERT_EQ(-1, strlist_index_of(&sl, "zzz"));
   ASSERT_EQ(8, strlist_pos(&sl, 2));
@@ -649,13 +648,13 @@ TEST(test_strlist_remove) {
   ASSERT_EQ(1, list_is(&sl, 3, no_b));
   ASSERT_EQ(1, strlist_removeb(&sl, "dXX", 1)); /* the LAST element: no empty one left behind */
   ASSERT_EQ(1, list_is(&sl, 2, no_d));
-  ASSERT_EQ(1, strlist_remove_at(&sl, 0));      /* by element number */
+  ASSERT_EQ(1, strlist_remove_at(&sl, 0)); /* by element number */
   ASSERT_EQ(1, list_is(&sl, 1, only_c));
   ASSERT_EQ(0, strlist_removes(&sl, "zz"));
   ASSERT_EQ(0, strlist_remove_at(&sl, 5));
-  ASSERT_EQ(1, strlist_pop(&sl));               /* a single element can be popped */
+  ASSERT_EQ(1, strlist_pop(&sl)); /* a single element can be popped */
   ASSERT_EQ(0, strlist_count(&sl));
-  ASSERT_EQ(0, strlist_pop(&sl));               /* an empty list cannot */
+  ASSERT_EQ(0, strlist_pop(&sl)); /* an empty list cannot */
   stralloc_free(&sl.sa);
 }
 
@@ -758,11 +757,11 @@ TEST(test_strlist_sort_slice) {
   ASSERT_EQ(1, list_is(&s, 3, sorted));
 
   strlist_init(&out, '\0');
-  strlist_slice(&out, &s, 1, 2);       /* end is exclusive */
+  strlist_slice(&out, &s, 1, 2); /* end is exclusive */
   ASSERT_EQ(1, list_is(&out, 1, fig));
   stralloc_free(&out.sa);
   strlist_init(&out, '\0');
-  strlist_slice(&out, &s, -2, 3);      /* negative: from the end */
+  strlist_slice(&out, &s, -2, 3); /* negative: from the end */
   ASSERT_EQ(1, list_is(&out, 2, last_two));
   stralloc_free(&out.sa);
   strlist_init(&out, '\0');
@@ -770,11 +769,11 @@ TEST(test_strlist_sort_slice) {
   ASSERT_EQ(1, list_is(&out, 2, first_two));
   stralloc_free(&out.sa);
   strlist_init(&out, '\0');
-  strlist_slice(&out, &s, 2, 99);      /* clipped */
+  strlist_slice(&out, &s, 2, 99); /* clipped */
   ASSERT_EQ(1, strlist_count(&out) == 1);
   stralloc_free(&out.sa);
 
-  r = strlist_range(&s, 1, 3);         /* a view into s, shares its memory */
+  r = strlist_range(&s, 1, 3); /* a view into s, shares its memory */
   ASSERT_EQ(2, strlist_count(&r));
   stralloc_free(&s.sa);
 }
@@ -810,15 +809,15 @@ TEST(test_strlist_set_operations) {
   ASSERT_EQ(1, list_is(&df, 2, left));
 
   /* sub removes one occurrence per element, remove_all every occurrence */
-  strlist_cat(&a, &b);                     /* apple fig pear fig kiwi */
+  strlist_cat(&a, &b); /* apple fig pear fig kiwi */
   ASSERT_EQ(5, strlist_count(&a));
-  ASSERT_EQ(2, strlist_sub(&a, &b));       /* one fig, kiwi */
+  ASSERT_EQ(2, strlist_sub(&a, &b)); /* one fig, kiwi */
   ASSERT_EQ(3, strlist_count(&a));
   ASSERT_EQ(1, strlist_remove_all(&a, &b)); /* the other fig */
   ASSERT_EQ(1, list_is(&a, 2, left));
   strlist_cat_unique(&a, &b);
   ASSERT_EQ(4, strlist_count(&a));
-  strlist_cat_unique(&a, &b);              /* nothing new */
+  strlist_cat_unique(&a, &b); /* nothing new */
   ASSERT_EQ(4, strlist_count(&a));
 
   stralloc_free(&a.sa);
@@ -847,7 +846,7 @@ TEST(test_strlist_copy_filter_match) {
   strlist_filter(&s, &m, &nm, "*p*");
   ASSERT_EQ(1, list_is(&m, 2, matching));
   ASSERT_EQ(1, strlist_count(&nm));
-  ASSERT_EQ(1, strlist_match(&s, "f*", 0));  /* index of the first match */
+  ASSERT_EQ(1, strlist_match(&s, "f*", 0)); /* index of the first match */
   ASSERT_EQ(-1, strlist_match(&s, "zz*", 0));
   stralloc_free(&s.sa);
   stralloc_free(&cp.sa);
@@ -913,7 +912,7 @@ TEST(test_strlist_output) {
   ASSERT_EQ(1, b.p >= 9);
 
   buffer_init(&b, (buffer_op_ptr)discard, -1, mem, sizeof mem);
-  strlist_dump(&b, &s);       /* ends with a flush */
+  strlist_dump(&b, &s); /* ends with a flush */
   strlist_dump_named(&b, &s, names);
   ASSERT_EQ(0, b.p);
   stralloc_free(&s.sa);

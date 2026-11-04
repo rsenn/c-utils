@@ -577,7 +577,6 @@ TEST(test_fmt_escapecharjson) {
   ASSERT_EQ(12, fmt_escapecharjson(NULL, 0x1d11e));
 }
 
-
 /* libowfat compat: protocol buffers, varints, netstrings */
 TEST(test_fmt_pb_netstring) {
   char b[64];
@@ -609,7 +608,6 @@ TEST(test_fmt_pb_netstring) {
   ASSERT_EQ('y', b[1]);
 }
 
-
 /*
  * protocol buffer field writers: tag + payload; NULL measures
  */
@@ -619,15 +617,15 @@ TEST(test_fmt_pb_fields) {
 
   ASSERT_EQ(2, fmt_pb_int(b, 1, 150) - 1); /* tag(1) + varint(150) is 3 bytes */
   ASSERT_EQ(3, fmt_pb_int(b, 1, 150));
-  ASSERT_EQ(8, b[0]);                      /* field 1, type 0 */
+  ASSERT_EQ(8, b[0]); /* field 1, type 0 */
   ASSERT_EQ((char)0x96, b[1]);
   ASSERT_EQ(1, b[2]);
 
   ASSERT_EQ(2, fmt_pb_sint(b, 2, -1));
-  ASSERT_EQ(0x10, b[0]);                   /* field 2, type 0 */
-  ASSERT_EQ(1, b[1]);                      /* zigzag(-1) */
+  ASSERT_EQ(0x10, b[0]); /* field 2, type 0 */
+  ASSERT_EQ(1, b[1]);    /* zigzag(-1) */
 
-  ASSERT_EQ(9, fmt_pb_double(b, 3, d));    /* tag + 8 bytes, type 1 */
+  ASSERT_EQ(9, fmt_pb_double(b, 3, d)); /* tag + 8 bytes, type 1 */
   ASSERT_EQ(0x19, b[0]);
   ASSERT_EQ(3, fmt_pb_int(NULL, 1, 150));
 }

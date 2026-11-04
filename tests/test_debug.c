@@ -28,17 +28,29 @@ capture(void (*fn)(void), char* out, size_t max) {
   return (size_t)n;
 }
 
-static void do_int(void) { debug_int("i", 42); debug_long("l", -7); }
-static void do_str(void) { debug_str("s", "hello"); }
-static void do_byte(void) { debug_byte("b", "ab", 2); }
-static void do_sa(void) {
+static void
+do_int(void) {
+  debug_int("i", 42);
+  debug_long("l", -7);
+}
+static void
+do_str(void) {
+  debug_str("s", "hello");
+}
+static void
+do_byte(void) {
+  debug_byte("b", "ab", 2);
+}
+static void
+do_sa(void) {
   stralloc sa = {0};
 
   stralloc_copys(&sa, "sa-text");
   debug_sa("sa", &sa);
   stralloc_free(&sa);
 }
-static void do_sl(void) {
+static void
+do_sl(void) {
   strlist sl;
 
   strlist_init(&sl, '\0');
@@ -47,7 +59,8 @@ static void do_sl(void) {
   debug_sl("sl", &sl, ",");
   stralloc_free(&sl.sa);
 }
-static void do_strarray(void) {
+static void
+do_strarray(void) {
   strarray a;
 
   strarray_init(&a);

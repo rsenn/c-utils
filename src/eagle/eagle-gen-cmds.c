@@ -1618,16 +1618,11 @@ void
 usage(char* progname) {
   buffer_putm_internal(buffer_1, "Usage: ", progname, " [OPTIONS] [PACKAGES...]\n", NULL);
   buffer_puts(buffer_1, "Options\n");
-  buffer_puts(buffer_1,
-              "  --help, -h                        show this help\n");
-  buffer_puts(buffer_1,
-              "  --layer, -l NUM       Layer name/number\n");
-  buffer_puts(buffer_1,
-              "  --layers, -L          List layers\n");
-  buffer_puts(buffer_1,
-              "  --draw, -d            Draw measures\n");
-  buffer_puts(buffer_1,
-              "  --align-by, -A NUM    Align to (inch, mm, mil)\n");
+  buffer_puts(buffer_1, "  --help, -h                        show this help\n");
+  buffer_puts(buffer_1, "  --layer, -l NUM       Layer name/number\n");
+  buffer_puts(buffer_1, "  --layers, -L          List layers\n");
+  buffer_puts(buffer_1, "  --draw, -d            Draw measures\n");
+  buffer_puts(buffer_1, "  --align-by, -A NUM    Align to (inch, mm, mil)\n");
   buffer_putnlflush(buffer_1);
 }
 

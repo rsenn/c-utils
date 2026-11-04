@@ -154,7 +154,7 @@ response_cname(response* resp, const char* c, const char* d, uint32 ttl) {
 void
 response_nxdomain(response* resp) {
   char* response = resp->buf;
-  
+
   assert(resp->pos > 3);
 
   response[3] |= 3;
@@ -164,9 +164,9 @@ response_nxdomain(response* resp) {
 void
 response_servfail(response* resp) {
   char* response = resp->buf;
-  
+
   assert(resp->pos > 3);
-  
+
   response[3] |= 2;
 }
 
@@ -181,7 +181,7 @@ response_id(response* resp, const char id[2]) {
 void
 response_tc(response* resp) {
   assert(resp->pos > 2);
-  
+
   resp->buf[2] |= 2;
   resp->pos = resp->tctarget;
 }
@@ -189,7 +189,7 @@ response_tc(response* resp) {
 void
 response_dump(response const* resp) {
   size_t i;
-  
+
   buffer_puts(buffer_2, "len = ");
   buffer_putulong(buffer_2, resp->len);
 

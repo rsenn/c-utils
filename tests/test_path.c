@@ -207,7 +207,8 @@ TEST(test_path_fnmatch) {
   ASSERT_EQ(0, path_fnmatch("a?c", 3, "abc", 3, 0));
   ASSERT_EQ(PATH_FNM_NOMATCH, path_fnmatch("*", 1, "a/b", 3, PATH_FNM_PATHNAME)); /* * does not cross a slash */
   ASSERT_EQ(0, path_fnmatch("*", 1, "a/b", 3, 0));
-  ASSERT_EQ(PATH_FNM_NOMATCH, path_fnmatch("*", 1, ".hidden", 7, PATH_FNM_PERIOD)); /* leading period only matched explicitly */
+  ASSERT_EQ(PATH_FNM_NOMATCH,
+            path_fnmatch("*", 1, ".hidden", 7, PATH_FNM_PERIOD)); /* leading period only matched explicitly */
   ASSERT_EQ(0, path_fnmatch(".*", 2, ".hidden", 7, PATH_FNM_PERIOD));
 }
 
@@ -334,7 +335,6 @@ TEST(test_path_extoff) {
   ASSERT_EQ(1, path_extoff("a.", 2));
   ASSERT_EQ(2, path_extoff("..", 2));
 }
-
 
 static int
 is_exec(const char* p, void* arg) {
@@ -488,6 +488,6 @@ TEST(test_path_resolve_dots) {
   RUN(test_path_gethome); \
   RUN(test_path_readlink); \
   RUN(test_path_exists); \
-  RUN(test_path_is_absolute); 
+  RUN(test_path_is_absolute);
 
 TESTS(path) { RUN_PATH_TESTS(); }

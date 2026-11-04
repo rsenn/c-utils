@@ -20,7 +20,7 @@ collect(playlist* pl, stralloc* title, stralloc* path, uint32 len) {
   byte_copy(seen + n, path->len, path->s);
   n += path->len;
   seen[n++] = '|';
-  
+
   {
     size_t k;
     unsigned long v = len;
@@ -42,7 +42,8 @@ collect(playlist* pl, stralloc* title, stralloc* path, uint32 len) {
  * void playlist_init(playlist*); void playlist_m3u(playlist*, buffer*); int playlist_read(playlist*);
  */
 TEST(test_playlist_m3u) {
-  static const char m3u[] = "#EXTM3U\n#EXTINF:123,Artist - Title\nsong.mp3\n#EXTINF:-1,Second\nhttp://x/y.ogg\nplain.mp3\n";
+  static const char m3u[] =
+      "#EXTM3U\n#EXTINF:123,Artist - Title\nsong.mp3\n#EXTINF:-1,Second\nhttp://x/y.ogg\nplain.mp3\n";
   playlist pl;
   buffer b;
 
@@ -60,7 +61,8 @@ TEST(test_playlist_m3u) {
 }
 
 TEST(test_playlist_pls) {
-  static const char pls[] = "[playlist]\nNumberOfEntries=2\nFile2=b.mp3\nTitle2=B\nLength2=20\nFile1=a.mp3\nTitle1=A\nLength1=10\nVersion=2\n";
+  static const char pls[] = "[playlist]\nNumberOfEntries=2\nFile2=b.mp3\nTitle2=B\nLength2=20\nFile1=a.mp3\nTitle1="
+                            "A\nLength1=10\nVersion=2\n";
   playlist pl;
   buffer b;
 

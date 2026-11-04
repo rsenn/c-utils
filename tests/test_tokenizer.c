@@ -52,7 +52,8 @@ first_type(const char* src, int* ret) {
 }
 
 TEST(test_tokenizer_hex_literal) {
-  static const char* const hex[] = {"0x2a", "0X2A", "0xdeadBEEF", "0x0", "0xFFu", "0x1UL", "0xffll", "0x7;", "0x10 + 1"};
+  static const char* const hex[] = {
+      "0x2a", "0X2A", "0xdeadBEEF", "0x0", "0xFFu", "0x1UL", "0xffll", "0x7;", "0x10 + 1"};
   static const char* const bad[] = {"0x", "0xg", "0x1z", "0xu"};
   size_t i;
   int ret;
@@ -100,10 +101,7 @@ TEST(test_tokenizer_hex_in_expression) {
 /*
  * const char* tokentype_to_str(enum tokentype);
  */
-TEST(test_tokentype_to_str) {
-  ASSERT_NE(NULL, tokentype_to_str(TT_IDENTIFIER));
-}
-
+TEST(test_tokentype_to_str) { ASSERT_NE(NULL, tokentype_to_str(TT_IDENTIFIER)); }
 
 /* the types of all tokens of src (white space skipped), as a string of letters */
 static void
@@ -125,9 +123,15 @@ types_of(const char* src, char* out, size_t max, int flags, int comments) {
       continue;
     if(tok.type == TT_EOF)
       break;
-    out[n++] = tok.type == TT_IDENTIFIER ? 'i' : tok.type == TT_HEX_INT_LIT ? 'h' : tok.type == TT_DEC_INT_LIT ? 'd' :
-               tok.type == TT_FLOAT_LIT ? 'f' : tok.type == TT_SQSTRING_LIT ? 'q' : tok.type == TT_DQSTRING_LIT ? 's' :
-               tok.type == TT_SEP ? (char)tok.value : tok.type >= TT_CUSTOM ? 'C' : '?';
+    out[n++] = tok.type == TT_IDENTIFIER     ? 'i'
+               : tok.type == TT_HEX_INT_LIT  ? 'h'
+               : tok.type == TT_DEC_INT_LIT  ? 'd'
+               : tok.type == TT_FLOAT_LIT    ? 'f'
+               : tok.type == TT_SQSTRING_LIT ? 'q'
+               : tok.type == TT_DQSTRING_LIT ? 's'
+               : tok.type == TT_SEP          ? (char)tok.value
+               : tok.type >= TT_CUSTOM       ? 'C'
+                                             : '?';
   }
   out[n] = 0;
 }

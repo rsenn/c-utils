@@ -182,7 +182,6 @@ TEST(test_pe_check_imports) {
   }
 }
 
-
 /*
  * header accessors
  */

@@ -26,8 +26,8 @@ omf_dump(buffer* b, omf_record* r) {
 
 void
 dump_hex(buffer* b, const char* x, const char* y, size_t offset) {
-  size_t i,n = y - x;
-  
+  size_t i, n = y - x;
+
   stralloc linesa;
   stralloc_init(&linesa);
 

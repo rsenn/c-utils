@@ -85,38 +85,33 @@ options(int argc, char* argv[]) {
   while((c = unix_getopt_long(argc, argv, "a:l:f:w:o:h", opts, &index)) != -1) {
     switch(c) {
       case 'a':
-        if(!number(unix_optarg, &opt_addr))
-          {
+        if(!number(unix_optarg, &opt_addr)) {
           errmsg_warn("invalid address ", unix_optarg, 0);
           return -1;
         }
         have_addr = 1;
         break;
       case 'l':
-        if(!number(unix_optarg, &opt_len))
-          {
+        if(!number(unix_optarg, &opt_len)) {
           errmsg_warn("invalid length ", unix_optarg, 0);
           return -1;
         }
         have_len = 1;
         break;
       case 'f':
-        if(!number(unix_optarg, &opt_fill) || opt_fill > 255)
-          {
+        if(!number(unix_optarg, &opt_fill) || opt_fill > 255) {
           errmsg_warn("invalid fill byte ", unix_optarg, 0);
           return -1;
         }
         break;
       case 'w':
-        if(!number(unix_optarg, &opt_width) || opt_width < 1 || opt_width > 255)
-          {
+        if(!number(unix_optarg, &opt_width) || opt_width < 1 || opt_width > 255) {
           errmsg_warn("invalid width ", unix_optarg, 0);
           return -1;
         }
         break;
       case 'o': opt_output = unix_optarg; break;
-      case 'h': usage(prog);
-        return -2;
+      case 'h': usage(prog); return -2;
       default: return -1;
     }
   }
@@ -487,7 +482,8 @@ cmd_frombin(int argc, char* argv[], int first) {
     return 1;
 
   b = output_buffer(&out, opened);
-  ihex_write_data(b, &hi16, (uint32)opt_addr, (const uint8*)x, have_len && opt_len < n ? opt_len : n, (unsigned)opt_width);
+  ihex_write_data(
+      b, &hi16, (uint32)opt_addr, (const uint8*)x, have_len && opt_len < n ? opt_len : n, (unsigned)opt_width);
   ihex_write_eof(b);
   output_close(&out, opened);
   mmap_unmap(x, n);

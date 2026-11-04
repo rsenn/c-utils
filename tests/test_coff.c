@@ -5,11 +5,35 @@
 
 #define IMG 512
 static size_t
-build(unsigned char*x){ byte_zero(x,IMG); coff_file_header*h=(void*)x; h->machine=0x14c; h->number_of_sections=1; h->pointer_to_symbol_table=100; h->number_of_symbols=2; h->size_of_optional_header=0;
- coff_section_header*s=(void*)(x+20); byte_copy(s->name,5,".text"); s->size_of_raw_data=16; s->pointer_to_raw_data=60; s->pointer_to_linenumbers=80; s->number_of_linenumbers=2;
- coff_symtab_entry*sy=(void*)(x+100); byte_copy(sy[0].e.name,4,"main"); sy[0].e.value=0; sy[0].e.scnum=1; sy[0].e.sclass=COFF_C_EXT;
- /* second symbol: long name in the string table */ coff_symtab_entry*s1=(coff_symtab_entry*)(x+100+18); s1->e.zeroes=0; s1->e.offset=4; s1->e.scnum=1; s1->e.sclass=COFF_C_STATIC;
- unsigned char*st=x+100+36; st[0]=4+16; byte_copy(st+4,15,"long_symbol_nam"); return 100+36+20; }
+build(unsigned char* x) {
+  byte_zero(x, IMG);
+  coff_file_header* h = (void*)x;
+  h->machine = 0x14c;
+  h->number_of_sections = 1;
+  h->pointer_to_symbol_table = 100;
+  h->number_of_symbols = 2;
+  h->size_of_optional_header = 0;
+  coff_section_header* s = (void*)(x + 20);
+  byte_copy(s->name, 5, ".text");
+  s->size_of_raw_data = 16;
+  s->pointer_to_raw_data = 60;
+  s->pointer_to_linenumbers = 80;
+  s->number_of_linenumbers = 2;
+  coff_symtab_entry* sy = (void*)(x + 100);
+  byte_copy(sy[0].e.name, 4, "main");
+  sy[0].e.value = 0;
+  sy[0].e.scnum = 1;
+  sy[0].e.sclass = COFF_C_EXT;
+  /* second symbol: long name in the string table */ coff_symtab_entry* s1 = (coff_symtab_entry*)(x + 100 + 18);
+  s1->e.zeroes = 0;
+  s1->e.offset = 4;
+  s1->e.scnum = 1;
+  s1->e.sclass = COFF_C_STATIC;
+  unsigned char* st = x + 100 + 36;
+  st[0] = 4 + 16;
+  byte_copy(st + 4, 15, "long_symbol_nam");
+  return 100 + 36 + 20;
+}
 
 TEST(test_coff_headers) {
   unsigned char x[IMG];
@@ -44,7 +68,7 @@ TEST(test_coff_symbols) {
   ASSERT_EQ(136, (const unsigned char*)coff_get_strtab(x, &size) - x);
   ASSERT_EQ(20, size);
   ASSERT_EQ(0, byte_diff(coff_symbol_name(x, coff_index_symtab(x, 0)), 4, "main"));
-  ASSERT_STR_EQUAL("long_symbol_nam", coff_symbol_name(x, coff_index_symtab(x, 1)) );
+  ASSERT_STR_EQUAL("long_symbol_nam", coff_symbol_name(x, coff_index_symtab(x, 1)));
 }
 
 TEST(test_coff_bad_string_offset) {

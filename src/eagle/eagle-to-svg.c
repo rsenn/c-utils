@@ -126,7 +126,8 @@ pad(double x, double y) {
   xml_set_attribute(node, "stroke-width", ".265");
   xml_set_attribute(node,
                     "d",
-                    "M0 2.004a.536.536 0 100 1.072.536.536 0 000-1.072zm0 .124c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+                    "M0 2.004a.536.536 0 100 1.072.536.536 0 000-1.072zm0 .124c.242 0 .438.185.438.412 0 "
+                    ".228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
   xml_set_attribute(node, "transform", sa.s);
   stralloc_free(&sa);
   return node;
@@ -216,9 +217,10 @@ main(int argc, char* argv[]) {
     xml_set_attribute(clip_path, "id", "pad-clip");
     xml_add_child(svgdefs, clip_path);
     clip_p = xml_element("path");
-    xml_set_attribute(clip_p,
-                      "d",
-                      "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
+    xml_set_attribute(
+        clip_p,
+        "d",
+        "M0 2.128c.242 0 .438.185.438.412 0 .228-.196.412-.438.412s-.438-.184-.438-.412c0-.227.196-.412.438-.412z");
     xml_add_child(clip_path, clip_p);
   }
   xml_set_attribute(svggroup, "stroke-width", "0.3");

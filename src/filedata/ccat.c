@@ -124,11 +124,7 @@ main(int argc, char* argv[]) {
       case 'o': out_filename = unix_optarg; break;
       case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
       default: /* '?' */
-        buffer_putm_internal(buffer_2,
-                             "Usage: ",
-                             argv[0],
-                             " [-c|-d] [-t TYPE] [-o OUTPUT] [file]\n",
-                             NULL);
+        buffer_putm_internal(buffer_2, "Usage: ", argv[0], " [-c|-d] [-t TYPE] [-o OUTPUT] [file]\n", NULL);
         exit(EXIT_FAILURE);
     }
   }
@@ -159,10 +155,7 @@ main(int argc, char* argv[]) {
     output = buffer_1;
   } else {
     if(!force && path_exists(out_filename)) {
-      buffer_putm_internal(buffer_2,
-                           "ERROR already exists (use -f): ",
-                           out_filename,
-                           NULL);
+      buffer_putm_internal(buffer_2, "ERROR already exists (use -f): ", out_filename, NULL);
       buffer_putnlflush(buffer_2);
       return 1;
     }
@@ -228,8 +221,7 @@ main(int argc, char* argv[]) {
     }
 
     if(decompress == 0 && output == buffer_1 && isatty(1)) {
-      buffer_putsflush(buffer_2,
-                       "ERROR: Won't write compressed data to a terminal\n");
+      buffer_putsflush(buffer_2, "ERROR: Won't write compressed data to a terminal\n");
       exit(EXIT_FAILURE);
     }
 

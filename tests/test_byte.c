@@ -283,7 +283,6 @@ TEST(test_byte_diff2) {
   ASSERT_NE(0, byte_diff2("abc", 3, "abcd", 4));
 }
 
-
 /*
  * size_t byte_skip / byte_rskip / byte_rskipn; byte_skipn is byte_chr
  */

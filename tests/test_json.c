@@ -93,7 +93,6 @@ TEST(test_json_tostring) {
   stralloc_free(&sa);
 }
 
-
 /* the decoded text of the string "a" in the document */
 static void
 string_of(const char* text, stralloc* out) {
@@ -132,7 +131,9 @@ TEST(test_json_string_decode) {
 
   /* a lone surrogate becomes U+FFFD */
   string_of("{\"a\":\"\\ud83dx\"}", &sa);
-  ASSERT_STR_EQUAL("\xef\xbf\xbd" "x", sa.s);
+  ASSERT_STR_EQUAL("\xef\xbf\xbd"
+                   "x",
+                   sa.s);
 
   /* an escaped backslash before u00e4 is not an escape of its own */
   string_of("{\"a\":\"\\\\u00e4\"}", &sa);
@@ -188,9 +189,9 @@ TEST(test_json_valid) {
  * jsonval json_property_path(jsonval, const char*);
  */
 TEST(test_json_property_path) {
-  static const char gemini[] =
-      "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"Hi\"},{\"text\":\"there\"}],\"role\":\"model\"},\"index\":0}],"
-      "\"usageMetadata\":{\"totalTokenCount\":3},\"a.b\":{\"c\":true}}";
+  static const char gemini[] = "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"Hi\"},{\"text\":\"there\"}],"
+                               "\"role\":\"model\"},\"index\":0}],"
+                               "\"usageMetadata\":{\"totalTokenCount\":3},\"a.b\":{\"c\":true}}";
   jsonval* doc = json_parse_text(gemini, sizeof(gemini) - 1);
   jsonval v;
 
@@ -258,7 +259,6 @@ TEST(test_ndjson_feed) {
 
   ndjson_free(&nd);
 }
-
 
 static jsonval*
 parse(const char* s) {

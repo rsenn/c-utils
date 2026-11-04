@@ -1,13 +1,13 @@
 #include "../../lib/stralloc.h"
 #include "../../lib/buffer.h"
-//#include "getln.h"
-//#include "timeoutio.h"
-//#include "ftplib.h"
-//#include "readwrite.h"
+// #include "getln.h"
+// #include "timeoutio.h"
+// #include "ftplib.h"
+// #include "readwrite.h"
 #include "../../lib/str.h"
-//#include "error.h"
+// #include "error.h"
 #include "../../lib/case.h"
-//#include "ftpcopy.h"
+// #include "ftpcopy.h"
 
 MKTIMEOUTREAD(o_timeout)
 

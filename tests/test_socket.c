@@ -114,7 +114,6 @@ TEST(test_socket_v6only) {
   socket_close(s);
 }
 
-
 /*
  * size_t fmt_ip4(char*, const char* ip); size_t scan_ip4(const char*, char* ip);
  */

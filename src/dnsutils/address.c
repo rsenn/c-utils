@@ -37,7 +37,7 @@ address_scan(const char* x, address_t* addr) {
   } else {
     addr->ip6 = false;
   }
-  
+
   return i;
 }
 
@@ -65,9 +65,7 @@ address_lookup(stralloc* name, address_t* addr, bool no_ip6) {
 
   if(no_ip6 || dns_ip6(&ips, name) == -1) {
     if(dns_ip4(&ips, name) == -1) {
-      errmsg_warnsys("unable to find IP address for ",
-                     name->s,
-                     0);
+      errmsg_warnsys("unable to find IP address for ", name->s, 0);
       return 0;
     } else {
       addr->ip6 = false;
@@ -75,7 +73,7 @@ address_lookup(stralloc* name, address_t* addr, bool no_ip6) {
   } else {
     addr->ip6 = true;
   }
-  
+
   byte_copy(addr->ip, MIN(addr->ip6 ? 16 : 4, ips.len), ips.s);
   stralloc_free(&ips);
   return 1;

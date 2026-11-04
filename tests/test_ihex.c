@@ -118,7 +118,6 @@ TEST(test_ihex_write_data) {
   ASSERT_EQ(1, hi16);
 }
 
-
 static ssize_t
 discard(int fd, const void* x, size_t n, void* b) {
   (void)fd;
@@ -209,7 +208,7 @@ TEST(test_ihex_record_io) {
   n = ihex_record_read(&r, ":0400000100020304F6\n", 19);
   ASSERT_EQ(1, n > 0);
   ASSERT_EQ(4, r->length);
-  ASSERT_EQ(IHEX_EOF, r->type); /* type 01 */
+  ASSERT_EQ(IHEX_EOF, r->type);                                  /* type 01 */
   ASSERT_EQ(0, ihex_record_read(&r, ":04000001000203FF\n", 18)); /* bad checksum: refused */
 
   ihex_init(&f);
@@ -259,8 +258,8 @@ TEST(test_ihex_strip_below) {
   uint32 lo = 0, hi = 0;
 
   ihex_init(&f);
-  ihex_put(&f, 0x0000, "RST!", 4);    /* the reset stub of a bootloaded program */
-  ihex_put(&f, 0x1ffe, "abcdef", 6);  /* crosses the load address 0x2000 */
+  ihex_put(&f, 0x0000, "RST!", 4);   /* the reset stub of a bootloaded program */
+  ihex_put(&f, 0x1ffe, "abcdef", 6); /* crosses the load address 0x2000 */
   ihex_put(&f, 0x2100, "tail", 4);
 
   ASSERT_EQ(4 + 2, ihex_strip_below(&f, 0x2000)); /* the stub, and the two bytes before the address */
@@ -271,7 +270,7 @@ TEST(test_ihex_strip_below) {
   ASSERT_EQ(4, ihex_read_at(&f, 0x2100, out, 4));
   ASSERT_EQ(8, ihex_range(&f, &lo, &hi));
   ASSERT_EQ(0x2000, lo);
-  ASSERT_EQ(0, ihex_verify(&f)); /* checksums of the trimmed record are right */
+  ASSERT_EQ(0, ihex_verify(&f));              /* checksums of the trimmed record are right */
   ASSERT_EQ(0, ihex_strip_below(&f, 0x2000)); /* idempotent */
 }
 

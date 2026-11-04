@@ -33,7 +33,7 @@ TEST(test_dns_domain) {
   ASSERT_EQ(0, byte_diff(a, 17, "\3www\7Example\3org\0"));
   ASSERT_EQ(17, dns_domain_length(a));
   ASSERT_EQ(1, dns_domain_fromdot(&b, "WWW.EXAMPLE.ORG.", 16) != 0); /* trailing dot is the same */
-  ASSERT_EQ(1, dns_domain_equal(a, b));                               /* case does not matter */
+  ASSERT_EQ(1, dns_domain_equal(a, b));                              /* case does not matter */
   ASSERT_EQ(0, dns_domain_diff(a, b));
   dns_domain_fromdot(&c, "example.org", 11);
   ASSERT_EQ(0, dns_domain_equal(a, c));
@@ -52,7 +52,7 @@ TEST(test_dns_domain) {
   stralloc_zero(&sa);
   ASSERT_EQ(1, dns_domain_todot_cat(&sa, a));
   ASSERT_EQ(0, byte_diff(sa.s, sa.len, "www.example.org."));
-  ASSERT_EQ(15, dns_domain_todot(text, a)); /* no dot at the end */
+  ASSERT_EQ(15, dns_domain_todot(text, a));             /* no dot at the end */
   ASSERT_EQ(0, byte_diff(text, 15, "www.Example.org")); /* keeps the case, unlike todot_cat */
 
   stralloc_zero(&sa);
@@ -85,7 +85,7 @@ TEST(test_dns_packet) {
 
   ASSERT_EQ(17, dns_packet_skipname(pkt, sizeof(pkt) - 1, 0));
   ASSERT_EQ(23, dns_packet_skipname(pkt, sizeof(pkt) - 1, 17)); /* a pointer ends the name */
-  ASSERT_EQ(0, dns_packet_skipname(pkt, 5, 0));                  /* runs off the packet */
+  ASSERT_EQ(0, dns_packet_skipname(pkt, 5, 0));                 /* runs off the packet */
 
   pos = dns_packet_getname(pkt, sizeof(pkt) - 1, 17, &name);
   ASSERT_EQ(23, pos);
@@ -314,17 +314,20 @@ TEST(test_dns_queries_loopback) {
  */
 TEST(test_dns_packet_parsers) {
   /* header: id, flags, 1 question, 2 answers; question: a.test A IN; answers: two A records */
-  static const unsigned char pkt[] = {0x12, 0x34, 0x81, 0x80, 0, 1, 0, 2, 0, 0, 0, 0, 1, 'a', 4, 't', 'e', 's', 't', 0, 0, 1, 0, 1,
-                                      0xc0, 12, 0, 1, 0, 1, 0, 0, 0, 60, 0, 4, 1, 2, 3, 4,
-                                      0xc0, 12, 0, 1, 0, 1, 0, 0, 0, 60, 0, 4, 5, 6, 7, 8};
+  static const unsigned char pkt[] = {0x12, 0x34, 0x81, 0x80, 0,   1,  0, 2,  0, 0, 0,    0,  1,    'a',
+                                      4,    't',  'e',  's',  't', 0,  0, 1,  0, 1, 0xc0, 12, 0,    1,
+                                      0,    1,    0,    0,    0,   60, 0, 4,  1, 2, 3,    4,  0xc0, 12,
+                                      0,    1,    0,    1,    0,   0,  0, 60, 0, 4, 5,    6,  7,    8};
   stralloc out;
 
   stralloc_init(&out);
   ASSERT_EQ(0, dns_ip4_packet(&out, (const char*)pkt, sizeof pkt));
   ASSERT_EQ(8, out.len);
-  ASSERT_EQ(1, byte_finds(out.s, 8, "\1\2\3\4") < 8 || byte_diff(out.s, 4, "\1\2\3\4") == 0 || byte_diff(out.s + 4, 4, "\1\2\3\4") == 0);
+  ASSERT_EQ(1,
+            byte_finds(out.s, 8, "\1\2\3\4") < 8 || byte_diff(out.s, 4, "\1\2\3\4") == 0 ||
+                byte_diff(out.s + 4, 4, "\1\2\3\4") == 0);
 
-  ASSERT_EQ(-1, dns_ip4_packet(&out, (const char*)pkt, 20)); /* truncated */
+  ASSERT_EQ(-1, dns_ip4_packet(&out, (const char*)pkt, 20));        /* truncated */
   ASSERT_EQ(0, dns_txt_packet(&out, (const char*)pkt, sizeof pkt)); /* no TXT records in it */
   ASSERT_EQ(0, out.len);
   ASSERT_EQ(0, dns_mx_packet(&out, (const char*)pkt, sizeof pkt));
@@ -338,9 +341,9 @@ TEST(test_dns_packet_parsers) {
  * dns_ip6_packet, dns_domain_todot_inline, dns_domain_todot_utf8_cat, dns_random_init
  */
 TEST(test_dns_ip6_todot_variants) {
-  static const unsigned char pkt[] = {0x12, 0x34, 0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0, 1, 'a', 4, 't', 'e', 's', 't', 0, 0, 28, 0, 1,
-                                      0xc0, 12, 0, 28, 0, 1, 0, 0, 0, 60, 0, 16,
-                                      0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  static const unsigned char pkt[] = {0x12, 0x34, 0x81, 0x80, 0, 1, 0,    1,  0, 0,  0, 0, 1, 'a', 4, 't', 'e', 's',
+                                      't',  0,    0,    28,   0, 1, 0xc0, 12, 0, 28, 0, 1, 0, 0,   0, 60,  0,   16,
+                                      0x20, 0x01, 0x0d, 0xb8, 0, 0, 0,    0,  0, 0,  0, 0, 0, 0,   0, 1};
   stralloc out;
   char name[64];
   char seed[128];

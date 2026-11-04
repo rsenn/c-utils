@@ -206,14 +206,14 @@ main(int argc, char** argv) {
   if(opt_dump)
     for(t = tok2; t; t = t->next)
       cpp_token_dump(buffer_2, t);
-  
+
   cpp_print_tokens(out, tok2, !(no_line || no_process));
 
   if(dump_defines)
     for(m = *ptr; m; m = m->next) {
       cpp_print_macro(buffer_2, m);
       buffer_flush(buffer_2);
-  
+
       if(&m->next == pp->macro_ptr)
         break;
     }

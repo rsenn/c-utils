@@ -98,9 +98,13 @@ TEST(test_terminal_cursor) {
   terminal_move(&f.t, 0, 0);
   ASSERT_OUT(&f, "");
   terminal_cursor_save(&f.t);
-  ASSERT_OUT(&f, "\x1b" "7");
+  ASSERT_OUT(&f,
+             "\x1b"
+             "7");
   terminal_cursor_restore(&f.t);
-  ASSERT_OUT(&f, "\x1b" "8");
+  ASSERT_OUT(&f,
+             "\x1b"
+             "8");
   terminal_cursor_show(&f.t, 0);
   ASSERT_OUT(&f, "\x1b[?25l");
   terminal_cursor_show(&f.t, 1);
@@ -261,7 +265,8 @@ TEST(test_terminal_raw_pty) {
   int master, slave, cols = 0, rows = 0;
   char* name;
 
-  if((master = posix_openpt(O_RDWR | O_NOCTTY)) < 0 || grantpt(master) < 0 || unlockpt(master) < 0 || (name = ptsname(master)) == NULL)
+  if((master = posix_openpt(O_RDWR | O_NOCTTY)) < 0 || grantpt(master) < 0 || unlockpt(master) < 0 ||
+     (name = ptsname(master)) == NULL)
     return; /* no pseudo terminals in this environment */
   slave = open(name, O_RDWR | O_NOCTTY);
   ASSERT_EQ(1, slave >= 0);

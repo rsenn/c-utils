@@ -245,7 +245,8 @@ TEST(test_http_recv_until_close) {
  * char* http_get_header(char* data, size_t n, const char* name, size_t* result_len);
  */
 TEST(test_http_helpers) {
-  static char head[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nX-Other:   spaced value \r\ncontent-length: 5\r\n\r\nhello";
+  static char head[] =
+      "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nX-Other:   spaced value \r\ncontent-length: 5\r\n\r\nhello";
   size_t n = 0, hl;
   char* v;
 
@@ -257,7 +258,7 @@ TEST(test_http_helpers) {
   ASSERT_STR_EQUAL("HEAD", http_method(HEAD));
 
   hl = http_skip_header(head, sizeof(head) - 1);
-  ASSERT_EQ(sizeof(head) - 1 - 5, hl); /* the body is "hello" */
+  ASSERT_EQ(sizeof(head) - 1 - 5, hl);                     /* the body is "hello" */
   ASSERT_EQ(5, http_skip_header("a\r\n\r\nhello", 3) + 2); /* no end of header: all of it */
 
   v = http_get_header(head, hl, "Content-Type", &n);
@@ -362,7 +363,8 @@ serve_once(const char* reply, size_t replylen, int* pid_out, const char* reqfile
 }
 
 TEST(test_http_get_loopback) {
-  static const char reply[] = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\nConnection: close\r\n\r\nhello";
+  static const char reply[] =
+      "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: 5\r\nConnection: close\r\n\r\nhello";
   http h;
   char url[64];
   int pid = 0, i, st;

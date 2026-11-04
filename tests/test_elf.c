@@ -205,7 +205,6 @@ TEST(test_elf_check_no_sections) {
   ASSERT_EQ(NULL, elf_check(x, sizeof(elf64_ehdr)));
 }
 
-
 /*
  * accessors of the section headers and tables
  */

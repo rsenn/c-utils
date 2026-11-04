@@ -421,8 +421,13 @@ generate_srcdir_compile_rules(
  * @return     Rule
  */
 target*
-generate_simple_compile_rules(
-    sourcedir* srcdir, const char* dir, const char* fromext, const char* toext, stralloc* cmd, char psa, array* objs_out) {
+generate_simple_compile_rules(sourcedir* srcdir,
+                              const char* dir,
+                              const char* fromext,
+                              const char* toext,
+                              stralloc* cmd,
+                              char psa,
+                              array* objs_out) {
   sourcefile* src;
   target* rule = 0;
   stralloc ppsrc, obj;
@@ -540,14 +545,15 @@ generate_srcdir_lib_rule(
         if(pfile->name == NULL || !is_source(pfile->name))
           continue;
 
-        if(is_include(pfile->name)) continue;
+        if(is_include(pfile->name))
+          continue;
 
         stralloc_zero(&sa);
 
         /*if(vpath.sa.len)
           path_extension(pfile->name, &sa, exts.obj);
         else*/
-          path_output(pfile->name, &sa, exts.obj, psa);
+        path_output(pfile->name, &sa, exts.obj, psa);
 
         set_addsa(&rule->prereq, &sa);
       }
@@ -719,7 +725,7 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
   if((compile = rule_get_sa(&obj))) {
     add_source(&compile->prereq, name, psa);
     stralloc_weak(&compile->recipe, &commands.compile);
-    //stralloc_zero(&compile->recipe);
+    // stralloc_zero(&compile->recipe);
 
 #ifdef DEBUG_OUTPUT
     buffer_putm_internal(debug_buf,
