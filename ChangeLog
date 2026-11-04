@@ -1,5 +1,7 @@
 2026-11-04:
 
+- fixed: genmakefile did not link; path_output2_bin is a macro again (it was
+  removed while path_output_bin still called it).
 - lib: added arena, dirlist and walk (from shish): a whole directory read into
   an arena as one packed blob, and a recursive tree walker with one open
   descriptor at a time. utf8 gained u8decode, u8encode, u8tou16, u8fromu16.

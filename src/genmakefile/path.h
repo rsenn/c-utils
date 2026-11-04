@@ -14,7 +14,7 @@ char* path_extension(const char*, stralloc* out, const char* ext);
 char* path_output2_dir(const char*, stralloc* out, const char* ext, char psa, const stralloc* dir);
 #define path_output2(in, out, ext, psa) path_output2_dir((in), (out), (ext), (psa), &dirs.obj.sa)
 char* path_output(const char*, stralloc* out, const char* ext, char psa);
-char* path_output2_bin(const char*, stralloc* out, const char* ext, char psa);
+#define path_output2_bin(in, out, ext, psa) path_output2_dir((in), (out), (ext), (psa), &dirs.bin.sa)
 char* path_output_bin(const char*, stralloc* out, const char* ext, char psa);
 char* path_wildcard(stralloc*, const char* wildchar);
 char* path_clean_s(const char*);
