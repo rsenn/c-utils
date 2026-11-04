@@ -95,6 +95,10 @@ How the headers are found depends on the compiler:
 | `--xtal HZ` | clock of the microcontroller, defines `_XTAL_FREQ` |
 | `--baud BPS` | baud rate of the serial port, defines `UART_BAUD` |
 | `--code-offset ADDRESS` | address the program is loaded to |
+| `--cflag FLAG`, `--ldflag FLAG` | xc8-cc: a flag for compile and link, or for the link only (repeatable); `--import-mplabx` makes them from the HI-TECH-COMP, HI-TECH-LINK and XC8-config-global properties |
+| `--pack VENDOR/NAME/VERSION` | xc8-cc: device family pack; the makefile gets `DFP_DIR ?=` its directory when found (else a warning) |
+| `--toolchain-version V` | xc8-cc: compiler version; the makefile gets `XC8_BIN ?=` and `export PATH` when `v<V>/bin/xc8-cc` is found |
+| `--program NAME` | name of the image (`NAME.elf`, and for xc8-cc `NAME.hex`) |
 
 Without any of the `--create-` options programs, libraries and objects are
 all generated.

@@ -911,7 +911,7 @@ set_compiler_type(const char* compiler) {
     if(cfg.build_type == BUILD_TYPE_DEBUG || cfg.build_type == BUILD_TYPE_RELWITHDEBINFO)
       var_push("CFLAGS", "-gdwarf-3");
 
-    var_push("CPPFLAGS", "-D__$(CHIP)=1");
+    /* -D__<chip>=1 follows from the generic part below */
 
     set_command(&commands.lib, "$(LIB) rcs $@", "$^");
     stralloc_copys(&commands.compile, "$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(CPPFLAGS) $(DEFS) -c $< -o $@");
@@ -984,7 +984,8 @@ set_compiler_type(const char* compiler) {
   } else {
     var_push("DEFS", "-DNDEBUG=1");
 
-    if(str_equal(exts.src, ".c"))
+    /* xc8-cc has its -Os / -O2 above, a later -O1 would win */
+    if(str_equal(exts.src, ".c") && !str_start(compiler, "xc8-cc"))
       var_push("CFLAGS", cfg.build_type == BUILD_TYPE_MINSIZEREL ? "-O1" : "-O2");
   }
 

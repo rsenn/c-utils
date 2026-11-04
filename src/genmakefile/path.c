@@ -60,12 +60,14 @@ path_extension(const char* in, stralloc* out, const char* ext) {
  *
  * @return     Path string
  */
+int srcroot_used;
+
 char*
 path_output2_dir(const char* in, stralloc* out, const char* ext, char psa, const stralloc* dir) {
   stralloc abs;
   stralloc_init(&abs);
   path_abs_sa(&abs, dirs.work.sa.s, str_len(dirs.work.sa.s));
-  path_rel_sa(out, dir->s, dir->len, abs.s, abs.len);
+  path_rel_far(out, dir->s, dir->len, abs.s, abs.len);
   stralloc_free(&abs);
 
   if(stralloc_equals(out, "."))
@@ -226,6 +228,50 @@ path_mmap_read(const char* path, size_t* n, char psm) {
 
   stralloc_free(&sa);
   return x;
+}
+
+/**
+ * @brief      Relative path of p to base; when it climbs more than 3 levels
+ *             (output file far from the project) the path is written below
+ *             $(SRCROOT), the project directory (gmake), else it is absolute.
+ */
+int
+path_rel_far(stralloc* out, const char* p, size_t pn, const char* base, size_t bn) {
+  size_t up = 0, i;
+  int ret = path_rel_sa(out, p, pn, base, bn);
+
+  for(i = 0; i + 2 < out->len && out->s[i] == '.' && out->s[i + 1] == '.' && out->s[i + 2] == '/'; i += 3)
+    ++up;
+
+  if(up > 3) {
+    stralloc root;
+
+    stralloc_init(&root);
+    path_abs_sa(&root, dirs.this.sa.s, dirs.this.sa.len);
+
+    if(str_start(tools.make, "g")) {
+      stralloc_zero(out);
+      path_rel_sa(out, p, pn, root.s, root.len);
+
+      if(out->len >= 3 && !byte_diff(out->s, 3, "../")) {
+        path_abs_sa(out, p, pn);
+      } else {
+        stralloc_nul(out);
+        stralloc_inserts(out, "$(SRCROOT)/", 0);
+        if(stralloc_equals(out, "$(SRCROOT)/."))
+          out->len = 11;
+        stralloc_nul(out);
+        srcroot_used = 1;
+      }
+    } else {
+      stralloc_zero(out);
+      path_abs_sa(out, p, pn);
+    }
+
+    stralloc_free(&root);
+  }
+
+  return ret;
 }
 
 /**

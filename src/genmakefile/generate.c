@@ -3,6 +3,7 @@
 #include "ansi.h"
 #include "../../lib/debug.h"
 #include "genmakefile.h"
+#include "xc8.h"
 
 strarray bins = {0}, progs = {0};
 stralloc output_name = {0};
@@ -168,6 +169,7 @@ generate_clean_rule(char psm) {
     }
   }
 
+  xc8_clean_args(&delete_args, psm);
   strlist_nul(&delete_args);
 
   strlist_foreach_s(&delete_args, arg) {
@@ -682,6 +684,9 @@ generate_lib_rules(bool shell, bool batch, bool batchmode, char psa, char psm) {
   stralloc_free(&abspath);
 }
 
+/* the base name of the image of the only program, NULL: named after its source */
+static const char* link_override;
+
 /**
  * @brief      Generates a rule for creating a program
  *
@@ -758,10 +763,16 @@ generate_program_rule(const char* name, char psa, char psm, strarray* other_sour
     stralloc outname;
 
     stralloc_init(&outname);
-    stralloc_cats(&outname, path_basename_s(name));
 
-    if(stralloc_endb(&outname, exts.src, 2))
-      outname.len -= 2;
+    if(link_override) {
+      /* the name of the image was given (-n, --program) */
+      stralloc_cats(&outname, link_override);
+    } else {
+      stralloc_cats(&outname, path_basename_s(name));
+
+      if(stralloc_endb(&outname, exts.src, 2))
+        outname.len -= 2;
+    }
 
     stralloc_nul(&outname);
     path_output_bin(outname.s, &bin, exts.bin, psa);
@@ -930,6 +941,20 @@ generate_link_rules(char psa, char psm) {
 
   /* pass 2: one program+link rule per main, depending on its own
    * directory's objects plus every shared-library directory's objects */
+  stralloc oname;
+
+  stralloc_init(&oname);
+
+  if(strarray_size(&mains) == 1 && output_name.len) {
+    stralloc_copy(&oname, &output_name);
+
+    if(stralloc_endb(&oname, exts.bin, str_len(exts.bin)))
+      oname.len -= str_len(exts.bin);
+
+    stralloc_nul(&oname);
+    link_override = oname.s;
+  }
+
   strarray_foreach(&mains, pp) {
     const char* filename = *pp;
     target* rule = generate_program_rule(filename, psa, psm, &others, &main_dirs);
@@ -941,24 +966,11 @@ generate_link_rules(char psa, char psm) {
     num_main++;
   }
 
+  link_override = 0;
+  stralloc_free(&oname);
   strarray_free(&mains);
   strarray_free(&others);
   set_free(&main_dirs);
-
-  if(num_main <= 1 && link && output_name.len) {
-    stralloc oldname;
-
-    stralloc_init(&oldname);
-    set_join(&link->output, " ", &oldname);
-
-    if(!stralloc_endb(&output_name, exts.bin, str_len(exts.bin)))
-      stralloc_cats(&output_name, exts.bin);
-
-    stralloc_nul(&output_name);
-    rule_rename(link, output_name.s, psm);
-
-    stralloc_free(&oldname);
-  }
 
   return count + num_main;
 }

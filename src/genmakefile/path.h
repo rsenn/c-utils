@@ -15,6 +15,8 @@ char* path_output2_dir(const char*, stralloc* out, const char* ext, char psa, co
 #define path_output2(in, out, ext, psa) path_output2_dir((in), (out), (ext), (psa), &dirs.obj.sa)
 char* path_output(const char*, stralloc* out, const char* ext, char psa);
 #define path_output2_bin(in, out, ext, psa) path_output2_dir((in), (out), (ext), (psa), &dirs.bin.sa)
+int path_rel_far(stralloc*, const char*, size_t, const char*, size_t);
+extern int srcroot_used;
 char* path_output_bin(const char*, stralloc* out, const char* ext, char psa);
 char* path_wildcard(stralloc*, const char* wildchar);
 char* path_clean_s(const char*);

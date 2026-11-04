@@ -237,7 +237,10 @@ output_make_rule(buffer* b, target* rule, build_tool_t tool, const char quote[],
 
   bool pattern_rule = (make_capabs & MAKE_RULE_PATTERN) && num_prereqs == 0 && str_contains(rule->name, "%");
 
-  if(pattern_rule) {
+  /* a static pattern rule "a.o b.o: %.o: %.c" needs the outputs; without them it is the plain "%.o: %.c" */
+  if(pattern_rule && sa.len == 0) {
+    stralloc_cats(&sa, rule->name);
+  } else if(pattern_rule) {
     stralloc_cats(&sa, ": ");
     stralloc_cats(&sa, rule->name);
 

@@ -1,5 +1,20 @@
 2026-11-04:
 
+- genmakefile -t xc8-cc: --code-offset gives -mcodeoffset on compile and
+  link; --import-mplabx maps the HI-TECH-COMP/-LINK and XC8-config-global
+  properties to flags (-fno-short-double, -memi, -mwarn, -mstack, -msummary,
+  -mdefault-config-bits, -mno-keep-startup, -mno-download, -fasmfile,
+  -maddrqual=ignore, -ginhx032, -Wl,--data-init, -Wl,-Map, --memorysummary,
+  --defsym=__MPLAB_BUILD=1) through new --cflag and --ldflag; -std=c90 becomes
+  -std=c99 with a warning (XC8 ignores __interrupt() under c90). New options
+  --pack, --toolchain-version and --program. The makefile defaults DFP_DIR and
+  XC8_BIN/PATH when the pack and compiler are found, builds NAME.hex as a
+  target and cleans .hex .map .d .i .o .sdb .sym .cmf .hxl .mum .s .lst .rlf
+  and memoryfile.xml. minsizerel gives -Os only, -D__<chip>=1 once.
+- genmakefile: no stray ": $(BUILDDIR)%.p1: %.c" line; -n/--program names the
+  image of a single program with its directory; an output file more than three
+  levels away from the sources uses $(SRCROOT) (gmake) or absolute paths.
+- tests: genmakefile/import-mplabx-xc8cc.sh.
 - fixed: genmakefile did not link; path_output2_bin is a macro again (it was
   removed while path_output_bin still called it).
 - lib: added arena, dirlist and walk (from shish): a whole directory read into
