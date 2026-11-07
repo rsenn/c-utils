@@ -428,7 +428,8 @@ output_ninja_target(buffer* b, target* rule, char psa) {
      * under dirs.bin (dirs.obj by default, unless -k/--bindir was
      * given) -- everything else ("cc"/"lib" outputs, and a link rule's
      * own prereqs below) still lives under dirs.obj. */
-    const char* out_dir = str_equal(rule_name, "link") || str_equal(rule_name, "ihextool_vectors") ? dirs.bin.sa.s : dirs.obj.sa.s;
+    const char* out_dir =
+        str_equal(rule_name, "link") || str_equal(rule_name, "ihextool_vectors") ? dirs.bin.sa.s : dirs.obj.sa.s;
 
     stralloc_init(&path);
     {

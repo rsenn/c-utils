@@ -218,13 +218,13 @@ main_scan(const char* p, size_t n) {
 
     if(x[0] == '/') {
       if(x[1] == '*') {
-        i = skip_comment(x, n);
+        i = skip_comment(x, end - x);
         x += i;
         continue;
       }
 
       if(x[1] == '/') {
-        i = byte_chr(x, n, '\n');
+        i = byte_chr(x, end - x, '\n');
         x += i + 1;
       }
     } else if(!isalpha(x[0]) && x[0] != '_') {
