@@ -182,7 +182,7 @@ cfg-mingw() {
     *) : ${TOOLCHAIN=/opt/cmake-toolchains/mingw32.cmake} ;;
   esac
 
-  : ${PKG_CONFIG=${host}-pkg-config}
+  PKG_CONFIG=${host}-pkg-config
   : ${PKG_CONFIG_PATH=$prefix/lib/pkgconfig}
 
   export TOOLCHAIN PKG_CONFIG PKG_CONFIG_PATH
@@ -192,6 +192,7 @@ cfg-mingw() {
   bindir=$prefix/bin \
   libdir=$prefix/lib \
   cfg \
+    -DPKG_CONFIG_EXECUTABLE=${host}-pkg-config \
     "$@")
 }
 cfg-mingw32() {
@@ -295,7 +296,7 @@ cfg-msys() {
   esac
   echo "builddir: $builddir"
 
-  export PKG_CONFIG=$(which $host-pkg-config)
+  export PKG_CONFIG=$host-pkg-config
   export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
 
   : ${builddir=build/$host}
@@ -307,6 +308,7 @@ cfg-msys() {
   host=$host \
   build=$build \
   cfg \
+    -DPKG_CONFIG_EXECUTABLE=${host}-pkg-config \
     "$@")
 }
 
