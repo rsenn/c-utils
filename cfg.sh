@@ -192,7 +192,7 @@ cfg-mingw() {
   bindir=$prefix/bin \
   libdir=$prefix/lib \
   cfg \
-    -DPKG_CONFIG_EXECUTABLE=${host}-pkg-config \
+    -DPKG_CONFIG_EXECUTABLE=$(which ${host}-pkg-config) \
     "$@")
 }
 cfg-mingw32() {
@@ -308,7 +308,7 @@ cfg-msys() {
   host=$host \
   build=$build \
   cfg \
-    -DPKG_CONFIG_EXECUTABLE=${host}-pkg-config \
+    -DPKG_CONFIG_EXECUTABLE=$(which ${host}-pkg-config) \
     "$@")
 }
 
