@@ -422,7 +422,7 @@ libdirs_add(const char* dir) {
  * @param  argv0 The errmsg arguments array 0
  */
 void
-usage(char* argv0) {
+usage(const char* argv0) {
   buffer_putm_internal(
       buffer_1,
       "Usage: ",
@@ -2558,11 +2558,11 @@ import_project(int* argcp, char** argv) {
 
 /* state of the xc8-cc options that the importer collects from one configuration */
 struct mplabx_xc8 {
-  int pic18;                 /* the chip is a PIC18 */
-  int sum[5];                /* -1 unset, else 0 or 1: psect class mem hex file */
+  int pic18;  /* the chip is a PIC18 */
+  int sum[5]; /* -1 unset, else 0 or 1: psect class mem hex file */
   char stack_type[16], stack_main[16], stack_high[16], stack_low[16];
-  const char* program;       /* name of the project, NULL when unknown */
-  int have_offset;           /* --code-offset was given, it makes the option itself */
+  const char* program; /* name of the project, NULL when unknown */
+  int have_offset;     /* --code-offset was given, it makes the option itself */
 };
 
 /* the value of <property key="KEY" value="V"/>, NULL when l is another line */

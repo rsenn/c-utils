@@ -55,8 +55,9 @@ format_linkdir_switch(const char* libdir, stralloc* out) {
 /**
  * @defgroup   var functions
  * @{
- * /
- * /**
+ */
+
+/**
  *
  * @brief      Checks whether variable is set
  *

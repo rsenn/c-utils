@@ -247,7 +247,7 @@ read_proc() {
   procfd_t* pfd;
   size_t len, i;
   int32 prev;
-  const char *fdPath, targetPath, *fdStr, *s;
+  const char *fdPath, *targetPath, *fdStr, *s;
   char* x;
   struct stat lst, st;
 

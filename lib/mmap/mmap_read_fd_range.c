@@ -35,7 +35,6 @@ mmap_read_fd_range(fd_type fd, size_t* size, size_t offset, size_t len) {
   }
   CloseHandle(m);*/
 #else
-  struct stat st;
   map = mmap_empty;
 
   if((ssize_t)(*size = fd_filesize(fd)) >= 0) {

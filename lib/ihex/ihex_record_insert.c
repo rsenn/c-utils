@@ -7,7 +7,7 @@ ihex_record*
 ihex_record_insert(ihex_file* ihf, uint32 at, uint8 len) {
   ihex_recptr p;
   ihex_addr o = {0};
-  uint32 prevAddr = 0, end = at + len;
+  uint32 prevAddr = 0;
   ihex_record *r = 0, *prev = 0;
 
   if(list_empty(&ihf->records)) {

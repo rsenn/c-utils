@@ -62,9 +62,9 @@ typedef char bool;
   }
 
 #define TESTLOG_CHAR(c) buffer_putc(muerr, c)
-#define TESTLOG_STR(s) buffer_putm_internal(muerr, s, 0), buffer_flush(muerr)
-#define TESTLOG_LONG(d) buffer_putlong(muerr, d), buffer_flush(muerr)
-#define TESTLOG_DBL(d) buffer_putdouble(muerr, d, 0), buffer_flush(muerr)
+#define TESTLOG_STR(s) (buffer_putm_internal(muerr, s, 0), buffer_flush(muerr))
+#define TESTLOG_LONG(d) (buffer_putlong(muerr, d), buffer_flush(muerr))
+#define TESTLOG_DBL(d) (buffer_putdouble(muerr, d, 0), buffer_flush(muerr))
 #define TESTLOG_FLUSH() buffer_flush(muerr)
 
 #define equal(a, b) ((a) == (b))

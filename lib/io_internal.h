@@ -42,13 +42,13 @@ extern void* io_getfds();
 #define popen _popen
 #endif
 #endif
-//#define lseek lseek64
+// #define lseek lseek64
 
 my_extern intptr_t io_comport;
 
 #elif !defined(__MSYS__) && !defined(__CYGWIN__) && !defined(_WIN32) && !defined(__APPLE__)
-//# define HAVE_EPOLL 1
-//# define HAVE_SIGIO 1
+// # define HAVE_EPOLL 1
+// # define HAVE_SIGIO 1
 
 #ifdef HAVE_SIGIO
 #ifndef _GNU_SOURCE

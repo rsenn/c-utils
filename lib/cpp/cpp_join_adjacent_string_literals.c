@@ -18,6 +18,7 @@ get_string_kind(cpp_token* tok) {
   }
 
   assert(0);
+  return -1;
 }
 
 /* Concatenate adjacent string literals into a single string literal
@@ -25,6 +26,7 @@ get_string_kind(cpp_token* tok) {
 void
 cpp_join_adjacent_string_literals(cpp_token* tok) {
   cpp_token* tok1;
+  
   /* First pass: If regular string literals are adjacent to wide
      string literals, regular string literals are converted to a wide
      type before concatenation. In this pass, we do the conversion. **/
@@ -32,6 +34,7 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
     cpp_string_kind kind;
     cpp_type* basety;
     cpp_token* t;
+ 
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
       continue;
@@ -66,11 +69,10 @@ cpp_join_adjacent_string_literals(cpp_token* tok) {
 
   /* Second pass: concatenate adjacent string literals. */
   for(tok1 = tok; tok1->kind != TK_EOF;) {
-    cpp_token* tok2;
-    int len;
+    cpp_token *t, *tok2;
+    int i, len;
     char* buf;
-    int i;
-    cpp_token* t;
+    
     if(tok1->kind != TK_STR || tok1->next->kind != TK_STR) {
       tok1 = tok1->next;
       continue;

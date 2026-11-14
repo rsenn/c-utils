@@ -581,12 +581,10 @@ if(HAVE_READDIR)
 endif(HAVE_READDIR)
 
 check_function_exists(wordexp HAVE_WORDEXP)
-dump(HAVE_WORDEXP)
 check_includes(wordexp.h)
 
 if(NOT HAVE_WORDEXP AND HAVE_WORDEXP_H)
   check_library_exists(android-wordexp wordexp "${CMAKE_INSTALL_PREFIX}" HAVE_ANDROID_WORDEXP)
-  dump(HAVE_WORDEXP_H HAVE_WORDEXP HAVE_ANDROID_WORDEXP)
   if(HAVE_ANDROID_WORDEXP)
     link_libraries(android-wordexp)
     set(WORDEXP_LIBRARY android-wordexp)

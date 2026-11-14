@@ -260,12 +260,12 @@ TEST(test_elf_section_typename) {
  * program headers and the conversions between file offsets and virtual addresses
  */
 TEST(test_elf_segments) {
-  unsigned char x[IMG];
+  char x[IMG];
   elf64_ehdr* h = (elf64_ehdr*)x;
   elf64_phdr* p = (elf64_phdr*)(x + 512);
   range file, ph;
 
-  build(x);
+  build((unsigned char*)x);
   ph = elf_program_headers(x);
   ASSERT_EQ(0, (char*)ph.end - (char*)ph.start); /* none yet */
 
@@ -282,8 +282,8 @@ TEST(test_elf_segments) {
 
   file.start = x;
   file.end = x + IMG;
-  ASSERT_EQ(512, (unsigned char*)elf_find_segment_offset(file, 0x50) - x);
-  ASSERT_EQ(512, (unsigned char*)elf_find_segment_vaddr(file, 0x400050) - x);
+  ASSERT_EQ(512, (char*)elf_find_segment_offset(file, 0x50) - x);
+  ASSERT_EQ(512, (char*)elf_find_segment_vaddr(file, 0x400050) - x);
   ASSERT_EQ(1, elf_find_segment_offset(file, 0x9999) == NULL);
   ASSERT_EQ(1, elf_find_segment_vaddr(file, 0x1) == NULL);
   ASSERT_EQ(0x50, elf_address_to_offset(file, 0x400050));

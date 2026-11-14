@@ -223,7 +223,6 @@ unit_test_main(int argc, char** argv) {
   int rc;
   static struct unit_test mu_i;
   struct unit_test* mu_ = &mu_i;
-  static buffer testtmp;
 
   muout = buffer_1small;
   muerr = buffer_2;

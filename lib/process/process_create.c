@@ -64,7 +64,6 @@ int
 process_create(const char* filename, char* const argv[], fd_type std[3], const char* cwd) {
   fd_type fds[3];
   int32 pid;
-  int status = 0;
 
   if(std) {
     fds[0] = std[0];
@@ -94,12 +93,12 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
       exit(1);
     }
   }
+
 #ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "Spawned '", filename, "' PID = ", NULL);
   buffer_putlong(buffer_2, pid);
   buffer_putsflush(buffer_2, "\n");
 #endif
-
 #elif WINDOWS_NATIVE
   {
     size_t i;
@@ -175,12 +174,8 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
   }
 #else
   {
-    int status;
-
     if((pid = fork()) == 0) {
-      fd_type i;
-
-      for(i = 0; i <= 2; ++i) {
+      for(fd_type i = 0; i <= 2; ++i) {
         if(fds[i] != i) {
           dup2(fds[i], i);
           close(fds[i]);
@@ -189,6 +184,7 @@ process_create(const char* filename, char* const argv[], fd_type std[3], const c
 
       if(execvp(filename, (char* const*)argv) == -1)
         errmsg_warn("execve failed: ", 0);
+    
       exit(127);
     }
   }

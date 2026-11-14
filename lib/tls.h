@@ -22,6 +22,7 @@ typedef enum {
   TLS_ERR_ZERO_RETURN,
   TLS_ERR_WANT_CONNECT,
   TLS_ERR_WANT_ACCEPT,
+  TLS_ERR_WANT_ASYNC,
 } tls_err_t;
 
 typedef struct ssl_st tls_t;

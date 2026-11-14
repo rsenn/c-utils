@@ -43,6 +43,8 @@ process64(void* base) {
 
   if(subsys == 3)
     uint16_pack((void*)&opthdr->subsystem, 2);
+
+  return 0;
 }
 
 int
@@ -62,6 +64,8 @@ process32(void* base) {
 
   if(subsys == 3)
     uint16_pack((void*)&opthdr->subsystem, 2);
+
+  return 0;
 }
 
 int
@@ -84,7 +88,6 @@ pewrsec(const char* file) {
   ret = PE_TYPE(base) == PE_MAGIC_PE64 ? process64(base) : process32(base);
 
   mmap_unmap(base, size);
-
   return ret;
 }
 

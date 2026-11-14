@@ -14,12 +14,14 @@ xml_read_token(xmlscanner* s) {
   xmltokid tok;
   r.x = 0;
   r.len = 0;
+
 again:
   tok = s->tok;
   r.id = tok;
 
   if(tok == XML_EOF || buffer_EOF(b))
     r.id = XML_EOF;
+
   x = buffer_PEEK(b);
   len = buffer_LEN(b);
   i = 0;
@@ -48,6 +50,7 @@ again:
         x++;
         i--;
       }
+      
       b->p += j;
 
       if(x[i] == '>')
@@ -55,6 +58,7 @@ again:
 
       if(*x == '/')
         r.id = XML_TAG_CLOSE;
+
       break;
     }
     case XML_TAG_CLOSE: {
@@ -63,6 +67,7 @@ again:
 
       if(i < len && x[i] == '>')
         i++;
+     
       s->tok = XML_DATA;
       b->p += i;
       break;
@@ -77,8 +82,10 @@ again:
       } else {
         if(j < len && x[j] == '=')
           j++;
+      
         s->tok = XML_ATTR_VALUE;
       }
+
       b->p += j;
       break;
     }
@@ -94,6 +101,7 @@ again:
         if(i > 0 && x[i - 1] != '\\')
           break;
       }
+      
       j = ++i;
       j += scan_whitenskip(x + j, len - j);
 
@@ -102,18 +110,12 @@ again:
       } else {
         s->tok = XML_ATTR_NAME;
       }
+     
       b->p += j;
       break;
     }
     case XML_DATA: {
-      size_t i2;
-      i2 = byte_chr(x, len, '<');
-      /*  i = scan_nonwhitenskip(x, len);
-
-        if(i == 0)
-          i = scan_whitenskip(x, len);
-
-        if(i2 < i)*/
+      size_t i2 = byte_chr(x, len, '<');
       i = i2;
 
       if(i == i2 && i2 < len) {
@@ -122,9 +124,11 @@ again:
         if(i2 == 0)
           goto again;
       }
+
       b->p += i;
       break;
     }
+    default: break;
   }
 
   if(len == 0)
@@ -136,6 +140,7 @@ again:
     s->tok = r.id;
     return r;
   }
+
   r.len = i;
   r.x = x;
   return r;

@@ -8,7 +8,7 @@
  * neither has to be sorted */
 void
 strarray_intersection(const strarray* s1, const strarray* s2, strarray* out) {
-  char **p;
+  char** p;
 
   strarray_foreach(s1, p) {
     if(strarray_index_of((strarray*)s2, *p) >= 0)

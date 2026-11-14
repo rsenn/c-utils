@@ -104,7 +104,7 @@ uri_scan(uri_t* u, const char* x, size_t len) {
   if(s < len && x[s] == '#') {
     e = s + byte_chrs(&x[s], len - s, "\r\n\t\"'\0", 7);
     u->anchor = str_ndup(&x[s], e - s);
-    } else {
+  } else {
     alloc_clear(&u->anchor);
   }
 

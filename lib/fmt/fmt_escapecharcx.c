@@ -29,13 +29,13 @@ fmt_escapecharcx(char* dest, int chr) {
       }
 
       return 2;
-  }
+    }
     default: {
       if(dest) {
         dest[0] = '\\';
         fmt_hex2(dest + 1, ch & 0xff);
       }
-     
+
       return 4;
     }
   }

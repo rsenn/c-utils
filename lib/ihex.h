@@ -17,7 +17,7 @@ enum ihex_type_e { IHEX_DATA = 0, IHEX_EOF = 1, IHEX_EXTSEGADDR = 2, IHEX_EXTLIN
 typedef union ihex_addr_u {
   uint32 off32;
   struct {
-#if(__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
+#if (__BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
     uint16 lo16;
     uint16 hi16;
 #else

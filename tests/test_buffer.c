@@ -21,18 +21,22 @@ static int
 tp_end_nl(const char* x, size_t n) {
   return n > 0 && x[n - 1] == '\n';
 }
+
 static int
 tp_end_arg(const char* x, size_t n, void* arg) {
   return n > 0 && x[n - 1] == *(char*)arg;
 }
+
 static int
 sp_end_semicolon(stralloc* sa) {
   return sa->len > 0 && sa->s[sa->len - 1] == ';';
 }
+
 static int
 sp_end_arg(stralloc* sa, void* arg) {
   return sa->len > 0 && sa->s[sa->len - 1] == *(char*)arg;
 }
+
 static size_t
 esc_upper_hex(char* dest, int c) {
   if(c >= 'a' && c <= 'z') {
@@ -41,10 +45,13 @@ esc_upper_hex(char* dest, int c) {
       dest[1] = (char)(c - 32);
       dest[2] = '>';
     }
+
     return 3;
   }
+
   if(dest)
     dest[0] = (char)c;
+  
   return 1;
 }
 static size_t
@@ -65,7 +72,8 @@ write_testfile(const char* s) {
 
   if(fd != -1) {
     if(write(fd, s, str_len(s)) < 0)
-      fd = fd;
+      ;
+  
     close(fd);
   }
 }
@@ -77,6 +85,7 @@ read_testfile(char* buf, size_t max) {
 
   if(fd != -1)
     close(fd);
+
   return n < 0 ? 0 : (size_t)n;
 }
 
@@ -89,6 +98,7 @@ discard_write(fd_type fd, void* buf, size_t len, buffer* b) {
   (void)fd;
   (void)buf;
   (void)b;
+ 
   return (ssize_t)len;
 }
 

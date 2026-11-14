@@ -405,16 +405,16 @@ cfg_get_data(const char* chip) {
     dl = dirlist_read(&ar, path.s, DIRLIST_NOHIDDEN);
 
     if(dl.s)
-    dirlist_foreach(rec, dl) {
-      if(dirlist_type(rec) != DL_DIR)
-        continue;
+      dirlist_foreach(rec, dl) {
+        if(dirlist_type(rec) != DL_DIR)
+          continue;
 
-      dir = subdir = dirlist_name(rec);
+        dir = subdir = dirlist_name(rec);
 
-      /*buffer_putm_internal(buffer_2, "subdir = ", subdir, NULL);
-        buffer_putnlflush(buffer_2);*/
-      break;
-    }
+        /*buffer_putm_internal(buffer_2, "subdir = ", subdir, NULL);
+          buffer_putnlflush(buffer_2);*/
+        break;
+      }
     stralloc_cats(&path, dir);
     arena_free(&ar);
   }

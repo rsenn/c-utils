@@ -415,6 +415,8 @@ add_type(cpp_node* node) {
 
       node->ty = node->lhs->ty->base;
       return;
+
+    default: break;
   }
 }
 
@@ -517,6 +519,8 @@ eval2(cpp_node* node, char*** label) {
       return 0;
 
     case ND_NUM: return node->val;
+
+    default: break;
   }
 
   cpp_error_tok(node->tok, "not a compile-time constant");
@@ -536,9 +540,12 @@ eval_rval(cpp_node* node, char*** label) {
     case ND_MEMBER:
       /*return eval_rval(node->lhs, label) + node->member->offset;*/
       return 0;
+
+    default: break;
   }
 
   cpp_error_tok(node->tok, "invalid initializer");
+  return -1;
 }
 
 static double
@@ -568,9 +575,12 @@ eval_double(cpp_node* node) {
       return eval(node->lhs);
 
     case ND_NUM: return node->fval;
+    
+    default: break;
   }
 
   cpp_error_tok(node->tok, "not a compile-time constant");
+  return 0;
 }
 
 static bool
@@ -607,6 +617,8 @@ is_const_expr(cpp_node* node) {
     case ND_CAST: return is_const_expr(node->lhs);
 
     case ND_NUM: return true;
+    
+    default: break;
   }
 
   return false;
@@ -1022,6 +1034,7 @@ new_sub(cpp_node* lhs, cpp_node* rhs, cpp_token* tok) {
   }
 
   cpp_error_tok(tok, "invalid operands");
+  return 0;
 }
 
 // add = mul ("+" mul | "-" mul)*
@@ -1253,6 +1266,7 @@ primary(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
   }
 
   cpp_error_tok(tok, "expected an expression");
+  return 0;
 }
 
 // unary = ("+" | "-" | "*" | "&" | "!" | "~") cast

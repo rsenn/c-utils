@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 #if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-extern int select();
+extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 #endif
 
 #ifdef __cplusplus

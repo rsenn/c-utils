@@ -100,7 +100,7 @@ static strlist extensions, exclude_masks, include_masks;
 static char opt_separator = PATHSEP_C;
 
 static int opt_list = 0, opt_numeric = 0, opt_relative = 0, opt_deref = 0, opt_samedev = 1, opt_crc = 0, opt_human = 0;
-static int64 opt_minsize = -1;
+static uint64 opt_minsize = UINT64_MAX;
 static long opt_depth = -1, opt_force = 0, opt_quiet = 0;
 static uint32 opt_types = (uint32)(int32)-1;
 static const char *opt_relative_to = 0, *opt_chdir = 0;
@@ -1455,6 +1455,7 @@ main(int argc, char* argv[]) {
       case 'r': opt_relative = 1; break;
       case 'c': opt_crc = 1; break;
       case 'm': scan_human(unix_optarg, &opt_minsize); break;
+
       default: usage(argv[0]); return 1;
     }
   }

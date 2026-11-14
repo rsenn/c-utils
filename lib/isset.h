@@ -13,7 +13,7 @@
   if (is_set(FOO))
 
  We will allow both
- 
+
 #define FOO
 
  and

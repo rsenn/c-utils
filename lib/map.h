@@ -82,7 +82,6 @@ hashfunc(const void* str, size_t capacity) {
   uint32 a = 0;
   uint32 b = 0;
   const unsigned char* v = (const unsigned char*)str;
-  const unsigned char* p = (const unsigned char*)v;
 
   static uint32 seeds[] = {
       0x2e8b1c8a,
@@ -148,13 +147,6 @@ hashfunc(const void* str, size_t capacity) {
 static int
 MAP_COMPARATOR(const void* l, const void* r) {
   return str_diff(l, r);
-  /*size_t lsz = *(((size_t*)l)-1);
-  size_t rsz = *(((size_t*)r)-1);
-
-  if(lsz != rsz)
-    return (ssize_t)lsz   - (ssize_t)rsz;
-
-  return byte_diff(l, lsz, r);*/
 }
 
 #elif MAP_USE_HMAP
@@ -182,11 +174,6 @@ typedef TUPLE* MAP_ITER_T;
 #define MAP_KEY_LEN MAP_ITER_KEY_LEN
 #define MAP_VALUE MAP_ITER_VALUE
 #define MAP_VALUE_LEN MAP_ITER_VALUE_LEN
-
-/*#define MAP_KEY(map, iter) ((void*)((iter)->key))
-#define MAP_KEY_LEN(map, iter) (str_len(MAP_KEY(map,iter))
-#define MAP_DATA(iter) hmap_data((iter))
-#define MAP_DATA_LEN(iter) ((void*)((iter)->data_len))*/
 
 #define MAP_VISIT_ALL(map, fn, arg) \
   { \

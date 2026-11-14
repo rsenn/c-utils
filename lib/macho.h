@@ -125,7 +125,7 @@
 #define MACHO_CPU_ARCH_MASK 0xff000000  /* mask for architecture bits */
 #define MACHO_CPU_ARCH_ABI64 0x01000000 /* 64 bit ABI */
 
-#define MACHO_CPU_TYPE_ANY ((cpu_type_t)-1)
+#define MACHO_CPU_TYPE_ANY ((cpu_type_t) - 1)
 
 #define MACHO_CPU_TYPE_VAX ((cpu_type_t)1)
 /* skip        ((cpu_type_t) 2)  */
@@ -173,7 +173,7 @@
  *  It is the responsibility of the implementor to make sure the
  *  software handles unsupported implementations elegantly.
  */
-#define MACHO_CPU_SUBTYPE_MULTIPLE ((cpu_subtype_t)-1)
+#define MACHO_CPU_SUBTYPE_MULTIPLE ((cpu_subtype_t) - 1)
 #define MACHO_CPU_SUBTYPE_LITTLE_ENDIAN ((cpu_subtype_t)0)
 #define MACHO_CPU_SUBTYPE_BIG_ENDIAN ((cpu_subtype_t)1)
 
@@ -252,7 +252,7 @@
 #define MACHO_CPU_SUBTYPE_XEON MACHO_CPU_SUBTYPE_INTEL(12, 0)
 #define MACHO_CPU_SUBTYPE_XEON_MP MACHO_CPU_SUBTYPE_INTEL(12, 1)
 
-#define MACHO_CPU_SUBTYPE_INTEL_FAMILY(x) ((x)&15)
+#define MACHO_CPU_SUBTYPE_INTEL_FAMILY(x) ((x) & 15)
 #define MACHO_CPU_SUBTYPE_INTEL_FAMILY_MAX 15
 
 #define MACHO_CPU_SUBTYPE_INTEL_MODEL(x) ((x) >> 4)

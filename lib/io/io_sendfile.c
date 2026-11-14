@@ -187,11 +187,11 @@ io_sendfile(fd_type s, fd_type fd, uint64 off, uint64 n) {
 }
 #endif
 
-#elif(defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)
+#elif (defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)) && !defined(__MSYS__)
 
-//#undef closesocket
-//#include <winsock2.h>
-//#include <windows.h>
+// #undef closesocket
+// #include <winsock2.h>
+// #include <windows.h>
 
 #ifndef TF_USE_KERNEL_APC
 #define TF_USE_KERNEL_APC 0x20

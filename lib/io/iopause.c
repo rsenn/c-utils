@@ -1,12 +1,12 @@
 #define USE_WS2_32 1
 
 #include "../socket_internal.h"
-//#include "../io.h"
+// #include "../io.h"
 #include "../select.h"
 #include "../iopause.h"
 #include "../taia.h"
 #include "../alloc.h"
-//#include <alloca.h>
+// #include <alloca.h>
 
 void
 iopause(iopause_fd* x, unsigned int len, struct taia* deadline, struct taia* stamp) {

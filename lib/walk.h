@@ -34,20 +34,20 @@ enum {
 
 /* policy, flags only */
 enum {
-  WALK_LOGICAL = 32,  /* follow every symlink (default: none) */
+  WALK_LOGICAL = 32,   /* follow every symlink (default: none) */
   WALK_COMFOLLOW = 64, /* follow the root if it is a symlink */
   WALK_XDEV = 128      /* a directory on another device is reported, not read */
 };
 
 struct walk_ent {
-  const char* path; /* "root/a/b", valid until the next walk_read() */
-  const char* rel;  /* "a/b": below the root, "" for the root itself */
-  const char* name; /* last component; the whole root string for the root */
-  size_t len;       /* str_len(path) */
-  int depth;        /* 0 for the root */
-  int phase;        /* WALK_FILE, WALK_PRE, ... */
-  int err;          /* errno, for WALK_ERR */
-  int type;         /* DL_*, never DL_UNKNOWN; the target's when followed */
+  const char* path;    /* "root/a/b", valid until the next walk_read() */
+  const char* rel;     /* "a/b": below the root, "" for the root itself */
+  const char* name;    /* last component; the whole root string for the root */
+  size_t len;          /* str_len(path) */
+  int depth;           /* 0 for the root */
+  int phase;           /* WALK_FILE, WALK_PRE, ... */
+  int err;             /* errno, for WALK_ERR */
+  int type;            /* DL_*, never DL_UNKNOWN; the target's when followed */
   unsigned islink : 1; /* the entry is a symlink (type is DL_LNK unless followed) */
   unsigned kept : 1;   /* WALK_POST: walk_keep() was called below this directory */
 };
@@ -56,9 +56,9 @@ struct walk_frame;
 
 struct walk {
   struct walk_ent e;
-  int maxdepth;    /* -1 = unlimited; set after walk_open(): deeper directories are not read */
+  int maxdepth; /* -1 = unlimited; set after walk_open(): deeper directories are not read */
   unsigned flags;
-  arena la, pa, fa;      /* directory lists; path; frames */
+  arena la, pa, fa; /* directory lists; path; frames */
   char* path;
   size_t plen, pcap, rlen, nameoff;
   struct walk_frame* f;

@@ -14,9 +14,6 @@ void* __stdcall InterlockedCompareExchangePointer(void* volatile*, void*, void*)
 #endif
 #include "../socket_internal.h"
 #include "../array.h"
-
-#define my_extern
-#undef my_extern
 #include "../byte.h"
 
 #if WINDOWS_NATIVE

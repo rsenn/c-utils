@@ -186,11 +186,10 @@ init(char ip[256]) {
       return -1;
 
     if(i) {
-      size_t i, n, p = 0;
+      size_t i = 0, p = 0;
 
       if(!stralloc_append(&data, "\n"))
         return -1;
-      i = 0;
 
       do {
         p += scan_whitenskip(&data.s[p], data.len - p);
@@ -205,6 +204,7 @@ init(char ip[256]) {
             if((i = scan_ip6(data.s + p, ip + iplen)))
               iplen += 16;
         }
+       
         p += byte_chr(&data.s[p], data.len - p, '\n');
       } while(++p < data.len);
     }
@@ -215,14 +215,15 @@ init(char ip[256]) {
       byte_copy(ip, 16, "\0\0\0\0\0\0\0\0\0\0\377\377\177\0\0\1");
     else
       byte_copy(ip, 16, "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1");
+
     iplen = 16;
   }
 
   /* keep only the servers of the wanted address family */
   if(dns_family) {
-    int k, n = 0;
+    int n = 0;
 
-    for(k = 0; k < iplen; k += 16)
+    for(int k = 0; k < iplen; k += 16)
       if(!ip6_isv4mapped(ip + k) == (dns_family == 6)) {
         byte_copy(ip + n, 16, ip + k);
         n += 16;
@@ -232,18 +233,21 @@ init(char ip[256]) {
       errno = EAFNOSUPPORT;
       return -1;
     }
+
     iplen = n;
   }
+
   byte_zero(ip + iplen, 256 - iplen);
 
-  x = getenv("DNSCACHEPORT");
+  
 
-  if(x) {
+  if((x = getenv("DNSCACHEPORT"))) {
     unsigned long u;
 
     if(x[scan_ulong(x, &u)] == 0 && u > 0 && u <= 65535)
       port = u;
   }
+
   dns_port = (unsigned int)port;
 
   DNS_DEBUG({
@@ -255,7 +259,7 @@ init(char ip[256]) {
     dns_debug_msg("DNSCACHEPORT=", getenv("DNSCACHEPORT"), getenv("DNSCACHEPORT") ? 0 : "(unset)");
     dns_debug_num("resolver servers: ", (unsigned long)iplen / 16, 0);
 
-    for(k = 0; k < (size_t)iplen; k += 16) {
+    for(int k = 0; k < (size_t)iplen; k += 16) {
       srv[dns_fmt_server(srv, ip + k, 16)] = 0;
       dns_debug_msg("  server ", srv, 0);
     }

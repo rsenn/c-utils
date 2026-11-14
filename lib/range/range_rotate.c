@@ -4,17 +4,15 @@
 
 void
 range_rotate(range* r, ssize_t n) {
-  char *x, *y;
-  size_t num_elements, size, bytes;
-
-  num_elements = range_size(r);
+  size_t num_elements = range_size(r);
 
   if(n < 0)
     n = num_elements + n;
 
   if((size_t)n > 0 && (size_t)n < num_elements) {
-    bytes = n * r->elem_size;
-    size = r->end - r->start;
+    char *x, *y;
+
+    size_t bytes = n * r->elem_size;
 
     if(bytes && (x = alloc_zero(bytes))) {
       byte_copy(x, bytes, r->start);
@@ -22,6 +20,7 @@ range_rotate(range* r, ssize_t n) {
 
       if(y < r->end)
         byte_copy(r->start, r->end - y, y);
+
       byte_copy(r->end - bytes, bytes, x);
       alloc_free(x);
     }

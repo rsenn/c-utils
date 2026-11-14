@@ -48,8 +48,7 @@ pe_resource_directory;
 typedef struct __unaligned {
   union {
     struct {
-      uint32 name_offset : 31;
-      uint32 name_is_string : 1;
+      unsigned name_offset : 31, name_is_string : 1;
     };
     uint32 name;
     uint16 id;
@@ -57,8 +56,7 @@ typedef struct __unaligned {
   union {
     uint32 offset_to_data;
     struct {
-      uint32 offset_to_directory : 31;
-      uint32 data_is_directory : 1;
+      unsigned offset_to_directory : 31, data_is_directory : 1;
     };
   };
 }
@@ -194,8 +192,7 @@ typedef struct {
   union {
     uint32 all_attributes;
     struct {
-      int rva_based : 1;
-      int reserved_attributes : 31;
+      unsigned rva_based : 1, reserved_attributes : 31;
     };
   } attributes;
   uint32 dll_name_rva;

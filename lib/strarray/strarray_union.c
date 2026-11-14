@@ -9,7 +9,7 @@
  * meant for the short lists of command lines and option sets. */
 void
 strarray_union(const strarray* s1, const strarray* s2, strarray* out) {
-  char **p;
+  char** p;
 
   strarray_foreach(s1, p) strarray_push(out, *p);
   strarray_foreach(s2, p) {

@@ -1,16 +1,19 @@
-/* lib/path/internal.h: private helpers of lib/path/*.c; nothing outside lib/path/ includes it.
- * Every macro takes a view (p, n), never reads past n, and evaluates its arguments more than
- * once: pass plain lvalues. Upper-case and without the path_ prefix, so a private name never
- * collides with the public path_* functions of ../path.h.
+/* lib/path/internal.h: private helpers of lib/path/<function>.c; nothing
+ * outside lib/path/ includes it.
+ * Every macro takes a view (p, n), never reads past n, and evaluates its
+ * arguments more than once: pass plain lvalues. Upper-case and without the
+ * path_ prefix, so a private name never collides with the public path_* 
+ * functions of ../path.h.
  *
  *   SEP(c)                  c is a separator ('/', also '\\' on WINDOWS)
  *   SEPCHARS, NSEP          the separator set as a string, and its length
  *   DRIVE(p, n)             2 if p starts with "X:" (WINDOWS only), else 0
  *   ISDOT / ISDOTDOT        the whole view is "." / ".."
  *   ISDOTSEP / ISDOTDOTSEP  "." / ".." followed by a separator or the end
- *   ISABS / ISREL           the root contains a separator ("/x", "//x", "C:/x") / does not
- *   SAMEROOT(a, ra, b, rb)  the roots a[0..ra), b[0..rb) are the same root (off Windows: both or neither;
- *                           "//" is "/")
+ *   ISABS / ISREL           the root contains a separator ("/x", "//x", "C:/x")
+ *                           / does not
+ *   SAMEROOT(a, ra, b, rb)  the roots a[0..ra), b[0..rb) are the same root 
+ *                           (off Windows: both or neither; "//" is "/")
  *   SEPLEN / COMLEN         run of separators / of non-separators at p
  *   RSEPLEN / RCOMLEN       the same, ending at p + n
  * ----------------------------------------------------------------------- */

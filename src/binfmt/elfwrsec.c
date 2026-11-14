@@ -96,7 +96,7 @@ print_shdr64(elf64_shdr* shdr) {
   elf64_ehdr* ehdr = (elf64_ehdr*)base;
   elf64_shdr* shdrs = (elf64_shdr*)((char*)base + ehdr->e_shoff);
 
-  int shnum = ehdr->e_shnum;
+  /*int shnum = ehdr->e_shnum;*/
 
   buffer_putlong(buffer_1, shdr - shdrs);
   buffer_puts(buffer_1, ": ");

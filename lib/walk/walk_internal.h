@@ -15,11 +15,11 @@ enum { WN_ROOT, WN_DESCEND, WN_LIST, WN_DONE };
 
 /* one directory being listed */
 struct walk_frame {
-  char* cur;       /* next record */
-  char* end;       /* one past the last record */
-  arena_pos pos;   /* la before the list was read */
-  size_t plen;     /* length of the directory's path */
-  size_t nameoff;  /* offset of its last component */
+  char* cur;      /* next record */
+  char* end;      /* one past the last record */
+  arena_pos pos;  /* la before the list was read */
+  size_t plen;    /* length of the directory's path */
+  size_t nameoff; /* offset of its last component */
   dev_t dev;
   ino_t ino;
   unsigned islink : 1;

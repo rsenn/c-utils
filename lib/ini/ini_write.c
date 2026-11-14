@@ -21,11 +21,13 @@ ini_write_utf16le(fd_type fd, void* buf, size_t len, void* arg) {
       uint16_pack(x, ((char*)buf)[i]);
       n = 1;
     }
+
     buffer_put(b->cookie, x, 2);
 
     i += n;
     r += 2;
   }
+
   return i;
 }
 
@@ -47,6 +49,7 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
     buffer_putc(b, '[');
     buffer_putsa(b, &ini->name);
     buffer_put(b, "]\r\n", 3);
+  
     for(t = ini->map.buckets; t < &ini->map.buckets[ini->map.capacity]; ++t) {
       if(!t->key || t->key == HASHMAP_TOMBSTONE)
         continue;
@@ -56,7 +59,9 @@ ini_write(buffer* b, ini_section_t* ini, int utf16) {
       buffer_put(b, MAP_VALUE(t), str_len(MAP_VALUE(t)));
       buffer_puts(b, "\r\n");
     }
+
     ini = ini->next;
   }
+
   buffer_flush(b);
 }

@@ -102,7 +102,7 @@ extern const char* project_name;
 extern int cmd_objs, cmd_libs, cmd_bins, cmd_module, cmd_libs_explicit;
 extern const char* outfile;
 
-void usage(char* argv0);
+void usage(const char* argv0);
 extern set_t link_libraries;
 extern MAP_T targetdirs, rules;
 

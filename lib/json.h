@@ -67,7 +67,7 @@ typedef union {
     const char *indent, *newline, *spacing, *separat;
     char quote[2];
     int precision, depth, index;
-    int compliant : 1;
+    unsigned compliant : 1;
   };
 } jsonfmt;
 

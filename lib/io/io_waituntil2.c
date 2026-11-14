@@ -11,7 +11,7 @@
 #endif
 
 #if WINDOWS_NATIVE
-//#include <winsock2.h>
+// #include <winsock2.h>
 #else
 #include <poll.h>
 #include <sys/select.h>
@@ -316,14 +316,15 @@ io_waituntil2(int64 milliseconds) {
       return 1;
     }
 
-    if(GetQueuedCompletionStatus((HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
+    if(GetQueuedCompletionStatus(
+           (HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
       io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
 
       if(!e)
         return 0;
       e->errorcode = 0;
 
-      if(o == &e->or &&e->readqueued == 1) {
+      if(o == &e->or && e->readqueued == 1) {
         e->readqueued = 2;
         e->canread = 1;
         e->bytes_read = numberofbytes;
@@ -335,7 +336,7 @@ io_waituntil2(int64 milliseconds) {
         e->bytes_written = numberofbytes;
         e->next_write = first_writeable;
         first_writeable = x;
-      } else if(o == &e->or &&e->acceptqueued == 1) {
+      } else if(o == &e->or && e->acceptqueued == 1) {
         e->acceptqueued = 2;
         e->canread = 1;
         e->next_read = first_readable;
@@ -371,7 +372,7 @@ io_waituntil2(int64 milliseconds) {
         return 0; /* WTF?! */
       e->errorcode = err;
 
-      if(o == &e->or &&(e->readqueued || e->acceptqueued)) {
+      if(o == &e->or && (e->readqueued || e->acceptqueued)) {
         if(e->readqueued)
           e->readqueued = 2;
         else if(e->acceptqueued)
@@ -662,18 +663,16 @@ io_waituntil2(int64 milliseconds) {
             }
 
             if(info.si_band & POLLIN && !e->canread) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal read queue before %ld\n",
-                            info.si_fd,
-                            first_readable));
+              debug_printf(
+                  ("io_waituntil2: enqueueing %ld in normal read queue before %ld\n", info.si_fd, first_readable));
               e->canread = 1;
               e->next_read = first_readable;
               first_readable = info.si_fd;
             }
 
             if(info.si_band & POLLOUT && !e->canwrite) {
-              debug_printf(("io_waituntil2: enqueueing %ld in normal write queue before %ld\n",
-                            info.si_fd,
-                            first_writeable));
+              debug_printf(
+                  ("io_waituntil2: enqueueing %ld in normal write queue before %ld\n", info.si_fd, first_writeable));
               e->canwrite = 1;
               e->next_write = first_writeable;
               first_writeable = info.si_fd;
@@ -685,7 +684,7 @@ io_waituntil2(int64 milliseconds) {
         }
     }
     return 1;
-  }
+
 #else
 #if !defined(HAVE_POLL)
 #warning Poll fallback
@@ -693,9 +692,7 @@ io_waituntil2(int64 milliseconds) {
 #endif
 
 #if defined(HAVE_POLL) || defined(SUPPORT_POLL)
-dopoll :
-
-{
+dopoll: {
   struct pollfd* p;
 
   for(i = r = 0; (size_t)i <= iarray_length((iarray*)io_getfds()); ++i) {
@@ -811,8 +808,10 @@ dopoll :
       e->next_write = first_writeable;
       first_writeable = p->fd;
     }
+
     p++;
   }
+
   return i;
 }
 #endif /* HAVE_POLL */

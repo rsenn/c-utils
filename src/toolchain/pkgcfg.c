@@ -137,7 +137,7 @@ static int atleast_version = 0;
 const char* pkgcfg_path = 0;
 extern buffer* unix_optbuf;
 static strlist args, output;
-static strarray modules = {0, 0, 0};
+static strarray modules = {{0}};
 
 static void
 add_cmd(id cmd) {

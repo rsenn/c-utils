@@ -73,11 +73,11 @@ typedef int64 offset_type;
 #endif
 
 #ifndef FMT_OFFS_T
-#define FMT_OFFS_T "0x%zx"
+#define FMT_OFFS_T "0x%" PRIx64
 #endif
 
 #ifndef FMT_SIZE_T
-#define FMT_SIZE_T "%zu"
+#define FMT_SIZE_T "%" PRIu64
 #endif
 
 #ifdef __dietlibc__
@@ -262,8 +262,8 @@ next:
         fprintf(stderr,
                 "mmap_map(%d, " FMT_SIZE_T ", " FMT_OFFS_T ") failed: %s\n",
                 fd,
-                (unsigned long long)msz,
-                (long long)mofs,
+                (uint64)msz,
+                (int64)mofs,
                 last_error_str());
         exit(2);
       }
@@ -288,8 +288,8 @@ next:
       if(verbose)
         fprintf(stderr,
                 "mmap at " FMT_OFFS_T ", size " FMT_SIZE_T "%s\n",
-                (long long)mofs,
-                (unsigned long long)msz,
+                (int64)mofs,
+                (uint64)msz,
                 (z < blocks ? "" : " zero"));
 
       zero_blocks += z;

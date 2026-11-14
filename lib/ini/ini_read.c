@@ -16,6 +16,7 @@ getchar_utf16(buffer* b, int* ptr) {
     uint16_unpack(d, &ch);
     *ptr = ch;
   }
+  
   return ret;
 }
 
@@ -26,6 +27,7 @@ getchar_utf8(buffer* b, int* ptr) {
 
   if(ret == 1)
     *ptr = (unsigned char)c;
+  
   return ret;
 }
 
@@ -54,6 +56,7 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
         ch = '\r';
       else if(ch == 't')
         ch = '\t';
+
       stralloc_catc(line, ch);
     } else {
       stralloc_catc(line, ch);
@@ -61,8 +64,10 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
       if(ch == '\n')
         break;
     }
+
     prev = ch;
   }
+
   return line->len;
 }
 
@@ -118,9 +123,6 @@ ini_read(buffer* b, ini_section_t** ptr) {
       line.s[i + e] = '\0';
       e++;
       MAP_INSERT2(s->map, &line.s[i], e - i - 1, &line.s[i + e], line.len - (i + e));
-
-      /*buffer_putsa(buffer_2, &line);
-      buffer_putnlflush(buffer_2);*/
     }
   }
 }

@@ -77,7 +77,7 @@ static inline void
 charbuf_dumpchar(int c, buffer* out, int pad) {
   char buf[64];
   int quote = pad < 0;
-  size_t l, i = 0;
+  size_t l = 0, i = 0;
 
   if(pad < 0)
     pad = -pad;

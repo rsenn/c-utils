@@ -98,7 +98,7 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
   buffer* other = ctx->b;
-  ssize_t r, a = buffer_SPACE(other);
+  ssize_t r = 0, a = buffer_SPACE(other);
   int eof = 0;
 
   strm->next_in = data;
@@ -111,13 +111,10 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   ret = lzma_code(strm, ctx->a);
 
   if(strm->avail_in == 0 || ret == LZMA_STREAM_END) {
-    r = n - strm->avail_in;
-
-    if(r > 0) {
+    if((r = n - strm->avail_in) > 0) {
       a = buffer_SPACE(other) - strm->avail_out;
       other->p += a;
     }
-
   } else if(ret != LZMA_OK) {
     r = -1;
   }

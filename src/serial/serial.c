@@ -516,40 +516,40 @@ serial_ports(void) {
   int i = 0;
 
   if(dl.s)
-  dirlist_foreach(rec, dl) {
-    if(i >= size)
-      break;
+    dirlist_foreach(rec, dl) {
+      if(i >= size)
+        break;
 
-    entry = dirlist_name(rec);
+      entry = dirlist_name(rec);
 #ifdef SEARCH
-    if(strstr(entry, SEARCH) != NULL) {
+      if(strstr(entry, SEARCH) != NULL) {
 #endif
 
-      int tmp = strlen(entry) + 6;
-      files[i] = (char*)malloc(tmp * sizeof(char));
-      strcpy(files[i], "/dev/");
-      strcpy(files[i] + 5, entry);
-      files[i][tmp - 1] = '\0';
+        int tmp = strlen(entry) + 6;
+        files[i] = (char*)malloc(tmp * sizeof(char));
+        strcpy(files[i], "/dev/");
+        strcpy(files[i] + 5, entry);
+        files[i][tmp - 1] = '\0';
 
 #ifdef TRY_TO_OPEN_PORTS
-      int fdtmp = serial_open(files[i], 9600);
+        int fdtmp = serial_open(files[i], 9600);
 
-      if(fdtmp != -1) {
-        serial_close(fdtmp);
+        if(fdtmp != -1) {
+          serial_close(fdtmp);
 #endif
 
-        i++;
+          i++;
 
 #ifdef TRY_TO_OPEN_PORTS
-      } else {
-        free(files[i]);
+        } else {
+          free(files[i]);
+        }
+#endif
+
+#ifdef SEARCH
       }
 #endif
-
-#ifdef SEARCH
     }
-#endif
-  }
   arena_free(&ar);
   files[i] = NULL;
   return files;

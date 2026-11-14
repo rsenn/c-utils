@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-int openreadclose(const char *filename,stralloc *buf,size_t initiallength);
+int openreadclose(const char* filename, stralloc* buf, size_t initiallength);
 
 #ifdef __cplusplus
 }

@@ -17,8 +17,8 @@ typedef struct {
   const char* event; /* the event type, "message" if the stream gave none */
   const char* data;  /* the data lines joined by newlines, 0 terminated */
   size_t data_len;
-  const char* id;    /* the last event id, empty if there was none */
-  long retry;        /* reconnection time in milliseconds, -1 if not given */
+  const char* id; /* the last event id, empty if there was none */
+  long retry;     /* reconnection time in milliseconds, -1 if not given */
 } sse_event;
 
 typedef void sse_callback(const sse_event* ev, void* user);
@@ -27,7 +27,7 @@ typedef void sse_callback(const sse_event* ev, void* user);
 typedef struct {
   stralloc line, data, event, id;
   long retry;
-  unsigned cr : 1;      /* the last byte was a CR, a LF that follows belongs to it */
+  unsigned cr : 1; /* the last byte was a CR, a LF that follows belongs to it */
   unsigned has_data : 1;
   unsigned started : 1; /* some byte was seen, a byte order mark is only ignored at the start */
 } sse;

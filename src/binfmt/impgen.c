@@ -30,7 +30,7 @@ main(int argc, char* argv[]) {
   int unix_optarg;
 
   for(unix_optarg = 1; unix_optarg < argc; ++unix_optarg) {
-    char *base, *filename, *dll_name;
+    char *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
     uint16* ord_rvas;
@@ -39,9 +39,8 @@ main(int argc, char* argv[]) {
     pe32_opt_header* opt_hdr_32;
     pe_type type;
 
-    filename = argv[unix_optarg];
-
-    base = (char*)mmap_read(filename, &dllsz);
+    char* filename = argv[unix_optarg];
+    char* base = (char*)mmap_read(filename, &dllsz);
 
     if(base == NULL) {
       errmsg_warnsys(filename, ": ", 0);
@@ -80,15 +79,15 @@ main(int argc, char* argv[]) {
     buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", NULL);
     buffer_puts(buffer_1, "EXPORTS\n");
     (void)dll_name;
-    /* buffer_putm_internal(buffer_1,
-     * "LIBRARY ", dll_name, "\n", NULL);
-     */
+
+    /*buffer_putm_internal(buffer_1, "LIBRARY ", dll_name, "\n", NULL);*/
 
     for(i = 0; i < nexp; i++) {
       buffer_putm_internal(buffer_1, "  ", pe_rva2ptr(base, uint32_get(&name_rvas[i])), " @ ", NULL);
       buffer_putulong(buffer_1, uint16_get(&ord_rvas[i]));
       buffer_putnlflush(buffer_1);
     }
+
     mmap_unmap(base, dllsz);
   }
 

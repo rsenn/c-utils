@@ -316,7 +316,7 @@ rule_command_subst(target* rule,
       vlen = byte_chr(&in->s[i], in->len - i, ')');
       stralloc_catb(out, &in->s[i], vlen);
 
-      if((tool == TOOL_BATCH))
+      if(tool == TOOL_BATCH)
         stralloc_catc(out, '%');
 
       i += vlen;
@@ -640,11 +640,11 @@ rule_prereq_recursive(target* rule, set_t* out) {
   size_t n;
 
   set_foreach(&rule->prereq, it, x, n) {
-    target* rule;
+    target* r;
 
-    if((rule = rule_find_b(x, n))) {
-      if(rule != rule)
-        rule_prereq_recursive(rule, out);
+    if((r = rule_find_b(x, n))) {
+      if(r != rule)
+        rule_prereq_recursive(r, out);
     } else {
       set_add(out, x, n);
     }

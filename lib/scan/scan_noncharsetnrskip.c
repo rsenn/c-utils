@@ -4,7 +4,7 @@
    in charset */
 size_t
 scan_noncharsetnrskip(const char* s, const char* charset, size_t limit) {
-  const char  *u = s + limit,*v;
+  const char *u = s + limit, *v;
   size_t count = 0;
 
   while(count < limit) {

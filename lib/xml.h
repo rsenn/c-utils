@@ -68,8 +68,7 @@ typedef struct xmlreader {
   xmlnode* parent;
   xmlnode** ptr;
   HMAP_DB* attrmap;
-  int closing : 1;
-  int self_closing : 1;
+  unsigned closing : 1, self_closing : 1;
   const void* data;
   struct xmlreader* stack;
 } xmlreader;

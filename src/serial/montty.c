@@ -158,6 +158,8 @@ uu_lockerr(int e) {
     case UU_LOCK_TRY_ERR: return "File try error";
     case UU_LOCK_OWNER_ERR: return "File owner error";
   }
+
+  return NULL;
 }
 
 #endif

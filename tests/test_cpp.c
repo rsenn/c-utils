@@ -321,7 +321,7 @@ TEST(test_cpp_token_basics) {
   stralloc_free(&dump);
 
   {
-    cpp_token* nt = cpp_token_new(&pp, TK_IDENT, "abc", "abc" + 3);
+    cpp_token* nt = cpp_token_new(&pp, TK_IDENT, "abc", &("abc"[3]));
 
     ASSERT_EQ(3, nt->len);
     ASSERT_EQ(TK_IDENT, nt->kind);

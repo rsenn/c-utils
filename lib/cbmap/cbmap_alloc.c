@@ -165,11 +165,11 @@ cbmap_mem_posix_memalign(void** memptr, size_t alignment, size_t size, const cha
 
 void
 cbmap_mem_debug_mem(const char* file, int line) {
+#ifdef DEBUG
   unsigned int allocations = CBM_DEBUG_ALLOCATIONS;
   unsigned int deallocations = CBM_DEBUG_FREES;
   unsigned int check = allocations - deallocations;
 
-#ifdef DEBUG
   printf("CBM_MEM_LOG %-20s (%d) ALLOCATIONS %d DEALLOCATIONS %d CHECK %d BYTES %d\n",
          file,
          line,

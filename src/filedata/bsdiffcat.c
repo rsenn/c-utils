@@ -158,7 +158,7 @@ debug_arr(const char* name, int64 i) {
   buffer_puts(buffer_2, "].");
 }
 
-int64
+void
 bsdiff_dump_ctrl(const bsdiff_control ctrl, int64 i) {
   /* clang-format off */
   debug_arr("control", i); debug_int("add_len", ctrl.add_len);
@@ -168,7 +168,7 @@ bsdiff_dump_ctrl(const bsdiff_control ctrl, int64 i) {
   /* clang-format on */
 }
 
-int64
+void
 bsdiff_dump_header(const bsdiff_header h) {
   debug_int("header.ctrl_len", h.ctrl_len);
   debug_int("header.data_len", h.data_len);

@@ -264,14 +264,14 @@ log_querydrop(uint64* qnum) {
 }
 
 void
-log_tcpopen(const char client[], unsigned int port, int fd) {
+log_tcpopen(const char* client, unsigned int port, int fd) {
   log_string("tcpopen ");
   log_peer(client, port, fd);
   log_line();
 }
 
 void
-log_tcpclose(const char client[], unsigned int port, int fd) {
+log_tcpclose(const char* client, unsigned int port, int fd) {
   const char* x = errno ? errstr() : "Success";
   log_string("tcpclose ");
   log_peer(client, port, fd);

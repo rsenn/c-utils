@@ -323,13 +323,11 @@ usage(const char* av0) {
 
 int
 main(int argc, char* argv[]) {
-  int ret = 1;
-  int index = 1;
+  int fd, ret = 1, index = 1;
   patch_t* p;
   size_t n;
   unsigned char* x;
   buffer file;
-  int fd;
   uint64 offset = 0;
 
   errmsg_iam(argv[0]);
@@ -353,8 +351,7 @@ main(int argc, char* argv[]) {
     while(++index < argc) {
       uint64 addr = 0, val_cmp = 0, val_set = 0;
 
-      char* spec = argv[index];
-      char sym = spec[0], *s = &spec[1];
+      char* spec = argv[index], sym = spec[0], *s = &spec[1];
 
       while((sym = *spec++)) {
         size_t n = 0;
@@ -372,16 +369,16 @@ main(int argc, char* argv[]) {
         }
 
         if((sym == '+' || sym == '*') && isdigit(*spec)) {
-          int64 num;
-          n = scan_x64(spec, &num);
-
-          if(n > 0) {
+          uint64 num;
+          
+          if((n = scan_x64(spec, &num)) > 0) {
             if(sym == '+')
               offset += num;
 
             if(sym == '*')
               offset *= num;
           }
+
           spec += n;
           continue;
         }
@@ -409,6 +406,7 @@ main(int argc, char* argv[]) {
 
         if(n == 0)
           break;
+
         spec += n;
       }
     }

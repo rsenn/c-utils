@@ -2,7 +2,7 @@
 
 size_t
 fmt_hexb(void* out, const void* d, size_t len) {
-   const char* buf = (const char*)d;
+  const char* buf = (const char*)d;
   char* s = (char*)out;
 
   if(s) {
