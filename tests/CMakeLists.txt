@@ -26,7 +26,7 @@ target_compile_definitions(all_tests PRIVATE ${COMPRESS_LIBRARY_DEFINES})
 # the module is called `debug`, which target_link_libraries reads as the keyword
 # for the Debug configuration, so it is linked by file
 add_dependencies(all_tests debug)
-target_link_libraries(all_tests ${ZLIB_LIBRARY} ${COMPRESSION_LIBRARIES} $<TARGET_FILE:debug>)
+target_link_libraries(all_tests ${WORDEXP_LIBRARY} ${ZLIB_LIBRARY} ${COMPRESSION_LIBRARIES} $<TARGET_FILE:debug>)
 
 if(DO_TESTS)
   include(CTest)

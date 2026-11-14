@@ -581,10 +581,25 @@ if(HAVE_READDIR)
 endif(HAVE_READDIR)
 
 check_function_exists(wordexp HAVE_WORDEXP)
+dump(HAVE_WORDEXP)
+check_includes(wordexp.h)
 
-if(HAVE_WORDEXP)
+if(NOT HAVE_WORDEXP AND HAVE_WORDEXP_H)
+  check_library_exists(android-wordexp wordexp "${CMAKE_INSTALL_PREFIX}" HAVE_ANDROID_WORDEXP)
+  dump(HAVE_WORDEXP_H HAVE_WORDEXP HAVE_ANDROID_WORDEXP)
+  if(HAVE_ANDROID_WORDEXP)
+    link_libraries(android-wordexp)
+    set(WORDEXP_LIBRARY android-wordexp)
+    set(HAVE_WORDEXP TRUE)
+  endif()
+endif()
+
+
+if(HAVE_WORDEXP AND HAVE_WORDEXP_H)
   add_definitions(-DHAVE_WORDEXP=1)
-endif(HAVE_WORDEXP)
+else()
+  set(WORDEXP_LIBRARY unix)
+endif()
 
 set(IOPAUSE_MUX "" CACHE STRING "iopause() multiplex call")
 
