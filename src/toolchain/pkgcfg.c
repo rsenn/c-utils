@@ -11,6 +11,7 @@
 #include "../../lib/errmsg.h"
 #include "../../lib/iterator.h"
 #include "../../lib/path.h"
+#include "../../lib/pathmap.h"
 #include "../../lib/slist.h"
 #include "../../lib/str.h"
 #include "../../lib/stralloc.h"
@@ -57,7 +58,9 @@ typedef enum {
   ATLEAST_PKGCONFIG_VERSION = 4096,
   CHECK_EXISTS = 8192,
   MATCH = 0x10000,
-  VARIABLE = 0x20000
+  VARIABLE = 0x20000,
+  PATH_MAP = 0x40000,
+  PATH_ROOT = 0x80000
 } id;
 
 typedef enum { OP_EQ = 0, OP_NE, OP_GT, OP_GE, OP_LT, OP_LE } op_code;
@@ -136,6 +139,7 @@ static int show_version = 0;
 static int atleast_version = 0;
 const char* pkgcfg_path = 0;
 extern buffer* unix_optbuf;
+static pathmap pmap;
 static strlist args, output;
 static strarray modules = {{0}};
 
@@ -495,6 +499,7 @@ pkg_format_version(uint64 v, stralloc* sa) {
 int
 pkg_read(buffer* b, pkg* p) {
   stralloc name, value;
+  int mapped;
   stralloc_init(&name);
   stralloc_init(&value);
 
@@ -540,7 +545,22 @@ pkg_read(buffer* b, pkg* p) {
     if(name.len) {
       stralloc_trimr(&value, "\r\n\t \0", 5);
 
-      if(stralloc_starts(&value, "/"))
+      mapped = 0;
+
+      if(sep == '=' && stralloc_starts(&value, "/")) {
+        stralloc mv;
+
+        stralloc_init(&mv);
+
+        if(pathmap_apply(&pmap, value.s, value.len, &mv) > 0) {
+          stralloc_copy(&value, &mv);
+          mapped = 1;
+        }
+
+        stralloc_free(&mv);
+      }
+
+      if(!mapped && stralloc_starts(&value, "/"))
         stralloc_prepends(&value, sysroot);
 
       stralloc_remove_all(&value, "\"'", 2);
@@ -1056,6 +1076,17 @@ pkg_conf(strarray* modules, id code, int mode) {
           pkg_free(&pf);
           return 0;
         }
+
+        if(!(code & VARIABLE) && (code & (PRINT_LIBS | PRINT_CFLAGS))) {
+          stralloc mf;
+
+          stralloc_init(&mf);
+
+          if(pathmap_flags(&pmap, value.s, value.len, &mf) > 0)
+            stralloc_copy(&value, &mf);
+
+          stralloc_free(&mf);
+        }
       }
 
       if((code == PRINT_LIBS && libs_mode) || (code == PRINT_CFLAGS && cflags_mode)) {
@@ -1242,6 +1273,9 @@ pkgcfg_init(const char* self) {
   if(cmd.host.len == 0) {
     if((pos = stralloc_finds(&cmd.self, "pkg")) > 0 && byte_count(cmd.self.s, pos, '-') >= 2) {
       stralloc_copyb(&cmd.host, cmd.self.s, pos);
+
+      if(cmd.host.s[cmd.host.len - 1] == '-')
+        cmd.host.len--;
     } else {
       const char* compiler = env_get("CC");
 
@@ -1332,6 +1366,90 @@ pkgcfg_setpath(const char* path) {
   stralloc_free(&dir);
 }
 
+/* a <triplet>-pkg-config link finds the sysroot of its triplet by itself:
+ * <prefix or /usr>/<triplet>/sys-root[/mingw|/usr]. The .pc files in there
+ * name the prefix of the machine they were built on: /mingw64 and
+ * friends for mingw, /usr for msys. Rules map them to the sysroot, and
+ * the sysroot's pkgconfig directories are appended to the search path. */
+static stralloc autospec;
+
+static void
+pkgcfg_autoroot(void) {
+  static const char* const bases[] = {"/sys-root", "/sysroot", 0};
+  static const char* const mingw[] = {"/mingw64", "/mingw32", "/ucrt64", "/clang64", "/clang32", "/clangarm64", 0};
+  stralloc dir;
+  const char* top[2];
+  size_t i, j, len;
+  int msys = 0;
+
+  if(!cmd.host.len || !str_contains(cmd.host.s, "-"))
+    return;
+
+  stralloc_init(&dir);
+  top[0] = cmd.prefix.s;
+  top[1] = "/usr";
+
+  for(i = 0; i < 2; i++)
+    for(j = 0; bases[j]; j++) {
+      stralloc_copys(&dir, top[i]);
+      stralloc_catm_internal(&dir, "/", cmd.host.s, bases[j], NULL);
+      stralloc_nul(&dir);
+
+      if(path_exists(dir.s))
+        goto found;
+    }
+
+  stralloc_free(&dir);
+  return;
+
+found:
+  len = dir.len;
+  stralloc_cats(&dir, "/mingw");
+  stralloc_nul(&dir);
+
+  if(!path_exists(dir.s)) {
+    dir.len = len;
+    stralloc_cats(&dir, "/usr");
+    stralloc_nul(&dir);
+    msys = 1;
+
+    if(!path_exists(dir.s)) {
+      stralloc_free(&dir);
+      return;
+    }
+  }
+
+  /* the rule texts are kept: pathmap does not copy them */
+  stralloc_zero(&autospec);
+
+  if(msys) {
+    stralloc_catb(&autospec, "/usr=", 5);
+    stralloc_catb(&autospec, dir.s, dir.len - 4);
+  } else {
+    for(i = 0; mingw[i]; i++) {
+      if(autospec.len)
+        stralloc_catc(&autospec, ':');
+
+      stralloc_cats(&autospec, mingw[i]);
+      stralloc_catc(&autospec, '=');
+      stralloc_catb(&autospec, dir.s, dir.len);
+    }
+  }
+
+  stralloc_nul(&autospec);
+  pathmap_addlist(&pmap, autospec.s, msys);
+
+  stralloc_cats(&dir, "/lib/pkgconfig");
+  stralloc_nul(&dir);
+  strlist_push_unique(&cmd.path, dir.s);
+  dir.len -= 14;
+  stralloc_cats(&dir, "/share/pkgconfig");
+  stralloc_nul(&dir);
+  strlist_push_unique(&cmd.path, dir.s);
+  stralloc_nul(&cmd.path.sa);
+  stralloc_free(&dir);
+}
+
 static void
 error_exit(int exitCode) {
   buffer_puts(buffer_2, "The arguments leading up to this were:\n  ");
@@ -1353,6 +1471,8 @@ usage(char* progname) {
   buffer_puts(buffer_1, "  --modversion                      print the specified module's version to stdout\n");
   buffer_puts(buffer_1, "  --list-all                        list all known packages\n");
   buffer_puts(buffer_1, "  --list-path                       list path of all known packages\n");
+  buffer_puts(buffer_1, "  --path-map FROM=TO                rewrite directory prefix FROM to TO in .pc paths\n");
+  buffer_puts(buffer_1, "  --path-root FROM=ROOT             prepend ROOT to paths under FROM (no FROM: all)\n");
   buffer_puts(buffer_1, "  --verbose                         increase verbosity\n");
   buffer_puts(buffer_1, "  --debug                           show verbose debug information\n");
   buffer_puts(buffer_1, "  --sorted                          sorted list output\n");
@@ -1383,6 +1503,7 @@ pkgcfg_dumpenv(char* envp[]) {
 int
 main(int argc, char* argv[], char* envp[]) {
   int c;
+  const char* x;
   id* code;
   int index = 0;
   int mode = 0;
@@ -1394,6 +1515,8 @@ main(int argc, char* argv[], char* envp[]) {
       {"verbose", 0, &verbose, 1},
       {"match", 0, NULL, MATCH},
       {"variable", 1, NULL, VARIABLE},
+      {"path-map", 1, NULL, PATH_MAP},
+      {"path-root", 1, NULL, PATH_ROOT},
       {"list-all", 0, NULL, 'l'},
       {"list-path", 0, NULL, 'L'},
       {"list-file", 0, NULL, 'F'},
@@ -1432,6 +1555,12 @@ main(int argc, char* argv[], char* envp[]) {
 
   pkgcfg_init(argv[0]);
 
+  if((x = env_get("PKGCFG_PATH_MAP")))
+    pathmap_addlist(&pmap, x, 0);
+
+  if((x = env_get("PKGCFG_PATH_ROOT")))
+    pathmap_addlist(&pmap, x, 1);
+
   if((pkgcfg_path = env_get("PKG_CONFIG_PATH")))
     pkgcfg_setpath(pkgcfg_path);
   unix_opterr = 0;
@@ -1451,6 +1580,13 @@ main(int argc, char* argv[], char* envp[]) {
 
     switch(c) {
       case ATLEAST_PKGCONFIG_VERSION: atleast_version = 1; break;
+      case PATH_MAP:
+      case PATH_ROOT:
+        if(!pathmap_addb(&pmap, unix_optarg, str_len(unix_optarg), c == PATH_ROOT)) {
+          errmsg_warn(c == PATH_MAP ? "--path-map" : "--path-root", " needs FROM=TO: ", unix_optarg, 0);
+          return 1;
+        }
+        break;
       case 'm': {
         stralloc_copys(&cmd.host, unix_optarg);
         break;
@@ -1536,6 +1672,8 @@ getopt_end:
     stralloc_nul(&cmd.prefix);
     pkgcfg_setpath(0);
   }
+
+  pkgcfg_autoroot();
 
   if(argv[unix_optind - 1] && str_equal(argv[unix_optind - 1], "--list-all")) {
     add_cmd(LIST_ALL);

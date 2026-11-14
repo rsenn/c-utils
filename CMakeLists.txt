@@ -1032,7 +1032,7 @@ program(pathtool debug set hmap stralloc buffer errmsg path strlist unix dirlist
 
 program(pelist buffer errmsg mmap pe str unix)
 program(omflist stralloc buffer errmsg omf mmap str unix)
-program(pkgcfg process wait path unix hashmap hmap stralloc buffer byte cbmap
+program(pkgcfg process wait path pathmap unix hashmap hmap stralloc buffer byte cbmap
         dirlist arena env errmsg slist case str strarray strlist)
 program(plsconv path stralloc buffer byte open playlist str unix)
 program(reg2cmd stralloc buffer byte fmt open scan str uint64)

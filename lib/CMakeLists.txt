@@ -53,6 +53,7 @@ set(MODSUBDIRS
     omf
     open
     path
+    pathmap
     pe
     playlist
     process

@@ -1,3 +1,17 @@
+2026-11-14:
+
+- pkgcfg: --path-map FROM=TO and --path-root FROM=ROOT (also the
+  environment variables PKGCFG_PATH_MAP and PKGCFG_PATH_ROOT, ':' separated)
+  rewrite the paths of a .pc file while it is read, without touching the
+  file: variable values before ${var} expansion, and the -I/-L paths of
+  Cflags and Libs. This fixes sysroot .pc files with a wrong prefix.
+- pkgcfg: called through a <triplet>-pkg-config link (mingw or msys) it finds
+  the sysroot of the triplet by itself (<prefix or /usr>/<triplet>/sys-root
+  /mingw or /usr), adds its pkgconfig directories to the search path and maps
+  the /mingw64 style prefix of its .pc files to it. The host name taken from
+  the program name no longer keeps a trailing dash.
+- pathmap: new library module for prefix path rewrite rules.
+
 2026-11-04:
 
 - copenai: the default of -u/--url is $OPENAI_API_URL and the default of

@@ -30,6 +30,7 @@ TESTS(unix);
 TESTS(socket);
 TESTS(mmap);
 TESTS(env);
+TESTS(pathmap);
 TESTS(safemult);
 TESTS(open);
 TESTS(taia);
@@ -104,6 +105,7 @@ START() {
   EXEC(socket);
   EXEC(mmap);
   EXEC(env);
+  EXEC(pathmap);
   EXEC(safemult);
   EXEC(open);
   EXEC(taia);
