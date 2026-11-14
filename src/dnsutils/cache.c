@@ -126,8 +126,6 @@ cache_find(const char* key, unsigned int keylen, unsigned int* datalen, struct t
   uint32 pos, prevpos, nextpos, u;
   unsigned int loop;
 
-  double d;
-
   if(!x)
     return 0;
 

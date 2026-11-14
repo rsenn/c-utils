@@ -102,12 +102,10 @@ log_ip(const char* x, size_t iplen) {
 
 void
 log_iplist(const char* x, size_t n, size_t iplen) {
-  size_t i;
-  char buf[FMT_IP4];
-
-  for(i = 0; i + iplen <= n; i += iplen) {
+  for(size_t i = 0; i + iplen <= n; i += iplen) {
     if(i > 0)
       log_string(",");
+
     log_ip(&x[i], iplen);
   }
 }
@@ -115,11 +113,10 @@ log_iplist(const char* x, size_t n, size_t iplen) {
 void
 log_fd(int fd) {
   int type = 0;
-  int length = sizeof(type);
+  socklen_t length = sizeof(type);
+
   getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &length);
   log_string(type == SOCK_STREAM ? "tcp" : type == SOCK_DGRAM ? "udp" : "sock");
-  // log_string(socket_is6(fd) ? "6" :
-  // "4");
   log_string("/");
   log_number(fd);
 }

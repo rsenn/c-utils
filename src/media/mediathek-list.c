@@ -297,7 +297,6 @@ read_mediathek_list(const char* url, buffer* b) {
 
   for(;;) {
     fd_type fd;
-    int doread = 0;
 
     io_wait();
 
@@ -324,7 +323,6 @@ read_mediathek_list(const char* url, buffer* b) {
           return 2;
         }
 
-        doread = 1;
         return 0;
       }
     }
@@ -843,17 +841,10 @@ parse_mediathek_list(buffer* inbuf, buffer* outbuf) {
   char buf2[BUFSIZE];
   static strlist prev, prevout, sl;
   size_t matched = 0, total = 0;
-  ssize_t ret, ret2, read_bytes = 0;
+  ssize_t ret, ret2;
   mediathek_entry_t* e = 0;
 
-  /*  strlist_init(&sl, '\0');
-    strlist_init(&prev, '\0');
-    strlist_init(&prevout, '\0');
-  */
-
   if((ret = buffer_get_token(inbuf, buf2, sizeof(buf2), "]", 1)) > 0) {
-    read_bytes += ret;
-
     for(;;) {
       ret2 = 0;
 

@@ -29,7 +29,6 @@
 #endif
 
 static stralloc cmd;
-static strlist builddir, srcdir;
 static const char* ext = "";
 static strlist path, pathext;
 static stralloc prog, real, base, cwd;
@@ -185,7 +184,7 @@ base_file(const char* suffix) {
 ssize_t
 read_env(const char* x, size_t n) {
   char* line;
-  size_t len, skip, num_read = 0;
+  size_t len, skip;
 
   byte_foreach_skip(x, n, line, skip) {
     skip = scan_lineskip(line, n - (line - x));
@@ -196,8 +195,6 @@ read_env(const char* x, size_t n) {
     buffer_puts(buffer_2, "Line: ");
     buffer_put(buffer_2, line, len);
     buffer_putnlflush(buffer_2);
-
-    num_read += len;
   }
 
   return len;
@@ -210,8 +207,6 @@ read_env(const char* x, size_t n) {
  */
 const char*
 get_prog_name(stralloc* prog) {
-  ssize_t len;
-
   stralloc_ready(prog, PATH_MAX);
 
 #ifndef WINDOWS_NATIVE
@@ -252,14 +247,9 @@ get_prog_name(stralloc* prog) {
  */
 int
 main(int argc, char* argv[], char* envp[]) {
-  size_t p;
-  int i;
-  stralloc sa;
-  strarray v;
   strlist args;
   char** av;
   int ret;
-  const char* pathstr;
 
   errmsg_iam(argv[0]);
 

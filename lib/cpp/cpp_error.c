@@ -7,7 +7,7 @@
    string in a fixed-width font. */
 static size_t
 display_width(char* p, size_t len) {
-  char *start = p, *end = p + len;
+  char* end = p + len;
   size_t w = 0;
 
   while(p < end) {

@@ -51,7 +51,7 @@
 #include <io.h>
 #endif
 
-static stralloc cmd, realcmd, fullcmd, specs;
+static stralloc realcmd, fullcmd;
 static const char* ext =
 #if WINDOWS
     ".exe";
@@ -164,7 +164,7 @@ expand_env(const char* src) {
   stralloc_init(&ret);
 
   while(s < e) {
-    size_t i, j;
+    size_t i;
 
     if((i = byte_chr(s, e - s, '%'))) {
       stralloc_catb(&ret, s, i);
@@ -214,7 +214,6 @@ search_path(stralloc* sa, const char* p) {
 
 static const char*
 get_prog_name(void) {
-  ssize_t len;
   char* name;
 
   if((name = process_executable())) {
@@ -249,14 +248,11 @@ write_log(const strarray* argv, const char* file) {
 
 int
 main(int argc, char* argv[], char* envp[]) {
-  size_t p;
   int i;
   stralloc sa;
-  strarray v;
   strarray args;
   char** av;
   int ret;
-  const char* pathstr;
   const char* logfile = getenv("LOGFILE");
   buffer inifile;
 

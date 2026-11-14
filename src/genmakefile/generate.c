@@ -230,7 +230,6 @@ generate_srcdir_compile_rules(
     sourcedir* srcdir, const char* dir, bool shell, bool batch, bool batchmode, char psa, char psm, array* objs_out) {
   sourcefile* src;
   target* rule = 0;
-  MAP_PAIR_T t;
   stralloc target, source, srcpat, obj, defines;
   size_t len, tlen;
   strlist pptoks;
@@ -247,10 +246,7 @@ generate_srcdir_compile_rules(
   path_output("%", &target, exts.obj, psa);
   tlen = target.len;
 
-  set_foreach(&srcdir->pptoks, it, tok, len) {
-    if(filter_pptoks(tok, len))
-      strlist_pushb(&pptoks, tok, len);
-  }
+  set_foreach(&srcdir->pptoks, it, tok, len) if(filter_pptoks(tok, len)) strlist_pushb(&pptoks, tok, len);
 
 #ifdef DEBUG_OUTPUT_
   buffer_puts(debug_buf, "pptoks: ");
@@ -551,12 +547,7 @@ generate_srcdir_lib_rule(
           continue;
 
         stralloc_zero(&sa);
-
-        /*if(vpath.sa.len)
-          path_extension(pfile->name, &sa, exts.obj);
-        else*/
         path_output(pfile->name, &sa, exts.obj, psa);
-
         set_addsa(&rule->prereq, &sa);
       }
     }

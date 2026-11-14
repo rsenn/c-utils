@@ -36,7 +36,6 @@ xml_unescape(const char* x, size_t n, stralloc* out) {
 
 static int
 xml_read_node(xmlreader* r, xmlnodeid id, stralloc* name, stralloc* value, HMAP_DB** attrs) {
-  xmlnode** nptr;
   stralloc text;
   stralloc_init(&text);
 

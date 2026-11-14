@@ -36,7 +36,7 @@ from_external_node(void* ptr, void** key, size_t* keylen) {
   *key = bytes + sizeof(size_t);
 }
 
-static int
+static inline int
 cb_less(const struct critbit_node* a, const struct critbit_node* b) {
   return a->byte < b->byte || (a->byte == b->byte && a->mask < b->mask);
 }

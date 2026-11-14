@@ -49,10 +49,18 @@ http_socket(http* h, int nonblock) {
   if(nonblock)
     ndelay_on(h->sock);
 
-  buffer_init_free(in, &http_socket_read, h->sock, in->x ? in->x : (char*)alloc(HTTP_RECV_BUFSIZE), in->a ? in->a : HTTP_RECV_BUFSIZE);
+  buffer_init_free(in,
+                   &http_socket_read,
+                   h->sock,
+                   in->x ? in->x : (char*)alloc(HTTP_RECV_BUFSIZE),
+                   in->a ? in->a : HTTP_RECV_BUFSIZE);
   in->cookie = (void*)h;
 
-  buffer_init_free(out, &http_socket_write, h->sock, out->x ? out->x : (char*)alloc(HTTP_SEND_BUFSIZE), out->a ? out->a : HTTP_SEND_BUFSIZE);
+  buffer_init_free(out,
+                   &http_socket_write,
+                   h->sock,
+                   out->x ? out->x : (char*)alloc(HTTP_SEND_BUFSIZE),
+                   out->a ? out->a : HTTP_SEND_BUFSIZE);
   out->cookie = (void*)h;
 
 #ifdef DEBUG_HTTP
@@ -70,7 +78,7 @@ http_socket_read(fd_type fd, void* buf, size_t len, buffer* b) {
   http* h = b->cookie;
   http_response* response = h->response;
   int err = 0, tlserr = 0, connected = h->connected;
-  ssize_t ret = -1, iret = -1;
+  ssize_t ret = -1;
 
   if(h->tls) {
     ret = tls_read(h->sock, buf, len);
@@ -88,7 +96,6 @@ http_socket_read(fd_type fd, void* buf, size_t len, buffer* b) {
 
     if(ret < 0)
       err = errno;
-
   }
 
 #ifdef DEBUG_OUTPUT
@@ -119,7 +126,8 @@ http_socket_read(fd_type fd, void* buf, size_t len, buffer* b) {
   } else if(ret == -1 && (!h->tls || tlserr == TLS_ERR_SYSCALL)) {
     response->err = err;
 
-    if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE) : (response->err != EWOULDBLOCK && response->err != EAGAIN))
+    if(h->tls ? (tlserr != TLS_ERR_WANT_READ && tlserr != TLS_ERR_WANT_WRITE)
+              : (response->err != EWOULDBLOCK && response->err != EAGAIN))
       response->status = HTTP_STATUS_ERROR;
   }
 

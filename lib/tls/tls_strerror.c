@@ -11,8 +11,6 @@
 
 const char*
 tls_strerror(fd_type fd) {
-  int err;
-  const char* str;
   tls_instance_t* i = iarray_get(&tls_list, fd);
 
   switch(i->error) {

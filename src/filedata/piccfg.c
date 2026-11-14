@@ -55,7 +55,8 @@ static ihex_file hex;
 static uint32 baseaddr;
 static stralloc cfg;
 static strlist pragmas;
-static int nodefault = false, oneline = false, comments = true, names = true, output_name = false, verbose = 0;
+static int nodefault, oneline;
+static unsigned comments = 1, output_name = 0, verbose = 0;
 
 static void
 cfg_add_item(strlist* output, const char* name, const char* value) {
@@ -478,7 +479,7 @@ cfg_data(cfg_word** wptr, const char* buf, size_t len) {
   size_t eol, col;
   cfg_word* word = 0;
   cfg_setting *setting = 0, **sptr = NULL;
-  cfg_value *value = 0, **vptr = NULL;
+  cfg_value** vptr = NULL;
 
   while(len > 0) {
     eol = byte_chr(buf, len, '\n');
@@ -504,7 +505,6 @@ cfg_data(cfg_word** wptr, const char* buf, size_t len) {
         sptr = nsptr;
       } else if(!str_diffn(line, "CVALUE", 6)) {
         cfg_value** nvptr = cfg_read_value(vptr, word, setting, buf, eol);
-        value = *vptr;
         vptr = nvptr;
       }
     }
@@ -523,8 +523,6 @@ void
 cfg_process(cfg_item add_item, cfg_comment add_comment, strlist* output) {
   cfg_word *prevword = 0, *word;
   cfg_value* value;
-  char cbuf[64];
-  size_t n = 0;
 
   slink_foreach(words, word) {
     cfg_setting* setting;
@@ -649,7 +647,7 @@ usage(char* argv0) {
 int
 main(int argc, char* argv[]) {
   const char *x, *cfgdata = 0, *hexfile = 0;
-  size_t i, n;
+  size_t n;
   int c, index = 0, print = 0;
 
   struct unix_longopt opts[] = {

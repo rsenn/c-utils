@@ -70,11 +70,10 @@ process32(void* base) {
 
 int
 pewrsec(const char* file) {
-  pe_file_t* header = base = mmap_shared(file, &size);
   const char* emsg;
   int ret;
 
-  if(base == NULL) {
+  if(!(base = mmap_shared(file, &size))) {
     errmsg_warnsys(file ? file : "(no file)", ": ", 0);
     return 127;
   }

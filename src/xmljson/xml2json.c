@@ -32,8 +32,7 @@ max_depth_fn(jsonval* v, int* arg, int depth) {
 }
 
 /**
- * @brief      Gets depth of JSON node
- * tree.
+ * @brief      Gets depth of JSON node tree.
  * @param      v     JSON value
  * @return     The depth.
  */
@@ -46,10 +45,8 @@ get_depth(jsonval* v) {
 
 /**
  * @brief      { function_description }
- * @param      p      {
- * parameter_description }
- * @param      v      {
- * parameter_description }
+ * @param      p      { parameter_description }
+ * @param      v      { parameter_description }
  * @param[in]  depth  The depth
  * @param[in]  index  The index
  */
@@ -59,11 +56,7 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
   static char quote[2] = {0, 0};
   quote[0] = q;
 
-  p->newline = valdepth > 1 ? "\n" : " "; // (!one_line &&
-                                          // valdepth > 1 &&
-                                          // ((index > -1) ||
-                                          // index < -2) && index
-                                          // > 0) ? "\n" : "";
+  p->newline = valdepth > 1 ? "\n" : " ";
   p->indent = indent_str.s;
   p->spacing = " ";
   p->separat = valdepth > 1 ? ",\n" : ", ";
@@ -91,8 +84,7 @@ pretty_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
 /**
  * @brief      { function_description }
  * @param      list  The list
- * @return     {
- * description_of_the_return_value }
+ * @return     { description_of_the_return_value }
  */
 static jsonval
 xmllist_to_jsonarray(xmlnode* list) {
@@ -203,13 +195,6 @@ hmap_to_jsonobj(HMAP_DB* db, jsonval* obj) {
  */
 static jsonval
 xml_to_json_obj(xmlnode* node) {
-  /*  static const char* const
-     node_types[] = {"(null)",
-     "XML_DOCUMENT", "XML_ELEMENT",
-     "XML_ATTRIBUTE", "XML_TEXT" };
-      buffer_putm_internal(buffer_2, node_types[(int)node->type], " ",
-     node->name, "\n", NULL);*/
-
   if(node->type == XML_ELEMENT) {
     jsonval obj = json_object();
     json_property_set(&obj, json_string(tag_property), json_string(node->name));
@@ -229,9 +214,6 @@ xml_to_json_obj(xmlnode* node) {
   return json_undefined();
 }
 
-/**
- *
- */
 static jsonval
 xml_to_json(xmlnode* node) {
   if(node->type == XML_DOCUMENT || node->attributes == NULL)
@@ -303,30 +285,25 @@ main(int argc, char* argv[]) {
   static xmlnodeset ns;
   xmlnodeset_iter_t it, e;
   size_t i = 0;
-  int c;
-  int index = 0;
-
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"single-quote", 0, NULL, 's'},
-                                {"double-quote", 0, NULL, 'd'},
-                                {"one-line", 0, NULL, 'o'},
-                                {"compact", 0, NULL, 'c'},
-                                {"indent", 0, NULL, 'l'},
-                                {"numbers", 0, NULL, 'n'},
-                                {"no-quote", 0, NULL, 'Q'},
-                                {"tag", 0, NULL, 'T'},
-                                {"children", 0, NULL, 'C'},
-                                {"class", 0, NULL, 'N'},
-                                {0, 0, 0, 0}};
+  int c, index = 0;
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"single-quote", 0, NULL, 's'},
+      {"double-quote", 0, NULL, 'd'},
+      {"one-line", 0, NULL, 'o'},
+      {"compact", 0, NULL, 'c'},
+      {"indent", 0, NULL, 'l'},
+      {"numbers", 0, NULL, 'n'},
+      {"no-quote", 0, NULL, 'Q'},
+      {"tag", 0, NULL, 'T'},
+      {"children", 0, NULL, 'C'},
+      {"class", 0, NULL, 'N'},
+      {0, 0, 0, 0},
+  };
 
   errmsg_iam(argv[0]);
 
-  for(;;) {
-    c = unix_getopt_long(argc, argv, "hsdol:cT:C:N:nQ", opts, &index);
-
-    if(c == -1)
-      break;
-
+  for(; (c = unix_getopt_long(argc, argv, "hsdol:cT:C:N:nQ", opts, &index)) != -1;) {
     if(c == 0)
       continue;
 
@@ -353,7 +330,6 @@ main(int argc, char* argv[]) {
     buffer_skip_until(input, "\r\n", 2);
 
     doc = xml_read_tree(input);
-    // xml_walk(doc, testwalk);
 
     buffer_close(input);
     {
@@ -362,10 +338,7 @@ main(int argc, char* argv[]) {
       json_print(root, buffer_1, pretty_printer);
     }
 
-    /*
-     * Cleanup function for the XML
-     * library.
-     */
+    /* Cleanup function for the XML library. */
     xml_free(doc);
 
     unix_optind++;

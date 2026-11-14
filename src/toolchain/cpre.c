@@ -36,13 +36,10 @@ int
 main(int argc, char** argv) {
   cpp_token* t;
   cpp_macro* m;
-  int ret, c, index = 0;
-  char *tmp, *fn;
-  int no_process = 0, no_line = 0, dump_defines = 0;
-  int show_deps = 0;
-  cpp_ctx ctx;
-  cpp_ctx* pp = &ctx;
-  cpp_init(pp);
+  int c, index = 0;
+  char* fn;
+  int no_process = 0, no_line = 0, dump_defines = 0, show_deps = 0;
+  cpp_ctx ctx, *pp = &ctx;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"debug", 0, NULL, 'd'},
@@ -56,6 +53,7 @@ main(int argc, char** argv) {
       {0, 0, 0, 0},
   };
 
+  cpp_init(pp);
   out = buffer_1;
   MAP_NEW(include_map);
   errmsg_iam(str_basename(argv[0]));
@@ -118,9 +116,8 @@ main(int argc, char** argv) {
 
   fn = "/dev/stdin";
 
-  if(argv[unix_optind] && str_diff(argv[unix_optind], "-")) {
+  if(argv[unix_optind] && str_diff(argv[unix_optind], "-"))
     fn = argv[unix_optind];
-  }
 
   cpp_token* tok;
   pp->base_file_name = fn;
@@ -162,6 +159,7 @@ main(int argc, char** argv) {
         buffer_putnlflush(buffer_1);
       }
     }
+
     return 0;
   } else if(show_deps >= 128) {
     strarray_foreach(&includer_list, str) {
@@ -173,17 +171,17 @@ main(int argc, char** argv) {
       strarray_foreach(arr, str2) { buffer_putm_internal(buffer_1, "  ", *str2, "\n", 0); }
       buffer_putnlflush(buffer_1);
     }
+
     return 0;
   }
-  /*   ptr;
-      strarray_foreach(a, ptr) { buffer_putm_internal(buffer_2, "  ", *ptr, "\n", 0); }
-      buffer_putnlflush(buffer_2);
-    }*/
+
   if(show_deps) {
     char** inc;
+
     buffer_put(buffer_1, fn, str_rchr(fn, '.'));
     buffer_puts(buffer_1, ".o: ");
     buffer_puts(buffer_1, fn);
+
     strarray_foreach(&pp->inc_array, inc) {
       if(show_deps > 1)
         if(path_isabs(*inc, str_len(*inc)))

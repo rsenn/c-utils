@@ -102,10 +102,9 @@ dnsopt_parse(int argc, char* const argv[], const char* args) {
                                              {"help", no_argument, 0, 'h'},
                                              {0, 0, 0, 0}};
   const char* prog = argv[0] ? argv[0] : "dns";
-  const char* env;
-  unsigned long port;
   size_t i = str_rchr(prog, '/');
   int c, index;
+  uint16 port = 0;
 
   if(prog[i])
     prog += i + 1;
@@ -124,14 +123,19 @@ dnsopt_parse(int argc, char* const argv[], const char* args) {
       case 's':
         /* DNSCACHE takes precedence over DNSCACHEIP in the resolver setup */
         env_unset("DNSCACHE");
+
         if(!env_set("DNSCACHEIP", unix_optarg))
           die(111, "out of memory", 0);
+
         break;
+
       case 'p':
-        if(unix_optarg[scan_ulong(unix_optarg, &port)] || port == 0 || port > 65535)
+        if(unix_optarg[scan_ushort(unix_optarg, &port)] || port == 0 || port > 65535)
           die(100, "invalid port: ", unix_optarg, 0);
+
         if(!env_set("DNSCACHEPORT", unix_optarg))
           die(111, "out of memory", 0);
+
         break;
       case 't': {
         /* seconds with up to 3 decimals, as milliseconds */

@@ -160,8 +160,7 @@ static const int timeouts[4] = {1, 3, 11, 45};
 static int
 thisudp(struct dns_transmit* d) {
   const char* ip;
-  //  int v4mapped;
-  int ret = 0, err = 0;
+  int ret = 0;
 
   socketfree(d);
 
@@ -181,7 +180,6 @@ thisudp(struct dns_transmit* d) {
         });
 
         d->s1 = 1 + (d->iplen == 16 ? socket_udp6() : socket_udp4());
-        err = errno;
 
         if(!d->s1) {
           dns_transmit_free(d);
@@ -192,25 +190,26 @@ thisudp(struct dns_transmit* d) {
           dns_transmit_free(d);
           return -1;
         }
-        err = errno;
+
         // v4mapped = ip6_isv4mapped(ip);
 
         if(d->iplen == 16)
           ret = socket_connect6(d->s1 - 1, ip, dns_port, d->scope_id);
         else
           ret = socket_connect4(d->s1 - 1, ip, dns_port);
-        err = errno;
 
         if(ret == 0)
-
           if(send(d->s1 - 1, d->query + 2, d->querylen - 2, 0) == (long)d->querylen - 2) {
             struct taia now;
+
             taia_now(&now);
             dns_timeout(&d->deadline, timeouts[d->udploop]);
             taia_add(&d->deadline, &d->deadline, &now);
             d->tcpstate = 0;
             dns_trace("send", 0, ip, d->iplen, d->query + 2, d->querylen - 2);
-            DNS_DEBUG(dns_debug_num("udp timeout in ms: ", dns_timeout_ms ? dns_timeout_ms : timeouts[d->udploop] * 1000UL, 0));
+            DNS_DEBUG(dns_debug_num("udp timeout in ms: ",
+                                    dns_timeout_ms ? dns_timeout_ms : timeouts[d->udploop] * 1000UL,
+                                    0));
             return 0;
           }
 
@@ -347,7 +346,11 @@ dns_transmit_start(struct dns_transmit* d,
 
   DNS_DEBUG({
     dns_debug_num("transmit start, recursive=", flagrecursive != 0, 0);
-    dns_debug_num("  query length ", len + 16, dns_tcp ? ", tcp requested" : len + 16 > 512 ? ", too long for udp, using tcp" : ", using udp");
+    dns_debug_num("  query length ",
+                  len + 16,
+                  dns_tcp          ? ", tcp requested"
+                  : len + 16 > 512 ? ", too long for udp, using tcp"
+                                   : ", using udp");
   });
 
   if(dns_tcp || len + 16 > 512)
@@ -395,16 +398,14 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
   if(d->tcpstate == 0) {
     /*
-    have attempted to send UDP query to each server udploop times
-    have sent query to curserver on UDP socket s
-    */
-    r = recv(fd, udpbuf, sizeof udpbuf, 0);
-
-    if(r <= 0) {
+     * have attempted to send UDP query to each server udploop times
+     * have sent query to curserver on UDP socket s
+     */
+    if((r = recv(fd, udpbuf, sizeof udpbuf, 0)) <= 0) {
       if(errno == ECONNREFUSED)
-
         if(d->udploop == 2)
           return 0;
+
       return nextudp(d);
     }
 
@@ -425,10 +426,13 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
     if(serverfailed(udpbuf, r)) {
       DNS_DEBUG(dns_debug_msg("server failed, trying next", 0, 0));
+
       if(d->udploop == 2)
         return 0;
+
       return nextudp(d);
     }
+
     socketfree(d);
 
     d->packetlen = r;
@@ -438,6 +442,7 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
       dns_transmit_free(d);
       return -1;
     }
+
     byte_copy(d->packet, d->packetlen, udpbuf);
     queryfree(d);
     return 1;
@@ -445,12 +450,12 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
   if(d->tcpstate == 1) {
     /*
-    have sent connection attempt to curserver on TCP socket s
-    pos not defined
-    */
-
+     * have sent connection attempt to curserver on TCP socket s
+     * pos not defined
+     */
     if(!socket_connected(fd))
       return nexttcp(d);
+
     d->pos = 0;
     d->tcpstate = 2;
     return 0;
@@ -458,36 +463,37 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
   if(d->tcpstate == 2) {
     /*
-    have connection to curserver on TCP socket s
-    have sent pos bytes of query
-    */
+     * have connection to curserver on TCP socket s
+     * have sent pos bytes of query
+     */
     if(d->pos == 0)
       dns_trace("send", 1, d->servers + d->iplen * d->curserver, d->iplen, d->query + 2, d->querylen - 2);
-    r = send(fd, d->query + d->pos, d->querylen - d->pos, 0);
 
-    if(r <= 0)
+    if((r = send(fd, d->query + d->pos, d->querylen - d->pos, 0)) <= 0)
       return nexttcp(d);
+
     d->pos += r;
 
     if(d->pos == d->querylen) {
       struct taia now;
+
       taia_now(&now);
       dns_timeout(&d->deadline, 10);
       taia_add(&d->deadline, &d->deadline, &now);
       d->tcpstate = 3;
     }
+
     return 0;
   }
 
   if(d->tcpstate == 3) {
     /*
-    have sent entire query to curserver on TCP socket s
-    pos not defined
-    */
-    r = recv(fd, (void*)&ch, 1, 0);
-
-    if(r <= 0)
+     * have sent entire query to curserver on TCP socket s
+     * pos not defined
+     */
+    if((r = recv(fd, (void*)&ch, 1, 0)) <= 0)
       return nexttcp(d);
+
     d->packetlen = ch;
     d->tcpstate = 4;
     return 0;
@@ -495,14 +501,12 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
 
   if(d->tcpstate == 4) {
     /*
-    have sent entire query to curserver on TCP socket s
-    pos not defined
-    have received one byte of packet length into packetlen
-    */
-    r = recv(fd, (void*)&ch, 1, 0);
-
-    if(r <= 0)
+     * have sent entire query to curserver on TCP socket pos not defined
+     * have received one byte of packet length into packetlen
+     */
+    if((r = recv(fd, (void*)&ch, 1, 0)) <= 0)
       return nexttcp(d);
+
     d->packetlen <<= 8;
     d->packetlen += ch;
     d->tcpstate = 5;
@@ -513,20 +517,19 @@ dns_transmit_get(struct dns_transmit* d, const iopause_fd* x, const struct taia*
       dns_transmit_free(d);
       return -1;
     }
+
     return 0;
   }
 
   if(d->tcpstate == 5) {
     /*
-    have sent entire query to curserver on TCP socket s
-    have received entire packet length into packetlen
-    packet is allocated
-    have received pos bytes of packet
-    */
-    r = recv(fd, d->packet + d->pos, d->packetlen - d->pos, 0);
-
-    if(r <= 0)
+     * have sent entire query to curserver on TCP socket s
+     * have received entire packet length into packetlen packet is allocated
+     * have received pos bytes of packet
+     */
+    if((r = recv(fd, d->packet + d->pos, d->packetlen - d->pos, 0)) <= 0)
       return nexttcp(d);
+
     d->pos += r;
 
     if(d->pos < d->packetlen)

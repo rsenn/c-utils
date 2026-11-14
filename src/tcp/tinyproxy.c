@@ -85,12 +85,11 @@ typedef struct socketbuf_s {
   fd_type sock;
   buffer buf;
   stralloc host;
-  uint16 af;
-  uint16 port;
+  uint16 af, port;
   char addr[16];
   uint32 scope_id;
   fd_type dump;
-  int force_write : 1;
+  unsigned force_write : 1;
 } socketbuf_t;
 
 typedef struct dns_result_s {
@@ -100,8 +99,7 @@ typedef struct dns_result_s {
 
 typedef struct connection_s {
   slink link;
-  socketbuf_t client;
-  socketbuf_t proxy;
+  socketbuf_t client, proxy;
   int connected;
 } connection_t;
 
@@ -183,8 +181,6 @@ dns_query(stralloc* h) {
     reclen = 4;
 
   if(reclen && dns.len >= reclen) {
-    char buf[100];
-    size_t i;
     res = alloc_zero(sizeof(dns_response_t));
     taia_now(&res->t);
     res->data.start = dns.s;
@@ -218,7 +214,6 @@ dns_print(buffer* b, dns_response_t* result, size_t num_responses) {
 
 dns_response_t*
 dns_lookup(stralloc* h) {
-  size_t i;
   bool cached = false;
   dns_response_t* result;
   tai6464 now, expire, diff;
@@ -228,7 +223,6 @@ dns_lookup(stralloc* h) {
   if((result = MAP_GET(dns_cache, h->s, h->len + 1)) != NULL) {
     taia_now(&now);
     taia_add(&expire, &result->t, &ttl);
-
     taia_sub(&diff, &now, &result->t);
 
     if(!taia_less(&now, &expire)) {
@@ -491,7 +485,6 @@ connection_open_log(connection_t* c, const char* prefix, const char* suffix) {
   char *x, buf[1024];
   size_t i, n;
   int ret;
-  tai6464 now;
   stralloc_init(&filename);
 
   if(fileBase)
@@ -589,11 +582,8 @@ socket_send(fd_type fd, void* x, size_t n, void* ptr) {
 /* Create client connection */
 int
 socket_connect(socketbuf_t* sb) {
-  int sock, ret, af;
-  char *addr, buf[100];
-
-  af = sb->af;
-  addr = sb->addr;
+  int sock, ret, af = sb->af;
+  char* addr = sb->addr;
 
   if(af == 0) {
     dns_response_t* res;
@@ -742,10 +732,17 @@ buffer_put_data(buffer* b, char* x, size_t len) {
 void
 sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
   while(len > 0) {
-    size_t maxlen, pos, end, n;
-    bool escape = !line_buffer;
+    size_t maxlen, pos, n
+#ifdef DEBUG_OUTPUT
+        ,
+        end
+#endif
+        ;
 
-    end = n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : (size_t)len;
+#ifdef DEBUG_OUTPUT
+    end =
+#endif
+        n = line_buffer ? byte_chrs(x, len, "\r\n", 2) : (size_t)len;
 
     while(n < len && byte_chr("\r\n", 2, x[n]) < 2) {
       n++;
@@ -754,10 +751,12 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
         break;
     }
 
+#ifdef DEBUG_OUTPUT
     if(!line_buffer)
       end = n;
 
-#ifdef DEBUG_OUTPUT
+    (void)end;
+
     buffer_puts(&log, send ? "Sent " : "Received ");
 
     if(line_buffer) {
@@ -767,23 +766,17 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
       buffer_putulong(&log, n);
       buffer_puts(&log, send ? " bytes to #" : " bytes from #");
     }
+
     buffer_putlong(&log, sb->sock);
     buffer_puts(&log, " ");
     sockbuf_put_addr(&log, sb);
     buffer_puts(&log, " '");
 #endif
 
-    if(line_buffer) {
-      size_t i;
-
-      for(i = 0; i < n; i++) {
-        if((unsigned)x[i] < ' ') {
-          escape = true;
-          end = n;
+    if(line_buffer)
+      for(size_t i = 0; i < n; i++)
+        if((unsigned)x[i] < ' ')
           break;
-        }
-      }
-    }
 
     pos = byte_rchr(log.x, log.p, '\n');
 
@@ -802,12 +795,13 @@ sockbuf_log_data(socketbuf_t* sb, bool send, char* x, size_t len) {
 
     buffer_puts(&log, "'");
 
-    if(max_length > 0) {
+    if(max_length > 0)
       if(log.p > max_length)
         log.p = max_length;
-    }
+
     buffer_putnlflush(&log);
 #endif
+
     x += n;
     len -= n;
   }
@@ -878,7 +872,6 @@ server_listen(uint16 port) {
 
 void
 server_finalize() {
-  char buf[100];
   struct stat st;
   const char *s, *b;
   stralloc filename, cmd;
@@ -917,22 +910,25 @@ server_finalize() {
 
   strlist_foreach(&output_files, s, n) {
     size_t filesize;
-    ssize_t ret;
     fd_type wr = s[str_find(s, "recv")] ? in : out;
     fd_type file = open_read(s);
 
     if(!(fstat(file, &st) == 0 && (filesize = st.st_size)))
       filesize = 0;
 
-    //    t = st.st_ctime;
     buffer_init_free(&w, (buffer_op_proto*)(void*)&write, wr, alloc(1024), 1024);
     buffer_puts(&w, "\n-- File '");
     buffer_put(&w, s, n);
     buffer_puts(&w, "' -- ");
-    //  localtime_r(&t, &lt);
     buffer_putnlflush(&w);
     buffer_free(&w);
-    ret = io_sendfile(wr, file, 0, filesize);
+
+#ifdef DEBUG_OUTPUT
+    ret =
+#endif
+
+        io_sendfile(wr, file, 0, filesize);
+
 #ifdef DEBUG_OUTPUT
     buffer_puts(buffer_2, "Output file: ");
     buffer_put(buffer_2, s, n);
@@ -992,6 +988,7 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
       strarray_unshiftm(&argv, "-v", "-f", archive->s, 0);
     else
       out = open_trunc(archive->s);
+
     strarray_unshiftm(&argv, "-c", 0);
   }
 
@@ -1007,21 +1004,6 @@ server_tar_files(const char* cmd, const stralloc* archive, strlist* files) {
     errmsg_warnsys("process_create", 0);
     exit(1);
   }
-
-  /*if((child_pid = vfork()) == 0) {
-      char* const env[] =
-    {"PATH=/bin:/usr/bin", 0}; close(2);
-      dup2(1, 2);
-
-      if(out != STDOUT_FILENO) {
-        close(1);
-        dup2(out, 1);
-      }
-      execve(cmd, v, env);
-      exit(127);
-    }
-    close(out);
-  */
 
   pid = wait_pid(child_pid, &status);
 
@@ -1078,11 +1060,6 @@ server_spawn() {
       exit(1);
     }
 
-    /*if(vfork() > 0) {
-      execvp(program_argv[0], program_argv);
-      errmsg_warnsys("Error in execvp: ", 0);
-      exit(1);
-    }*/
     strlist_free(&args);
   }
 }
@@ -1093,7 +1070,6 @@ server_loop() {
   int sock;
   connection_t* c;
   socketbuf_t* sb;
-  uint64 iteration = 0;
   ssize_t n;
 
 #ifdef USE_SYSTEMD
@@ -1107,6 +1083,7 @@ server_loop() {
       sockbuf_check(&c->client);
       sockbuf_check(&c->proxy);
     }
+
     io_waituntil2(1000 * 100);
 #ifdef DEBUG_OUTPUT_
     debug_long("Loop #", iteration++);
@@ -1202,7 +1179,6 @@ server_loop() {
 
       } else {
         if((c = connection_find(sock, -1))) {
-
           n = sockbuf_forward_data(&c->client, &c->proxy);
 
           if(n > 0) {
@@ -1270,8 +1246,7 @@ server_loop() {
   }
 }
 
-/* Update systemd status with connection
- * count */
+/* Update systemd status with connection count */
 void
 server_connection_count() {
 #ifdef USE_SYSTEMD
@@ -1313,26 +1288,27 @@ usage(const char* argv0) {
 /* Program start */
 int
 main(int argc, char* argv[]) {
-  int pid;
-  int c, index = 0;
+  int pid, c, index = 0;
   const char* s;
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"local-port", 0, NULL, 'l'},
-                                {"local-addr", 0, NULL, 'b'},
-                                {"remote-port", 0, NULL, 'p'},
-                                {"remote-addr", 0, NULL, 'r'},
-                                {"input-parser", 0, NULL, 'i'},
-                                {"output-parser", 0, NULL, 'O'},
-                                {"foreground", 0, NULL, 'f'},
-                                {"syslog", 0, NULL, 's'},
-                                {"logfile", 0, NULL, 'o'},
-                                {"append", 0, NULL, 'a'},
-                                {"max-length", 0, NULL, 'm'},
-                                {"line-buffer", 0, NULL, 'L'},
-                                {"dump", 0, NULL, 'd'},
-                                {"ttl", 0, NULL, 'T'},
-                                {"basename", 0, NULL, 'n'},
-                                {0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"local-port", 0, NULL, 'l'},
+      {"local-addr", 0, NULL, 'b'},
+      {"remote-port", 0, NULL, 'p'},
+      {"remote-addr", 0, NULL, 'r'},
+      {"input-parser", 0, NULL, 'i'},
+      {"output-parser", 0, NULL, 'O'},
+      {"foreground", 0, NULL, 'f'},
+      {"syslog", 0, NULL, 's'},
+      {"logfile", 0, NULL, 'o'},
+      {"append", 0, NULL, 'a'},
+      {"max-length", 0, NULL, 'm'},
+      {"line-buffer", 0, NULL, 'L'},
+      {"dump", 0, NULL, 'd'},
+      {"ttl", 0, NULL, 'T'},
+      {"basename", 0, NULL, 'n'},
+      {0},
+  };
 
   fileBase = path_basename_s(argv[0]);
   errmsg_iam(argv[0]);
@@ -1383,11 +1359,6 @@ main(int argc, char* argv[]) {
 
   program_argv = (const char**)argv + unix_optind;
   program_argc = (int)argc - unix_optind;
-  // strarray_from_argv(argc - unix_optind, argv + unix_optind, &program);
-
-  /*buffer_puts(buffer_2, "program:\n  ");
-  buffer_putstra(buffer_2, &program, "\n  ");
-  buffer_putnlflush(buffer_2);*/
 
   if(!(server.port && remote.port)) {
     usage(argv[0]);
@@ -1405,7 +1376,6 @@ main(int argc, char* argv[]) {
 
 #if !WINDOWS_NATIVE
   sig_block(SIGPIPE);
-  //    sig_block(SIGINT);
   sig_push(SIGTERM, &server_sigterm);
   sig_push(SIGINT, &server_sigint);
 #endif
@@ -1432,7 +1402,6 @@ main(int argc, char* argv[]) {
 #endif
 
   server_spawn();
-
   server_loop();
 
 #if !WINDOWS_NATIVE

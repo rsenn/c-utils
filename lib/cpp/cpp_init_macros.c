@@ -57,7 +57,7 @@ base_file_macro(cpp_ctx* pp, cpp_token* tmpl) {
 void
 cpp_init_macros(cpp_ctx* pp) {
   /* Define predefined macros */
-  /*cpp_define(pp, "_LP64", "1");
+  cpp_define(pp, "_LP64", "1");
   cpp_define(pp, "__C99_MACRO_WITH_VA_ARGS", "1");
   cpp_define(pp, "__ELF__", "1");
   cpp_define(pp, "__LP64__", "1");
@@ -96,12 +96,13 @@ cpp_init_macros(cpp_ctx* pp) {
   cpp_define(pp, "__x86_64", "1");
   cpp_define(pp, "__x86_64__", "1");
   cpp_define(pp, "linux", "1");
-  cpp_define(pp, "unix", "1");*/
+  cpp_define(pp, "unix", "1");
 
   /* a dependency scan defines the macros of its own target instead */
   if(!pp->scan_only)
     define_gnu_macros(pp);
-  // define_clang_macros(pp);
+
+  define_clang_macros(pp);
 
   cpp_add_builtin(pp, "__FILE__", file_macro);
   cpp_add_builtin(pp, "__LINE__", line_macro);

@@ -30,17 +30,12 @@ main(int argc, char* argv[]) {
   int unix_optarg;
 
   for(unix_optarg = 1; unix_optarg < argc; ++unix_optarg) {
-    char *dll_name;
     size_t dllsz;
     uint32 i, *name_rvas, nexp, num_entries;
     uint16* ord_rvas;
     pe_data_directory* datadir;
     pe_export_directory* exports;
-    pe32_opt_header* opt_hdr_32;
-    pe_type type;
-
-    char* filename = argv[unix_optarg];
-    char* base = (char*)mmap_read(filename, &dllsz);
+    char *dll_name, *filename = argv[unix_optarg], *base = (char*)mmap_read(filename, &dllsz);
 
     if(base == NULL) {
       errmsg_warnsys(filename, ": ", 0);
@@ -60,10 +55,6 @@ main(int argc, char* argv[]) {
 
     if(dll_name == NULL)
       dll_name = str_basename(filename);
-
-    opt_hdr_32 = pe_header_opt(base);
-
-    type = uint16_get(&opt_hdr_32->magic);
 
     datadir = pe_get_datadir(base, &num_entries);
 

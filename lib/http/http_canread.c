@@ -26,11 +26,10 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   http_response* response;
   int err;
   size_t n;
-  ssize_t ret = 0, received;
+  ssize_t ret = 0;
 
   if(h->tls) {
     if(!h->connected) {
-
       ret = tls_connect(h->sock);
 
       if(ret == -1) {
@@ -56,17 +55,13 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       h->sent = 1;
     }
 
-  } else {
-    if(!h->connected)
-      h->connected = 1;
-  }
+  } else if(!h->connected)
+    h->connected = 1;
 
   n = buffer_LEN(&h->q.in);
 
-  if((ret = buffer_freshen(&h->q.in)) <= 0) {
-    // if(!(ret == -1 && errno == EAGAIN))
+  if((ret = buffer_freshen(&h->q.in)) <= 0)
     goto fail;
-  }
 
   received = ret > 0 ? ret - n : 0;
 
@@ -135,12 +130,8 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
       response->chunk_length = 0;
     }
 
-    if(response->header) {
+    if(response->header)
       response->header(h, response->data.s + pos, len);
-    }
-
-    /*   response->headers_len = 0;
-       stralloc_zero(&response->data);*/
   }
 
   if(response->status == HTTP_RECV_HEADER || response->status == HTTP_RECV_DATA) {

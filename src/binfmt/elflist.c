@@ -40,7 +40,6 @@ typedef int put64_function(buffer*, uint64, int);
 typedef int putstr_function(buffer*, const char*, size_t);
 static put64_function* putnum = &hex64;
 static putstr_function* putstr = &buffer_putspad;
-static unsigned word_size;
 static unsigned radix = 16;
 static uint64 offset, rva;
 
@@ -123,7 +122,7 @@ elf_dump_header(buffer* b, range map) {
  */
 void
 elf_dump_dynamic(range map) {
-  int i = 0, di = elf_section_find(map.start, ".dynamic");
+  int di = elf_section_find(map.start, ".dynamic");
   range dyn;
   void* entry;
   const char* dynstrtab = NULL;
@@ -394,7 +393,6 @@ elf_section_flags(uint64 flags, strlist* list) {
  */
 void
 elf_dump_sections(range map) {
-  int i, n;
   range sections = elf_section_headers(map.start);
   void* section;
   int col_width = ELF_BITS(map.start) / 4 + 2 + 1;
@@ -455,7 +453,6 @@ elf_dump_sections(range map) {
  */
 void
 elf_dump_segments(range map) {
-  int i, n;
   range segments = elf_program_headers(map.start);
   void* segment;
   int col_width = ELF_BITS(map.start) / 4 + 2;
@@ -486,6 +483,7 @@ elf_dump_segments(range map) {
 
     if(!paddr && !vaddr && !filesz)
       continue;
+
     putnum(buffer_1, offset, col_width);
     buffer_putspace(buffer_1);
     putnum(buffer_1, paddr, col_width);

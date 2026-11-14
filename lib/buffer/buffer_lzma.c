@@ -99,7 +99,6 @@ buffer_lzmawrite_op(fd_type fd, void* data, size_t n, buffer* b) {
   lzma_ret ret;
   buffer* other = ctx->b;
   ssize_t r = 0, a = buffer_SPACE(other);
-  int eof = 0;
 
   strm->next_in = data;
   strm->avail_in = n;
@@ -160,7 +159,6 @@ buffer_lzma_close(buffer* b) {
   buffer* other = ctx->b;
   lzma_stream* strm = &ctx->strm;
   lzma_ret ret;
-  ssize_t a;
 
   ctx->a = LZMA_FINISH;
 
@@ -184,7 +182,6 @@ buffer_lzma_close(buffer* b) {
     ret = lzma_code(strm, ctx->a);
 
     other->p += space - strm->avail_out;
-    a = space;
 
     if(ret == LZMA_STREAM_END || (ret != LZMA_OK && ret != LZMA_BUF_ERROR))
       break;
@@ -241,12 +238,10 @@ buffer_lzma(buffer* b, buffer* other, int compress) {
 
   f[2].id = 0xffffffffffffffff; // LZMA_VLI_UNKNOWN;
 
-  if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT)) {
+  if(lzma_lzma_preset(&opt_lzma2, LZMA_PRESET_DEFAULT))
     return 0;
-  }
-  ctx = alloc_zero(sizeof(lzma_ctx));
 
-  if(ctx == NULL)
+  if((ctx = alloc_zero(sizeof(lzma_ctx))) == NULL)
     return 0;
 
   ctx->b = other;

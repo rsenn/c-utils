@@ -4,19 +4,10 @@
 static void xml_print_list(xmlnode*, buffer*, int, xml_print_fmt_t* fmt);
 static void
 default_fmt(xmlnode* node, buffer* b, int depth, char ch, int n) {
-  int inner = depth < 0;
-
   depth = depth < 0 ? -depth : depth;
 
   while(n-- > 0)
     buffer_putc(b, ch);
-
-  /*   switch(ch) {
-      case '\n':
-      break;
-      case ' ':
-      break;
-    } */
 }
 
 static void

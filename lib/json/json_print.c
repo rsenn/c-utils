@@ -10,45 +10,6 @@ struct indent_write {
   const char* indent;
 };
 
-static void
-buffer_indent_set(buffer* b, const char* in) {
-  struct indent_write* iw = (struct indent_write*)b->cookie;
-
-  iw->indent = in;
-}
-
-static ssize_t
-buffer_indent_write(fd_type fd, char* x, size_t n, void* ptr) {
-  buffer* b = (buffer*)ptr;
-  struct indent_write* iw = (struct indent_write*)b->cookie;
-  ssize_t ret;
-
-  while(n > 0) {
-    ret = iw->realop(fd, x, 1, ptr);
-
-    if(*x == '\n') {
-      size_t i;
-
-      for(i = 0; i < iw->level; i++)
-        if((ret = iw->realop(fd, (void*)iw->indent, str_len(iw->indent), ptr)) < 0)
-          return ret;
-    }
-
-    x++;
-    n--;
-  }
-  return ret;
-}
-
-static void
-buffer_indent(buffer* b, struct indent_write* iw) {
-  iw->realop = b->op;
-  iw->indent = "  ";
-  iw->level = 0;
-  b->op = (buffer_op_proto*)&buffer_indent_write;
-  b->cookie = iw;
-}
-
 static void json_print_val(jsonval* val, buffer* b, int depth, json_print_fn*);
 
 static int
@@ -74,7 +35,8 @@ json_print_separator(jsonval* val, buffer* b, int what, const jsonfmt* printer) 
 
 static void
 json_print_key(buffer* b, const char* key, size_t key_len, const jsonfmt* fmt) {
-  char quote = ((!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char))) ? fmt->quote[1] : fmt->quote[0];
+  char quote = ((!isdigit(key[0]) && byte_fullfils_predicate(key, key_len, json_is_identifier_char))) ? fmt->quote[1]
+                                                                                                      : fmt->quote[0];
 
   if(fmt->compliant)
     if(quote != '"')
@@ -174,6 +136,7 @@ json_print_array(jsonval* val, buffer* b, int depth, json_print_fn* p) {
 
     if(index > 0)
       json_print_separator(val, b, JSON_FMT_SEPARATOR, &printer);
+
     json_print_val(&item->value, b, depth + 1, p);
     ++index;
   }

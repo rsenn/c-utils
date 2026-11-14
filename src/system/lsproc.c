@@ -11,27 +11,18 @@
 
 static strlist pidlist;
 
-static const char* stat_fields[] = {
-    "pid",        "comm",       "state",       "ppid",      "pgrp",        "session",     "tty_nr",
-    "tpgid",      "flags",      "minflt",      "cminflt",   "majflt",      "cmajflt",     "utime",
-    "stime",      "cutime",     "cstime",      "priority",  "nice",        "num_threads", "itrealvalue",
-    "starttime",  "vsize",      "rss",         "rsslim",    "startcode",   "endcode",     "startstack",
-    "kstkesp",    "kstkeip",    "signal",      "blocked",   "sigignore",   "sigcatch",    "wchan",
-    "nswap",      "cnswap",     "exit_signal", "processor", "rt_priority", "policy",      "delayacct_blkio_ticks",
-    "guest_time", "cguest_time"};
-static const char* statm_fields[] = {"size", "resident", "share", "text", "lib", "data", "dt"};
-
 void
 usage(char* argv0) {
   const char* prog = str_basename(argv0);
-  buffer_putm_internal(
-      buffer_1, "Usage: ", prog, "\n", "Options\n", "  -h, --help                show this help\n", "\n", NULL);
+
+  buffer_putm_internal(buffer_1, "Usage: ", prog, "\nOptions\n  -h, --help                show this help\n\n", 0);
   buffer_putnlflush(buffer_1);
 }
 
 int
 proc_openreadclose(const char* pid, const char* file, stralloc* out) {
   int ret;
+
   stralloc path;
   stralloc_init(&path);
   stralloc_copys(&path, "/proc/");
@@ -40,9 +31,7 @@ proc_openreadclose(const char* pid, const char* file, stralloc* out) {
   stralloc_cats(&path, file);
   stralloc_nul(&path);
 
-  ret = openreadclose(path.s, out, 1024);
-
-  if(ret) {
+  if((ret = openreadclose(path.s, out, 1024))) {
     stralloc_trimr(out, "\n", 1);
     stralloc_nul(out);
   } else
@@ -119,7 +108,6 @@ main(int argc, char* argv[]) {
     buffer_puts(buffer_1, "Process #");
     buffer_puts(buffer_1, pid);
     buffer_puts(buffer_1, ": ");
-    //  strlist_dump_named(buffer_1, &stat, stat_fields);
     buffer_putnlflush(buffer_1);
 
     stralloc_zero(&cmdline.sa);

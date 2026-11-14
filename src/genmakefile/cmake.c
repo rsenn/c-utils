@@ -167,32 +167,10 @@ output_cmake_subst(stralloc* str, const char* varname) {
  */
 void
 output_cmake_subst_path(const char* path, const char* varname, stralloc* out) {
-  const char* value;
-
   stralloc_zero(out);
   path_normalize_sa(path, out);
   output_cmake_subst(out, varname);
 }
-
-/*void
-output_cmake_libs(buffer* b) {
-  strlist* libs = var_list("LIBS");
-  const char* s;
-  size_t n;
-
-  buffer_puts(b, "\nlink_libraries(");
-
-  strlist_foreach(libs, s, n) {
-    if(n < 2 || !byte_equal(s, 2, "-l"))
-      continue;
-
-    buffer_puts(b, "\n  ");
-    buffer_put(b, s + 2, byte_finds(s + 2, n - 2, "$("));
-  }
-
-  buffer_puts(b, "\n)");
-  buffer_putnlflush(b);
-}*/
 
 /**
  * @brief      Output a CMake rule
@@ -209,8 +187,7 @@ output_cmake_rule(buffer* b, target* rule) {
 
   set_foreach(&rule->output, it, x, n) {
     if(!compile) {
-      bool lib = rule_is_lib(rule);
-      bool link = !(rule_is_compile(rule) || lib);
+      bool lib = rule_is_lib(rule), link = !(rule_is_compile(rule) || lib);
       size_t pos = 0, len;
       const char* s;
       set_t deps, libs, srcs;
@@ -242,11 +219,6 @@ output_cmake_rule(buffer* b, target* rule) {
           rule_prereq_recursive(rule, &deps);
         }
       }
-
-      /*if(link) {
-         set_filter_out(&rule->prereq, &deps, is_source_b);
-         set_filter(&rule->prereq, &srcs, is_source_b);
-       } else */
 
       set_foreach(&rule->prereq, it, s, len) {
         target* compile;
@@ -282,7 +254,7 @@ output_cmake_rule(buffer* b, target* rule) {
         }
       }
 
-      if(n - pos == 0 /* || 0 == set_size(lib ? &deps : &srcs)*/)
+      if(n - pos == 0)
         continue;
 
       buffer_put(b, x + pos, n - pos);
@@ -347,9 +319,6 @@ output_cmake_rules(buffer* b, MAP_T rule_map) {
 
     if(!cmd_libs && str_end(name, ".a"))
       continue;
-
-    /* if(str_end(name, ".o"))
-       continue;*/
 
     if(str_equal(name, "all") || str_equal(name, "clean"))
       continue;
@@ -437,13 +406,6 @@ output_cmake_project(buffer* b, MAP_T* rule_map, MAP_T* vars, const strlist* inc
 
   if(var_isset("LDFLAGS"))
     output_cmake_var(b, "CMAKE_EXE_LINKER_FLAGS", &var_list("LDFLAGS", ' ')->value);
-
-  /*if(var_isset("DEFS")) {
-    buffer_puts(b, "add_definitions(");
-    buffer_putsa(b, &var_list("DEFS")->sa);
-    buffer_puts(b, ")");
-    buffer_putnlflush(b);
-  }*/
 
   buffer_putnlflush(b);
   output_cmake_cmd(b, "add_definitions", &var_list("DEFS", ' ')->value, 0);

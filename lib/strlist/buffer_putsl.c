@@ -5,7 +5,7 @@
 void
 buffer_putsl(buffer* out, const strlist* sl, const char* separator) {
   const char *x, *end;
-  size_t i = 0, n, count = strlist_count(sl);
+  size_t i = 0, n;
 
   x = sl->sa.s;
   n = sl->sa.len;

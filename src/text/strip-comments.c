@@ -20,9 +20,7 @@
 #include <unistd.h>
 #endif
 
-static char quote[4] = {'"', 0};
-static int one_line, indent = 2, compact;
-static stralloc indent_str, queue;
+static stralloc queue;
 static buffer output;
 static bool in_place, remove_blank_lines;
 
@@ -76,18 +74,17 @@ put_line(stralloc* sa, const char* x, ssize_t len) {
 #endif
     stralloc_catb(sa, x, len);
   }
+
   stralloc_catb(sa, "\n", 1);
 
-  if(len > 0) {
+  if(len > 0)
     consume_output(sa, &output);
-  }
 }
 
 size_t
 eat_line(const char** s, size_t n, buffer* out) {
-  size_t p, q;
   const char* x = *s;
-  p = scan_noncharsetnskip(x, "\n\r", n);
+  size_t q, p = scan_noncharsetnskip(x, "\n\r", n);
 
   if(p < n) {
     q = scan_charsetnskip(&x[p], "\n\r", n - p);
@@ -97,9 +94,11 @@ eat_line(const char** s, size_t n, buffer* out) {
 
     if(!remove_blank_lines || p > 0)
       buffer_put(out, x, p + (q > 2 ? 2 : q));
+
     x += p + q;
     n -= p + q;
   }
+
   *s = x;
   return p;
 }
@@ -107,18 +106,15 @@ eat_line(const char** s, size_t n, buffer* out) {
 size_t
 consume_output(stralloc* sa, buffer* out) {
   size_t prevlen = -1;
-  const char* s = sa->s;
-  const char* e = s + sa->len;
+  const char *s = sa->s, *e = sa->s + sa->len;
 
   while(s < e) {
     size_t r = eat_line(&s, e - s, out);
 
-    if(r == 0) {
+    if(r == 0)
       if(prevlen)
         break;
-      //      buffer_puts(out, "\n");
-      //  break;
-    }
+
 #ifdef DEBUG_OUTPUT_
     buffer_puts(buffer_2, "eat_line() = ");
     buffer_putlong(buffer_2, r);
@@ -132,6 +128,7 @@ consume_output(stralloc* sa, buffer* out) {
   } else {
     stralloc_zero(sa);
   }
+
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "remaining ");
   buffer_putlong(buffer_2, e - s);
@@ -142,13 +139,12 @@ consume_output(stralloc* sa, buffer* out) {
 
 int
 strip_comments(charbuf* in, buffer* out) {
-  int c, is_empty;
+  int c;
   const char* x;
-  size_t p, n;
   char buf[2], prev_c = 0;
   stralloc line;
+
   stralloc_init(&line);
-  n = 0;
 
   while((c = charbuf_get(in)) > 0) {
     if(c == '/') {
@@ -165,25 +161,28 @@ strip_comments(charbuf* in, buffer* out) {
         do {
           if(charbuf_skip_until(in, '*') <= 0)
             break;
+
           charbuf_skip(in);
           c2 = charbuf_peek(in);
         } while(c2 != '/');
+
         charbuf_skip(in);
         continue;
       }
     }
+
     buf[0] = c;
     prev_c = c;
-
-    n++;
 
     if(c == '\n') {
       put_line(&queue, line.s, line.len);
       stralloc_zero(&line);
       continue;
     }
+
     stralloc_catb(&line, buf, 1);
   }
+
 end:
   put_line(&queue, line.s, line.len);
 
@@ -198,19 +197,11 @@ end:
 
 int
 main(int argc, char* argv[]) {
-  int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
+  int c, index = 0, in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
   stralloc tmp;
-  int c;
-  const char *in_path = 0, *out_path = 0;
-  int index = 0;
-  char buf[16384];
-  buffer temp;
+  const char *x, *in_path = 0, *out_path = 0;
   charbuf input;
-  stralloc data;
-  size_t n;
-  const char* x;
   char* tmpl = "/tmp/strip-comments.XXXXXX";
-
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"in-place", 0, NULL, 'i'},
@@ -220,12 +211,7 @@ main(int argc, char* argv[]) {
 
   errmsg_iam(argv[0]);
 
-  for(;;) {
-    c = unix_getopt_long(argc, argv, "hib", opts, &index);
-
-    if(c == -1)
-      break;
-
+  for(; (c = unix_getopt_long(argc, argv, "hib", opts, &index)) != -1;) {
     if(c == 0)
       continue;
 
@@ -239,7 +225,6 @@ main(int argc, char* argv[]) {
   }
 
   stralloc_init(&tmp);
-  //  stralloc_init(&data);
 
   if(unix_optind < argc) {
 #ifdef DEBUG_OUTPUT
@@ -277,6 +262,7 @@ again:
       out_path = tmpl;
     }
   }
+
   buffer_write_fd(&output, out_fd);
   strip_comments(&input, &output);
 
@@ -294,22 +280,10 @@ again:
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
-  /*
-
-    if((x = mmap_read(out_path, &n)) &&
-    n > 1) {
-      buffer_puts(buffer_1, "out: ");
-      buffer_put(buffer_1, x, n);
-      buffer_putnlflush(buffer_1);
-
-      mmap_unmap(x, n);
-    } */
 
   charbuf_close(&input);
 
   if(in_place) {
-    // buffer inplace;
-
     if(unlink(in_path) != 0)
       errmsg_warnsys("unlink: ", in_path, 0);
 
@@ -318,13 +292,6 @@ again:
     } else {
       errmsg_warnsys("unlink: ", tmpl, 0);
     }
-
-    /*    buffer_truncfile(&inplace,
-       out_path); buffer_put(&inplace,
-       tmp.s, tmp.len);
-        buffer_flush(&inplace);
-        buffer_close(&inplace);
-    */
 
     if(out_path == 0) {
       in_path = argv[unix_optind++];

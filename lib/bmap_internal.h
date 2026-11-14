@@ -16,17 +16,17 @@ struct bmap_node_s {
 
 bmap_node_t** bmap_getref(bmap_base_t* m, const char* key);
 
-static unsigned
+static inline unsigned
 bmap_hash(const char* str) {
   unsigned hash = 5381;
 
-  while(*str) {
+  while(*str)
     hash = ((hash << 5) + hash) ^ *str++;
-  }
+
   return hash;
 }
 
-static int
+static inline int
 bmap_bucketidx(bmap_base_t* m, unsigned hash) {
   /* If the implementation is changed to allow a non-power-of-2 bucket
    * count, the line below should be changed to use mod instead of AND */

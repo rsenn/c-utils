@@ -454,7 +454,6 @@ TEST(test_strlist_shift) {
  * int strlist_shift_n(strlist* sl, size_t i);
  */
 TEST(test_strlist_shift_n) {
-  const char* s;
   stralloc sa;
   strlist sl;
   strlist_init(&sl, ',');
@@ -486,7 +485,6 @@ TEST(test_strlist_shift_n) {
  * size_t strlist_sort(strlist* sl);
  */
 TEST(test_strlist_sort) {
-  const char* s;
   stralloc sa;
   strlist sl;
   strlist_init(&sl, ',');

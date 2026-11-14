@@ -9,23 +9,6 @@
 #include <errno.h>
 #include <assert.h>
 
-static inline void
-putline(const char* what, const char* b, ssize_t l, int i) {
-  buffer_puts(buffer_2, what);
-  buffer_puts(buffer_2, "[");
-  buffer_putulong(buffer_2, i);
-  buffer_puts(buffer_2, "]");
-  buffer_puts(buffer_2, ": ");
-
-  if(l <= 0)
-    buffer_puts(buffer_2, b);
-  else
-    while(l-- > 0)
-      buffer_put(buffer_2, b++, 1);
-
-  buffer_putnlflush(buffer_2);
-}
-
 ssize_t
 http_read_header(buffer* in, stralloc* out, http_response* response) {
   ssize_t ret = 0, bytesread = 0, byteswritten = 0;

@@ -63,7 +63,6 @@ const output_fn_ptr output_handlers[3] = {&output_m3u_entry, &output_wget_entry,
 int
 read_line(char* s, size_t len, strlist* fields) {
   char *end = s + len, *p = s;
-  int64 pos = 0;
   int quoted = 0;
   size_t n, i = 0;
   char tokbuf[65536];
@@ -486,7 +485,6 @@ get_line(buffer* input, stralloc* sa) {
 int
 process_input(buffer* input) {
   int ret = -1;
-  size_t line = 0 /*, index = 0*/;
   stralloc sa;
   strlist fields;
   stralloc_init(&sa);
@@ -496,25 +494,16 @@ process_input(buffer* input) {
     buffer_puts(&output_buf, "#EXTM3U\r\n");
 
   for(stralloc_init(&sa); get_line(input, &sa); stralloc_zero(&sa)) {
-    ++line;
-
     strlist_init(&fields, '\0');
 
     ret = read_line(sa.s, sa.len, &fields);
-
-    /*        buffer_puts(buffer_2,
-       "Line ");
-            buffer_putulong(buffer_2,
-       line); buffer_puts(buffer_2, ":
-       "); buffer_putsa(buffer_2, &sa);
-            buffer_putnlflush(buffer_2);
-    */
 
     if(fields.sa.s) {
       strarray arr;
 
       char** v = strlist_to_argv(&fields);
       int c = strlist_count(&fields);
+
       strarray_init(&arr);
       strarray_from_argv(c > 21 ? 21 : c, (const char**)v, &arr);
 
@@ -564,7 +553,6 @@ main(int argc, char* argv[]) {
   char inbuf[8192];
   buffer b;
   const char* output_file = 0;
-
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"csv", 0, NULL, 'c'},
@@ -585,6 +573,7 @@ main(int argc, char* argv[]) {
         usage(argv[0]);
         return 0;
         break;
+
       case 'c': csv = 1; break;
       case 'd': debug++; break;
       case 'l': lowq++; break;
@@ -631,6 +620,7 @@ main(int argc, char* argv[]) {
     } else {
       buffer_init(&b, (buffer_op_proto*)(void*)&read, STDIN_FILENO, inbuf, sizeof(inbuf));
     }
+
     process_input(&b);
     ++unix_optind;
   }

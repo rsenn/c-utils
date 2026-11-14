@@ -208,14 +208,9 @@ int
 patch_check(unsigned char* x, size_t n, patch_t* p) {
   size_t i, nrec = array_length(&p->records, sizeof(record_t));
   size_t done = 0;
-  uint32 crc;
 
   if(p->file_size && p->file_size != n)
     return -1;
-  /* crc = byte_crc32((const char*)x, n);
-
-   if(p->crc32 && p->crc32 != crc)
-     return -1;*/
 
   buffer_putm_internal(buffer_2, "Checking for '", p->name, "'...", NULL);
   buffer_flush(buffer_2);
@@ -349,9 +344,8 @@ main(int argc, char* argv[]) {
     patch_new("command line", file.n, 0);
 
     while(++index < argc) {
-      uint64 addr = 0, val_cmp = 0, val_set = 0;
-
-      char* spec = argv[index], sym = spec[0], *s = &spec[1];
+      uint64 addr = 0;
+      char *spec = argv[index], sym = spec[0];
 
       while((sym = *spec++)) {
         size_t n = 0;
@@ -370,7 +364,7 @@ main(int argc, char* argv[]) {
 
         if((sym == '+' || sym == '*') && isdigit(*spec)) {
           uint64 num;
-          
+
           if((n = scan_x64(spec, &num)) > 0) {
             if(sym == '+')
               offset += num;
@@ -387,22 +381,14 @@ main(int argc, char* argv[]) {
           uint8 ch = 0;
 
           do {
-            n = scan_xchar(spec, &ch);
-
-            if(n >= 1) {
+            if((n = scan_xchar(spec, &ch)) >= 1)
               patch(offset + addr, file.x[offset + addr], ch);
-            }
 
             addr++;
             spec += n;
 
           } while(*spec);
-
-        } /*else {
-          buffer_putm_internal(buffer_2, "ERROR: ", spec, "\n", NULL);
-          buffer_putnlflush(buffer_2);
-          return 2;
-        }*/
+        }
 
         if(n == 0)
           break;

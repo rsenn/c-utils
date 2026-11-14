@@ -6,16 +6,14 @@
 ssize_t
 http_response_read(buffer* in, http_response* response) {
   ssize_t ret = 0;
+  size_t i, n = buffer_LEN(in);
 
   switch(response->transfer) {
     case HTTP_TRANSFER_BOUNDARY: {
       break;
     }
-
     case HTTP_TRANSFER_CHUNKED: {
       if(response->chunk_length == 0) {
-        size_t i;
-        size_t n = buffer_LEN(in);
         char* x = buffer_PEEK(in);
 
         if((i = byte_chrs(x, n, "\r\n", 2)) < n) {
@@ -23,7 +21,6 @@ http_response_read(buffer* in, http_response* response) {
 
           buffer_SKIP(in, i);
           buffer_SCAN(in, scan_eolskip);
-          // response->headers_len = 0;
 
           if(response->chunk_length)
             response->content_length += response->chunk_length;
@@ -53,12 +50,7 @@ http_response_read(buffer* in, http_response* response) {
         response->chunk_length = 0;
 
         buffer_SCAN(in, scan_eolskip);
-
-        /*if(buffer_LEN(in))
-        goto again;*/
-
       } else {
-        ssize_t n = buffer_LEN(in);
         ssize_t remain = response->chunk_length - response->data_pos;
 
         ret = MIN(remain, n);
@@ -66,9 +58,7 @@ http_response_read(buffer* in, http_response* response) {
 
       break;
     }
-
     case HTTP_TRANSFER_LENGTH: {
-      ssize_t n = buffer_LEN(in);
       ssize_t remain = response->content_length - response->data_pos;
 
       ret = MIN(remain, n);
@@ -76,6 +66,9 @@ http_response_read(buffer* in, http_response* response) {
       if(response->data_pos + (uint64)ret >= response->content_length)
         response->status = HTTP_STATUS_FINISH;
 
+      break;
+    }
+    default: {
       break;
     }
   }

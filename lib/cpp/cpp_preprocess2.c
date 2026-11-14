@@ -33,15 +33,6 @@ push_cond_incl(cpp_ctx* pp, cpp_token* tok, bool included) {
   return ci;
 }
 
-static void
-pop_cond_incl(cpp_ctx* pp) {
-  cpp_cond_incl* ci = pp->cur_cond_incl;
-
-  alloc_free(ci);
-
-  pp->cur_cond_incl = pp->cur_cond_incl->next;
-}
-
 cpp_token*
 cpp_preprocess2(cpp_ctx* pp, cpp_token* tok) {
   cpp_token head = {0};

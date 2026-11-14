@@ -125,10 +125,7 @@ response_rfinish(response* resp, int x) {
 
 char*
 response_getdata(response* resp, size_t* size_ptr) {
-  uint32 pos;
-  char* x;
-
-  x = &resp->buf[resp->dpos];
+  char* x = &resp->buf[resp->dpos];
   *size_ptr = resp->pos - resp->dpos;
 
   return x;

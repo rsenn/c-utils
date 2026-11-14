@@ -215,17 +215,15 @@ add_output(const char* x, size_t len, buffer* out) {
 int
 run_quote(buffer* in, buffer* out) {
   int c, prev_c;
-  size_t n, line, col;
+  size_t n = 0;
   bool ws = false;
   stralloc buf;
   stralloc_init(&buf);
-  n = 0;
-  line = 0;
-  col = 0;
   prev_c = '\0';
 
   if(add_quotes)
     buffer_puts(out, add_quotes);
+
   c = 0;
 
   while(buffer_getc(in, (char*)&c) > 0) {
@@ -235,10 +233,9 @@ run_quote(buffer* in, buffer* out) {
       ws = true;
     }
 
-    if(c != ' ') {
+    if(c != ' ')
       if(ws)
         ws = false;
-    }
 
     if(ws && tab_size > 0 && buf.len == (size_t)(tab_size - 1)) {
       c = '\t';
@@ -248,7 +245,6 @@ run_quote(buffer* in, buffer* out) {
     stralloc_catc(&buf, c);
 
     n++;
-    col++;
 
     prev_c = c;
   }
@@ -271,15 +267,15 @@ run_quote(buffer* in, buffer* out) {
 
 int
 add_chars(const char* x, size_t len) {
-  size_t i;
   int n = 0;
 
-  for(i = 0; i < len; i++) {
+  for(size_t i = 0; i < len; i++) {
     if(byte_chr(quote_chars.s, quote_chars.len, x[i]) == quote_chars.len) {
       stralloc_catb(&quote_chars, &x[i], 1);
       n++;
     }
   }
+
   return n;
 }
 
@@ -317,34 +313,33 @@ int
 main(int argc, char* argv[]) {
   int in_fd = STDIN_FILENO, out_fd = STDOUT_FILENO;
   stralloc tmp;
-  int c;
+  int c, index = 0, in_place = 0;
   const char *in_path = 0, *out_path = 0;
-  int index = 0;
-  int in_place = 0;
   buffer input;
   char* tmpl = "/tmp/quote.XXXXXX";
-
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'},
-                                {"in-place", 0, NULL, 'i'},
-                                {"add-quotes", 1, NULL, 'a'},
-                                {"tab-size", 1, NULL, 't'},
-                                {"quote-chars", 1, NULL, 'q'},
-                                {"quote-newline", 0, NULL, 'n'},
-                                {"quote-tabs", 0, NULL, 9},
-                                {"quote-nul", 0, NULL, '0'},
-                                {"quote-backslash", 0, NULL, 'b'},
-                                {"no-quote-newline", 0, &quote_newline, false},
-                                {"no-quote-tabs", 0, &quote_tabs, false},
-                                {"no-quote-nul", 0, &quote_nul, false},
-                                {"escape-cmake", 1, NULL, 'C'},
-                                {"escape-shell", 0, NULL, 'S'},
-                                {"escape-doublequoted-shell", 0, NULL, 'D'},
-                                {"escape-quoted-shell", 0, NULL, 'Q'},
-                                {"escape-c", 0, NULL, 'c'},
-                                {"escape-xml", 0, NULL, 'X'},
-                                {"escape-json", 0, NULL, 'J'},
-                                {"escape-printable", 0, NULL, 'P'},
-                                {0, 0, 0, 0}};
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {"in-place", 0, NULL, 'i'},
+      {"add-quotes", 1, NULL, 'a'},
+      {"tab-size", 1, NULL, 't'},
+      {"quote-chars", 1, NULL, 'q'},
+      {"quote-newline", 0, NULL, 'n'},
+      {"quote-tabs", 0, NULL, 9},
+      {"quote-nul", 0, NULL, '0'},
+      {"quote-backslash", 0, NULL, 'b'},
+      {"no-quote-newline", 0, &quote_newline, false},
+      {"no-quote-tabs", 0, &quote_tabs, false},
+      {"no-quote-nul", 0, &quote_nul, false},
+      {"escape-cmake", 1, NULL, 'C'},
+      {"escape-shell", 0, NULL, 'S'},
+      {"escape-doublequoted-shell", 0, NULL, 'D'},
+      {"escape-quoted-shell", 0, NULL, 'Q'},
+      {"escape-c", 0, NULL, 'c'},
+      {"escape-xml", 0, NULL, 'X'},
+      {"escape-json", 0, NULL, 'J'},
+      {"escape-printable", 0, NULL, 'P'},
+      {0, 0, 0, 0},
+  };
 
   stralloc_init(&quote_chars);
   stralloc_ready(&quote_chars, 4);
@@ -377,15 +372,10 @@ main(int argc, char* argv[]) {
         break;
       case 'n': quote_newline = true; break;
       case 9: quote_tabs = true; break;
-      case '0':
-        quote_nul = true;
-        break;
-        //    case 'S':
-        //    stralloc_copys(&quote_chars,
-        //    "\"$`"); break;
+      case '0': quote_nul = true; break;
+
       case 'C':
         add_quotes = "\"";
-        // tab_size = 2;
         quote_newline = quote_tabs = true;
         quote_backslash = 0;
         stralloc_copys(&quote_chars, "$\t");
@@ -426,6 +416,7 @@ main(int argc, char* argv[]) {
     if(quote_backslash == 0)
       quote_backslash++;
   }
+
 #ifdef DEBUG_OUTPUT
   buffer_puts(buffer_2, "Chars to quote '");
   buffer_putsa(buffer_2, &quote_chars);
@@ -455,7 +446,6 @@ main(int argc, char* argv[]) {
   buffer_init_free(&input, (buffer_op_proto*)(void*)&read, in_fd, alloc(1024), 1024);
 
 again:
-
   if(in_place) {
     stralloc_zero(&tmp);
     path_dirname_s(in_path, &tmp);
@@ -470,6 +460,7 @@ again:
       out_path = tmpl;
     }
   }
+
   buffer_write_fd(&output, out_fd);
   run_quote(&input, &output);
 
@@ -487,22 +478,10 @@ again:
     buffer_puts(buffer_1, out_path);
     buffer_putnlflush(buffer_1);
   }
-  /*
-
-    if((x = mmap_read(out_path, &n)) &&
-    n > 1) {
-      buffer_puts(buffer_1, "out: ");
-      buffer_put(buffer_1, x, n);
-      buffer_putnlflush(buffer_1);
-
-      mmap_unmap(x, n);
-    } */
 
   buffer_close(&input);
 
   if(in_place) {
-    // buffer inplace;
-
     if(unlink(in_path) != 0)
       errmsg_warnsys("unlink: ", in_path, 0);
 
@@ -512,17 +491,12 @@ again:
       errmsg_warnsys("unlink: ", tmpl, 0);
     }
 
-    /*    buffer_truncfile(&inplace,
-       out_path); buffer_put(&inplace,
-       tmp.s, tmp.len);
-        buffer_flush(&inplace);
-        buffer_close(&inplace);
-    */
-
     if(out_path == 0) {
       in_path = argv[unix_optind++];
       in_fd = open_read(in_path);
       goto again;
     }
   }
+
+  return 0;
 }

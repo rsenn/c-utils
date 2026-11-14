@@ -17,13 +17,6 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
-static void
-putnum(const char* what, ssize_t n) {
-  buffer_puts(buffer_2, what);
-  buffer_puts(buffer_2, ": ");
-  buffer_putlonglong(buffer_2, n);
-  buffer_putnlflush(buffer_2);
-}
 static int seq = 0;
 
 ssize_t

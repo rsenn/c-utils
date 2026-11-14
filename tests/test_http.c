@@ -71,6 +71,7 @@ TEST(test_buffer_chunked_truncated) {
     total += n;
 
   ASSERT_LT(n, 0);
+  ASSERT_GT(total, 0);
   buffer_close(&dec);
 }
 

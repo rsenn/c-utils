@@ -1694,7 +1694,6 @@ pair_header_sources(strarray* sources) {
 static void
 generate_all_rules(strarray* sources, target* all) {
   MAP_PAIR_T t;
-  int link_rules = 0;
   stralloc src;
   strarray sources2;
   char** ptr;
@@ -1725,8 +1724,6 @@ generate_all_rules(strarray* sources, target* all) {
 
     if(!(ret = generate_link_rules(pathsep_args, pathsep_make)))
       cmd_bins = 0;
-
-    link_rules += ret;
   }
 
   if(cmd_module)
@@ -2070,16 +2067,13 @@ static int
 parse_target_options(
     int argc, char* argv[], struct unix_longopt* opts, strarray* libs, strarray* libdirs, strarray* includes) {
   int c, index = 0;
-  const char* arg;
-  const char* objdir = NULL;
+  const char *arg, *objdir = NULL;
 
-  for(;;) {
-    c = unix_getopt_long(
-        argc, argv, "hvGe:j:H:U:Z:Q:K:a:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:", opts, &index);
-
-    if(c == -1)
-      break;
-
+  for(; (c = unix_getopt_long(argc,
+                              argv,
+                              "hvGe:j:H:U:Z:Q:K:a:bo:O:B:E:d:k:t:m:n:D:l:I:c:s:p:P:R:S:if:CW:w:L:O:T:X:x:M:Y:",
+                              opts,
+                              &index)) != -1;) {
     if(c == 0)
       continue;
 
@@ -2369,17 +2363,19 @@ import_project(int* argcp, char** argv) {
   strarray out;
   char** nv;
   size_t k, pos = 0;
-  int in_project = 0, in_define = 0;
+  unsigned in_project = 0, in_define = 0;
 
   for(i = 1; i < *argcp; ++i)
     if(str_equal(argv[i], "--project") && i + 1 < *argcp) {
       at = i;
       break;
     }
+
   if(at < 0)
     return argv;
 
   stralloc_init(&text);
+
   if(openreadclose(argv[at + 1], &text, 4096) <= 0) {
     buffer_putm_internal(buffer_2, "ERROR: cannot read ", argv[at + 1], newline, NULL);
     buffer_flush(buffer_2);
@@ -2399,11 +2395,12 @@ import_project(int* argcp, char** argv) {
     stralloc_init(&line);
     stralloc_copyb(&line, text.s + pos, eol);
     stralloc_nul(&line);
+
     pos += eol + 1;
     l = line.s + scan_whitenskip(line.s, line.len);
-    while(line.len && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == ' ')) {
+
+    while(line.len && (line.s[line.len - 1] == '\r' || line.s[line.len - 1] == ' '))
       line.s[--line.len] = '\0';
-    }
 
     if(*l == '[') {
       in_project = str_start(l, "[project]");
@@ -2415,16 +2412,20 @@ import_project(int* argcp, char** argv) {
       size_t a = 0;
 
       kl = (size_t)(eq - l);
+
       while(kl && (l[kl - 1] == ' ' || l[kl - 1] == '\t'))
         --kl;
+
       while(*v == ' ' || *v == '\t')
         ++v;
+
       stralloc_init(&key);
       stralloc_copyb(&key, l, kl);
       stralloc_nul(&key);
       stralloc_init(&val);
       stralloc_copys(&val, v);
       stralloc_nul(&val);
+
       if(!str_diff(key.s, "all")) {
         while(a < val.len) {
           size_t e = str_chrs(val.s + a, " \t", 2);
@@ -2439,6 +2440,7 @@ import_project(int* argcp, char** argv) {
             strarray_push(&out, opt.s);
             stralloc_free(&opt);
           }
+
           a += e + 1;
         }
       } else {
@@ -2447,14 +2449,17 @@ import_project(int* argcp, char** argv) {
         stralloc_init(&opt);
         stralloc_copys(&opt, "-D");
         stralloc_cats(&opt, key.s);
+
         if(val.len) {
           stralloc_catc(&opt, '=');
           stralloc_cats(&opt, val.s);
         }
+
         stralloc_nul(&opt);
         strarray_push(&out, opt.s);
         stralloc_free(&opt);
       }
+
       stralloc_free(&key);
       stralloc_free(&val);
     } else if(in_project && *l && *l != ';' && *l != '#' && (eq = l + str_chr(l, '=')) && *eq == '=') {
@@ -2462,10 +2467,13 @@ import_project(int* argcp, char** argv) {
       stralloc key, val;
 
       kl = (size_t)(eq - l);
+
       while(kl && (l[kl - 1] == ' ' || l[kl - 1] == '\t'))
         --kl;
+
       while(*v == ' ' || *v == '\t')
         ++v;
+
       stralloc_init(&key);
       stralloc_copyb(&key, l, kl);
       stralloc_nul(&key);
@@ -2479,6 +2487,7 @@ import_project(int* argcp, char** argv) {
         stralloc opt;
 
         stralloc_init(&opt);
+
         if(!str_diff(key.s, "toolchain"))
           stralloc_copys(&opt, "-t");
         else if(!str_diff(key.s, "make"))
@@ -2491,6 +2500,7 @@ import_project(int* argcp, char** argv) {
           stralloc_copys(&opt, "--");
           stralloc_cats(&opt, key.s);
         }
+
         stralloc_nul(&opt);
         strarray_push(&out, opt.s);
         strarray_push(&out, val.s);
@@ -2529,14 +2539,18 @@ import_project(int* argcp, char** argv) {
             strarray_push(&out, opt.s);
             stralloc_free(&opt);
           }
+
           a += e + 1;
         }
       }
+
       stralloc_free(&key);
       stralloc_free(&val);
     }
+
     stralloc_free(&line);
   }
+
   stralloc_free(&text);
 
   for(i = 1; i < *argcp; ++i) {
@@ -2544,15 +2558,19 @@ import_project(int* argcp, char** argv) {
       ++i;
       continue;
     }
+
     strarray_push(&out, argv[i]);
   }
 
   *argcp = (int)strarray_size(&out);
   nv = (char**)alloc((*argcp + 1) * sizeof(char*));
+
   for(k = 0; k < (size_t)*argcp; ++k)
     nv[k] = str_dup(strarray_at(&out, k));
+
   nv[*argcp] = 0;
   strarray_free(&out);
+
   return nv;
 }
 
@@ -2583,6 +2601,7 @@ mplabx_prop(const char* l, const char* key, size_t* n) {
 
   l += 7;
   *n = str_chr(l, '"');
+
   return l;
 }
 
@@ -2652,6 +2671,7 @@ mplabx_xc8_line(strarray* out, struct mplabx_xc8* st, const char* l) {
       mplabx_push(out, "ldflag", "-Wl,-Map=$(BUILDDIR)", st->program, str_len(st->program), ".map");
       mplabx_push(out, "program", st->program, 0, 0, 0);
     }
+
     return;
   }
 
@@ -2687,8 +2707,10 @@ mplabx_xc8_line(strarray* out, struct mplabx_xc8* st, const char* l) {
 
     if((a = l + str_find(l, "name=\"")) && *a)
       mplabx_small(name, sizeof(name), a + 6, str_chr(a + 6, '"'));
+
     if((a = l + str_find(l, "vendor=\"")) && *a)
       mplabx_small(vendor, sizeof(vendor), a + 8, str_chr(a + 8, '"'));
+
     if((a = l + str_find(l, "version=\"")) && *a)
       mplabx_small(ver, sizeof(ver), a + 9, str_chr(a + 9, '"'));
 
@@ -2701,6 +2723,7 @@ mplabx_xc8_line(strarray* out, struct mplabx_xc8* st, const char* l) {
       mplabx_push(out, "pack", o.s, 0, 0, 0);
       stralloc_free(&o);
     }
+
     return;
   }
 
@@ -2808,9 +2831,7 @@ mplabx_project_name(const char* dir) {
 /* the compiler type of the command line: is it xc8-cc? */
 static int
 args_have_xc8cc(int argc, char** argv) {
-  int i;
-
-  for(i = 1; i < argc; ++i) {
+  for(int i = 1; i < argc; ++i) {
     const char* a = argv[i];
 
     if(!str_diffn(a, "--compiler-type=", 16) && str_start(a + 16, "xc8-cc"))
@@ -2852,8 +2873,10 @@ import_mplabx(int* argcp, char** argv) {
       at = i;
       break;
     }
+
   if(at < 0)
     return argv;
+
   for(i = 1; i + 1 < *argcp; ++i)
     if(str_equal(argv[i], "--mplabx-conf")) {
       want = argv[i + 1];
@@ -2861,6 +2884,7 @@ import_mplabx(int* argcp, char** argv) {
     }
 
   stralloc_init(&text);
+
   if(openreadclose(argv[at + 1], &text, 8192) <= 0) {
     buffer_putm_internal(buffer_2, "ERROR: cannot read ", argv[at + 1], newline, NULL);
     buffer_flush(buffer_2);
@@ -2871,8 +2895,10 @@ import_mplabx(int* argcp, char** argv) {
   is_mcp = str_end(argv[at + 1], ".mcp");
   is_cc = !is_mcp && args_have_xc8cc(*argcp, argv);
   byte_zero(&xc8, sizeof(xc8));
+
   for(i = 0; i < 5; ++i)
     xc8.sum[i] = -1;
+
   for(i = 1; i < *argcp; ++i)
     if(str_equal(argv[i], "--code-offset") || !str_diffn(argv[i], "--code-offset=", 14))
       xc8.have_offset = 1;
@@ -2881,6 +2907,7 @@ import_mplabx(int* argcp, char** argv) {
   stralloc_init(&dir);
   stralloc_copys(&dir, argv[at + 1]);
   stralloc_nul(&dir);
+
   {
     size_t e = str_rchr(dir.s, '/');
 
@@ -2888,6 +2915,7 @@ import_mplabx(int* argcp, char** argv) {
       dir.s[e] = '\0'; /* .../nbproject, or the directory of the .mcp */
     else
       dir.s[0] = '\0';
+
     if(!is_mcp && dir.s[0]) {
       e = str_rchr(dir.s, '/');
       if(dir.s[e])
@@ -2896,6 +2924,7 @@ import_mplabx(int* argcp, char** argv) {
         dir.s[0] = '\0';
     }
   }
+
   if(!dir.s[0]) {
     stralloc_copys(&dir, ".");
     stralloc_nul(&dir);
@@ -2908,11 +2937,13 @@ import_mplabx(int* argcp, char** argv) {
 
   strarray_init(&out);
   strarray_push(&out, argv[0]);
+
   for(i = 1; i < *argcp; ++i) {
     if(i == at || i == want_at) {
       ++i;
       continue;
     }
+
     strarray_push(&out, argv[i]);
   }
 
@@ -2937,14 +2968,18 @@ import_mplabx(int* argcp, char** argv) {
 
         stralloc_init(&chip);
         stralloc_copys(&chip, "--chip=");
+
         for(j = 7; l[j] && l[j] != '\r'; ++j)
           stralloc_catc(&chip, (l[j] >= 'A' && l[j] <= 'Z') ? l[j] + 32 : l[j]);
+
         stralloc_nul(&chip);
+
         if(!str_diffn(chip.s + 7, "pic", 3)) {
           byte_copy(chip.s + 7, chip.len - 10, chip.s + 10);
           chip.len -= 3;
           stralloc_nul(&chip);
         }
+
         strarray_push(&out, chip.s);
         stralloc_free(&chip);
         have_chip = 1;
@@ -2957,15 +2992,18 @@ import_mplabx(int* argcp, char** argv) {
           size_t j;
 
           ++v;
-          n = str_chr(v, '\r');
-          if(n > 2 && v[n - 2] == '.' && v[n - 1] == 'c') {
+
+          if((n = str_chr(v, '\r')) > 2 && v[n - 2] == '.' && v[n - 1] == 'c') {
             stralloc_init(&path);
+
             if(str_diff(dir.s, ".")) {
               stralloc_cats(&path, dir.s);
               stralloc_catc(&path, '/');
             }
+
             for(j = 0; j < n; ++j)
               stralloc_catc(&path, v[j] == '\\' ? '/' : v[j]);
+
             stralloc_nul(&path);
             strarray_push(&out, path.s);
             stralloc_free(&path);
@@ -2986,15 +3024,19 @@ import_mplabx(int* argcp, char** argv) {
 
       stralloc_init(&chip);
       stralloc_copys(&chip, "--chip=");
+
       for(j = 0; j < n; ++j)
         stralloc_catc(&chip, (v[j] >= 'A' && v[j] <= 'Z') ? v[j] + 32 : v[j]);
+
       stralloc_nul(&chip);
+
       /* PIC18F25K50 -> 18f25k50 */
       if(!str_diffn(chip.s + 7, "pic", 3)) {
         byte_copy(chip.s + 7, chip.len - 10, chip.s + 10);
         chip.len -= 3;
         stralloc_nul(&chip);
       }
+
       strarray_push(&out, chip.s);
       xc8.pic18 = !str_diffn(chip.s + 7, "18", 2);
       stralloc_free(&chip);
@@ -3007,10 +3049,12 @@ import_mplabx(int* argcp, char** argv) {
         stralloc path;
 
         stralloc_init(&path);
+
         if(str_diff(dir.s, ".")) {
           stralloc_cats(&path, dir.s);
           stralloc_catc(&path, '/');
         }
+
         stralloc_catb(&path, v, n);
         stralloc_nul(&path);
         strarray_push(&out, path.s);
@@ -3027,8 +3071,10 @@ import_mplabx(int* argcp, char** argv) {
         stralloc_init(&d);
         stralloc_copyb(&d, v, n);
         stralloc_nul(&d);
+
         while(a < d.len) { /* the macros are separated by ; or blanks */
           size_t e = str_chrs(d.s + a, "; ", 2);
+
           if(e) {
             stralloc opt;
 
@@ -3039,8 +3085,10 @@ import_mplabx(int* argcp, char** argv) {
             strarray_push(&out, opt.s);
             stralloc_free(&opt);
           }
+
           a += e + 1;
         }
+
         stralloc_free(&d);
       }
     } else if(in_conf && str_start(l, "<property key=\"optimization-level\" value=\"")) {
@@ -3062,10 +3110,12 @@ import_mplabx(int* argcp, char** argv) {
 
         stralloc_init(&inc);
         stralloc_copys(&inc, "-I");
+
         if(str_diff(dir.s, ".") && v[0] != '/') {
           stralloc_cats(&inc, dir.s);
           stralloc_catc(&inc, '/');
         }
+
         stralloc_catb(&inc, v, n);
         stralloc_nul(&inc);
         strarray_push(&out, inc.s);
@@ -3080,15 +3130,19 @@ import_mplabx(int* argcp, char** argv) {
       stralloc_free(&line);
       break; /* only the first configuration */
     }
+
     stralloc_free(&line);
   }
+
   stralloc_free(&text);
   stralloc_free(&dir);
 
   *argcp = (int)strarray_size(&out);
   nv = (char**)alloc((*argcp + 1) * sizeof(char*));
+
   for(k = 0; k < (size_t)*argcp; ++k)
     nv[k] = str_dup(strarray_at(&out, k));
+
   nv[*argcp] = 0;
   strarray_free(&out);
   return nv;
@@ -3099,7 +3153,6 @@ main(int argc, char* argv[]) {
   strarray libs, libdirs, includes, args, sources;
   strlist cmdline;
   int ret = 0, seg_argc;
-  const char* s;
   buffer filebuf, *out = buffer_1;
   target *all = 0, *compile_target = 0;
   struct unix_longopt opts[] = {
@@ -3234,10 +3287,12 @@ main(int argc, char* argv[]) {
           buffer_puts(buffer_1, argv[di]);
           buffer_putc(buffer_1, '\n');
         }
+
       buffer_flush(buffer_1);
       return 0;
     }
   }
+
   strlist_fromv(&cmdline, (const char**)argv, argc);
 
   strlist_init(&dirs.this, pathsep_make);

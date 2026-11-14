@@ -6,7 +6,6 @@
 
 void
 tls_io(fd_type fd) {
-  ssize_t ret;
   tls_instance_t* i = iarray_get(&tls_list, fd);
   assert(i);
 

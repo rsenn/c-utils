@@ -4,10 +4,9 @@ jsonval
 json_property_get(jsonval obj, jsonval name) {
   jsonval ret = json_undefined();
 
-  if(obj.type == JSON_ARRAY || obj.type == JSON_STRING) {
+  if(obj.type == JSON_ARRAY || obj.type == JSON_STRING)
     if(str_equal(json_string_cstr(&name), "length"))
       return json_int(json_length(obj));
-  }
 
   if(obj.type == JSON_OBJECT) {
     stralloc key;
@@ -18,12 +17,12 @@ json_property_get(jsonval obj, jsonval name) {
 
     if(found)
       ret = *found;
+
     stralloc_free(&key);
   } else if(obj.type == JSON_ARRAY) {
-    struct slink* p;
-    int64 i;
-    i = json_toint(name);
+    int64 i = json_toint(name);
     return json_property_get_int(obj, i);
   }
+
   return ret;
 }

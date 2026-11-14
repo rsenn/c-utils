@@ -50,7 +50,7 @@ again:
         x++;
         i--;
       }
-      
+
       b->p += j;
 
       if(x[i] == '>')
@@ -62,12 +62,11 @@ again:
       break;
     }
     case XML_TAG_CLOSE: {
-      size_t j;
       i = byte_chr(x, len, '>');
 
       if(i < len && x[i] == '>')
         i++;
-     
+
       s->tok = XML_DATA;
       b->p += i;
       break;
@@ -82,7 +81,7 @@ again:
       } else {
         if(j < len && x[j] == '=')
           j++;
-      
+
         s->tok = XML_ATTR_VALUE;
       }
 
@@ -101,7 +100,7 @@ again:
         if(i > 0 && x[i - 1] != '\\')
           break;
       }
-      
+
       j = ++i;
       j += scan_whitenskip(x + j, len - j);
 
@@ -110,7 +109,7 @@ again:
       } else {
         s->tok = XML_ATTR_NAME;
       }
-     
+
       b->p += j;
       break;
     }

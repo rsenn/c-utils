@@ -16,7 +16,9 @@ typedef hashentry* MAP_PAIR_T;
 #define MAP_SIZE(map) hashmap_size(&(map))
 #define MAP_ZERO(map) byte_zero(&(map), sizeof(MAP_T))
 #define MAP_ISNULL(map) (byte_count(&(map), sizeof(MAP_T), 0) == sizeof(MAP_T))
-#define MAP_NEW(map) hashmap_init(&(map) /*, 64, MAP_COMPARATOR, &hashfunc, (hashmap_key_dup_func)&str_dup, (hashmap_key_free_func)&alloc_free*/)
+#define MAP_NEW(map) \
+  hashmap_init( \
+      &(map) /*, 64, MAP_COMPARATOR, &hashfunc, (hashmap_key_dup_func)&str_dup, (hashmap_key_free_func)&alloc_free*/)
 #define MAP_GET(map, key, klen) hashmap_get(&(map), (void*)(key))
 #define MAP_DESTROY(map) hashmap_free(&(map))
 #define MAP_FOREACH(map, pair) \
@@ -144,7 +146,7 @@ hashfunc(const void* str, size_t capacity) {
   return hash % capacity;
 }
 
-static int
+static inline int
 MAP_COMPARATOR(const void* l, const void* r) {
   return str_diff(l, r);
 }

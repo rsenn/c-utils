@@ -7,7 +7,6 @@ json_parse_array(jsonval* val, charbuf* b) {
     int ret;
     jsonitem **ptr, *item;
     unsigned char c;
-    int64 i = 0;
 
     val->type = JSON_ARRAY;
     val->itemv = 0;

@@ -16,7 +16,7 @@ getchar_utf16(buffer* b, int* ptr) {
     uint16_unpack(d, &ch);
     *ptr = ch;
   }
-  
+
   return ret;
 }
 
@@ -27,13 +27,13 @@ getchar_utf8(buffer* b, int* ptr) {
 
   if(ret == 1)
     *ptr = (unsigned char)c;
-  
+
   return ret;
 }
 
 static int
 getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
-  int prev = -1, ch;
+  int ch;
   stralloc_zero(line);
 
   while(getbyte(b, &ch) >= 1) {
@@ -42,8 +42,6 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
       stralloc_catb(line, chars, fmt_utf8(chars, ch));
 
     } else if(ch == '\\') {
-      prev = ch;
-
       if(getbyte(b, &ch) <= 0)
         break;
 
@@ -64,8 +62,6 @@ getline_sa(buffer* b, stralloc* line, getchar_fn* getbyte) {
       if(ch == '\n')
         break;
     }
-
-    prev = ch;
   }
 
   return line->len;

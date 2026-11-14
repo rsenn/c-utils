@@ -67,7 +67,6 @@ int
 main(int argc, char* argv[], char* envp[]) {
   int i;
   stralloc sa;
-  strarray v;
   strlist args;
   char** av;
   int ret;

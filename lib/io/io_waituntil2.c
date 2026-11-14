@@ -113,12 +113,12 @@ static void handleevent(fd_type fd, int readable, int writable, int error) {
 }
 #endif
 
+#ifdef DEBUG_IO
 static void
 put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
-  fd_type i;
   buffer_putm_internal(b, "fd_set ", name, "=[", NULL);
 
-  for(i = 0; i <= maxfd; ++i) {
+  for(fd_type i = 0; i <= maxfd; ++i) {
     if(FD_ISSET(i, fds)) {
       buffer_putspace(b);
       buffer_putlong(b, i);
@@ -127,13 +127,14 @@ put_fdset(buffer* b, const char* name, const fd_set* fds, fd_type maxfd) {
 
   buffer_puts(b, " ]");
 }
+#endif
 
 int64
 io_waituntil2(int64 milliseconds) {
-#if !(defined(_WIN32) || defined(_WIN64))
-  struct pollfd* p;
-#endif
-  long i, j, r;
+  /*#if !(defined(_WIN32) || defined(_WIN64))
+    struct pollfd* p = NULL;
+  #endif*/
+  long i = 0;
 
   if(!io_wanted_fds)
     return 0;
@@ -267,6 +268,7 @@ io_waituntil2(int64 milliseconds) {
         if(i > maxfd)
           maxfd = i;
       }
+
       ++r;
     }
 
@@ -281,6 +283,7 @@ io_waituntil2(int64 milliseconds) {
 
     if((i = select(maxfd + 1, &rfds, &wfds, NULL, milliseconds == -1 ? 0 : &tv)) == -1)
       return -1;
+
 #ifdef DEBUG_IO
     put_fdset(buffer_2, "rfds2", &rfds, maxfd);
     buffer_puts(buffer_2, ", ");
@@ -312,9 +315,8 @@ io_waituntil2(int64 milliseconds) {
     DWORD x;
     LPOVERLAPPED o;
 
-    if(first_readable != -1 || first_writeable != -1) {
+    if(first_readable != -1 || first_writeable != -1)
       return 1;
-    }
 
     if(GetQueuedCompletionStatus(
            (HANDLE)(ptrdiff_t)io_comport, &numberofbytes, &x, &o, milliseconds == -1 ? INFINITE : milliseconds)) {
@@ -322,6 +324,7 @@ io_waituntil2(int64 milliseconds) {
 
       if(!e)
         return 0;
+
       e->errorcode = 0;
 
       if(o == &e->or && e->readqueued == 1) {
@@ -352,6 +355,7 @@ io_waituntil2(int64 milliseconds) {
         e->bytes_written = numberofbytes;
         e->next_write = first_writeable;
         first_writeable = x;
+        A
       }
       return 1;
     } else {
@@ -366,10 +370,12 @@ io_waituntil2(int64 milliseconds) {
 
       if(err == WAIT_TIMEOUT)
         return 0; /* or maybe not */
+
       e = (io_entry*)iarray_get((iarray*)io_getfds(), x);
 
       if(!e)
         return 0; /* WTF?! */
+
       e->errorcode = err;
 
       if(o == &e->or && (e->readqueued || e->acceptqueued)) {
@@ -377,6 +383,7 @@ io_waituntil2(int64 milliseconds) {
           e->readqueued = 2;
         else if(e->acceptqueued)
           e->acceptqueued = 2;
+
         e->canread = 1;
         e->bytes_read = -1;
         e->next_read = first_readable;
@@ -389,11 +396,13 @@ io_waituntil2(int64 milliseconds) {
             e->connectqueued = 2;
         } else if(o == &e->os)
           e->sendfilequeued = 2;
+
         e->canwrite = 1;
         e->bytes_written = -1;
         e->next_write = first_writeable;
         first_writeable = x;
       }
+
       return 1;
     }
   }
@@ -420,6 +429,7 @@ io_waituntil2(int64 milliseconds) {
 #ifdef DEBUG
         if((y[i].events & (EPOLLIN | EPOLLPRI | EPOLLRDNORM | EPOLLRDBAND)) && !e->kernelwantread)
           DEBUG_MSG("got unexpected read event on fd #", y[i].data.fd);
+
         if((y[i].events & EPOLLOUT) && !e->kernelwantwrite)
           DEBUG_MSG("got unexpected write event on fd #", y[i].data.fd);
 #endif
@@ -526,6 +536,7 @@ io_waituntil2(int64 milliseconds) {
         epoll_ctl(io_master, EPOLL_CTL_DEL, y[i].data.fd, y + i);
       }
     }
+
     return n;
   }
 #elif defined(HAVE_KQUEUE)
@@ -533,6 +544,7 @@ io_waituntil2(int64 milliseconds) {
     struct kevent y[100];
     int n;
     struct timespec ts;
+
     ts.tv_sec = milliseconds / 1000;
     ts.tv_nsec = (milliseconds % 1000) * 1000000;
 
@@ -568,6 +580,7 @@ io_waituntil2(int64 milliseconds) {
 #endif
       }
     }
+
     return n;
   }
 #elif defined(HAVE_DEVPOLL)
@@ -575,6 +588,7 @@ io_waituntil2(int64 milliseconds) {
     dvpoll_t timeout;
     struct pollfd y[100];
     int n;
+
     timeout.dp_timeout = milliseconds;
     timeout.dp_nfds = 100;
     timeout.dp_fds = y;
@@ -588,7 +602,6 @@ io_waituntil2(int64 milliseconds) {
       if(e) {
         if(y[n].revents & (POLLERR | POLLHUP | POLLNVAL)) {
           /* error; signal whatever app is looking for */
-
           if(e->wantread)
             y[n].revents = POLLIN;
 
@@ -618,6 +631,7 @@ io_waituntil2(int64 milliseconds) {
 #endif
       }
     }
+
     return n;
   }
 #elif defined(HAVE_SIGIO)
@@ -654,7 +668,6 @@ io_waituntil2(int64 milliseconds) {
           if(e) {
             if(info.si_band & (POLLERR | POLLHUP)) {
               /* error; signal whatever app is looking for */
-
               if(e->wantread)
                 info.si_band |= POLLIN;
 
@@ -683,8 +696,9 @@ io_waituntil2(int64 milliseconds) {
           }
         }
     }
-    return 1;
 
+    return 1;
+  }
 #else
 #if !defined(HAVE_POLL)
 #warning Poll fallback
@@ -700,6 +714,7 @@ dopoll: {
 
     if(!e)
       continue;
+
     e->canread = e->canwrite = 0;
 
     if(e->wantread || e->wantwrite) {
@@ -722,9 +737,7 @@ dopoll: {
   for(i = 0; i < r; ++i) {
     if(i > 0)
       buffer_puts(buffer_2, ", ");
-    /*buffer_puts(buffer_2, "    pollfd[");
-    buffer_putlong(buffer_2, i);
-    buffer_puts(buffer_2, "] ");*/
+
     buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
     buffer_puts(buffer_2, ", events=");
@@ -739,12 +752,10 @@ dopoll: {
       buffer_puts(buffer_2, "ERR ");
 
     buffer_puts(buffer_2, "}");
-    // buffer_putnlflush(buffer_2);
   }
 
   buffer_puts(buffer_2, " ]");
   buffer_putnlflush(buffer_2);
-
 #endif
 
   if((i = poll((struct pollfd*)array_start(&io_pollfds), r, milliseconds)) < 1)
@@ -759,9 +770,7 @@ dopoll: {
   for(i = 0; i < r; ++i) {
     if(i > 0)
       buffer_puts(buffer_2, ", ");
-    /*buffer_puts(buffer_2, "    pollfd[");
-         buffer_putlong(buffer_2, i);
-         buffer_puts(buffer_2, "] ");*/
+
     buffer_puts(buffer_2, "{ ");
     buffer_putlong(buffer_2, p[i].fd);
     buffer_puts(buffer_2, ", revents=");
@@ -776,7 +785,6 @@ dopoll: {
       buffer_puts(buffer_2, "ERR ");
 
     buffer_puts(buffer_2, "}");
-    //  buffer_putnlflush(buffer_2);
   }
 
   buffer_puts(buffer_2, " ]");
@@ -789,7 +797,6 @@ dopoll: {
 
     if(p->revents & (POLLERR | POLLHUP | POLLNVAL)) {
       /* error; signal whatever app is looking for */
-
       if(e->wantread)
         p->revents |= POLLIN;
 
@@ -811,8 +818,7 @@ dopoll: {
 
     p++;
   }
+#endif /* HAVE_POLL */
 
   return i;
-}
-#endif /* HAVE_POLL */
 }

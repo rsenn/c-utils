@@ -630,7 +630,6 @@ main(int argc, char* argv[]) {
   const char *x, *y;
   unsigned long cachesize;
   int i;
-  int v6only_prev;
 
   uint32_seed(NULL, 0);
 

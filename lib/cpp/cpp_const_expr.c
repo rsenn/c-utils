@@ -75,7 +75,6 @@ new_cast(cpp_node* expr, cpp_type* ty) {
   cpp_node* node;
   add_type(expr);
 
-
   if((node = alloc_zero(sizeof(cpp_node)))) {
     node->kind = ND_CAST;
     node->tok = expr->tok;
@@ -524,6 +523,7 @@ eval2(cpp_node* node, char*** label) {
   }
 
   cpp_error_tok(node->tok, "not a compile-time constant");
+  return -1;
 }
 
 static int64
@@ -575,7 +575,7 @@ eval_double(cpp_node* node) {
       return eval(node->lhs);
 
     case ND_NUM: return node->fval;
-    
+
     default: break;
   }
 
@@ -583,7 +583,7 @@ eval_double(cpp_node* node) {
   return 0;
 }
 
-static bool
+static inline bool
 is_const_expr(cpp_node* node) {
   add_type(node);
 
@@ -607,6 +607,7 @@ is_const_expr(cpp_node* node) {
     case ND_COND:
       if(!is_const_expr(node->cond))
         return false;
+
       return is_const_expr(eval(node->cond) ? node->then : node->els);
 
     case ND_COMMA: return is_const_expr(node->rhs);
@@ -617,7 +618,7 @@ is_const_expr(cpp_node* node) {
     case ND_CAST: return is_const_expr(node->lhs);
 
     case ND_NUM: return true;
-    
+
     default: break;
   }
 
@@ -1124,8 +1125,6 @@ cast(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
 //         | num
 static cpp_node*
 primary(cpp_ctx* pp, cpp_token** rest, cpp_token* tok) {
-  cpp_token* start = tok;
-
   /* This is a GNU statement expresssion. */
   /* if(cpp_equal(tok, "(") && cpp_equal(tok->next, "{")) {
      cpp_node* node = new_node(ND_STMT_EXPR, tok);

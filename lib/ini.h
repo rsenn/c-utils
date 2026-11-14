@@ -26,7 +26,7 @@ void ini_set_sa(ini_section_t* ini, stralloc* key, stralloc* value);
 void ini_write(buffer* b, ini_section_t* ini, int utf16);
 void ini_read(buffer* b, ini_section_t** ini);
 
-static void
+static inline void
 ini_init(ini_section_t* ini) {
   byte_zero(ini, sizeof(ini_section_t));
 }

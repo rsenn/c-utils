@@ -7,23 +7,8 @@
 #include "is.h"
 
 static void
-to_backslash_b(void* x, size_t n) {
-  byte_replace(x, n, '/', '\\');
-}
-
-static void
 to_backslash_sa(stralloc* sa) {
   stralloc_replacec(sa, '/', '\\');
-}
-
-static void
-to_slash_b(void* x, size_t n) {
-  byte_replace(x, n, '\\', '/');
-}
-
-static void
-to_slash_sa(stralloc* sa) {
-  stralloc_replacec(sa, '\\', '/');
 }
 
 static void
@@ -117,7 +102,6 @@ output_mplab_project(buffer* b, MAP_T* _rules, MAP_T* vars, const strlist* inclu
   MAP_T toolcfg;
   strlist incdirs, srcdirs, defines, tcfg, *vdefs;
   const char* dir;
-  char** p = 0;
   size_t n;
   unsigned int i = 0, num_sources = 0;
   stralloc sa, file;

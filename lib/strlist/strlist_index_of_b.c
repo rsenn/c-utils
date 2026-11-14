@@ -5,7 +5,6 @@
 int64
 strlist_index_of_b(strlist* sl, const char* x, size_t n) {
   size_t p;
-  const char* s = sl->sa.s;
 
   for(p = 0; p < sl->sa.len;) {
     size_t l = byte_chr(&sl->sa.s[p], sl->sa.len - p, sl->sep);

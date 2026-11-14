@@ -380,51 +380,34 @@ is_junction_point(const char* fn) {
 
   if(INVALID_HANDLE_VALUE != hFind) {
     if(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
-      /* We're probably going to skip
-       * this reparse point, */
-      /* but not always. (See the logic
-       * below.) */
+      /* We're probably going to skip this reparse point,
+         but not always. (See the logic below.) */
       status = 1;
-      /* Tag values come from */
-      /* http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx
-       */
+      /* Tag values come from
+         http://msdn.microsoft.com/en-us/library/dd541667(prot.20).aspx  */
 
       switch(FindFileData.dwReserved0) {
         case IO_REPARSE_TAG_MOUNT_POINT: /* ocb.error_filename(fn,
                                             "Junction point, skipping"); */
           break;
         case IO_REPARSE_TAG_SYMLINK:
-          /* TODO: Maybe have the option
-           * to follow symbolic links?
-           */
-          /* ocb.error_filename(fn,
-           * "Symbolic link, skipping");
-           */
+          /* TODO: Maybe have the option to follow symbolic links?*/
+          /* ocb.error_filename(fn, "Symbolic link, skipping"); */
           break;
-        /* TODO: Use label for
-         * deduplication reparse point
-         */
-        /*         when the compiler
-         * supports it */
+        /* TODO: Use label for deduplication reparse point when the compiler supports it */
         /*      case
          * IO_REPARSE_TAG_DEDUP: */
         case 0x80000013:
-          /* This is the reparse point
-           * for Data Deduplication */
-          /* See */
-          /* http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
+          /* This is the reparse point for Data Deduplication */
+          /* See
+             http://blogs.technet.com/b/filecab/archive/2012/05/21/introduction-to-data-deduplication-in-windows-server-2012.aspx
            */
-          /* Unfortunately the compiler
-           * doesn't have this value
-           * defined yet. */
+          /* Unfortunately the compiler doesn't have this value defined yet. */
           status = 0;
           break;
         case IO_REPARSE_TAG_SIS:
-          /* Single Instance Storage */
-          /* "is a system's ability to
-           * keep one copy of content
-           * that multiple users or
-           * computers share" */
+          /* Single Instance Storage
+             "is a system's ability to keep one copy of content that multiple users or computers share" */
           /* http://blogs.technet.com/b/filecab/archive/2006/02/03/single-instance-store-sis-in-windows-storage-server-r2.aspx
            */
           status = 0;
@@ -432,16 +415,16 @@ is_junction_point(const char* fn) {
         default: break;
       }
     }
-    /* We don't error check this call as
-     * there's nothing to do differently
-     */
-    /* if it fails. */
+
+    /* We don't error check this call as here's nothing to do differently  if it fails. */
     FindClose(hFind);
   }
+
   return status;
 }
 
 #endif
+
 static int list_dir_internal(stralloc* dir, int type, long depth);
 
 /* entry type bits, as filtered by the -t option */
@@ -486,6 +469,7 @@ type_mask(const char* arg) {
     else
       mask |= bit;
   }
+
   return mask;
 }
 
@@ -503,12 +487,14 @@ read_etc(strarray* out, const char* path) {
 
       if(namelen == n)
         break;
+
       x += namelen + 1;
       n -= namelen - 1;
       len = byte_chr(x, n, ':');
 
       if(len == n)
         break;
+
       x += len + 1;
       n -= len - 1;
       len = scan_uint(x, &uid);
@@ -520,15 +506,19 @@ read_etc(strarray* out, const char* path) {
         strarray_setb(out, uid, name, namelen);
         count++;
       }
+
       len = byte_chr(x, n, '\n');
 
       if(len == n)
         break;
+
       x += len + 1;
       n -= len - 1;
     }
+
     mmap_unmap(x, n);
   }
+
   return count;
 }
 
@@ -538,6 +528,7 @@ resolve_etc(const strarray* arr, uint32 id) {
 
   if(id < len)
     return strarray_AT(arr, id);
+
   return 0;
 }
 
@@ -553,6 +544,7 @@ make_num(stralloc* out, uint64 num, uint32 width, size_t (*fmt)(char*, uint64)) 
 
     while(n-- > 0)
       stralloc_catb(out, " ", 1);
+
     stralloc_catb(out, buf, sz);
   }
 }
@@ -587,6 +579,7 @@ make_taia(stralloc* out, const uint64* epoch) {
     taia_uint(&t, *epoch);
   else
     taia_now(&t);
+
   taia_pack(tpack, &t);
   stralloc_readyplus(out, 25);
   s = stralloc_end(out);
@@ -596,6 +589,7 @@ make_taia(stralloc* out, const uint64* epoch) {
     s[i * 2 + 1] = hex[(tpack[i] >> 4) & 15];
     s[i * 2 + 2] = hex[tpack[i] & 15];
   }
+
   out->len += 25;
 }
 
@@ -618,9 +612,11 @@ print_strarray(buffer* b, array* a) {
 
     if(s == 0)
       break;
+
     buffer_puts(b, x[i]);
     buffer_putc(b, '\n');
   }
+
   buffer_flush(b);
 }
 
@@ -640,32 +636,9 @@ fnmatch_strarray(buffer* b, array* a, const char* string, int flags) {
     if((ret = path_fnmatch(s, str_len(s), string, string_len, flags)) != FNM_NOMATCH)
       break;
   }
+
   return ret;
 }
-/*
-void
-make_time(stralloc* out, time_t t,
-size_t width) { if(opt_numeric) {
-    make_num(out, (size_t)t, width);
-  } else {
-    struct tm ltime;
-    char buf[1024];
-    size_t sz;
-    ssize_t n;
-#ifdef HAVE_LOCALTIME_R_FUNC
-    localtime_r(&t, &ltime);
-#else
-    ltime = *localtime(&t);
-#endif
-    sz = strftime(buf, sizeof(buf),
-opt_timestyle, &ltime); n = width - sz;
-
-    while(n-- > 0) {
-      stralloc_catb(out, " ", 1);
-    }
-    stralloc_catb(out, buf, sz);
-  }
-}*/
 
 static void
 mode_octal(stralloc* out, int mode) {
@@ -673,9 +646,9 @@ mode_octal(stralloc* out, int mode) {
   size_t i, n = fmt_8long(buf, mode & 07777);
 
   if(mode)
-
     for(i = 0; i + n < 4; i++)
       stralloc_catc(out, '0');
+
   stralloc_catb(out, buf, n);
 }
 
@@ -780,33 +753,34 @@ stat_type(const char* path, int mode) {
 }
 
 static const char* type_strs[] = {
-    "D_PIPE", "D_CHARDEV", "D_BLKDEV", "D_SYMLINK", "D_DIRECTORY", "D_FILE", "D_SOCKET", 0};
+    "D_PIPE",
+    "D_CHARDEV",
+    "D_BLKDEV",
+    "D_SYMLINK",
+    "D_DIRECTORY",
+    "D_FILE",
+    "D_SOCKET",
+    0,
+};
 
 static const char*
 type_str(dir_type_t type) {
   int shift = 0;
   type &= 0x7f;
 
-  for(shift = 0; type_strs[shift]; shift++) {
+  for(shift = 0; type_strs[shift]; shift++)
     if((type >> shift) & 1)
       break;
-  }
 
   if(!type_strs[shift])
     return "";
+
   return type_strs[shift];
 }
 
-/*static inline mode_t
-stat_perm(int mode) {
-  mode_t mask = S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO;
-
-  return mode & mask;
-}*/
-
 static int
 match_extensions(const stralloc* path) {
-  const char *pattern, *ext, *str;
+  const char *pattern, *str;
   size_t elen, plen, slen, pos;
   int match = 0, ret = 0;
 
@@ -855,6 +829,7 @@ match_extensions(const stralloc* path) {
       }
     }
   }
+
 #ifdef DEBUG_OUTPUT_
   if(match) {
     dump_key("match");
@@ -865,24 +840,9 @@ match_extensions(const stralloc* path) {
     dump_newline();
   }
 #endif
+
   return ret;
 }
-
-/*static inline mode_t
-type_mode(dir_type_t dtype) {
-  mode_t mode;
-
-  switch(dtype) {
-    case D_DIRECTORY: mode |= S_IFDIR; break;
-    case D_SYMLINK: mode |= S_IFLNK; break;
-    case D_BLKDEV: mode |= S_IFBLK; break;
-    case D_CHARDEV: mode |= S_IFCHR; break;
-    case D_SOCKET: mode |= S_IFSOCK; break;
-    case D_FILE: mode |= S_IFREG; break;
-    case D_PIPE: mode |= S_IFIFO; break;
-  }
-  return mode;
-}*/
 
 static int
 file_crc32(const char* path, size_t size, uint32* crc) {
@@ -899,12 +859,12 @@ file_crc32(const char* path, size_t size, uint32* crc) {
     mmap_unmap(x, n);
     return 0;
   }
+
   return -1;
 }
 
 int
 list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) {
-  size_t l;
   struct stat st;
   static stralloc pre;
   int is_dir, is_symlink;
@@ -917,6 +877,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
   uint32 uid = 0, gid = 0;
 
   match = match_extensions(path);
+
 #ifdef DEBUG_OUTPUT_
   if(match) {
     dump_key("match");
@@ -934,6 +895,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
 #if !WINDOWS_NATIVE
   byte_zero(&st, sizeof(st));
 #endif
+
   dtype = stat_type(path->s, mode);
 
   if(dtype) {
@@ -951,6 +913,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
     if(opt_force < 2)
       return 0;
   }
+
   nlink = is_dir ? st.st_nlink : 1;
 
 #ifdef DEBUG_OUTPUT_
@@ -968,6 +931,7 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
     if(st.st_dev != root_dev)
       return 0;
   }
+
   is_dir = S_ISDIR(mode);
   is_symlink = S_ISLNK(mode);
 
@@ -975,10 +939,12 @@ list_file(stralloc* path, const char* name, int mode, long depth, int root_dev) 
     is_symlink = 0;
     is_dir = S_ISDIR(st.st_mode);
   }
+
   dtype = stat_type(path->s, mode);
 #else
   if(dtype & D_SYMLINK)
     is_symlink = 1;
+
   if(!is_dir && stat(path->s, &st) == 0) {
     size = st.st_size;
     mtime = st.st_mtime;
@@ -1203,8 +1169,8 @@ io_err_check(ssize_t ret) {
     buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", NULL);
     buffer_flush(buffer_2);
     exit(errno);
-    /* return -1; */
   }
+
   return ret;
 }
 
@@ -1216,8 +1182,8 @@ write_err_check(int fd, const void* buf, size_t len) {
     buffer_putm_internal(buffer_2, "ERROR: ", strerror(errno), "\n", NULL);
     buffer_flush(buffer_2);
     exit(errno);
-    /* return -1; */
   }
+
   return ret;
 }
 
@@ -1226,14 +1192,14 @@ count_non_negative(const int* x, size_t n) {
   size_t i;
 
   for(i = 0; i < n; i++)
-
     if(x[i] == -1)
       break;
+
   return i;
 }
 
 void
-usage(char* argv0) {
+jusage(char* argv0) {
   const char* prog = str_basename(argv0);
   buffer_putm_internal(buffer_1,
                        "Usage: ",
@@ -1311,30 +1277,31 @@ find_ext_class(const char* name) {
   size_t i, namelen = str_chr(name, ',');
   size_t n = sizeof(ext_classes) / sizeof(ext_classes[0]);
 
-  for(i = 0; i < n; i++) {
+  for(i = 0; i < n; i++)
     if(byte_equal(name, namelen, ext_classes[i][0]))
       return ext_classes[i][1];
-  }
+
   return 0;
 }
 static const int
 add_ext_name(const char* ext) {
   size_t len = 1 + str_chrs(ext + 1, ",^-", 3);
+
 #ifdef DEBUG_OUTPUT
   dump_key("add");
   dump_bytes(ext, len);
   dump_newline();
 #endif
+
   strlist_pushb(&extensions, ext, len);
   return len;
 }
 
 static const int
 add_ext_class(const char* ext) {
-  int ret = 0, invert = 0;
+  int invert = 0;
   size_t len;
   invert = str_chr("^!-", *ext) < 3;
-  //
 
   if(ext[invert] == ':') {
     char* group;
@@ -1342,19 +1309,21 @@ add_ext_class(const char* ext) {
     if((group = (char*)find_ext_class((char*)&ext[invert + 1])) == 0) {
       buffer_putm_internal(buffer_2, "class ", ext, " not found", NULL);
       buffer_putnlflush(buffer_2);
-      // usage(argv[0]);
       return 0;
     }
 
     while(*group) {
       if(!invert && *group == '^')
         group++;
+
       len = invert + str_chr(group + invert, '^');
       add_ext_name(group);
       group += len;
     }
+
     return str_chr(ext, ',');
   }
+
   return add_ext_name(ext);
 }
 
@@ -1362,33 +1331,34 @@ int
 main(int argc, char* argv[]) {
   stralloc dir = {0, 0, 0};
   int c;
-  int digit_optind = 0;
-  const char *rel_to = 0, *input_file = 0;
+  const char* input_file = 0;
   int index = 0;
-  static const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
-                                             {"quiet", 0, 0, 'q'},
-                                             {"list", 0, &opt_list, 1},
-                                             {"numeric", 0, &opt_numeric, 1},
-                                             {"relative", 0, &opt_relative, 1},
-                                             {"human", 0, &opt_human, 'H'},
-                                             {"input", 1, 0, 'i'},
-                                             {"output", 1, 0, 'o'},
-                                             {"include", 1, 0, 'I'},
-                                             {"exclude", 1, 0, 'X'},
-                                             {"time-style", 1, 0, 't'},
-                                             {"dereference", 0, &opt_deref, 1},
-                                             {"no-dereference", 0, &opt_deref, 0},
-                                             {"one-filesysten", 0, &opt_samedev, 1},
-                                             {"cross-filesysten", 0, &opt_samedev, 0},
-                                             {"MIN-size", 1, 0, 'm'},
-                                             {"depth", 1, 0, 'd'},
-                                             {"filter-type", 1, 0, 'F'},
-                                             {"samedev", 0, 0, 'S'},
-                                             {"force", 1, 0, 'f'},
+  static const struct unix_longopt opts[] = {
+      {"help", 0, 0, 'h'},
+      {"quiet", 0, 0, 'q'},
+      {"list", 0, &opt_list, 1},
+      {"numeric", 0, &opt_numeric, 1},
+      {"relative", 0, &opt_relative, 1},
+      {"human", 0, &opt_human, 'H'},
+      {"input", 1, 0, 'i'},
+      {"output", 1, 0, 'o'},
+      {"include", 1, 0, 'I'},
+      {"exclude", 1, 0, 'X'},
+      {"time-style", 1, 0, 't'},
+      {"dereference", 0, &opt_deref, 1},
+      {"no-dereference", 0, &opt_deref, 0},
+      {"one-filesysten", 0, &opt_samedev, 1},
+      {"cross-filesysten", 0, &opt_samedev, 0},
+      {"MIN-size", 1, 0, 'm'},
+      {"depth", 1, 0, 'd'},
+      {"filter-type", 1, 0, 'F'},
+      {"samedev", 0, 0, 'S'},
+      {"force", 1, 0, 'f'},
 #if WINDOWS
-                                             {"separator", 1, 0, 's'},
+      {"separator", 1, 0, 's'},
 #endif
-                                             {0, 0, 0, 0}};
+      {0, 0, 0, 0},
+  };
 
 #if WINDOWS && defined(O_BINARY)
   setmode(STDOUT_FILENO, O_BINARY);
@@ -1397,12 +1367,7 @@ main(int argc, char* argv[]) {
   strlist_init(&exclude_masks, '\0');
   strlist_init(&extensions, ',');
 
-  for(;;) {
-    c = unix_getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index);
-
-    if(c == -1)
-      break;
-
+  for(; (c = unix_getopt_long(argc, argv, "fhlLne:qri:o:I:X:t:m:cd:C:F:SD", opts, &index)) != -1;) {
     if(c == 0)
       continue;
 
@@ -1410,7 +1375,6 @@ main(int argc, char* argv[]) {
       case 'h': usage(argv[0]); return 0;
       case 'e': {
         char* x = unix_optarg;
-        ssize_t n;
 
         while(*x) {
           x += add_ext_class(x);
@@ -1443,10 +1407,7 @@ main(int argc, char* argv[]) {
         break;
       }
       case 'l': opt_list = 1; break;
-      case 'd':
-        scan_long(unix_optarg, &opt_depth);
-        ;
-        break;
+      case 'd': scan_long(unix_optarg, &opt_depth); break;
       case 'L': opt_deref = 1; break;
       case 'C': opt_chdir = unix_optarg; break;
       case 'S': opt_samedev = 0; break;
@@ -1481,7 +1442,6 @@ main(int argc, char* argv[]) {
 
   if(opt_chdir) {
     if(chdir(opt_chdir) == -1) {
-      //      if(!opt_quiet)
       errmsg_warnsys("chdir", opt_chdir, 0);
       return 1;
     }
@@ -1492,12 +1452,9 @@ main(int argc, char* argv[]) {
     stralloc line, file;
     strarray lines;
     array columns;
-    size_t i, j, k, l, n, column, pathlen;
+    size_t i, j, n, column, pathlen;
     col_t offsets, lengths;
     const char* base_path;
-    // int offsets[max_cols], lengths[max_cols];
-    offsets_lengths_t col, *cptr;
-    int cols;
     int init[8];
     byte_fill(init, sizeof(init), -1);
     stralloc_init(&file);
@@ -1512,25 +1469,27 @@ main(int argc, char* argv[]) {
       if(file.len && file.s[file.len - 1] != '/')
         stralloc_catc(&file, '/');
     }
+
     pathlen = file.len;
 
     stralloc_init(&line);
     strarray_init(&lines);
     array_init(&columns);
-    l = 0;
 
     while(buffer_getnewline_sa(&input, &line) > 0) {
       const char* x = line.s;
 
-      while(line.len > 0 && isspace(line.s[line.len - 1])) {
+      while(line.len > 0 && isspace(line.s[line.len - 1]))
         line.len--;
-      }
+
       stralloc_nul(&line);
+
 #ifdef DEBUG_OUTPUT_
       dump_key("line");
       dump_str(line.s);
       dump_newline();
 #endif
+
       strarray_push_sa(&lines, &line);
       byte_copy(offsets, sizeof(offsets), init);
       byte_copy(lengths, sizeof(lengths), init);
@@ -1542,15 +1501,17 @@ main(int argc, char* argv[]) {
 
         while(isspace(x[i]))
           i++;
+
         offsets[column] = i;
 
         for(j = i; j < n; j++)
-
           if(isspace(x[j]))
             break;
+
         lengths[column] = j - i;
         i = j;
       }
+
 #ifdef DEBUG_LINE
       dump_ulong(l++);
       dump_str(": ");
@@ -1566,6 +1527,7 @@ main(int argc, char* argv[]) {
 
       n = count_non_negative(offsets, 7 /*max_cols*/);
       stralloc_nul(&line);
+
 #ifdef DEBUG_OUTPUT_
       dump_key("n");
       dump_ulong(n);
@@ -1580,8 +1542,8 @@ main(int argc, char* argv[]) {
       dump_key("]");
       dump_ulong(lengths[n - 1]);
       dump_newline();
-
 #endif
+
       j = offsets[n - 1];
 
       if(file.len > pathlen)
@@ -1589,6 +1551,7 @@ main(int argc, char* argv[]) {
 
       stralloc_catb(&file, &line.s[j], line.len - j);
       stralloc_nul(&file);
+
 #ifdef DEBUG_OUTPUT_
       dump_key("file");
       dump_str(file.s);
@@ -1599,7 +1562,9 @@ main(int argc, char* argv[]) {
       dump_str(file.s);
       dump_newline();
 #endif
+
       stralloc_nul(&file);
+
       {
         unsigned int mode;
         scan_8int(line.s, &mode);
@@ -1607,6 +1572,7 @@ main(int argc, char* argv[]) {
         list_file(&file, path_basename_s(file.s), mode, 0, 0);
       }
     }
+
     return 0;
   }
 
@@ -1614,6 +1580,7 @@ main(int argc, char* argv[]) {
     while(unix_optind < argc) {
       if(opt_relative)
         opt_relative_to = argv[unix_optind];
+
       stralloc_copys(&dir, argv[unix_optind]);
       list_dir_internal(&dir, 0, 0);
       unix_optind++;
@@ -1622,5 +1589,6 @@ main(int argc, char* argv[]) {
     stralloc_copys(&dir, ".");
     list_dir_internal(&dir, 0, 0);
   }
+
   return 0;
 }

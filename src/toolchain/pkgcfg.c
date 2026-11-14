@@ -217,8 +217,8 @@ extract_paths(const stralloc* sa, strlist* paths) {
 
 const char*
 exec_program(const char* compiler, const char* arg, stralloc* out) {
-  int pid, ws = 0;
-#if 0 // def POSIX_SPAWN
+  int pid;
+#ifdef POSIX_SPAWN
   posix_spawn_file_actions_t actions;
   posix_spawnattr_t attr;
 #endif
@@ -262,7 +262,7 @@ exec_program(const char* compiler, const char* arg, stralloc* out) {
   }
 
   close(p[1]);
-  ws = process_wait(pid);
+  process_wait(pid);
 
   readclose_append(p[0], out, 1024);
 
@@ -329,7 +329,6 @@ end:
 const char*
 pkg_get(pkg* pf, const char* key) {
   char* v = NULL;
-  size_t len;
   MAP_T map = isupper(key[0]) ? pf->fields : pf->vars;
 
 #ifdef DEBUG_OUTPUT_
@@ -577,7 +576,6 @@ fail:
 
 static int
 visit_set(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
-  pkg* p = user_data;
   stralloc var, v;
   stralloc_init(&var);
   stralloc_copyb(&var, key, key_len - 1);
@@ -590,16 +588,14 @@ visit_set(const void* key, size_t key_len, const void* value, size_t value_len, 
 
   stralloc_catb(&v, value, value_len);
 
-  /* wordexp_sa(value, &v); */
-
 #ifdef DEBUG_OUTPUT_
   buffer_putm_internal(buffer_2, "ENV SET ", key, "=", NULL);
   buffer_putsa(buffer_2, &v);
   buffer_putnlflush(buffer_2);
 #endif
+
   stralloc_nul(&v);
   env_set(key, v.s);
-  /* setenv(key, v.s, 1); */
 
   return 1;
 }
@@ -1201,10 +1197,9 @@ add_paths(const stralloc* prefix) {
 void
 pkgcfg_init(const char* self) {
   size_t pos;
-  const char* x;
   stralloc dir;
+
   stralloc_init(&dir);
-  // path_readlink("/proc/self/exe", &cmd.self);
   stralloc_init(&cmd.self);
   stralloc_init(&cmd.host);
   stralloc_init(&cmd.prefix);
@@ -1220,6 +1215,7 @@ pkgcfg_init(const char* self) {
   }
 
   stralloc_copys(&cmd.self, path_basename_s(self));
+
 #ifdef DEBUG_OUTPUT_
   buffer_puts(buffer_2, "self: ");
   buffer_puts(buffer_2, self);

@@ -245,9 +245,8 @@ read_proc() {
   fd_type tmpfd;
   pipe_t* p;
   procfd_t* pfd;
-  size_t len, i;
-  int32 prev;
-  const char *fdPath, *targetPath, *fdStr, *s;
+  size_t len;
+  const char *fdPath, *fdStr, *s;
   char* x;
   struct stat lst, st;
 
@@ -351,7 +350,6 @@ read_proc() {
           pfd->pid = pid;
           pfd->fd = fd;
           byte_copy(&pfd->st, sizeof(struct stat), &st);
-          prev = '\0';
           openreadclose(proc_fdinfo_path(pid, fd, &procfdinfo), &pfd->info, 1024);
         }
       }

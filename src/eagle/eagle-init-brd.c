@@ -204,27 +204,31 @@ get_part(const char* part) {
  */
 instance_t*
 create_instance(const char* part, const char* gate, double x, double y, double rot) {
-  int ret;
   stralloc key;
   instance_t* i;
+
   stralloc_init(&key);
   stralloc_copys(&key, part);
   stralloc_cats(&key, ":");
   stralloc_cats(&key, gate);
-  i = malloc(sizeof(instance_t));
 
-  if(i == NULL)
+  if((i = malloc(sizeof(instance_t))) == NULL)
     return NULL;
+
   str_copyn(i->part, part, sizeof(i->part) - 1);
   str_copyn(i->gate, gate, sizeof(i->gate) - 1);
+
   i->x = x;
   i->y = y;
   i->rot = rot;
+
   hmap_add(&instances_db, key.s, key.len, 1, HMAP_DATA_TYPE_CUSTOM, i);
   update_part(part, x, y, rot);
+
 #ifdef DEBUG
   dump_instance(i);
 #endif
+
   return i;
 }
 
@@ -236,24 +240,26 @@ create_part(const char* name, const char* library, const char* deviceset, const 
 
   if(value == NULL)
     value = "";
-  /*if(deviceset == NULL) deviceset =
-  ""; if(device == NULL) device = "";*/
-  p = malloc(sizeof(*p));
 
-  if(p == NULL)
+  if((p = malloc(sizeof(*p))) == NULL)
     return NULL;
+
   str_copyn(p->name, name, sizeof(p->name) - 1);
   str_copyn(p->library, library ? library : "", sizeof(p->library) - 1);
   str_copyn(p->deviceset, deviceset ? deviceset : "", sizeof(p->deviceset) - 1);
   str_copyn(p->device, device ? device : "", sizeof(p->device) - 1);
   str_copyn(p->value, value ? value : "", sizeof(p->value) - 1);
+
   p->x = 0.0;
   p->y = 0.0;
   p->rot = 0.0;
+
   hmap_add(&parts_db, (char*)name, str_len(name), 1, HMAP_DATA_TYPE_CUSTOM, p);
+
 #ifdef DEBUG
   dump_part(p);
 #endif
+
   return p;
 }
 
@@ -285,10 +291,12 @@ update_part(const char* name, double x, double y, double rot) {
   if(p->rot == 0.0 || isnan(p->rot)) {
     p->rot = rot;
   } else {
-    p->rot += rot; /* p->rot /= 2; */
+    p->rot += rot;
     p->rot = round(p->rot);
   }
+
   update_minmax_xy(p->x, p->y);
+
 #ifdef DEBUG
   dump_part(p);
 #endif
@@ -321,6 +329,7 @@ get_attribute_double(double* d, xmlnode* e, const char* name) {
 
   if(!(value = xml_get_attribute(e, name)))
     return 0;
+
   return value[scan_double(value, d)] != '\0';
 }
 
@@ -332,12 +341,14 @@ cat_attributes(stralloc* sa, xmlnode* e) {
 
   for(a = hmap_begin(e->attributes); a; a = hmap_next(e->attributes, a)) {
     const char* value = (const char*)a->vals.val_chars;
+
     stralloc_cats(sa, "\n  ");
     stralloc_catb(sa, a->key, a->key_len);
     stralloc_cats(sa, "=\"");
 
     if(value)
       stralloc_cats(sa, value);
+
     stralloc_catb(sa, "\"", 1);
 
     if(a->next == hmap_begin(e->attributes))
@@ -363,22 +374,19 @@ process_instance(xmlnode* e) {
 
     while(*r && !isdigit(*r))
       ++r;
+
     scan_double(r, &rotate);
   }
+
   get_attribute_double(&x, e, "x");
   get_attribute_double(&y, e, "y");
-  /*x /= unit_factor;
-  y /= unit_factor;*/
-  /*x *= scale_factor;
-  y *= scale_factor;*/
 
-  if(part.s) {
-    instance_t* newinst = create_instance(part.s,
-                                          gate.s,
-                                          round_to_mil(x * scale_factor / unit_factor, grid_mils),
-                                          round_to_mil(y * scale_factor / unit_factor, grid_mils),
-                                          rotate);
-  }
+  if(part.s)
+    create_instance(part.s,
+                    gate.s,
+                    round_to_mil(x * scale_factor / unit_factor, grid_mils),
+                    round_to_mil(y * scale_factor / unit_factor, grid_mils),
+                    rotate);
 }
 
 /* -----------------------------------------------------------------------
@@ -386,6 +394,7 @@ process_instance(xmlnode* e) {
 void
 process_part(xmlnode* e) {
   stralloc name, library, deviceset, device, value;
+
   stralloc_init(&name);
   xml_get_attribute_sa(e, &name, "name");
   stralloc_init(&library);
@@ -397,13 +406,11 @@ process_part(xmlnode* e) {
   stralloc_init(&value);
   xml_get_attribute_sa(e, &value, "value");
 
-  if(name.s) {
-    part_t* newpart = create_part(name.s, library.s, deviceset.s, device.s, value.s);
-  }
+  if(name.s)
+    create_part(name.s, library.s, deviceset.s, device.s, value.s);
 }
 
-/* -----------------------------------------------------------------------
- */
+/* ----------------------------------------------------------------------- */
 void
 print_element_names(xmlnode* a_node) {
   xmlnode* n = NULL;
@@ -415,7 +422,6 @@ print_element_names(xmlnode* a_node) {
     if(n->type == XML_ELEMENT) {
       stralloc attrs;
       xmlnode* e = (xmlnode*)n;
-      const char* value = xml_content(n);
       stralloc_init(&attrs);
       cat_attributes(&attrs, e);
       stralloc_nul(&attrs);
@@ -424,8 +430,8 @@ print_element_names(xmlnode* a_node) {
         process_instance(e);
       } else if(!str_diff((const char*)e->name, "part")) {
         process_part(e);
-      } else {
       }
+
       stralloc_free(&attrs);
 
       if(n->children)
@@ -451,6 +457,7 @@ mystr_basename(const char* filename) {
 
   if(s1)
     return s1 + 1;
+
   return 0;
 }
 
@@ -460,6 +467,7 @@ int
 main(int argc, char* argv[]) {
   xmlnode* root_element = NULL;
   const char* filename = "sample.xml";
+
   /* initialize database */
   hmap_init(1024, &hashmap);
   hmap_init(1024, &instances_db);
@@ -472,8 +480,10 @@ main(int argc, char* argv[]) {
     buffer_putnlflush(buffer_2);
     return 1;
   }
+
   {
     buffer input;
+
     if(buffer_mmapprivate(&input, filename) != 0) {
       buffer_putm_internal(buffer_2, filename, ": cannot read the file", NULL);
       buffer_putnlflush(buffer_2);

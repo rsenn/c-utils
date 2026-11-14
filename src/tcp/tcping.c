@@ -394,8 +394,6 @@ main(int argc, char* argv[]) {
   taia_sub(&timeout, &now, &start);
 
   if(verbose) {
-    double duration = taia_approx(&timeout);
-
     buffer_putm_internal(buffer_1, argv[unix_optind], " port ", argv[unix_optind + 1], " open", NULL);
     buffer_puts(buffer_1, " (");
     put_taia(buffer_1, &timeout);

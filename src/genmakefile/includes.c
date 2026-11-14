@@ -4,7 +4,7 @@
 #include "../../lib/debug.h"
 #include "genmakefile.h"
 
-strlist include_dirs = {{0}, 0, 0};
+strlist include_dirs = {{0}};
 
 /**
  * @brief      Extract #include directives

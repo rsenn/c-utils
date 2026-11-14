@@ -21,8 +21,6 @@ static stralloc prog;
 
 const char*
 get_prog_name(void) {
-  ssize_t len;
-
   stralloc_ready(&prog, PATH_MAX);
 
 #ifndef WINDOWS_NATIVE
@@ -68,9 +66,7 @@ write_log(const strlist* argv, const char* file) {
 ssize_t
 parse_string(const char* x, ssize_t n, stralloc* out) {
   const char* start = x;
-  ssize_t i, j;
-
-  i = byte_chr(x, n, '"');
+  ssize_t i = byte_chr(x, n, '"');
 
   if(i != 0)
     return 0;
@@ -205,62 +201,54 @@ usage(char* errmsg_argv0) {
 
 int
 main(int argc, char* argv[]) {
-  ssize_t p;
-  int i;
-  int in_fd = 0;
-  ssize_t line = 0;
+  int opt, in_fd = 0;
   stralloc sa;
-  strarray v;
   strlist args;
-  char** av;
-  int opt;
   buffer* input = buffer_0;
-  const char *pathstr, *in_type = NULL;
-  const char* logfile = getenv("LOGFILE");
+  const char *in_type = NULL, *in_file = NULL;
 
   errmsg_iam(argv[0]);
-
   strlist_init(&args, '\0');
-
   get_prog_name();
 
   while((opt = unix_getopt(argc, argv, "f:h")) != -1) {
     switch(opt) {
-      case 'f': in_type = unix_optarg; break;
-
-      case 'h': usage(str_basename(argv[0])); exit(EXIT_SUCCESS);
-      default: /* '?' */
+      case 'f': {
+        in_type = unix_optarg;
+        break;
+      }
+      case 'h': {
+        usage(str_basename(argv[0]));
+        exit(EXIT_SUCCESS);
+        break;
+      }
+      default: { /* '?' */
         buffer_putm_internal(buffer_2, "Usage: ", argv[0], "[-t TYPE] [file]\n", NULL);
         exit(EXIT_FAILURE);
+        break;
+      }
     }
   }
 
-  {
-    const char* in_file = argc > unix_optind ? argv[unix_optind] : "-";
+  (void)in_type;
 
-    if(!str_diff(in_file, "-")) {
-      in_fd = 0;
-    } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
-      buffer_putm_internal(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n", NULL);
-      buffer_flush(buffer_2);
-      exit(1);
-    }
+  in_file = argc > unix_optind ? argv[unix_optind] : "-";
+
+  if(!str_diff(in_file, "-")) {
+    in_fd = 0;
+  } else if(in_file == NULL || (in_fd = open_read(in_file)) == -1) {
+    buffer_putm_internal(buffer_2, "No such file: ", in_file ? in_file : "(null)", "\n", NULL);
+    buffer_flush(buffer_2);
+    exit(1);
   }
 
   buffer_read_fd(input, in_fd);
 
   for(stralloc_init(&sa); buffer_getline_sa(input, &sa); stralloc_zero(&sa)) {
-    ++line;
     stralloc_trimr(&sa, "\r\n", 2);
 
     if(sa.len > 0)
       parse_line(sa.s, sa.len);
-
-    /*buffer_putulong(buffer_1, sa.len);
-    buffer_puts(buffer_1, ": ");
-    buffer_put(buffer_1, sa.s, sa.len);
-    buffer_puts(buffer_1, "\n");
-    buffer_flush(buffer_1);*/
   }
 
 #ifdef DEBUG_OUTPUT_

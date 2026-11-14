@@ -28,11 +28,12 @@ TEST(test_iarray_allocate) {
  */
 TEST(test_iarray_length) {
   iarray a;
-  ssize_t* c;
+  void* ptr;
   iarray_init(&a, sizeof(ssize_t));
 
-  c = iarray_allocate(&a, 10);
+  ptr = iarray_allocate(&a, 10);
   ASSERT_EQ(11, iarray_length(&a));
+  ASSERT_NE(0, ptr);
 }
 
 /*

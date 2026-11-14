@@ -978,7 +978,7 @@ handle_input(void) {
 
 int
 get_filesize(int fd, uint64* size) {
-  seek_pos save, end;
+  seek_pos save;
   int ret = 0;
 #if !WINDOWS_NATIVE
   struct stat st;
@@ -1023,7 +1023,7 @@ winsizechange(int sig) {
 int
 main(int argc, char* argv[]) {
   buffer input;
-  int watchfd = -1, wd, is_pipe = 0, argi = 1;
+  int watchfd = -1, is_pipe = 0, argi = 1;
 
   sig_catch(SIGTERM, terminate);
   sig_catch(SIGINT, interrupt);
@@ -1077,7 +1077,7 @@ main(int argc, char* argv[]) {
   if(input.fd != STDIN_FILENO) {
 #if !WINDOWS
     watchfd = inotify_init();
-    wd = inotify_add_watch(watchfd, filename, IN_MODIFY);
+    inotify_add_watch(watchfd, filename, IN_MODIFY);
 #endif
   } else if(is_pipe) {
     watchfd = input.fd;
@@ -1105,10 +1105,12 @@ main(int argc, char* argv[]) {
           read_terminal_properties();
           reset = 1;
         }
+
         if(reset) {
           scroll_to(first_line);
           reset = 0;
         }
+
         continue;
       }
 

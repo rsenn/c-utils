@@ -31,7 +31,7 @@
 #endif
 #include <errno.h>
 
-static stralloc cmd, realcmd, fullcmd, specs;
+static stralloc realcmd, fullcmd, specs;
 static const char* ext = "";
 static strlist path, pathext;
 static stralloc prog, real, base, cwd;
@@ -177,7 +177,7 @@ base_file(const char* suffix) {
 ssize_t
 read_env(const char* x, size_t n) {
   char* line;
-  size_t len, skip, num_read = 0;
+  size_t len, skip;
 
   byte_foreach_skip(x, n, line, skip) {
     skip = scan_lineskip(line, n - (line - x));
@@ -188,8 +188,6 @@ read_env(const char* x, size_t n) {
     buffer_puts(buffer_2, "Line: ");
     buffer_put(buffer_2, line, len);
     buffer_putnlflush(buffer_2);
-
-    num_read += len;
   }
 
   return len;
@@ -255,14 +253,12 @@ write_log(const strlist* argv, const char* file) {
 
 int
 main(int argc, char* argv[]) {
-  size_t p;
   int i, st;
   stralloc sa, lib, arg;
   strarray v;
   strlist opts, objs, dirs;
   char** av;
   int ret;
-  const char* pathstr;
   const char* logfile = getenv("LOGFILE");
   static int tlib = 0;
 
@@ -338,7 +334,6 @@ main(int argc, char* argv[]) {
   strarray_from_argv(argc, (const char* const*)argv, &v);
 
   for(i = 1; i < strarray_size(&v); ++i) {
-    size_t pos;
     stralloc_copys(&arg, strarray_AT(&v, i));
     stralloc_nul(&arg);
 
@@ -348,7 +343,6 @@ main(int argc, char* argv[]) {
     }
 
     if(stralloc_starts(&arg, "@")) {
-      long exist = 0;
       stralloc sa;
       stralloc_init(&sa);
       debug_sa("@", &arg);
@@ -361,8 +355,6 @@ main(int argc, char* argv[]) {
 
         it = stralloc_begin(&sa);
         end = stralloc_end(&sa);
-
-        exist = 1;
 
         while(it < end) {
           size_t n;
@@ -389,11 +381,13 @@ main(int argc, char* argv[]) {
       }
     }
 
-    pos = stralloc_findb(&arg, "/", 1);
-
 #if WINDOWS_NATIVE
-    if(pos > 0 && pos < arg.len)
-      stralloc_replacec(&arg, '/', '\\');
+    {
+      size_t pos = stralloc_findb(&arg, "/", 1);
+
+      if(pos > 0 && pos < arg.len)
+        stralloc_replacec(&arg, '/', '\\');
+    }
 #endif
 
     if(stralloc_endb(&arg, ".a", 2) || stralloc_endb(&arg, ".lib", 4)) {

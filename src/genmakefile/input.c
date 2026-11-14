@@ -659,19 +659,9 @@ input_process_command(stralloc* cmd, int argc, char* argv[], const char* file, s
     stralloc_nul(cmd);
 
     {
-      size_t pathlen;
       target* rule;
       stralloc* sacmd = &args.sa;
 
-      /*if(compile) {
-        sacmd = &commands.compile;
-      } else if(link) {
-        sacmd = &commands.link;
-      } else if(lib) {
-        sacmd = &commands.lib;
-      }*/
-
-      pathlen = rel.len;
       stralloc_cat(&rel, &out);
 
       if((rule = generate_single_rule(&out, sacmd))) {
@@ -912,7 +902,6 @@ input_process_rules(target* all) {
   MAP_PAIR_T t;
   strlist args, builddir, outdir;
   var_t *cflags, *cc, *defs, *includes, *libs, *common;
-  size_t count;
   ssize_t found;
 
   strlist_init(&args, '\0');
@@ -1043,13 +1032,6 @@ input_process_rules(target* all) {
   buffer_putsl(debug_buf, &common->value, " ");
   buffer_putnlflush(debug_buf);
 #endif
-
-  /*strlist_free(&cflags->value);
-  strlist_init(&cflags->value, '\0');*/
-
-  count = strlist_count(&args);
-  // strlist_slice(&cflags->value, &args, 1, count);
-  // strlist_at_sa(&args, &cc->value.sa, 0);
 
   if((found = strlist_match(&args, "--chip=*", 0)) >= 0) {
     char* chip = strlist_at(&args, found);
@@ -1710,15 +1692,12 @@ input_process_file(const char* infile, target* all) {
 
     var_t* v = var_list("COMMON_FLAGS", 0);
 
-    /*stralloc_copyb(&v->value.sa, common_flags_list.sa.s, common_flags_list.sa.len);
-    stralloc_nul(&v->value.sa);*/
     strlist_copy(&v->value, &common_flags_list);
     v->value.sep = ' ';
 
-    /*    var_set_set("COMMON_FLAGS", &common_flags);*/
+#ifdef DEBUG_OUTPUT
     const char* val = var_get("COMMON_FLAGS");
 
-#ifdef DEBUG_OUTPUT
     buffer_puts(debug_buf, "Common flags (2): ");
     buffer_puts(debug_buf, val);
     buffer_putnlflush(debug_buf);

@@ -22,9 +22,7 @@
 int
 http_open(http* h, http_req_t type, const char* location) {
   int ret;
-  struct hostent* he;
   ipv4addr* a;
-  char ip[FMT_IP4];
   stralloc dns;
   uint32 serial = 0;
   size_t len = byte_chrs(location, str_len(location), "\r\n\0", 3);

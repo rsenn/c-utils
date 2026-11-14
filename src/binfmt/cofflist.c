@@ -47,8 +47,7 @@ void
 coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
   range ln;
   coff_line_number* p;
-  const char* strtab;
-  int i;
+  int i = 0;
   uint16 line_number;
 
   coff_symtab_entry* aux = coff_index_symtab(coff, uint32_get(&fn->func.tag_index));
@@ -59,9 +58,6 @@ coff_print_func(buffer* b, void* coff, coff_symtab_entry* fn) {
     return;
 
   ln = coff_line_numbers(coff, shdr);
-  strtab = coff_get_strtab(coff, NULL);
-  i = 0;
-
   line_number = bfef->bfef.source_line_number;
 
   buffer_putnlflush(b);
@@ -117,16 +113,13 @@ static const char* const coff_symtab_mchp_types[] = {
 
 void
 coff_list_symbols(buffer* b, void* coff) {
-  range symtab;
   uint32 strtab_size = 0;
   const char* strtab = coff_get_strtab(coff, &strtab_size);
   coff_file_header* fhdr = coff_header_file(coff);
-
   char microchip = (fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V1 || fhdr->machine == COFF_FILE_MACHINE_MICROCHIP_V2);
   coff_symtab_entry* e;
   long i = 0;
-
-  symtab = coff_symbol_table(coff);
+  range symtab = coff_symbol_table(coff);
 
   buffer_puts(b, "number of symbol table entries: ");
   buffer_putulong(b, range_size(&symtab));
@@ -195,14 +188,10 @@ coff_list_symbols(buffer* b, void* coff) {
     } else {
       if(e->e.zeroes != 0)
         stralloc_copyb(&name, e->e.name, sizeof(e->e.name));
-      /* else
-         stralloc_copys(&name,
-         &strtab[e->e.offset]);*/
 
       if(e->e.sclass == 0) {
         stralloc_zero(&name);
       } else if(e->e.type & 0x20 && e->e.scnum > 0 && e->e.sclass == COFF_C_EXT) {
-        //   stralloc_cats(&name, "()");
         fn = range_plus(&symtab, e, 1);
       }
 
@@ -210,6 +199,7 @@ coff_list_symbols(buffer* b, void* coff) {
 
       if(!isspace(name.s[0]) && name.s[0] != 0x08) {
         const char* sclass = coff_sclass_name(e->e.sclass);
+
         buffer_putlong0(b, i, 3);
         buffer_putspace(b);
         put_hex(b, e->e.value);

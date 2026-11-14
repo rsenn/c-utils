@@ -111,8 +111,6 @@ mklink_sa(stralloc* target, stralloc* link) {
 int
 sln(const char* path) {
   stralloc s, d;
-  char* to;
-  ssize_t i;
   stralloc_init(&s);
   stralloc_copys(&s, path);
 

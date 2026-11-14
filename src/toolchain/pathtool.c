@@ -474,7 +474,6 @@ pathtool_canonical(const char* arg, stralloc* sa) {
 int
 pathtool(const char* arg, stralloc* sa) {
   strlist path;
-  size_t len;
   char* str = 0;
 
   stralloc_init(sa);
@@ -636,7 +635,7 @@ usage(char* av0) {
 int
 main(int argc, char* argv[]) {
   stralloc tmp;
-  int c, digit_optind = 0, index = 0;
+  int c, index = 0;
   const char* rel_to = NULL;
   struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},

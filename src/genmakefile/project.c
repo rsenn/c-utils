@@ -295,11 +295,6 @@ collect(const char* dir) {
   walk_close(&w);
 }
 
-static unit*
-unit_at(size_t i) {
-  return units[i];
-}
-
 /* a library module has lib/<name>.h and sources in lib/<name>/ */
 static int
 is_module(const char* name) {

@@ -24,7 +24,7 @@
 #include <windows.h>
 #endif
 
-static stralloc cmd, realcmd, fullcmd, specs;
+static stralloc realcmd, fullcmd, specs;
 static const char* ext =
 #if WINDOWS
     ".exe";
@@ -89,7 +89,8 @@ base_file(const char* suffix) {
 ssize_t
 read_env(const char* x, size_t n) {
   char* line;
-  size_t len, skip, num_read = 0;
+  size_t len, skip;
+
   byte_foreach_skip(x, n, line, skip) {
     skip = scan_lineskip(line, n - (line - x));
     len = scan_line(line, skip);
@@ -99,8 +100,6 @@ read_env(const char* x, size_t n) {
     buffer_puts(buffer_2, "Line: ");
     buffer_put(buffer_2, line, len);
     buffer_putnlflush(buffer_2);
-
-    num_read += len;
   }
 
   return len;
@@ -108,7 +107,6 @@ read_env(const char* x, size_t n) {
 
 const char*
 get_prog_name(void) {
-  ssize_t len;
   char* name;
 
   stralloc_ready(&prog, PATH_MAX);
@@ -155,14 +153,12 @@ write_log(const strlist* argv, const char* file) {
 
 int
 main(int argc, char* argv[], char* envp[]) {
-  size_t p;
   int i;
   stralloc sa;
-  strarray v;
   strlist args;
   char** av;
   int ret;
-  const char *pathstr, *logfile = getenv("LOGFILE");
+  const char* logfile = getenv("LOGFILE");
 
   errmsg_iam(argv[0]);
 

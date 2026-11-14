@@ -168,18 +168,20 @@ xmlnode* xml_textnodeb(const char* text, size_t len);
 xmlnode* xml_textnode(const char* s);
 void xml_walk(xmlnode* root, int (*func)());
 
-static xmlnode*
+__inl xmlnode*
 xml_add_text(xmlnode* parent, const char* text) {
   xmlnode* n = xml_textnode(text);
   xml_add_child(parent, n);
   return n;
 }
-static size_t
+
+__inl size_t
 xml_num_attrs(xmlnode* node) {
   assert(node->type == XML_ELEMENT);
 
   if(node->attributes == 0)
     return 0;
+
   return hmap_count(node->attributes);
 }
 
@@ -191,13 +193,10 @@ HMAP_DB* xml_attributes(const char* arg, ...);
 xmlnode* xml_element(const char*);
 xmlnode* xml_child_element(const char*, xmlnode*);
 
-// #define xml_attributes(node) ((node)->attributes ?
-//(node)->attributes->list_tuple : NULL)
+// #define xml_attributes(node) ((node)->attributes ? (node)->attributes->list_tuple : NULL)
 
 #define xmlnodeset_item(ns, i) ((ns)->nodes[i])
-
 #define xmlnodeset_clear(ns) byte_zero((ns), sizeof(xmlnodeset))
-
 #define xmlnodeset_foreach(ns, it) for((it) = &(ns)->nodes[0]; (it) != &(ns)->nodes[(ns)->size]; ++(it))
 
 __inl xmlnode**

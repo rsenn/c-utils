@@ -104,7 +104,6 @@ splitport(const char* x, unsigned long* port) {
 static int
 init(char ip[256]) {
   unsigned long int i;
-  unsigned long int j;
   int iplen = 0;
   char* x;
   unsigned long port = 53;
@@ -204,7 +203,7 @@ init(char ip[256]) {
             if((i = scan_ip6(data.s + p, ip + iplen)))
               iplen += 16;
         }
-       
+
         p += byte_chr(&data.s[p], data.len - p, '\n');
       } while(++p < data.len);
     }
@@ -238,8 +237,6 @@ init(char ip[256]) {
   }
 
   byte_zero(ip + iplen, 256 - iplen);
-
-  
 
   if((x = getenv("DNSCACHEPORT"))) {
     unsigned long u;

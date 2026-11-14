@@ -87,12 +87,12 @@ usage(char* av0) {
 
 int
 main(int argc, char** argv) {
-  uint8* base = NULL;
-  size_t filesize;
-
   int c, index = 0;
+  struct unix_longopt opts[] = {
+      {"help", 0, NULL, 'h'},
+      {0, 0, 0, 0},
+  };
 
-  struct unix_longopt opts[] = {{"help", 0, NULL, 'h'}, {0, 0, 0, 0}};
   errmsg_iam(argv[0]);
   buffer_puts(buffer_1, "Number of arguments: ");
   buffer_putlong(buffer_1, argc);
@@ -120,21 +120,14 @@ main(int argc, char** argv) {
     omf_file omf;
 
     if(omf_open(&omf, argv[unix_optind])) {
-      omf_record* r;
       char* p;
-
-      r = omf_begin(&omf);
+      omf_record* r = omf_begin(&omf);
 
       omf_dump(buffer_1, r);
 
       omf_foreach(&omf, r) {
-        range x = omf_data(r);
-        const char* name = omf_name(r);
-
         if((p = omf_record_begin(r))) {
           omf_record_foreach(r, p) {
-
-            //  //|| r->type == 0x96
             buffer_putptr(buffer_1, p);
 
             if((r->type & 0xfe) == 0x90 || r->type == 0x96 || r->type == 0x8c) {

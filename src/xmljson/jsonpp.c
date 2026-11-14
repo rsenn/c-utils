@@ -33,21 +33,7 @@ put_str_escaped(buffer* b, const char* str) {
 }
 
 static void
-max_depth_fn(jsonval* v, int* in_file, int depth) {
-  if(depth > *in_file)
-    *in_file = depth;
-}
-
-static int
-get_depth(const jsonval* v) {
-  int max_depth = -1;
-  json_recurse((jsonval*)v, max_depth_fn, &max_depth);
-  return max_depth;
-}
-
-static void
 compact_printer(jsonfmt* p, jsonval* v, int depth, int index, char q) {
-  int valdepth = v ? get_depth(v) : 0;
   int multi_line = !one_line && depth < depth_arg;
 
   p->indent = !multi_line || depth > depth_arg ? "" : indent_str.s;

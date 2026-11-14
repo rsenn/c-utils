@@ -911,43 +911,30 @@ search_path(const char* filename) {
 
 int
 main(int argc, char** argv) {
-  int i = 0;
-  static int verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0,
-             list_imports = 0;
-  int skip = 0;
-  int files = 0;
-  int files_start = -1;
-  int files_count = 0;
-  int c;
-  int digit_optind = 0;
-  const char* rel_to = 0;
-  int index = 0;
-  static int print_dirs = 0;
-  const struct unix_longopt opts[] = {{"help", 0, 0, 'h'},
-                                      {"verbose", 0, &verbose, 'v'},
-                                      {"unused", 0, &unused, 'u'},
-                                      {"data-relocs", 0, &datarelocs, 'd'},
-                                      {"function-relocs", 0, &functionrelocs, 'r'},
-                                      {"recursive", 0, &recursive, 'R'},
-                                      {"list-exports", 0, &list_exports, 'e'},
-                                      {"list-imports", 0, &list_imports, 'i'},
-                                      {"version", 0, 0, 'V'},
-                                      {"search-dir", 0, 0, 'D'},
-                                      {"print-search-dirs", 0, &print_dirs, 1},
-                                      {0, 0, 0, 0}};
+  int i = 0, skip = 0, files = 0;
+  static unsigned verbose = 0, unused = 0, datarelocs = 0, functionrelocs = 0, recursive = 0, list_exports = 0,
+                  list_imports = 0, print_dirs = 0;
+  int files_start = -1, files_count = 0;
+  int c, digit_optind = 0, index = 0;
+  const struct unix_longopt opts[] = {
+      {"help", 0, 0, 'h'},
+      {"verbose", 0, &verbose, 'v'},
+      {"unused", 0, &unused, 'u'},
+      {"data-relocs", 0, &datarelocs, 'd'},
+      {"function-relocs", 0, &functionrelocs, 'r'},
+      {"recursive", 0, &recursive, 'R'},
+      {"list-exports", 0, &list_exports, 'e'},
+      {"list-imports", 0, &list_imports, 'i'},
+      {"version", 0, 0, 'V'},
+      {"search-dir", 0, 0, 'D'},
+      {"print-search-dirs", 0, &print_dirs, 1},
+      {0, 0, 0, 0},
+  };
 
   path_getcwd(&cwd);
   stralloc_append(&cwd, PATHSEP_S);
 
-  // byte_zero(&sp, sizeof(sp));
-  // sp.path = calloc(1, sizeof(char*));
-
-  for(;;) {
-    c = unix_getopt_long(argc, argv, "hvudrReiD:", opts, &index);
-
-    if(c == -1)
-      break;
-
+  for(; (c = unix_getopt_long(argc, argv, "hvudrReiD:", opts, &index)) != -1;) {
     if(c == 0)
       continue;
 
@@ -1025,8 +1012,7 @@ main(int argc, char** argv) {
     files_count = argc - files_start;
 
     for(i = 0; i < files_count; ++i) {
-      char* p;
-      char buff[MAX_PATH];
+      char *p, buff[MAX_PATH];
       str_copyn(buff, argv[files_start + i], sizeof(buff));
       p = str_basename(buff);
 

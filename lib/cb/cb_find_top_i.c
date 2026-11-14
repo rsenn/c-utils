@@ -1,39 +1,6 @@
 #include "../byte.h"
 #include "../cb_internal.h"
 
-static int
-cb_find_prefix_i(void* ptr, const void* key, size_t keylen, void** results, int numresults, int* offset, int next) {
-  struct critbit_node* node;
-  assert(next <= numresults);
-
-  if(next == numresults)
-    return next;
-
-  if(decode_pointer(&ptr) == INTERNAL_NODE) {
-    node = (struct critbit_node*)ptr;
-
-    if(numresults > (next = cb_find_prefix_i(node->child[0], key, keylen, results, numresults, offset, next)))
-      next = cb_find_prefix_i(node->child[1], key, keylen, results, numresults, offset, next);
-
-  } else {
-    /* reached an external node */
-    char* str;
-    void* vptr;
-    size_t len;
-
-    from_external_node(ptr, &vptr, &len);
-    str = vptr;
-
-    if(len >= keylen && byte_diff(key, keylen, str) == 0) {
-      if(*offset > 0)
-        --*offset;
-      else
-        results[next++] = str;
-    }
-  }
-  return next;
-}
-
 void*
 cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen) {
   void *ptr, *top = 0, *last;
@@ -64,5 +31,6 @@ cb_find_top_i(const critbit_tree* cb, const void* key, size_t keylen) {
       break;
     }
   }
+
   return top;
 }

@@ -29,7 +29,7 @@ void pe_dump_sections(uint8* base);
 
 size_t
 pe_end_offset(uint8* base) {
-  uint16 i, n;
+  uint16 n;
   pe_section_header* sections = pe_header_sections(base, &n);
   size_t start, length;
 
@@ -164,13 +164,11 @@ pe_dump_exports(uint8* base) {
   size_t i;
   pe_data_directory* export_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];
   pe_section_header* text;
-  uint32 fnaddr, *nameptr, *fnptr, mintextptr, maxtextptr;
+  uint32* nameptr;
   uint16* ordptr;
   char* dllname;
 
   pe_export_directory* exports = pe_rva2ptr(base, uint32_get(&export_dir->virtual_address));
-  // pe_print_export_directory(buffer_1,
-  // exports);
 
   if(!(text = pe_get_section(base, ".text"))) {
     buffer_putsflush(buffer_2, "no .text section\n");
@@ -178,11 +176,7 @@ pe_dump_exports(uint8* base) {
   }
 
   nameptr = (uint32*)pe_rva2ptr(base, uint32_get(&exports->address_of_names));
-  fnptr = (uint32*)pe_rva2ptr(base, uint32_get(&exports->address_of_functions));
   ordptr = (uint16*)pe_rva2ptr(base, uint32_get(&exports->address_of_name_ordinals));
-
-  mintextptr = uint32_get(&text->virtual_address);
-  maxtextptr = mintextptr + uint32_get(&text->size_of_raw_data);
 
   if((dllname = pe_dllname(base)))
     buffer_putm_internal(buffer_1, "LIBRARY ", dllname, "\n", NULL);
@@ -190,22 +184,11 @@ pe_dump_exports(uint8* base) {
   buffer_puts(buffer_1, "EXPORTS\n");
 
   for(i = 0; i < uint32_get(&exports->number_of_names); i++) {
-    const char* s;
+    const char* s = pe_rva2ptr(base, uint32_get(&nameptr[i]));
     uint16 ordinal = uint16_get(&ordptr[i]);
-    fnaddr = fnptr[ordinal];
+
     buffer_puts(buffer_1, "  ");
-
-    /* if(mintextptr < fnaddr && fnaddr
-     * < maxtextptr)*/
-    {
-      s = pe_rva2ptr(base,
-                     uint32_get(&nameptr[i])); // pe_rva2ptr(base,
-                                               // pe_thunk(base,
-                                               // nameptr,
-                                               // i));
-      buffer_puts(buffer_1, s ? s : "<null>");
-    }
-
+    buffer_puts(buffer_1, s ? s : "<null>");
     buffer_puts(buffer_1, " @ ");
     buffer_putulong(buffer_1, ordinal);
     buffer_putnlflush(buffer_1);
@@ -214,15 +197,13 @@ pe_dump_exports(uint8* base) {
 
 void
 pe_dump_imports(uint8* base) {
-  int i, j, n;
+  int i, j;
+
   pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
   pe_import_descriptor* imports = pe_rva2ptr(base, uint32_get(&import_dir->virtual_address));
 
-  // n = import_dir->size / sizeof(pe_import_descriptor) - 1;
-
   if(list_imports) {
     buffer_puts(buffer_1, "IMPORTS\n");
-
   } else {
     buffer_putspad(buffer_1, "symbol", 64);
     buffer_putspace(buffer_1);
@@ -283,11 +264,10 @@ pe_dump_imports(uint8* base) {
 
 void
 pe_dump_dependencies(uint8* base) {
-  int i;
   pe_data_directory* import_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_IMPORT];
   pe_import_descriptor* imports = pe_rva2ptr(base, uint32_get(&import_dir->virtual_address));
 
-  for(i = 0; imports[i].original_first_thunk; ++i) {
+  for(int i = 0; imports[i].original_first_thunk; ++i) {
     const char* name = pe_rva2ptr(base, uint32_get(&imports[i].name));
 
     buffer_puts(buffer_1, name);
@@ -371,9 +351,7 @@ int
 main(int argc, char** argv) {
   uint8* base = NULL;
   size_t filesize;
-
   int c, index = 0;
-
   static const struct unix_longopt opts[] = {
       {"help", 0, NULL, 'h'},
       {"imports", 0, &list_imports, 'i'},
@@ -462,9 +440,9 @@ main(int argc, char** argv) {
         uint64 offset = pe_rva2offset(base, rva);
 
         buffer_puts(buffer_1, "0x");
-
         buffer_putxlonglong0(buffer_1, offset, offset > 0xffffffff ? 16 : 8);
         buffer_putnlflush(buffer_1);
+
         continue;
       }
 
@@ -476,6 +454,7 @@ main(int argc, char** argv) {
           put_search(buffer_1, &search);
           buffer_putnlflush(buffer_1);
         }
+
         continue;
       }
 
@@ -491,10 +470,9 @@ main(int argc, char** argv) {
       if(list_deps)
         pe_dump_dependencies(base);
 
-      if(nt_headers->coff_header.characteristics & PE_FILE_DLL) {
+      if(nt_headers->coff_header.characteristics & PE_FILE_DLL)
         if(list_exports)
           pe_dump_exports(base);
-      }
 
       if(print_export_dir) {
         pe_data_directory* data_dir = &pe_header_datadir(base)[PE_DIRECTORY_ENTRY_EXPORT];

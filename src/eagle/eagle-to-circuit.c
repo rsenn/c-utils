@@ -417,13 +417,13 @@ void
 build_nets(xmlnode* node) {
   int i = 0;
   struct net* ptr;
-  xmlnode* sn;
   char *sign, *name = node->name;
 
   assert(str_equal(name, "net") || str_equal(name, "signal"));
 
   if(!(sign = xml_get_attribute(node, "name")))
     return;
+
   print_name_value(buffer_2, name, sign);
   buffer_putnlflush(buffer_2);
   ptr = get_or_create(nets, sign, sizeof(struct net));
@@ -432,8 +432,7 @@ build_nets(xmlnode* node) {
 }
 
 /**
- * Build structures from <package>
- * element
+ * Build structures from <package> element
  */
 void
 build_package(xmlnode* set) {
@@ -449,10 +448,12 @@ build_package(xmlnode* set) {
 
     if(node->type != XML_ELEMENT || str_diff(node->name, "pad"))
       continue;
+
     pn = xml_get_attribute(node, "name");
 
     if(!pn || str_len(pn) == 0)
       continue;
+
     byte_zero(&p, sizeof(struct pad));
     p.x = get_double(node, "x");
     p.y = get_double(node, "y");
@@ -463,8 +464,7 @@ build_package(xmlnode* set) {
 }
 
 /**
- * Build structures from <deviceset>
- * element
+ * Build structures from <deviceset> element
  */
 void
 build_deviceset(xmlnode* set) {
@@ -476,6 +476,7 @@ build_deviceset(xmlnode* set) {
   print_name_value(buffer_2, "deviceset", name);
   buffer_putnlflush(buffer_2);
 #endif
+
   byte_zero(&d, sizeof(struct deviceset));
   stralloc_copys(&d.name, name);
   MAP_NEW(d.devices);
@@ -487,6 +488,7 @@ build_deviceset(xmlnode* set) {
 
     if(node->type != XML_ELEMENT)
       continue;
+
     byte_zero(&g, sizeof(struct gate));
     stralloc_copys(&g.name, xml_get_attribute(node, "name"));
     stralloc_copys(&g.symbol, xml_get_attribute(node, "symbol"));
@@ -494,33 +496,28 @@ build_deviceset(xmlnode* set) {
   }
 
   for(node = devices->children; node; node = node->next) {
-    struct package* pkg;
-    size_t len;
     char *name, *package;
     struct pinmapping pm;
 
     if(node->type != XML_ELEMENT)
       continue;
-    name = xml_get_attribute(node, "name");
 
-    if(!name || str_len(name) == 0)
+    if(!(name = xml_get_attribute(node, "name")) || str_len(name) == 0)
       continue;
+
     package = xml_get_attribute(node, "package");
     byte_zero(&pm, sizeof(struct pinmapping));
 
-    // MAP_GET(packages, package,
-    // str_len(package), (void**)&pkg,
-    // &len);
     pm.pkg = MAP_GET(packages, package, str_len(package));
 
     MAP_INSERT2(d.devices, name, str_len(name) + 1, &pm, sizeof(struct pinmapping));
   }
+
   MAP_INSERT2(devicesets, name, str_len(name) + 1, &d, sizeof(struct deviceset));
 }
 
 /**
- * Run an XPath query and return a XPath
- * object
+ * Run an XPath query and return a XPath object
  */
 xmlnodeset
 getnodeset(void* n, const char* xpath) {
@@ -528,8 +525,7 @@ getnodeset(void* n, const char* xpath) {
 }
 
 /**
- * Retrieve all <part> (schematic) or
- * <element> (board) objects
+ * Retrieve all <part> (schematic) or <element> (board) objects
  */
 strlist
 getparts(xmlnode* doc) {
@@ -543,12 +539,12 @@ getparts(xmlnode* doc) {
     xmlnode* node = *it;
     strlist_push(&ret, xml_get_attribute(node, "name"));
   }
+
   return ret;
 }
 
 /**
- * Iterate through a node-set, calling a
- * functor for every item
+ * Iterate through a node-set, calling a functor for every item
  */
 void
 for_set(xmlnodeset* ns, void (*fn)(xmlnode*)) {
@@ -567,19 +563,20 @@ compare_pads(const struct pad* a, const struct pad* b) {
 
   if(scan_long(a->name.s, &la) && scan_long(b->name.s, &lb))
     return la - lb;
+
   return stralloc_diff(&a->name, &b->name);
 }
 
 void
 clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   size_t idx;
+
   stralloc_init(pkgname);
   stralloc_copy(pkgname, &pkg->name);
   stralloc_lower(pkgname);
 
   if(pkgname->len > 4 && pkgname->s[0] == '0' && isdigit(pkgname->s[1]) && isdigit(pkgname->s[2]) &&
      isdigit(pkgname->s[3]) && pkgname->s[4] == '/') {
-    // stralloc_remove(pkgname, 0, 1);
     pkgname->s[0] = 'r';
     pkgname->s[1] = 'e';
     pkgname->s[2] = 's';
@@ -599,24 +596,20 @@ clean_pkgname(stralloc* pkgname, const struct package* pkg) {
   stralloc_replaces(pkgname, "-", "_n");
   stralloc_replaces(pkgname, "+", "_p");
 
-  for(idx = 0; idx < pkgname->len; idx++) {
+  for(idx = 0; idx < pkgname->len; idx++)
     if(!isalnum(pkgname->s[idx]))
       pkgname->s[idx] = '_';
-  }
 }
 
 int
 dump_package(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   int64 i;
-
   double x, y;
   const struct package* pkg = value;
   struct pad* first;
   stralloc pkgname;
-  clean_pkgname(&pkgname, pkg);
 
-  // buffer_puts(&output, "dump_package:
-  // ");
+  clean_pkgname(&pkgname, pkg);
   stralloc_nul(&pkgname);
 
   buffer_putspad(&output, pkgname.s, 18);
@@ -643,10 +636,8 @@ dump_package(const void* key, size_t key_len, const void* value, size_t value_le
     buffer_putlong(&output, -iy);
     buffer_putc(&output, ',');
     buffer_putlong(&output, -ix);
-    //   buffer_putspace(&output);
-    // buffer_puts(&output, "\n\t ");
   }
-  // buffer_puts(buffer_2, " ]");
+
   buffer_putnlflush(&output);
   return 1;
 }
@@ -665,7 +656,6 @@ int
 output_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
   struct pad* pad1 = array_start(&ptr->pkg->pads);
-
   double x, y;
 
   stralloc name;
@@ -693,10 +683,11 @@ output_part(const void* key, size_t key_len, const void* value, size_t value_len
 int
 dump_part(const void* key, size_t key_len, const void* value, size_t value_len, void* user_data) {
   struct part* ptr = (struct part*)value;
-  const char *s, *comment;
+  const char* s;
   size_t n;
   strlist refs;
   struct part_ref u;
+
   u.list = &refs;
   u.part = ptr;
   assert(ptr->name.s);
@@ -707,6 +698,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
     buffer_puts(&output, "\n# Package: ");
     buffer_putsa(&output, &ptr->pkg->name);
   }
+
   buffer_putsflush(&output, "\n");
 
   strlist_init(&refs, '\n');
@@ -717,15 +709,14 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
 
   strlist_foreach(&refs, s, n) {
     size_t clen;
-    size_t i = 0;
 
     if((clen = byte_chr(s, n, '\t')) + 1 < n) {
       ((char*)s)[clen] = '\0';
       buffer_putspad(&output, s, 7);
       s += clen + 1;
       n -= clen + 1;
-      i++;
     }
+
     buffer_put(&output, s, byte_chrs(s, n, " \t\r#\n", 4));
     buffer_putc(&output, '\n');
   }
@@ -737,6 +728,7 @@ dump_part(const void* key, size_t key_len, const void* value, size_t value_len, 
     buffer_puts(buffer_2, " deviceset: ");
     buffer_putsa(buffer_2, &ptr->dset->name);
   }
+
   buffer_putnlflush(buffer_2);
   return 1;
 }
@@ -751,6 +743,7 @@ net_connects(const struct net* net, struct part* part, int pin) {
     if(r->part == part && (r->pin == pin || pin == -1))
       return r;
   }
+
   return NULL;
 }
 
@@ -762,7 +755,6 @@ part_unconnected() {
     struct part* part = MAP_ITER_VALUE(t);
 
     for(i = 0; i < part->num_pins; i++) {
-      struct net* pin = &part->pins[i];
       buffer_puts(buffer_2, "Part ");
       buffer_putsa(buffer_2, &part->name);
       buffer_puts(buffer_2, " Pin ");
@@ -811,20 +803,16 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
   strlist* refs = ((struct part_ref*)user_data)->list;
   struct part* p = ((struct part_ref*)user_data)->part;
   struct ref* rc;
-
   int64 i, len;
   stralloc conn, rconn;
   stralloc_init(&conn);
   stralloc_init(&rconn);
 
-  if(p) {
+  if(p)
     if(!(rc = net_connects(n, p, -1)))
       return 1;
-  }
 
-  len = array_length(&n->contacts, sizeof(struct ref));
-
-  if(len == 0) {
+  if((len = array_length(&n->contacts, sizeof(struct ref))) == 0) {
     buffer_puts(&output, "## Net ");
     buffer_putsa(&output, &n->name);
     buffer_putsflush(&output, " has no connections\n");
@@ -835,6 +823,7 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
 
     if(r == rc)
       continue;
+
     assert(r->part);
 
     stralloc_zero(&conn);
@@ -856,9 +845,9 @@ output_net(const void* key, size_t key_len, const void* value, size_t value_len,
   stralloc_free(&rconn);
   return 1;
 }
+
 /**
- *  hashmap_dump: Gets depth of node in
- * hierarchy
+ *  hashmap_dump: Gets depth of node in hierarchy
  */
 int
 node_depth(xmlnode* node) {
@@ -866,6 +855,7 @@ node_depth(xmlnode* node) {
 
   while((node = node->next))
     ++i;
+
   return i;
 }
 
@@ -874,8 +864,10 @@ str_ischarset(const char* s, const char* set) {
   while(*s) {
     if(set[str_chr(set, *s)] == '\0')
       return 0;
+
     ++s;
   }
+
   return 1;
 }
 
@@ -902,9 +894,9 @@ print_element_name(xmlnode* a_node) {
     xmlnode* p = a_node->parent;
     const char* pn = p->name;
 
-    if(pn && !str_diffn(pn, name, str_len(name))) {
+    if(pn && !str_diffn(pn, name, str_len(name)))
       p = p->parent;
-    }
+
     print_element_name(p);
   }
 
@@ -923,8 +915,7 @@ print_element_name(xmlnode* a_node) {
 }
 
 /**
- *  print_element_attrs: Prints all
- * element attributes to stdout
+ *  print_element_attrs: Prints all element attributes to stdout
  */
 void
 print_attrs(HMAP_DB* a) {
@@ -932,8 +923,8 @@ print_attrs(HMAP_DB* a) {
 
   for(t = a->list_tuple; t; t = t->next) {
     char* v = t->vals.val_chars;
-    buffer_putm_internal(
-        buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", NULL);
+
+    buffer_putm_internal(buffer_2, " ", t->key, str_isdoublenum(v) ? "=" : "=\"", v, str_isdoublenum(v) ? "" : "\"", 0);
 
     if(t->next == a->list_tuple)
       break;
@@ -960,8 +951,7 @@ print_element_content(xmlnode* node) {
 }
 
 /**
- *  print_element_children: Prints all
- * element attributes to stdout
+ *  print_element_children: Prints all element attributes to stdout
  */
 void
 print_element_children(xmlnode* a_node) {
@@ -973,6 +963,7 @@ print_element_children(xmlnode* a_node) {
   for(node = a_node->children; node; node = node->next) {
     if(node->type != XML_ELEMENT)
       continue;
+
     print_element_name(node);
     print_element_attrs(node);
     print_element_content(node);
@@ -983,11 +974,9 @@ print_element_children(xmlnode* a_node) {
 
 /**
  * print_element_names:
- * @a_node: the initial xml node to
- * consider.
+ * @a_node: the initial xml node to consider.
  *
- * Prints the names of the all the xml
- * elements that are siblings or
+ * Prints the names of the all the xml elements that are siblings or
  * children of a given xml node.
  */
 void
@@ -1000,9 +989,9 @@ print_element_names(xmlnode* node) {
       continue;
     print_element_name(node);
 
-    if(node_depth(node) >= 1) {
+    if(node_depth(node) >= 1)
       print_element_attrs(node);
-    }
+
     print_element_content(node);
     buffer_putnlflush(buffer_2);
     print_element_names(node->children);
@@ -1047,6 +1036,7 @@ match_query(xmlnode* doc, const char* q) {
           elem_name = attr_name;
           attr_name = "name";
         }
+
         stralloc_zero(&query);
         stralloc_catm_internal(&query, "", elem_name, "[@", attr_name, "='", v, "']", NULL);
         stralloc_0(&query);
@@ -1059,8 +1049,7 @@ match_query(xmlnode* doc, const char* q) {
 }
 
 /**
- * Executes XPath query and for every
- * resulting element calls a function
+ * Executes XPath query and for every resulting element calls a function
  */
 int
 match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
@@ -1070,6 +1059,7 @@ match_foreach(xmlnode* doc, const char* q, void (*fn)(xmlnode*)) {
     for_set(&ns, fn);
     return 1;
   }
+
   return 0;
 }
 
@@ -1077,8 +1067,7 @@ int
 main(int argc, char* argv[]) {
   xmlnode* doc;
   int argi = 1, output_fd = 1;
-  const char* input_file = "/home/roman/Sources/an-tronics/eagle/40106-4069-Synth.brd";
-  const char* output_file = NULL;
+  const char *input_file = NULL, *output_file = NULL;
 
   MAP_NEW(devicesets);
   MAP_NEW(packages);
@@ -1159,21 +1148,15 @@ main(int argc, char* argv[]) {
   MAP_VISIT_ALL(nets, dump_net, 0);
 
   MAP_DUMP(nets, buffer_1);
-  // hmap_print_list(nets);
 
   strlist_dump(buffer_2, &connections);
 
   part_unconnected();
 
-  /*
-   * Cleanup function for the XML
-   * library.
-   */
+  /* Cleanup function for the XML library */
   xml_free(doc);
   buffer_flush(&output);
-  /*
-   * this is to debug memory for
-   * regression tests
-   */
+
+  /* this is to debug memory for regression tests */
   return (0);
 }
