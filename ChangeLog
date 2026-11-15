@@ -9,9 +9,10 @@
 - list-r: the usage function is named usage again, its callers could not
   find jusage.
 - http: http_canread declares received again.
-- sig: sig_dfl and sig_ign are initialized with a typed SIG_DFL and SIG_IGN,
-  a long constant for a function pointer is an error with current gcc and
-  clang.
+- sig: sig_dfl and sig_ign are initialized through the sa_handler member
+  with a typed SIG_DFL and SIG_IGN. A long constant for a function pointer
+  is an error with current gcc and clang, and a positional initializer hits
+  sa_flags on Android, where it is the first member.
 
 2026-11-14:
 
