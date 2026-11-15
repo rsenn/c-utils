@@ -8,12 +8,12 @@
 #endif
 
 #ifndef SIG_DFL
-#define SIG_DFL 0l
+#define SIG_DFL ((void (*)(int))0)
 #endif
 #ifndef SIG_IGN
-#define SIG_IGN 1l
+#define SIG_IGN ((void (*)(int))1)
 #endif
 
 /* sa_handler is the first member */
-struct sigaction const sig_dfl = {(long)SIG_DFL};
-struct sigaction const sig_ign = {(long)SIG_IGN};
+struct sigaction const sig_dfl = {SIG_DFL};
+struct sigaction const sig_ign = {SIG_IGN};

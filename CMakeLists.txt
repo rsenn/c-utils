@@ -454,8 +454,16 @@ endif(LINK_STATIC)
 set(CMAKE_STATIC_LINKER_FLAGS "")
 
 check_functions(
-  __write aligned_alloc clock_gettime getdelim lstat pipe2 popen posix_memalign
-  pread sendfile sigaddset sigemptyset sigprocmask waitpid writev)
+  __write clock_gettime getdelim lstat pipe2 popen posix_memalign pread
+  sendfile sigaddset sigemptyset sigprocmask waitpid writev)
+
+# aligned_alloc is tested by its declaration, not by linking: bionic exports it
+# from libc.so but declares it only for API level 28 and up (Termux builds for
+# 24), so a link test passes and the call is then an implicit declaration.
+check_symbol_exists(aligned_alloc stdlib.h HAVE_ALIGNED_ALLOC_DECL)
+if(HAVE_ALIGNED_ALLOC_DECL)
+  add_definitions(-DHAVE_ALIGNED_ALLOC=1)
+endif(HAVE_ALIGNED_ALLOC_DECL)
 check_functions(sigismember sigsuspend)
 check_functions(ftruncate)
 check_functions(glob)

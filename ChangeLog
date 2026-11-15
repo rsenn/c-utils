@@ -1,3 +1,18 @@
+2026-11-15:
+
+- cmake: aligned_alloc is detected by its declaration in stdlib.h instead of
+  by linking. Android bionic exports it from libc but declares it only from
+  API level 28, so the Termux build failed in cbmap_alloc.c; there it now
+  uses posix_memalign.
+- eagle-gen-cmds: build_nets declares name again; the build failed with an
+  undeclared identifier.
+- list-r: the usage function is named usage again, its callers could not
+  find jusage.
+- http: http_canread declares received again.
+- sig: sig_dfl and sig_ign are initialized with a typed SIG_DFL and SIG_IGN,
+  a long constant for a function pointer is an error with current gcc and
+  clang.
+
 2026-11-14:
 
 - pkgcfg: --path-map FROM=TO and --path-root FROM=ROOT (also the

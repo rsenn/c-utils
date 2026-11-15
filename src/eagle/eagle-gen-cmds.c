@@ -761,7 +761,7 @@ void
 build_nets(xmlnode* node) {
   int i;
   struct net* ptr;
-  char* sign;
+  char *sign, *name = node->name;
   assert(str_equal(name, "net") || str_equal(name, "signal"));
 
   if(!(sign = xml_get_attribute(node, "name")))

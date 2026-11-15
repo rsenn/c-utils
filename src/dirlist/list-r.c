@@ -1199,7 +1199,7 @@ count_non_negative(const int* x, size_t n) {
 }
 
 void
-jusage(char* argv0) {
+usage(char* argv0) {
   const char* prog = str_basename(argv0);
   buffer_putm_internal(buffer_1,
                        "Usage: ",

@@ -26,7 +26,7 @@ http_canread(http* h, void (*wantread)(fd_type), void (*wantwrite)(fd_type)) {
   http_response* response;
   int err;
   size_t n;
-  ssize_t ret = 0;
+  ssize_t ret = 0, received;
 
   if(h->tls) {
     if(!h->connected) {
