@@ -629,3 +629,29 @@
   the code offset is the same. Build from the project directory when the hex
   has to be reproducible.
 
+
+- pathmap-sources-untracked:
+  lib/pathmap/*.c, lib/pathmap.h and lib/pathmap_internal.h are not in git (git status shows them as
+  untracked), so a fresh clone has an empty lib/pathmap/ module: lib/CMakeLists.txt:112
+  add_library(pathmap STATIC ...) gets no sources and the generate step fails with "No SOURCES
+  given to target: pathmap" for both build types. Found 2026-11-15 restoring a Termux home from
+  clones. Two fixes: commit the files, and skip (or error with a clear message) a module whose glob
+  is empty in lib/CMakeLists.txt:98-112.
+
+    git clone <c-utils> && cmake -S c-utils -B b   # expected: configures; actual: No SOURCES given to target: pathmap
+
+- cmake-project-before-minimum-required:
+  CMakeLists.txt:1 calls project(c-utils C ASM) before cmake_minimum_required (line 3); CMake warns
+  "cmake_minimum_required() should be called prior to this top-level project()" and the policies of
+  the first call are not applied to the compiler checks. Same in the CMake 4.5 log of the other
+  projects (qjs-* CMakeLists.txt have the right order).
+
+- cmake-policy-warnings-cmp0153-cmp0219:
+  cmake/CheckMsysCygwinMingw.cmake:51, :59, :67 call exec_program (CMP0153: should not be called,
+  use execute_process); CMakeLists.txt:198 check_compile() gets an argument containing a backslash
+  (CMP0219 not set: the "test\n" literal is unescaped twice). Warnings on every configure with
+  CMake 4.5 (Termux), and the probe source is not what it looks like.
+
+- sigset-and-toolchain-empty-in-configure-output:
+  the configure on Termux prints "Size of sigset_t: " (empty) and "-- Toolchain: " (empty); the check
+  that fills them does not work for the Android triple. Not root-caused.

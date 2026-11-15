@@ -427,3 +427,6 @@ them with -v when porting a foreign project. Details in
   Likewise list-r.c on Windows native now gets size and time from stat on a
   UTF-8 path instead of the find data, which is unchecked there.
 
+
+- build on a fresh machine: see BUGS pathmap-sources-untracked (commit lib/pathmap first), then
+  cmake-project-before-minimum-required
