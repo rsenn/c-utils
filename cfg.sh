@@ -333,14 +333,17 @@ cfg-termux()
 {
   (: ${builddir=build/termux}
    : ${NDK:=/mnt/data/opt/android-ndk-r27c}
-   : ${TERMUX_SYSROOT:=$HOME/mnt/termux/usr}
+   # a local copy (make sysroot-termux in js-engines) is fast; the sshfs mount works too but every lookup is a round trip
+   if [ -z "${TERMUX_SYSROOT:-}" ]; then
+     if [ -d "$HOME/sysroots/termux/usr/lib" ]; then TERMUX_SYSROOT=$HOME/sysroots/termux/usr; else TERMUX_SYSROOT=$HOME/mnt/termux/usr; fi
+   fi
    : ${ANDROID_ABI:=arm64-v8a}
    : ${ANDROID_PLATFORM:=android-24}
    : ${TOOLCHAIN:=$NDK/build/cmake/android.toolchain.cmake}
    termux_prefix=/data/data/com.termux/files/usr
 
    [ -e "$TOOLCHAIN" ] || { echo "cfg-termux: no $TOOLCHAIN (set NDK)" 1>&2; exit 1; }
-   [ -d "$TERMUX_SYSROOT/lib" ] || echo "cfg-termux: no Termux sysroot at $TERMUX_SYSROOT (mount it: sshfs termux:.. ~/mnt/termux)" 1>&2
+   [ -d "$TERMUX_SYSROOT/lib" ] || echo "cfg-termux: no Termux sysroot at $TERMUX_SYSROOT (make sysroot-termux in js-engines, or mount it: sshfs termux:.. ~/mnt/termux)" 1>&2
 
    mkdir -p "$builddir"
    pcwrap=$(cd "$builddir" && pwd)/termux-pkg-config
@@ -430,16 +433,53 @@ LIBRARY_PATH=$(set -- /opt/*-wasm/lib ;  IFS=";"; echo "$*")
     "$@")
 }
 
+# cfg-aarch64: cross-compile for a Raspberry Pi (aarch64 glibc) with the host clang (--target=aarch64-linux-gnu, lld)
+# against a copy of the Pi's /usr (make sysroot-pi in js-engines puts it in ~/sysroots/pi). No cross gcc is needed.
+# Variables: PI_SYSROOT (default ~/sysroots/pi, else the sshfs mount ~/mnt/pi-root), PI_TARGET (default
+# aarch64-linux-gnu), prefix (default /usr/local, the install prefix ON the Pi). The sysroot's gcc (usr/lib/gcc,
+# usr/include/c++) supplies crt files, libgcc and the C++ headers, so C++ matches the Pi's libstdc++.
 cfg-aarch64() {
- (: ${build=$(cc -dumpmachine | sed 's|-pc-|-|g')}
-  : ${host=aarch64-${build#*-}}
-  : ${builddir=build/$host}
+ (: ${builddir=build/aarch64-linux-gnu}
+  : ${PI_TARGET:=aarch64-linux-gnu}
+  : ${prefix:=/usr/local}
+  if [ -z "${PI_SYSROOT:-}" ]; then
+    if [ -d "$HOME/sysroots/pi/usr/lib" ]; then PI_SYSROOT=$HOME/sysroots/pi; else PI_SYSROOT=$HOME/mnt/pi-root; fi
+  fi
+  [ -d "$PI_SYSROOT/usr/lib" ] || { echo "cfg-aarch64: no Pi sysroot at $PI_SYSROOT (make sysroot-pi in js-engines)" 1>&2; exit 1; }
+  type clang >/dev/null 2>&1 && type ld.lld >/dev/null 2>&1 || { echo "cfg-aarch64: needs clang and lld" 1>&2; exit 1; }
 
-  : ${prefix=/usr/aarch64-linux-gnu/sysroot/usr}
-
-  : ${TOOLCHAIN=/opt/cmake-toolchains/aarch64-linux-gnu.toolchain.cmake}
-  export prefix TOOLCHAIN
-
-  PKG_CONFIG=$(which ${host}-pkg-config) \
-  cfg "$@")
+  mkdir -p "$builddir"
+  bd=$(cd "$builddir" && pwd)
+  mt=$PI_TARGET
+  tc=$bd/aarch64-toolchain.cmake
+  cat >"$tc" <<TCEOF
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR aarch64)
+set(CMAKE_SYSROOT $PI_SYSROOT)
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+set(CMAKE_C_COMPILER_TARGET $mt)
+set(CMAKE_CXX_COMPILER_TARGET $mt)
+set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld")
+set(CMAKE_FIND_ROOT_PATH $PI_SYSROOT)
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+TCEOF
+  pcwrap=$bd/aarch64-pkg-config
+  cat >"$pcwrap" <<PCEOF
+#!/bin/sh
+PKG_CONFIG_SYSROOT_DIR=$PI_SYSROOT
+PKG_CONFIG_LIBDIR=$PI_SYSROOT/usr/lib/$mt/pkgconfig:$PI_SYSROOT/usr/lib/pkgconfig:$PI_SYSROOT/usr/share/pkgconfig
+unset PKG_CONFIG_PATH
+export PKG_CONFIG_SYSROOT_DIR PKG_CONFIG_LIBDIR
+exec pkg-config "\$@"
+PCEOF
+  chmod +x "$pcwrap"
+  PKG_CONFIG=$pcwrap TOOLCHAIN=$tc
+  export PKG_CONFIG TOOLCHAIN prefix
+  cfg -DCMAKE_INSTALL_PREFIX=$prefix "$@")
 }

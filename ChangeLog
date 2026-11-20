@@ -533,3 +533,7 @@
   pkg-config wrapper maps the Termux prefix onto it (pkgcfg --path-map) and turns -I into
   -idirafter, because Termux ships its own bionic headers that must not shadow the NDK's.
   NDK, TERMUX_SYSROOT, ANDROID_ABI and ANDROID_PLATFORM override the defaults
+
+2026-11-20  cfg.sh
+  cfg-termux uses the local sysroot copy ~/sysroots/termux/usr when present (make sysroot-termux in js-engines), else the sshfs mount
+  cfg-aarch64 rewritten: host clang + lld against the local Pi sysroot copy (~/sysroots/pi), generated toolchain file and pkg-config wrapper, no cross gcc needed
