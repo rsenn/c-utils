@@ -323,19 +323,48 @@ cfg-msys64() {
 }
 
 
+# cfg-termux: cross-compile for Termux (aarch64, bionic) with the NDK clang against a Termux sysroot,
+# a copy or sshfs mount of $PREFIX (sshfs termux:.. ~/mnt/termux gives ~/mnt/termux/usr).
+#   NDK=/mnt/data/opt/android-ndk-r27c  TERMUX_SYSROOT=~/mnt/termux/usr
+#   ANDROID_ABI=arm64-v8a  ANDROID_PLATFORM=android-24      (ANDROID_ABI=armeabi-v7a for 32 bit)
+# Termux ships its own bionic headers, so its include dir must come after the NDK's: the pkg-config
+# wrapper turns -I<sysroot>/include into -idirafter. Binaries get an rpath to the Termux lib dir.
 cfg-termux()
 {
   (: ${builddir=build/termux}
-    cfg \
-  -DCMAKE_INSTALL_PREFIX=/data/data/com.termux/files/usr \
-  \
-  -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN:-/opt/android-cmake/android.cmake} \
-  -DANDROID_NATIVE_API_LEVEL=21 \
-  -DPKG_CONFIG_EXECUTABLE=arm-linux-androideabi-pkg-config \
-  -DCMAKE_PREFIX_PATH=/data/data/com.termux/files/usr \
-  -DCMAKE_MAKE_PROGRAM=/usr/bin/make \
-   -DCMAKE_MODULE_PATH="/data/data/com.termux/files/usr/lib/cmake" \
-   "$@"
+   : ${NDK:=/mnt/data/opt/android-ndk-r27c}
+   : ${TERMUX_SYSROOT:=$HOME/mnt/termux/usr}
+   : ${ANDROID_ABI:=arm64-v8a}
+   : ${ANDROID_PLATFORM:=android-24}
+   : ${TOOLCHAIN:=$NDK/build/cmake/android.toolchain.cmake}
+   termux_prefix=/data/data/com.termux/files/usr
+
+   [ -e "$TOOLCHAIN" ] || { echo "cfg-termux: no $TOOLCHAIN (set NDK)" 1>&2; exit 1; }
+   [ -d "$TERMUX_SYSROOT/lib" ] || echo "cfg-termux: no Termux sysroot at $TERMUX_SYSROOT (mount it: sshfs termux:.. ~/mnt/termux)" 1>&2
+
+   mkdir -p "$builddir"
+   pcwrap=$(cd "$builddir" && pwd)/termux-pkg-config
+   cat >"$pcwrap" <<EOF
+#!/bin/sh
+PKG_CONFIG_PATH=$TERMUX_SYSROOT/lib/pkgconfig:$TERMUX_SYSROOT/share/pkgconfig
+export PKG_CONFIG_PATH
+out=\$(pkgcfg --path-map $termux_prefix=$TERMUX_SYSROOT "\$@") || exit
+printf '%s\\n' "\$out" | sed -E 's#-I$TERMUX_SYSROOT/include( |\$)#-idirafter $TERMUX_SYSROOT/include\\1#g'
+EOF
+   chmod +x "$pcwrap"
+   PKG_CONFIG=$pcwrap
+   export PKG_CONFIG TOOLCHAIN
+
+   cfg \
+     -DCMAKE_INSTALL_PREFIX=$termux_prefix \
+     -DANDROID_ABI=$ANDROID_ABI \
+     -DANDROID_PLATFORM=$ANDROID_PLATFORM \
+     -DCMAKE_FIND_ROOT_PATH=$TERMUX_SYSROOT \
+     -DCMAKE_PREFIX_PATH=$TERMUX_SYSROOT \
+     -DCMAKE_MODULE_PATH=$TERMUX_SYSROOT/lib/cmake \
+     -DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,$termux_prefix/lib \
+     -DCMAKE_SHARED_LINKER_FLAGS=-Wl,-rpath,$termux_prefix/lib \
+     "$@"
     )
 }
 cfg-wasm() {

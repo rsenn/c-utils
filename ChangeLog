@@ -528,3 +528,8 @@
 - fixed io_closeonexec, it set the flag on the wrong fcntl command and the
   descriptor stayed inheritable. io_get_wantread and io_get_wantwrite now
   report what the caller asked for, not the state the kernel still has
+- cfg.sh: cfg-termux cross-builds with the NDK r27c clang (android.toolchain.cmake, arm64-v8a,
+  API 24) against a Termux sysroot, by default the sshfs mount ~/mnt/termux/usr. A generated
+  pkg-config wrapper maps the Termux prefix onto it (pkgcfg --path-map) and turns -I into
+  -idirafter, because Termux ships its own bionic headers that must not shadow the NDK's.
+  NDK, TERMUX_SYSROOT, ANDROID_ABI and ANDROID_PLATFORM override the defaults
