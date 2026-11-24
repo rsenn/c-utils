@@ -435,7 +435,8 @@ LIBRARY_PATH=$(set -- /opt/*-wasm/lib ;  IFS=";"; echo "$*")
 
 # cfg-aarch64: cross-compile for a Raspberry Pi (aarch64 glibc) with the host clang (--target=aarch64-linux-gnu, lld)
 # against a copy of the Pi's /usr (make sysroot-pi in js-engines puts it in ~/sysroots/pi). No cross gcc is needed.
-# Variables: PI_SYSROOT (default ~/sysroots/pi, else the sshfs mount ~/mnt/pi-root), PI_TARGET (default
+# Variables: PI_SYSROOT (default ~/sysroots/pi, else the sshfs mount ~/mnt/pi-root), CROSS_FIND_ROOT (more find roots,
+# ;-separated, for a library prefix outside the sysroot such as a staged OpenCV), PI_TARGET (default
 # aarch64-linux-gnu), prefix (default /usr/local, the install prefix ON the Pi). The sysroot's gcc (usr/lib/gcc,
 # usr/include/c++) supplies crt files, libgcc and the C++ headers, so C++ matches the Pi's libstdc++.
 cfg-aarch64() {
@@ -463,7 +464,7 @@ set(CMAKE_CXX_COMPILER_TARGET $mt)
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld")
 set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
 set(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld")
-set(CMAKE_FIND_ROOT_PATH $PI_SYSROOT)
+set(CMAKE_FIND_ROOT_PATH $PI_SYSROOT${CROSS_FIND_ROOT:+;$CROSS_FIND_ROOT})
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
