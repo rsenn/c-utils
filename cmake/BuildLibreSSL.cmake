@@ -22,8 +22,15 @@ macro(build_libressl PIC)
   set(OPENSSL_SSL_LIBRARY "${OPENSSL_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}ssl${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set(OPENSSL_CRYPTO_LIBRARY "${OPENSSL_LIB_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}crypto${CMAKE_STATIC_LIBRARY_SUFFIX}")
 
+  # cosmocc undefines __linux__ (libc/integral/normalize.inc), which compat/arc4random.h selects its
+  # platform hooks by; __midipix__ picks arc4random_linux.h there too
+  set(_extra)
+  if(CMAKE_C_COMPILER MATCHES "cosmo")
+    set(_extra "-DCMAKE_C_FLAGS=-w -D__midipix__")
+  endif(CMAKE_C_COMPILER MATCHES "cosmo")
+
   third_party_build(libressl "${LIBRESSL_SOURCE_DIR}" "${THIRD_PARTY_PREFIX}" ${PIC} "${OPENSSL_SSL_LIBRARY}"
-                    CMAKE_ARGS -DLIBRESSL_APPS=OFF -DLIBRESSL_TESTS=OFF)
+                    CMAKE_ARGS -DLIBRESSL_APPS=OFF -DLIBRESSL_TESTS=OFF ${_extra})
 
   set(OPENSSL_LIBRARIES "${OPENSSL_SSL_LIBRARY};${OPENSSL_CRYPTO_LIBRARY}")
   set(TLS_LIBRARIES "${OPENSSL_LIBRARIES}")

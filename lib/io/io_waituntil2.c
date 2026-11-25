@@ -708,6 +708,7 @@ io_waituntil2(int64 milliseconds) {
 #if defined(HAVE_POLL) || defined(SUPPORT_POLL)
 dopoll: {
   struct pollfd* p;
+  long j, r;
 
   for(i = r = 0; (size_t)i <= iarray_length((iarray*)io_getfds()); ++i) {
     io_entry* e = (io_entry*)iarray_get((iarray*)io_getfds(), i);
@@ -818,6 +819,7 @@ dopoll: {
 
     p++;
   }
+}
 #endif /* HAVE_POLL */
 
   return i;

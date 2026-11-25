@@ -19,7 +19,7 @@ struct arena_src {
 
 extern const struct arena_src arena_heap; /* malloc()/free() */
 extern const struct arena_src arena_mmap; /* anonymous mmap()/munmap() */
-extern const struct arena_src arena_brk;  /* sbrk(); never returned */
+extern const struct arena_src arena_brk;  /* sbrk(); never returned; not on cosmopolitan */
 
 struct arena_chunk;
 

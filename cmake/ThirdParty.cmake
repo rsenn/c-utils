@@ -75,6 +75,12 @@ function(third_party_build NAME SRC PREFIX PIC BYPRODUCT)
     endif(${_var})
   endforeach(_var)
 
+  # a bare CMAKE_SYSTEM_NAME (cosmocc) leaves the processor empty, and
+  # projects like libressl pick their per-arch headers by it
+  if(NOT CMAKE_SYSTEM_PROCESSOR AND CMAKE_SYSTEM_NAME)
+    list(APPEND _args "-DCMAKE_SYSTEM_PROCESSOR=${CMAKE_HOST_SYSTEM_PROCESSOR}")
+  endif(NOT CMAKE_SYSTEM_PROCESSOR AND CMAKE_SYSTEM_NAME)
+
   message(STATUS "Building ${NAME} into ${PREFIX}")
 
   foreach(_step "-S;${SRC};-B;${_build};${_args};${TP_CMAKE_ARGS}" "--build;${_build};--parallel" "--install;${_build}")

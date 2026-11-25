@@ -1,3 +1,17 @@
+2026-11-25:
+
+- cmake: zlib is fetched at v1.3.2 and built static only (ZLIB_BUILD_SHARED=OFF);
+  the cosmocc configure no longer fails linking libz.so ("-shared not
+  supported").
+- cmake: third_party builds pass CMAKE_SYSTEM_PROCESSOR (host's when unset),
+  and libressl is built with -D__midipix__ under cosmocc, which undefines
+  __linux__; the cosmocc configure now completes.
+- arena: arena_brk is not built on cosmopolitan, which has no sbrk().
+- iarray: cas.S carries a placeholder symbol under cosmocc, whose fixupobj
+  rejects an object without a symbol table.
+- io: io_waituntil2 compiles with the poll() backend again (missing
+  declarations and a missing closing brace).
+
 2026-11-15:
 
 - cmake: aligned_alloc is detected by its declaration in stdlib.h instead of
@@ -537,3 +551,4 @@
 2026-11-20  cfg.sh
   cfg-termux uses the local sysroot copy ~/sysroots/termux/usr when present (make sysroot-termux in js-engines), else the sshfs mount
   cfg-aarch64 rewritten: host clang + lld against the local Pi sysroot copy (~/sysroots/pi), generated toolchain file and pkg-config wrapper, no cross gcc needed
+  cfg-aarch64: the generated toolchain file sets the assembler compiler and target too (.S files were assembled for the host)

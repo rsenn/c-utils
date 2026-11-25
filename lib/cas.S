@@ -14,4 +14,9 @@ __sync_val_compare_and_swap :
         cbnz w3, 1b 
 2:      add sp, sp,16
         ret
+#elif defined(__COSMOPOLITAN__)
+/* cosmocc's fixupobj rejects an object without a symbol table */
+        .text
+        .global __cas_placeholder
+__cas_placeholder:
 #endif

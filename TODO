@@ -430,3 +430,13 @@ them with -v when porting a foreign project. Details in
 
 - build on a fresh machine: see BUGS pathmap-sources-untracked (commit lib/pathmap first), then
   cmake-project-before-minimum-required
+
+- cosmo-program-build:
+  The cosmocc build (build/cosmopolitan) now builds all libraries but three
+  programs and tests still fail. Fix them one by one.
+
+  Files:
+    src/serial/serial.c: B460800 and B921600 are not defined by cosmopolitan
+    src/text/least.c: needs sys/inotify.h, which cosmopolitan lacks
+    tests/test_walk.c: its touch conflicts with a cosmopolitan declaration
+
