@@ -71,6 +71,12 @@ cfg() {
   : set -x
   cd "${builddir:-.}"
   IFS="$IFS "
+ # a toolchain file chooses the compilers; -DCMAKE_C_COMPILER next to it makes a reconfigure drop the toolchain
+  CC_ARG= CXX_ARG=
+  if [ -z "$TOOLCHAIN" ]; then
+    CC_ARG=${CC:+-DCMAKE_C_COMPILER=$CC}
+    CXX_ARG=${CXX:+-DCMAKE_CXX_COMPILER=$CXX}
+  fi
  set -- -Wno-dev \
     -G "$generator" \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -78,12 +84,10 @@ cfg() {
     ${VERBOSE:+-DCMAKE_VERBOSE_MAKEFILE=OFF${VERBOSE:-OFF}} \
     -DCMAKE_BUILD_TYPE="${TYPE:-Debug}" \
     -DBUILD_SHARED_LIBS=ON \
-    ${CC:+-DCMAKE_C_COMPILER="$CC"} \
-    ${CXX:+-DCMAKE_CXX_COMPILER="$CXX"} \
     ${PKG_CONFIG:+-DPKG_CONFIG_EXECUTABLE="$PKG_CONFIG"} \
     ${TOOLCHAIN:+-DCMAKE_TOOLCHAIN_FILE="$TOOLCHAIN"} \
-    ${CC:+-DCMAKE_C_COMPILER="$CC"} \
-    ${CXX:+-DCMAKE_CXX_COMPILER="$CXX"} \
+    ${CC_ARG:+"$CC_ARG"} \
+    ${CXX_ARG:+"$CXX_ARG"} \
     ${MAKE:+-DCMAKE_MAKE_PROGRAM="$MAKE"} \
     "$@" \
     $relsrcdir 
@@ -352,7 +356,9 @@ cfg-termux()
 PKG_CONFIG_PATH=$TERMUX_SYSROOT/lib/pkgconfig:$TERMUX_SYSROOT/share/pkgconfig
 export PKG_CONFIG_PATH
 out=\$(pkgcfg --path-map $termux_prefix=$TERMUX_SYSROOT "\$@") || exit
-printf '%s\\n' "\$out" | sed -E 's#-I$TERMUX_SYSROOT/include( |\$)#-idirafter $TERMUX_SYSROOT/include\\1#g'
+# the sysroot include dir is not reported: cmake's pkg_check_modules would take "-idirafter" for an include dir, and -I would
+# shadow bionic's headers; the dir is on the compile line as -idirafter through CMAKE_C_FLAGS/CMAKE_CXX_FLAGS (cfg-termux)
+printf '%s\\n' "\$out" | sed -E 's# ?-I$TERMUX_SYSROOT/include( |\$)#\\1#g'
 EOF
    chmod +x "$pcwrap"
    PKG_CONFIG=$pcwrap
@@ -362,7 +368,9 @@ EOF
      -DCMAKE_INSTALL_PREFIX=$termux_prefix \
      -DANDROID_ABI=$ANDROID_ABI \
      -DANDROID_PLATFORM=$ANDROID_PLATFORM \
-     -DCMAKE_FIND_ROOT_PATH=$TERMUX_SYSROOT \
+     "-DCMAKE_FIND_ROOT_PATH=$TERMUX_SYSROOT${CROSS_FIND_ROOT:+;$CROSS_FIND_ROOT}" \
+     "-DCMAKE_C_FLAGS=-idirafter $TERMUX_SYSROOT/include" \
+     "-DCMAKE_CXX_FLAGS=-idirafter $TERMUX_SYSROOT/include" \
      -DCMAKE_PREFIX_PATH=$TERMUX_SYSROOT \
      -DCMAKE_MODULE_PATH=$TERMUX_SYSROOT/lib/cmake \
      -DCMAKE_EXE_LINKER_FLAGS=-Wl,-rpath,$termux_prefix/lib \
